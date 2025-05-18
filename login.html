@@ -1,0 +1,98 @@
+<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ucapan Pernikahan</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-blue-100 to-purple-100 min-h-screen p-6 flex justify-center items-center">
+  <div class="bg-white p-8 rounded-2xl shadow-lg w-full max-w-2xl text-gray-800 ring-1 ring-gray-200">
+
+    <!-- Header -->
+    <div class="mb-3 border-b pb-3">
+      <p class="font-bold">Log In sebagai, <span class="text-blue-700">KODE AKSES</span></p>
+      <p class="text-sm text-gray-500">Diakses Pada <span id="lastLogin" class="uppercase">TANGGAL DAN JAM</span></p>
+    </div>
+
+    <!-- Informasi Acara -->
+    <div class="grid grid-cols-2 gap-y-4 mb-3">
+      <div>
+        <p class="text-gray-400 text-sm font-semibold">Tgl. Pernikahan</p>
+        <p class="text-lg font-bold text-gray-700">20 Mei 2025</p>
+      </div>
+      <div>
+        <p class="text-gray-400 text-sm font-semibold">Bingkisan</p>
+        <p class="text-lg font-bold text-green-600">Rp35.000</p>
+      </div>
+      <div>
+        <p class="text-gray-400 text-sm font-semibold">Nama Kerabat</p>
+        <p class="text-lg font-bold">Ahmad Sajah</p>
+      </div>
+      <div>
+        <p class="text-gray-400 text-sm font-semibold">Nama Pasangan</p>
+        <p class="text-lg font-bold">Siti Rohmah</p>
+      </div>
+    </div>
+
+    <!-- Alamat -->
+    <div class="mb-3">
+      <p class="text-gray-400 text-sm font-semibold">Alamat</p>
+      <p class="text-lg font-bold leading-snug">
+        Kp. Pagadungan, Rt.05 Rw.03, <br />
+        Desa. Purwasari, Kec. Purwasari, Kab. Karawang
+      </p>
+    </div>
+
+    <!-- Ucapan -->
+    <div class="mb-3 bg-blue-50 p-4 rounded-md">
+      <p class="mb-2 font-semibold text-left text-blue-800">Selamat atas pernikahannya ya . . .</p>
+      <p class="text-sm leading-relaxed text-justify text-gray-700">
+        Dengan pernikahan ini, maka sempurnalah kehidupan kalian. Warnailah pernikahan dengan saling menghormati,
+        menyayangi, dan saling menolong dalam ketaatan satu sama lain. Semoga Alloh selalu melimpahkan petunjuk,
+        rahmat, dan berkah kehidupan, serta rezeki yang halal dan keturunan yang sholih dan sholihah. Aammiin.
+      </p>
+    </div>
+
+    <!-- Penutup -->
+    <div class="text-right mb-4">
+      <p class="mb-1 italic text-gray-600">Salam hangat,</p>
+      <p class="text-lg font-semibold text-black-700">Asep Jamaludin</p>
+    </div>
+
+    <!-- Tombol Cetak -->
+    <div class="text-center print:hidden">
+      <button onclick="window.print()" class="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 transition text-white font-semibold py-2 px-6 rounded-xl shadow-lg">
+        Cetak PDF
+      </button>
+    </div>
+
+  </div>
+
+  <!-- Script untuk waktu log in -->
+  <script>
+    function formatDate(date) {
+      return date.toLocaleString('id-ID', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+    }
+
+    const lastLoginEl = document.getElementById('lastLogin');
+    const lastLogin = localStorage.getItem('lastLogin');
+
+    if (lastLogin) {
+      lastLoginEl.textContent = lastLogin;
+    } else {
+      lastLoginEl.textContent = 'Belum pernah';
+    }
+
+    const now = new Date();
+    localStorage.setItem('lastLogin', formatDate(now));
+  </script>
+</body>
+</html>
