@@ -1,0 +1,200 @@
+<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Login Undangan</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: "Segoe UI", sans-serif;
+      background: linear-gradient(135deg, #dbeafe, #eff6ff);
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .login-container {
+      background-color: #ffffff;
+      padding: 40px 30px 30px 30px;
+      border-radius: 10px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 320px;
+      box-sizing: border-box;
+      position: relative;
+    }
+
+    .login-container h2 {
+      text-align: center;
+      margin-bottom: 8px;
+      color: #1d4ed8;
+    }
+
+    #tanggal-hari {
+      text-align: center;
+      font-size: 14px;
+      color: #6b7280;
+      margin-bottom: 16px;
+    }
+
+    label {
+      font-weight: 600;
+      color: #374151;
+      display: block;
+      margin-bottom: 8px;
+      text-align: left;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 6px;
+      margin-bottom: 10px;
+      font-size: 14px;
+      transition: border 0.3s;
+    }
+
+    input[type="text"]:focus {
+      border-color: #3b82f6;
+      outline: none;
+    }
+
+    small {
+      display: none;
+      color: #6b7280;
+      font-size: 13px;
+      margin-top: -5px;
+      margin-bottom: 10px;
+      text-align: left;
+      display: block;
+    }
+
+    button {
+      width: 100%;
+      background-color: #3b82f6;
+      color: white;
+      font-weight: bold;
+      padding: 12px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 15px;
+      transition: background-color 0.3s;
+      margin-top: 10px;
+    }
+
+    button:hover {
+      background-color: #2563eb;
+    }
+
+    #error-message {
+      text-align: center;
+      color: #dc2626;
+      margin-top: 15px;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    #success-message {
+      text-align: center;
+      color: #16a34a;
+      margin-top: 15px;
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .footer {
+      text-align: center;
+      font-size: 12px;
+      color: #6b7280;
+      margin-top: 30px;
+    }
+
+    @media (max-width: 480px) {
+      .login-container {
+        padding: 30px 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <h2>Cek Data Undangan</h2>
+    <div id="tanggal-hari"></div>
+
+    <label for="kodeAkses"></label>
+    <input type="text" id="kodeAkses" placeholder="Masukkan Kode Akses"
+           onfocus="tampilkanInfo()" onblur="sembunyikanInfo()">
+    <small id="infoKode">Kode Akses Tertera di Amplop Undangan.</small>
+
+    <button onclick="prosesLogin()">Masuk</button>
+
+    <div id="error-message"></div>
+    <div id="success-message"></div>
+
+    <div class="footer">
+      &copy; 2025 | AJ Project
+    </div>
+  </div>
+
+  <script>
+    const aksesMap = {
+      "123": "CONTOH FORMAT.html",
+      "AJ5394": "ggggg.html",
+      "TES456": "halaman-rahasia.html"
+    };
+
+    function tampilkanInfo() {
+      document.getElementById("infoKode").style.display = "block";
+    }
+
+    function sembunyikanInfo() {
+      document.getElementById("infoKode").style.display = "none";
+    }
+
+    function prosesLogin() {
+      const kode = document.getElementById("kodeAkses").value.trim().toUpperCase();
+      const pesanError = document.getElementById("error-message");
+      const pesanSukses = document.getElementById("success-message");
+
+      pesanError.textContent = "";
+      pesanSukses.textContent = "";
+
+      if (aksesMap[kode]) {
+        pesanSukses.textContent = `Selamat, Kode Akses Diterima.`;
+        setTimeout(() => {
+          window.location.href = aksesMap[kode];
+        }, 2000);
+      } else {
+        pesanError.textContent = "Maaf, Kode Akses Ditolak.";
+      }
+    }
+
+    function updateTanggalDanJam() {
+      const hari = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+      const bulan = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+
+      const sekarang = new Date();
+      const hariIni = hari[sekarang.getDay()];
+      const tgl = sekarang.getDate();
+      const bln = bulan[sekarang.getMonth()];
+      const thn = sekarang.getFullYear();
+
+      let jam = sekarang.getHours().toString().padStart(2, '0');
+      let menit = sekarang.getMinutes().toString().padStart(2, '0');
+      let detik = sekarang.getSeconds().toString().padStart(2, '0');
+
+      document.getElementById("tanggal-hari").textContent =
+        `${hariIni}, ${tgl} ${bln} ${thn} - ${jam}:${menit}:${detik}`;
+    }
+
+    // Update waktu setiap detik
+    setInterval(updateTanggalDanJam, 1000);
+    updateTanggalDanJam(); // panggil pertama kali saat halaman dimuat
+  </script>
+</body>
+</html>
+ .
