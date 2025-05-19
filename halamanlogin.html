@@ -197,27 +197,33 @@
     }
 
     function prosesLogin() {
-      const kode = document.getElementById("kodeAkses").value.trim().toUpperCase();
-      const pesanError = document.getElementById("error-message");
-      const pesanSukses = document.getElementById("success-message");
+      cfunction prosesLogin() {
+  const kode = document.getElementById("kodeAkses").value.trim().toUpperCase();
+  const pesanError = document.getElementById("error-message");
+  const pesanSukses = document.getElementById("success-message");
 
-      pesanError.textContent = "";
-      pesanSukses.textContent = "";
+  pesanError.textContent = "";
+  pesanSukses.textContent = "";
 
-      if (aksesMap[kode]) {
-        sessionStorage.setItem("loginBerhasil", "true");
+  if (aksesMap[kode]) {
+    pesanSukses.textContent = "Selamat, Kode Akses Diterima.";
 
-        pesanSukses.textContent = `Selamat, Kode Akses Diterima.`;
-        setTimeout(() => {
-          pesanSukses.textContent = "Mohon Tunggu Sebentar ...";
-        }, 1000);
-        setTimeout(() => {
-          window.location.href = aksesMap[kode];
-        }, 2500);
-      } else {
-        pesanError.textContent = "Maaf, Kode Akses Ditolak.";
-      }
-    }
+    setTimeout(() => {
+      pesanSukses.textContent = "Mohon Tunggu Sebentar ...";
+    }, 1000);
+
+    setTimeout(() => {
+      pesanSukses.textContent = ""; // Kosongkan sebelum pindah halaman
+    }, 2400);
+
+    setTimeout(() => {
+      window.location.href = aksesMap[kode];
+    }, 2500);
+  } else {
+    pesanError.textContent = "Maaf, Kode Akses Ditolak.";
+  }
+}
+
 
     function updateTanggalDanJam() {
       const hari = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
