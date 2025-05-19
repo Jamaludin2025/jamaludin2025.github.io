@@ -1,4 +1,4 @@
-<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
@@ -39,7 +39,6 @@
       margin-bottom: 8px;
     }
 
-    /* Animasi teks berjalan dengan CSS */
     .marquee-container {
       overflow: hidden;
       white-space: nowrap;
@@ -92,7 +91,6 @@
       outline: none;
     }
 
-    /* Perbaikan di sini */
     #infoKode {
       display: none;
       color: #6b7280;
@@ -180,9 +178,13 @@
   <script>
     const aksesMap = {
       "123": "CONTOH FORMAT.html",
-      "A5394": "https://jamaludin2025.github.io/5394",
+      "AJ5394": "https://jamaludin2025.github.io/5394",
       "TES456": "halaman-rahasia.html"
     };
+
+    // Cek jika user kembali dari halaman tujuan
+    const kembaliDariHalamanTujuan = sessionStorage.getItem("loginBerhasil") === "true";
+    sessionStorage.removeItem("loginBerhasil");
 
     function tampilkanInfo() {
       document.getElementById("infoKode").style.display = "block";
@@ -193,25 +195,27 @@
     }
 
     function prosesLogin() {
-  const kode = document.getElementById("kodeAkses").value.trim().toUpperCase();
-  const pesanError = document.getElementById("error-message");
-  const pesanSukses = document.getElementById("success-message");
+      const kode = document.getElementById("kodeAkses").value.trim().toUpperCase();
+      const pesanError = document.getElementById("error-message");
+      const pesanSukses = document.getElementById("success-message");
 
-  pesanError.textContent = "";
-  pesanSukses.textContent = "";
+      pesanError.textContent = "";
+      pesanSukses.textContent = "";
 
-  if (aksesMap[kode]) {
-    pesanSukses.textContent = `Selamat, Kode Akses Diterima.`;
-    setTimeout(() => {
-      pesanSukses.textContent = "Mohon Tunggu Sebentar ...";
-    }, 1000);
-    setTimeout(() => {
-      window.location.href = aksesMap[kode];
-    }, 2500); // kasih jeda total 2,5 detik supaya pesan terlihat dulu
-  } else {
-    pesanError.textContent = "Maaf, Kode Akses Ditolak.";
-  }
-}
+      if (aksesMap[kode]) {
+        sessionStorage.setItem("loginBerhasil", "true");
+
+        pesanSukses.textContent = `Selamat, Kode Akses Diterima.`;
+        setTimeout(() => {
+          pesanSukses.textContent = "Mohon Tunggu Sebentar ...";
+        }, 1000);
+        setTimeout(() => {
+          window.location.href = aksesMap[kode];
+        }, 2500);
+      } else {
+        pesanError.textContent = "Maaf, Kode Akses Ditolak.";
+      }
+    }
 
     function updateTanggalDanJam() {
       const hari = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
@@ -231,9 +235,15 @@
         `${hariIni}, ${tgl} ${bln} ${thn} - ${jam}:${menit}:${detik}`;
     }
 
-    // Update waktu setiap detik
     setInterval(updateTanggalDanJam, 1000);
-    updateTanggalDanJam(); // panggil pertama kali saat halaman dimuat
+    updateTanggalDanJam();
+
+    // Hapus pesan sukses jika user kembali dari halaman tujuan tanpa login ulang
+    window.addEventListener("load", () => {
+      if (kembaliDariHalamanTujuan) {
+        document.getElementById("success-message").textContent = "";
+      }
+    });
   </script>
 </body>
 </html>
