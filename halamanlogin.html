@@ -1,7 +1,8 @@
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Login Undangan</title>
   <style>
     body {
@@ -39,6 +40,45 @@
       margin-bottom: 8px;
     }
 
+    .tab-container {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      margin-bottom: 24px;
+      border-bottom: 1px solid #e0e7ff;
+    }
+
+    .tab-button {
+      background: none;
+      border: none;
+      color: #6b7280;
+      font-weight: 600;
+      font-size: 15px;
+      padding: 8px 0;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      transition: color 0.3s, border-color 0.3s;
+      outline: none;
+      box-shadow: none;
+      background-color: transparent;
+    }
+
+    .tab-button:focus,
+    .tab-button:active {
+      outline: none;
+      box-shadow: none;
+      background-color: transparent;
+    }
+
+    .tab-button.active {
+      color: #3b82f6;
+      border-bottom-color: #3b82f6;
+    }
+
+    .tab-button:hover:not(.active) {
+      color: #2563eb;
+    }
+
     .marquee-container {
       overflow: hidden;
       white-space: nowrap;
@@ -60,12 +100,8 @@
     }
 
     @keyframes marquee {
-      0% {
-        transform: translateX(0%);
-      }
-      100% {
-        transform: translateX(-100%);
-      }
+      0% { transform: translateX(0%); }
+      100% { transform: translateX(-100%); }
     }
 
     label {
@@ -91,7 +127,8 @@
       outline: none;
     }
 
-    #infoKode {
+    #infoKode,
+    #infoKodeAdmin {
       display: none;
       color: #6b7280;
       font-size: 13px;
@@ -135,10 +172,23 @@
     }
 
     .footer {
-      text-align: center;
+      display: flex;
+      justify-content: space-between;
       font-size: 12px;
       color: #6b7280;
       margin-top: 30px;
+      padding: 10px 20px;
+      border-top: 1px solid #ddd;
+      gap: 8px;
+    }
+
+    .footer a {
+      color: #007bff;
+      text-decoration: none;
+    }
+
+    .footer a:hover {
+      text-decoration: underline;
     }
 
     @media (max-width: 480px) {
@@ -150,7 +200,8 @@
 </head>
 <body>
   <div class="login-container">
-    <h2>Cek Data Undangan</h2>
+    <h2 id="judul-form">Cek Data Undangan</h2>
+
     <div id="tanggal-hari"></div>
 
     <div class="marquee-container" aria-label="Pesan selamat datang berjalan">
@@ -159,31 +210,91 @@
       </div>
     </div>
 
-    <label for="kodeAkses"></label>
-    <input type="text" id="kodeAkses" placeholder="Masukkan Kode Akses"
-           onfocus="tampilkanInfo()" onblur="sembunyikanInfo()">
-    <small id="infoKode">Kode Akses Tertera di Amplop Undangan.</small>
+    <div class="tab-container" role="tablist" aria-label="Pilih mode">
+      <button class="tab-button active" role="tab" aria-selected="true" id="tab-login" aria-controls="panel-login" tabindex="0" onclick="switchTab('login')">Beranda</button>
+      <button class="tab-button" role="tab" aria-selected="false" id="tab-admin" aria-controls="panel-admin" tabindex="-1" onclick="switchTab('admin')">Admin</button>
+    </div>
 
-    <button onclick="prosesLogin()">Masuk</button>
+    <form id="form-login" aria-labelledby="judul-form" onsubmit="return false;">
+      <label for="kodeAkses">Kode Akses</label>
+      <input type="text" id="kodeAkses" placeholder="Masukkan Kode Akses"
+             onfocus="tampilkanInfo()" onblur="sembunyikanInfo()" autocomplete="off" />
+      <small id="infoKode">Kode Akses Tertera di Amplop Undangan.</small>
+
+      <button type="button" onclick="prosesLogin()">Masuk</button>
+    </form>
+
+    <form id="form-admin" style="display:none;" onsubmit="return false;">
+      <label for="kodeAdmin">Kode Akses Admin</label>
+      <input type="text" id="kodeAdmin" placeholder="Masukkan Kode Akses"
+             onfocus="tampilkanInfoAdmin()" onblur="sembunyikanInfoAdmin()" autocomplete="off" />
+      <small id="infoKodeAdmin">Kode Akses Admin Rahasia.</small>
+
+      <button type="button" onclick="prosesAdmin()">Masuk Sebagai Admin</button>
+
+      <div id="admin-log" style="margin-top:20px; max-height: 180px; overflow-y: auto; border: 1px solid #cbd5e1; border-radius: 6px; padding: 10px; font-size: 13px; color: #374151; background: #f9fafb;"></div>
+    </form>
 
     <div id="error-message"></div>
     <div id="success-message"></div>
 
-    <div class="footer" style="display: flex; justify-content: space-between; font-size: 14px; color: #666; padding: 10px 20px; border-top: 1px solid #ddd;">
-      <a href="https://wa.me/6289677484948" target="_blank" rel="noopener noreferrer" style="color: #007bff; text-decoration: none;">Customer Service</a>
+    <div class="footer">
+      <a href="https://wa.me/6289677484948" target="_blank" rel="noopener noreferrer">Customer Service</a>
       <span>&copy; 2025 | AJ Project</span>
     </div>
   </div>
 
   <script>
     const aksesMap = {
-      "123": "CONTOH FORMAT.html",
+      "abc": "https://jamaludin2025.github.io/contoh.html",
       "AJ5394": "https://jamaludin2025.github.io/5394",
       "TES456": "halaman-rahasia.html"
     };
 
-    const kembaliDariHalamanTujuan = sessionStorage.getItem("loginBerhasil") === "true";
-    sessionStorage.removeItem("loginBerhasil");
+    const adminKode = "Admin123";
+
+    function switchTab(tab) {
+      const loginForm = document.getElementById("form-login");
+      const adminForm = document.getElementById("form-admin");
+      const tabLogin = document.getElementById("tab-login");
+      const tabAdmin = document.getElementById("tab-admin");
+      const infoKode = document.getElementById("infoKode");
+      const infoKodeAdmin = document.getElementById("infoKodeAdmin");
+      const errorMsg = document.getElementById("error-message");
+      const successMsg = document.getElementById("success-message");
+
+      errorMsg.textContent = "";
+      successMsg.textContent = "";
+
+      if (tab === "login") {
+        loginForm.style.display = "block";
+        adminForm.style.display = "none";
+        tabLogin.classList.add("active");
+        tabAdmin.classList.remove("active");
+        tabLogin.setAttribute("aria-selected", "true");
+        tabAdmin.setAttribute("aria-selected", "false");
+        tabLogin.tabIndex = 0;
+        tabAdmin.tabIndex = -1;
+        document.getElementById("judul-form").textContent = "Cek Data Undangan";
+        document.getElementById("kodeAkses").value = "";
+        infoKode.style.display = "none";
+        infoKodeAdmin.style.display = "none";
+      } else {
+        loginForm.style.display = "none";
+        adminForm.style.display = "block";
+        tabAdmin.classList.add("active");
+        tabLogin.classList.remove("active");
+        tabAdmin.setAttribute("aria-selected", "true");
+        tabLogin.setAttribute("aria-selected", "false");
+        tabAdmin.tabIndex = 0;
+        tabLogin.tabIndex = -1;
+        document.getElementById("judul-form").textContent = "Beranda Admin";
+        document.getElementById("kodeAdmin").value = "";
+        infoKode.style.display = "none";
+        infoKodeAdmin.style.display = "none";
+        document.getElementById("admin-log").textContent = "";
+      }
+    }
 
     function tampilkanInfo() {
       document.getElementById("infoKode").style.display = "block";
@@ -191,6 +302,14 @@
 
     function sembunyikanInfo() {
       document.getElementById("infoKode").style.display = "none";
+    }
+
+    function tampilkanInfoAdmin() {
+      document.getElementById("infoKodeAdmin").style.display = "block";
+    }
+
+    function sembunyikanInfoAdmin() {
+      document.getElementById("infoKodeAdmin").style.display = "none";
     }
 
     function prosesLogin() {
@@ -203,7 +322,6 @@
 
       if (aksesMap[kode]) {
         pesanSukses.textContent = "Selamat, Kode Akses Diterima.";
-
         setTimeout(() => {
           window.location.href = aksesMap[kode];
         }, 2500);
@@ -212,32 +330,46 @@
       }
     }
 
-    function updateTanggalDanJam() {
-      const hari = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
-      const bulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+    function prosesAdmin() {
+      const kodeAdminInput = document.getElementById("kodeAdmin").value.trim();
+      const pesanError = document.getElementById("error-message");
+      const pesanSukses = document.getElementById("success-message");
+      const adminLog = document.getElementById("admin-log");
 
-      const sekarang = new Date();
-      const hariIni = hari[sekarang.getDay()];
-      const tgl = sekarang.getDate();
-      const bln = bulan[sekarang.getMonth()];
-      const thn = sekarang.getFullYear();
+      pesanError.textContent = "";
+      pesanSukses.textContent = "";
 
-      let jam = sekarang.getHours().toString().padStart(2, '0');
-      let menit = sekarang.getMinutes().toString().padStart(2, '0');
-      let detik = sekarang.getSeconds().toString().padStart(2, '0');
-
-      document.getElementById("tanggal-hari").textContent =
-        `${hariIni}, ${tgl} ${bln} ${thn} - ${jam}:${menit}:${detik}`;
+      if (!kodeAdminInput) {
+        pesanError.textContent = "Mohon isi Kode Akses Admin.";
+        return;
+      }
+      if (kodeAdminInput === adminKode) {
+        pesanSukses.textContent = "Berhasil masuk sebagai Admin.";
+        adminLog.textContent = " Berhasil log in pada " + new Date().toLocaleString();
+      } else {
+        pesanError.textContent = "Kode Akses Salah.";
+      }
     }
 
-    setInterval(updateTanggalDanJam, 1000);
-    updateTanggalDanJam();
+    function updateTanggalHari() {
+      const tanggalHari = document.getElementById("tanggal-hari");
+      const hari = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+      const bulan = ["Januari", "Februari", "Maret", "April", "Mei", "Juni",
+                     "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
 
-    window.addEventListener("load", () => {
-      if (kembaliDariHalamanTujuan) {
-        document.getElementById("success-message").textContent = "";
-      }
-    });
+      setInterval(() => {
+        const now = new Date();
+        const jam = now.getHours().toString().padStart(2, '0');
+        const menit = now.getMinutes().toString().padStart(2, '0');
+        const detik = now.getSeconds().toString().padStart(2, '0');
+
+        const teksTanggal = `${hari[now.getDay()]}, ${now.getDate()} ${bulan[now.getMonth()]} ${now.getFullYear()}`;
+        const teksWaktu = `${jam}:${menit}:${detik}`;
+        tanggalHari.textContent = `${teksTanggal} - ${teksWaktu}`;
+      }, 1000);
+    }
+
+    updateTanggalHari();
   </script>
 </body>
 </html>
