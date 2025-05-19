@@ -4,30 +4,144 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Login Undangan</title>
-  <style>
-    /* Tetap gunakan gaya yang sama dari file sebelumnya */
-    body { font-family: sans-serif; background: #f0f4f8; margin: 0; padding: 0; }
-    .login-container { max-width: 400px; margin: 30px auto; background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-    .tab-container { display: flex; margin-bottom: 16px; }
-    .tab-button { flex: 1; padding: 10px; border: none; cursor: pointer; background: #e2e8f0; border-radius: 6px 6px 0 0; }
-    .tab-button.active { background: #fff; font-weight: bold; }
-    label { display: block; margin-bottom: 6px; font-size: 14px; }
-    input[type="text"] { width: 100%; padding: 8px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 6px; }
-    button { padding: 10px; width: 100%; border: none; border-radius: 6px; background: #2563eb; color: white; cursor: pointer; }
-    small { display: none; font-size: 12px; color: #64748b; margin-top: -8px; margin-bottom: 8px; }
-    #error-message, #success-message { text-align: center; font-size: 14px; margin-top: 10px; }
-    #error-message { color: red; }
-    #success-message { color: green; }
-    .log-item { border-bottom: 1px solid #e5e7eb; padding: 6px 0; display: flex; justify-content: space-between; }
-    .log-item button { background: red; font-size: 12px; padding: 2px 6px; width: auto; margin-left: 10px; }
-  </style>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #f3f4f6;
+      margin: 0;
+      padding: 0;
+    }
+    .login-container {
+      max-width: 400px;
+      margin: 40px auto;
+      padding: 20px;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+    input {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    small {
+      display: none;
+      color: #555;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 15px;
+      background-color: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .footer {
+      text-align: center;
+      font-size: 12px;
+      color: #888;
+      margin-top: 20px;
+    }
+    .footer a {
+      text-decoration: none;
+      color: #2563eb;
+    }
+    .tab-container {
+      display: flex;
+      justify-content: space-around;
+      margin-bottom: 15px;
+    }
+    .tab-button {
+      flex: 1;
+      padding: 10px;
+      cursor: pointer;
+      border: 1px solid #ccc;
+      background: #e5e7eb;
+    }
+    .tab-button.active {
+      background: #2563eb;
+      color: white;
+      font-weight: bold;
+    }
+    .marquee-container {
+      overflow: hidden;
+      white-space: nowrap;
+      box-sizing: border-box;
+      border: 1px solid #ccc;
+      padding: 5px;
+      margin-bottom: 10px;
+      background: #fefce8;
+      border-radius: 5px;
+    }
+    .marquee-text {
+      display: inline-block;
+      padding-left: 100%;
+      animation: marquee 15s linear infinite;
+    }
+    @keyframes marquee {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-100%); }
+    }
+    #admin-log .log-entry {
+      padding: 8px;
+      border-bottom: 1px solid #ddd;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    #admin-log .log-entry:last-child {
+      border-bottom: none;
+    }
+    #admin-log button {
+      padding: 4px 8px;
+      font-size: 12px;
+      background: #ef4444;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    #tanggal-hari {
+      font-size: 14px;
+      color: #444;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    #error-message {
+      color: red;
+      text-align: center;
+      margin-top: 10px;
+    }
+    #success-message {
+      color: green;
+      text-align: center;
+      margin-top: 10px;
+    }
+  </style>
 </head>
 <body>
   <div class="login-container">
     <h2 id="judul-form">Cek Data Undangan</h2>
     <div id="tanggal-hari"></div>
+    <div class="marquee-container">
+      <div class="marquee-text">Selamat datang di AJ Project. Harap diingat kode akses Anda agar bisa log in kembali.</div>
+    </div>
     <div class="tab-container">
       <button class="tab-button active" id="tab-login" onclick="switchTab('login')">Beranda</button>
       <button class="tab-button" id="tab-admin" onclick="switchTab('admin')">Admin</button>
@@ -43,16 +157,20 @@
       <input type="text" id="kodeAdmin" placeholder="Masukkan Kode Akses" onfocus="tampilkanInfoAdmin()" onblur="sembunyikanInfoAdmin()" autocomplete="off" />
       <small id="infoKodeAdmin">Kode Akses Admin Rahasia.</small>
       <button type="button" onclick="prosesAdmin()">Masuk Sebagai Admin</button>
-      <div id="admin-log" style="margin-top:20px;"></div>
+      <div id="admin-log" style="margin-top:20px; max-height: 180px; overflow-y: auto;"></div>
     </form>
     <div id="error-message"></div>
     <div id="success-message"></div>
+    <div class="footer">
+      <a href="https://wa.me/6289677484948" target="_blank">Customer Service</a>
+      <span>&copy; 2025 | AJ Project</span>
+    </div>
   </div>
 
   <script>
     const aksesMap = {
-      "abc": "https://jamaludin2025.github.io/qr15.html",
-      "AJ5394": "https://jamaludin2025.github.io/qr15.html",
+      "ABC": "https://jamaludin2025.github.io/qr15.html",
+      "AJ5394": "https://jamaludin2025.github.io/qr5.html",
       "TES456": "halaman-rahasia.html"
     };
     const adminKode = "Admin123";
@@ -60,16 +178,15 @@
     const firebaseConfig = {
       apiKey: "AIzaSyBdt-2IQflUWNx3sdI1QHPMe1vAzsXAZcY",
       authDomain: "ajproject-log.firebaseapp.com",
-      databaseURL: "https://ajproject-log-default-rtdb.firebaseio.com/",
+      databaseURL: "https://ajproject-log-default-rtdb.firebaseio.com",
       projectId: "ajproject-log",
       storageBucket: "ajproject-log.appspot.com",
       messagingSenderId: "113688767697",
       appId: "1:113688767697:web:ca9ad012667acb7474a9f0",
       measurementId: "G-6PLCT8D53G"
     };
-
     firebase.initializeApp(firebaseConfig);
-    const database = firebase.database();
+    const db = firebase.database();
 
     function switchTab(tab) {
       document.getElementById("form-login").style.display = (tab === "login") ? "block" : "none";
@@ -83,7 +200,7 @@
       document.getElementById("infoKodeAdmin").style.display = "none";
       document.getElementById("error-message").textContent = "";
       document.getElementById("success-message").textContent = "";
-      if (tab === "admin") ambilLog();
+      document.getElementById("admin-log").innerHTML = ""; // kosongkan saat ganti tab
     }
 
     function tampilkanInfo() {
@@ -103,49 +220,70 @@
       const kode = document.getElementById("kodeAkses").value.trim().toUpperCase();
       const pesanError = document.getElementById("error-message");
       const pesanSukses = document.getElementById("success-message");
+
       pesanError.textContent = "";
       pesanSukses.textContent = "";
 
       if (aksesMap[kode]) {
-        const waktu = new Date().toLocaleString("id-ID", { timeZone: "Asia/Jakarta" });
-        database.ref("log").push({ kode, waktu });
         pesanSukses.textContent = "Selamat, Kode Akses Diterima.";
-        setTimeout(() => window.location.href = aksesMap[kode], 2500);
+        const now = new Date();
+        const tanggal = now.toLocaleString("id-ID");
+        db.ref("log").push({ kode: kode, waktu: tanggal });
+        setTimeout(() => {
+          window.location.href = aksesMap[kode];
+        }, 2500);
       } else {
         pesanError.textContent = "Maaf, Kode Akses Ditolak.";
       }
     }
 
     function prosesAdmin() {
-      const input = document.getElementById("kodeAdmin").value.trim();
-      if (input === adminKode) {
-        document.getElementById("success-message").textContent = "Berhasil masuk sebagai Admin.";
-        ambilLog();
+      const kodeAdminInput = document.getElementById("kodeAdmin").value.trim();
+      const pesanError = document.getElementById("error-message");
+      const pesanSukses = document.getElementById("success-message");
+
+      pesanError.textContent = "";
+      pesanSukses.textContent = "";
+
+      if (!kodeAdminInput) {
+        pesanError.textContent = "Mohon isi Kode Akses Admin.";
+        return;
+      }
+      if (kodeAdminInput === adminKode) {
+        pesanSukses.textContent = "Berhasil masuk sebagai Admin.";
+        ambilLog(); // hanya muncul setelah login sukses
       } else {
-        document.getElementById("error-message").textContent = "Kode Akses Salah.";
+        pesanError.textContent = "Kode Akses Salah.";
       }
     }
 
     function ambilLog() {
-      const adminLog = document.getElementById("admin-log");
-      database.ref("log").once("value", snapshot => {
-        adminLog.innerHTML = "";
+      const logContainer = document.getElementById("admin-log");
+      db.ref("log").once("value", snapshot => {
         const data = snapshot.val();
-        if (data) {
-          Object.entries(data).reverse().forEach(([id, log]) => {
-            const div = document.createElement("div");
-            div.className = "log-item";
-            div.innerHTML = `Kode: ${log.kode}, Waktu: ${log.waktu} <button onclick="hapusLog('${id}')">Hapus</button>`;
-            adminLog.appendChild(div);
-          });
-        } else {
-          adminLog.textContent = "Belum ada login pengguna.";
+        if (!data) {
+          logContainer.innerHTML = "Belum ada login pengguna.";
+          return;
         }
+        logContainer.innerHTML = "";
+        Object.entries(data).reverse().forEach(([id, item]) => {
+          const div = document.createElement("div");
+          div.className = "log-entry";
+          div.innerHTML = `
+            <span>Kode: ${item.kode} | Waktu: ${item.waktu}</span>
+            <button onclick="hapusLog('${id}')">Hapus</button>
+          `;
+          logContainer.appendChild(div);
+        });
       });
     }
 
     function hapusLog(id) {
-      database.ref("log/" + id).remove().then(() => ambilLog());
+      if (confirm("Hapus log ini?")) {
+        firebase.database().ref("log/" + id).remove().then(() => {
+          ambilLog(); // refresh setelah hapus
+        });
+      }
     }
 
     function updateTanggalHari() {
