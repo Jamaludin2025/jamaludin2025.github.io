@@ -1,10 +1,8 @@
-<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <html lang="id">
 <head>
-  <meta charset=UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8" />
   <title>Login Undangan</title>
-  
   <style>
     body {
       margin: 0;
@@ -157,7 +155,7 @@
 
     <div class="marquee-container" aria-label="Pesan selamat datang berjalan">
       <div class="marquee-text">
-        Selamat datang di AJ Project,  Harap diingat kode akses Anda agar bisa log in kembali. Perlu diketahui bahwa projek ini masih dalam proses pengembangan dan perbaikan. Jadi, semua informasi terbaru akan kami tampilkan di sini. Jika ada kendala atau pertanyaan, silakan hubungi Customer Service. Terima kasih.
+        Selamat datang di AJ Project, Harap diingat kode akses Anda agar bisa log in kembali. Perlu diketahui bahwa projek ini masih dalam proses pengembangan dan perbaikan. Jadi, semua informasi terbaru akan kami tampilkan di sini. Jika ada kendala atau pertanyaan, silakan hubungi Customer Service. Terima kasih.
       </div>
     </div>
 
@@ -184,7 +182,6 @@
       "TES456": "halaman-rahasia.html"
     };
 
-    // Cek jika user kembali dari halaman tujuan
     const kembaliDariHalamanTujuan = sessionStorage.getItem("loginBerhasil") === "true";
     sessionStorage.removeItem("loginBerhasil");
 
@@ -197,37 +194,27 @@
     }
 
     function prosesLogin() {
-      cfunction prosesLogin() {
-  const kode = document.getElementById("kodeAkses").value.trim().toUpperCase();
-  const pesanError = document.getElementById("error-message");
-  const pesanSukses = document.getElementById("success-message");
+      const kode = document.getElementById("kodeAkses").value.trim().toUpperCase();
+      const pesanError = document.getElementById("error-message");
+      const pesanSukses = document.getElementById("success-message");
 
-  pesanError.textContent = "";
-  pesanSukses.textContent = "";
+      pesanError.textContent = "";
+      pesanSukses.textContent = "";
 
-  if (aksesMap[kode]) {
-    pesanSukses.textContent = "Selamat, Kode Akses Diterima.";
+      if (aksesMap[kode]) {
+        pesanSukses.textContent = "Selamat, Kode Akses Diterima.";
 
-    setTimeout(() => {
-      pesanSukses.textContent = "Mohon Tunggu Sebentar ...";
-    }, 1000);
-
-    setTimeout(() => {
-      pesanSukses.textContent = ""; // Kosongkan sebelum pindah halaman
-    }, 2400);
-
-    setTimeout(() => {
-      window.location.href = aksesMap[kode];
-    }, 2500);
-  } else {
-    pesanError.textContent = "Maaf, Kode Akses Ditolak.";
-  }
-}
-
+        setTimeout(() => {
+          window.location.href = aksesMap[kode];
+        }, 2500);
+      } else {
+        pesanError.textContent = "Maaf, Kode Akses Ditolak.";
+      }
+    }
 
     function updateTanggalDanJam() {
-      const hari = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
-      const bulan = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+      const hari = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+      const bulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
 
       const sekarang = new Date();
       const hariIni = hari[sekarang.getDay()];
@@ -246,7 +233,6 @@
     setInterval(updateTanggalDanJam, 1000);
     updateTanggalDanJam();
 
-    // Hapus pesan sukses jika user kembali dari halaman tujuan tanpa login ulang
     window.addEventListener("load", () => {
       if (kembaliDariHalamanTujuan) {
         document.getElementById("success-message").textContent = "";
