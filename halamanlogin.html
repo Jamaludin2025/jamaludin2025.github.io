@@ -307,7 +307,7 @@
       AJ5394: "https://jamaludin2025.github.io/qr5.html",
       TES456: "halaman-rahasia.html",
     };
-    const adminKode = "Admin123";
+    const adminKode = "Admin1507";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBdt-2IQflUWNx3sdI1QHPMe1vAzsXAZcY",
@@ -362,7 +362,7 @@
       const pesanSukses = document.getElementById("success-message");
 
       pesanError.textContent = "";
-      pesanSukses.textContent = "Selamat, Kode Akses Diterima.";
+      pesanSukses.textContent = "Selamat, Kode Akses Diterima";
 
       if (!aksesMap[kode]) {
         pesanError.textContent = "Maaf, Kode Akses Ditolak.";
@@ -447,7 +447,7 @@
     // Tampilkan log di halaman admin
     async function tampilkanLog() {
       const logContainer = document.getElementById("admin-log");
-      logContainer.innerHTML = "Memuat data ...";
+      logContainer.innerHTML = "Memuat data...";
 
       try {
         const snapshot = await db.ref("logAktivitas").once("value");
