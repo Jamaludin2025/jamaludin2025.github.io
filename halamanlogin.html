@@ -97,7 +97,7 @@
     .marquee-text {
       display: inline-block;
       padding-left: 100%;
-      animation: marquee 37s linear infinite;
+      animation: marquee 25s linear infinite;
       font-size: 14px;
       color: #374151;
     }
@@ -246,7 +246,7 @@
     <div id="tanggal-hari"></div>
     <div class="marquee-container">
       <div class="marquee-text">
-        Selamat datang di AJ Project. Harap diingat kode akses Anda agar bisa log in kembali.
+        Selamat datang di AJ Project.
       </div>
     </div>
     <div class="tab-container">
@@ -303,7 +303,7 @@
 
   <script>
     const aksesMap = {
-      ABC: "https://jamaludin2025.github.io/qr15.html",
+      ABC: "https://jamaludin2025.github.io/qr15.html?kode=ABC",
       AJ5394: "https://jamaludin2025.github.io/qr5.html",
       TES456: "halaman-rahasia.html",
     };
@@ -491,33 +491,30 @@
 
     // Tampilkan tanggal dan hari
     function tampilkanTanggalHari() {
-      const now = new Date();
-      const hariNama = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
-      const bulanNama = [
-        "Januari",
-        "Februari",
-        "Maret",
-        "April",
-        "Mei",
-        "Juni",
-        "Juli",
-        "Agustus",
-        "September",
-        "Oktober",
-        "November",
-        "Desember",
-      ];
+  const hariNama = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+  const bulanNama = [
+    "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+    "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+  ];
 
-      const hari = hariNama[now.getDay()];
-      const tanggal = now.getDate();
-      const bulan = bulanNama[now.getMonth()];
-      const tahun = now.getFullYear();
+  setInterval(() => {
+    const now = new Date();
+    const hari = hariNama[now.getDay()];
+    const tanggal = now.getDate();
+    const bulan = bulanNama[now.getMonth()];
+    const tahun = now.getFullYear();
 
-      document.getElementById("tanggal-hari").textContent = `${hari}, ${tanggal} ${bulan} ${tahun}`;
-    }
+    const jam = String(now.getHours()).padStart(2, '0');
+    const menit = String(now.getMinutes()).padStart(2, '0');
+    const detik = String(now.getSeconds()).padStart(2, '0');
 
-    // Jalankan saat pertama kali load
-    tampilkanTanggalHari();
+    const waktuLengkap = `${hari}, ${tanggal} ${bulan} ${tahun} - ${jam}:${menit}:${detik}`;
+    document.getElementById("tanggal-hari").textContent = waktuLengkap;
+  }, 1000);
+}
+
+// Jalankan saat pertama kali load
+tampilkanTanggalHari();
   </script>
 </body>
 </html>
