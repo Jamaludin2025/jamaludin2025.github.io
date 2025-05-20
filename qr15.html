@@ -13,7 +13,7 @@
     <!-- Header -->
     <div class="mb-3 border-b pb-3 flex items-center gap-4">
       <div class="flex-1">
-        <p class="font-bold">Log in sebagai <span id="kodeAksesDisplay" class="text-blue-700">KODE AKSES</span></p>
+        <p class="font-bold">Log in sebagai <span class="text-blue-700">KODE AKSES</span></p>
         <p class="text-sm text-gray-500">Pada <span id="lastLogin">--</span></p>
       </div>
     </div>
@@ -80,17 +80,19 @@
         Unduh PDF
       </button>
       <button
-        id="tombolLoginUlang"
-        onclick="loginUlang()"
-        class="bg-gradient-to-r from-red-700 to-red-500 hover:from-red-800 hover:to-red-600 transition transform hover:scale-105 text-white font-semibold py-2 px-6 rounded-xl shadow-lg"
-        style="display: none;"
-      >
-        Log In Ulang
-      </button>
+  id="tombolLoginUlang"
+  onclick="loginUlang()"
+  class="bg-gradient-to-r from-red-700 to-red-500 hover:from-red-800 hover:to-red-600 transition transform hover:scale-105 text-white font-semibold py-2 px-6 rounded-xl shadow-lg"
+  style="display: none;"
+>
+  Log In Ulang
+</button>
+
     </div>
 
   </div>
 
+  <!-- Script -->
   <script>
     function formatDate(date) {
       const formatted = date.toLocaleString('id-ID', {
@@ -106,7 +108,6 @@
     }
 
     const lastLoginEl = document.getElementById('lastLogin');
-    const kodeAksesDisplay = document.getElementById('kodeAksesDisplay');
     const now = new Date();
     lastLoginEl.textContent = formatDate(now);
 
@@ -129,6 +130,7 @@
       };
 
       html2pdf().set(opt).from(element).save().then(() => {
+        // Setelah pdf selesai diunduh, sembunyikan tombol balas & cetak, munculkan tombol login ulang
         tombolLoginUlang.style.display = 'inline-block';
       });
     }
@@ -150,66 +152,8 @@
     }
 
     function loginUlang() {
-      const urlLoginUlang = 'halamanlogin.html'; // Ganti sesuai lokasi file login kamu
+      const urlLoginUlang = 'https://jamaludin2025.github.io/halamanlogin.html'; // Ganti dengan URL yang kamu inginkan
       window.location.href = urlLoginUlang;
-    }
-  </script>
-
-  <!-- Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
-  <script>
-    const firebaseConfig = {
-      apiKey: "API_KEY_MU",
-      authDomain: "PROJECT_ID.firebaseapp.com",
-      databaseURL: "https://ajproject-log-default-rtdb.firebaseio.com/",
-      projectId: "PROJECT_ID",
-      storageBucket: "PROJECT_ID.appspot.com",
-      messagingSenderId: "SENDER_ID",
-      appId: "APP_ID"
-    };
-
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-
-    // Ambil kode akses dari URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const kodeAkses = urlParams.get('kode') ? urlParams.get('kode').toUpperCase() : null;
-    if (kodeAkses) {
-      kodeAksesDisplay.textContent = kodeAkses;
-      updateLogStatus(kodeAkses);
-    }
-
-    async function updateLogStatus(kode) {
-      if (!kode) return;
-      try {
-        const snapshot = await db.ref("logAktivitas").orderByChild("kodeAkses").equalTo(kode).once("value");
-        if (snapshot.exists()) {
-          const logs = snapshot.val();
-          let lastKey = null;
-          let lastTime = 0;
-          for (const key in logs) {
-            if (logs[key].status === "Proses") {
-              // Parsing waktu log ke timestamp untuk cari yang terbaru
-              const parts = logs[key].waktu.split(" ");
-              const tglParts = parts[0].split("-");
-              // Format: DD-MM-YYYY hh:mm:ss
-              const isoDateStr = `${tglParts[2]}-${tglParts[1]}-${tglParts[0]}T${parts[1]}`;
-              const logDate = new Date(isoDateStr);
-              if (logDate.getTime() > lastTime) {
-                lastTime = logDate.getTime();
-                lastKey = key;
-              }
-            }
-          }
-          if (lastKey) {
-            await db.ref("logAktivitas/" + lastKey).update({ status: "Berhasil" });
-            console.log(`Log status untuk kode ${kode} sudah diperbarui menjadi Berhasil.`);
-          }
-        }
-      } catch (error) {
-        console.error("Gagal update status log:", error);
-      }
     }
   </script>
 </body>
