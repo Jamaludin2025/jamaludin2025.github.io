@@ -63,10 +63,20 @@
       <p class="text-lg font-semibold text-black-700">Asep Jamaludin</p>
     </div>
 
+    <!-- Link aktif untuk PDF -->
+    <div class="text-center mb-4 print:block hidden">
+      <p class="text-sm text-gray-600">
+        Kunjungi halaman login:
+        <a href="https://jamaludin2025.github.io/halamanlogin.html" class="text-blue-600 underline" target="_blank">
+          jamaludin2025.github.io/halamanlogin.html
+        </a>
+      </p>
+    </div>
+
     <!-- Tombol Aksi -->
     <div class="text-center print:hidden flex justify-center gap-4">
       <button
-      id="tombolBalas"
+        id="tombolBalas"
         onclick="balasPesan()"
         class="bg-gradient-to-r from-green-600 to-green-500 hover:from-green-700 hover:to-green-600 transition transform hover:scale-105 text-white font-semibold py-2 px-6 rounded-xl shadow-lg"
       >
@@ -79,15 +89,13 @@
       >
         Unduh
       </button>
-      <a
-  href="https://jamaludin2025.github.io/halamanlogin.html"
-  target="_blank"
-  id="tombolLoginUlang"
-  class="bg-gradient-to-r from-red-700 to-red-500 hover:from-red-800 hover:to-red-600 transition transform hover:scale-105 text-white font-semibold py-2 px-6 rounded-xl shadow-lg inline-block text-center"
->
-  Log In
-</a>
-
+      <button
+        id="tombolLoginUlang"
+        onclick="loginUlang()"
+        class="bg-gradient-to-r from-red-700 to-red-500 hover:from-red-800 hover:to-red-600 transition transform hover:scale-105 text-white font-semibold py-2 px-6 rounded-xl shadow-lg"
+      >
+        Log In
+      </button>
     </div>
 
   </div>
@@ -130,7 +138,8 @@
       };
 
       html2pdf().set(opt).from(element).save().then(() => {
-        // Setelah pdf selesai diunduh, sembunyikan tombol balas & cetak, munculkan tombol login ulang
+        tombolCetak.style.display = 'inline-block';
+        tombolBalas.style.display = 'inline-block';
         tombolLoginUlang.style.display = 'inline-block';
       });
     }
@@ -152,7 +161,7 @@
     }
 
     function loginUlang() {
-      const urlLoginUlang = 'https://jamaludin2025.github.io/halamanlogin.html'; // Ganti dengan URL yang kamu inginkan
+      const urlLoginUlang = 'https://jamaludin2025.github.io/halamanlogin.html';
       window.location.href = urlLoginUlang;
     }
   </script>
