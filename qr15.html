@@ -80,7 +80,7 @@
         onclick="balasPesan()"
         class="bg-gradient-to-r from-green-600 to-green-500 hover:from-green-700 hover:to-green-600 transition transform hover:scale-105 text-white font-semibold py-2 px-6 rounded-xl shadow-lg"
       >
-        Balas
+        Balas Pesan
       </button>
       <button
         id="tombolCetak"
@@ -88,13 +88,6 @@
         class="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 transition transform hover:scale-105 text-white font-semibold py-2 px-6 rounded-xl shadow-lg"
       >
         Unduh
-      </button>
-      <button
-        id="tombolLoginUlang"
-        onclick="loginUlang()"
-        class="bg-gradient-to-r from-red-700 to-red-500 hover:from-red-800 hover:to-red-600 transition transform hover:scale-105 text-white font-semibold py-2 px-6 rounded-xl shadow-lg"
-      >
-        Log In
       </button>
     </div>
 
@@ -123,11 +116,9 @@
       const element = document.getElementById('konten');
       const tombolCetak = document.getElementById('tombolCetak');
       const tombolBalas = document.getElementById('tombolBalas');
-      const tombolLoginUlang = document.getElementById('tombolLoginUlang');
 
       tombolCetak.style.display = 'none';
       tombolBalas.style.display = 'none';
-      tombolLoginUlang.style.display = 'none';
 
       const opt = {
         margin: [0.5, 0.5, 0.5, 0.5],
@@ -140,7 +131,6 @@
       html2pdf().set(opt).from(element).save().then(() => {
         tombolCetak.style.display = 'inline-block';
         tombolBalas.style.display = 'inline-block';
-        tombolLoginUlang.style.display = 'inline-block';
       });
     }
 
