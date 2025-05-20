@@ -156,53 +156,61 @@
   </script>
 
   <!-- Firebase -->
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
-<script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyBdt-2IQflUWNx3sdI1QHPMe1vAzsXAZcY",
-    authDomain: "ajproject-log.firebaseapp.com",
-    databaseURL: "https://ajproject-log-default-rtdb.firebaseio.com",
-    projectId: "ajproject-log",
-    storageBucket: "ajproject-log.appspot.com",
-    messagingSenderId: "113688767697",
-    appId: "1:113688767697:web:ca9ad012667acb7474a9f0",
-    measurementId: "G-6PLCT8D53G",
-  };
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "API_KEY_MU",
+      authDomain: "PROJECT_ID.firebaseapp.com",
+      databaseURL: "https://ajproject-log-default-rtdb.firebaseio.com/",
+      projectId: "PROJECT_ID",
+      storageBucket: "PROJECT_ID.appspot.com",
+      messagingSenderId: "SENDER_ID",
+      appId: "APP_ID"
+    };
 
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.database();
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
 
-  async function updateLogStatus(kode) {
-    if (!kode) return;
-    try {
-      const snapshot = await db.ref("logAktivitas").orderByChild("kodeAkses").equalTo(kode).once("value");
-      if (snapshot.exists()) {
-        const logs = snapshot.val();
-        let lastKey = null;
-        let lastTime = 0;
-        for (const key in logs) {
-          if (logs[key].status === "Proses") {
-            const logDate = new Date(logs[key].waktu.split(" ")[0].split("-").reverse().join("-") + " " + logs[key].waktu.split(" ")[1]);
-            if (logDate.getTime() > lastTime) {
-              lastTime = logDate.getTime();
-              lastKey = key;
+    // Ambil kode akses dari URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const kodeAkses = urlParams.get('kode') ? urlParams.get('kode').toUpperCase() : null;
+    if (kodeAkses) {
+      kodeAksesDisplay.textContent = kodeAkses;
+      updateLogStatus(kodeAkses);
+    }
+
+    async function updateLogStatus(kode) {
+      if (!kode) return;
+      try {
+        const snapshot = await db.ref("logAktivitas").orderByChild("kodeAkses").equalTo(kode).once("value");
+        if (snapshot.exists()) {
+          const logs = snapshot.val();
+          let lastKey = null;
+          let lastTime = 0;
+          for (const key in logs) {
+            if (logs[key].status === "Proses") {
+              // Parsing waktu log ke timestamp untuk cari yang terbaru
+              const parts = logs[key].waktu.split(" ");
+              const tglParts = parts[0].split("-");
+              // Format: DD-MM-YYYY hh:mm:ss
+              const isoDateStr = `${tglParts[2]}-${tglParts[1]}-${tglParts[0]}T${parts[1]}`;
+              const logDate = new Date(isoDateStr);
+              if (logDate.getTime() > lastTime) {
+                lastTime = logDate.getTime();
+                lastKey = key;
+              }
             }
           }
+          if (lastKey) {
+            await db.ref("logAktivitas/" + lastKey).update({ status: "Berhasil" });
+            console.log(`Log status untuk kode ${kode} sudah diperbarui menjadi Berhasil.`);
+          }
         }
-        if (lastKey) {
-          await db.ref("logAktivitas/" + lastKey).update({ status: "Berhasil" });
-        }
+      } catch (error) {
+        console.error("Gagal update status log:", error);
       }
-    } catch (error) {
-      console.error("Gagal update status log:", error);
     }
-  }
-
-  // Panggil saat halaman dimuat
-  const urlParams = new URLSearchParams(window.location.search);
-  const kode = urlParams.get("kode");
-  if (kode) updateLogStatus(kode.toUpperCase());
-</script>
+  </script>
 </body>
 </html>
