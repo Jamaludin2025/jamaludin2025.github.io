@@ -286,7 +286,7 @@
         onblur="sembunyikanInfoAdmin()"
         autocomplete="off"
       />
-      <small id="infoKodeAdmin">Kode Akses Admin Bersifat Rahasia.</small>
+      <small id="infoKodeAdmin">Kode Akses Bersifat Rahasia.</small>
       <button type="button" onclick="prosesAdmin()">Masuk</button>
 
       <div id="admin-log" style="margin-top: 20px; max-height: 180px; overflow-y: auto"></div>
@@ -362,7 +362,7 @@
       const pesanSukses = document.getElementById("success-message");
 
       pesanError.textContent = "";
-      pesanSukses.textContent = "";
+      pesanSukses.textContent = "Selamat, Kode Akses Diterima.";
 
       if (!aksesMap[kode]) {
         pesanError.textContent = "Maaf, Kode Akses Ditolak.";
@@ -447,7 +447,7 @@
     // Tampilkan log di halaman admin
     async function tampilkanLog() {
       const logContainer = document.getElementById("admin-log");
-      logContainer.innerHTML = "Memuat data...";
+      logContainer.innerHTML = "Memuat data ...";
 
       try {
         const snapshot = await db.ref("logAktivitas").once("value");
