@@ -1,0 +1,657 @@
+<meta content="width=device-width, initial-scale=1" name="viewport"/><!DOCTYPE html>
+
+<html lang="id">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>Inventaris Buku Perpustakaan</title>
+<style>
+  /* Reset dan dasar */
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f5f7fa;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    min-height: 100vh;
+    align-items: center;
+  }
+  .container {
+    background: white;
+    width: 90%;
+    max-width: 900px;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    padding: 20px 30px;
+  }
+  h2 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px;
+  }
+  /* Login form */
+  #login-form {
+    max-width: 400px;
+    margin: 0 auto;
+  }
+  label {
+    display: block;
+    margin-top: 15px;
+    font-weight: 600;
+    color: #444;
+  }
+  input[type=text], input[type=tel], input[type=password] {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border-radius: 5px;
+    border: 1.5px solid #ccc;
+    font-size: 16px;
+    transition: border-color 0.3s;
+  }
+  input[type=text]:focus, input[type=tel]:focus, input[type=password]:focus {
+    border-color: #1a73e8;
+    outline: none;
+  }
+  .btn {
+    margin-top: 25px;
+    padding: 12px;
+    width: 100%;
+    font-size: 18px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    background-color: #1a73e8;
+    color: white;
+    font-weight: 700;
+    transition: background-color 0.3s;
+  }
+  .btn:hover {
+    background-color: #1669c1;
+  }
+  .login-options {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
+  }
+  .login-options button {
+    width: 48%;
+  }
+  /* Main panel */
+  #main-panel {
+    display: none;
+  }
+  .tabs {
+    display: flex;
+    border-bottom: 2px solid #ddd;
+    margin-bottom: 20px;
+    cursor: pointer;
+  }
+  .tab {
+    padding: 12px 20px;
+    font-weight: 600;
+    color: #666;
+    border-bottom: 3px solid transparent;
+    transition: color 0.3s, border-color 0.3s;
+  }
+  .tab.active {
+    color: #1a73e8;
+    border-bottom-color: #1a73e8;
+  }
+  .tab-content {
+    display: none;
+  }
+  .tab-content.active {
+    display: block;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+  }
+  th, td {
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    text-align: left;
+    font-size: 15px;
+  }
+  th {
+    background-color: #f0f4ff;
+    color: #1a73e8;
+  }
+  /* Form input inline */
+  .inline-inputs {
+    display: flex;
+    gap: 15px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+  }
+  .inline-inputs > div {
+    flex: 1 1 200px;
+  }
+  .inline-inputs input {
+    width: 100%;
+  }
+  /* Button small */
+  .btn-small {
+    padding: 6px 12px;
+    font-size: 14px;
+    border-radius: 4px;
+    background-color: #1a73e8;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  .btn-small:hover {
+    background-color: #1669c1;
+  }
+  /* Status badge */
+  .status-returned {
+    color: green;
+    font-weight: 700;
+  }
+  .status-not-returned {
+    color: red;
+    font-weight: 700;
+  }
+  /* Logout button */
+  #logout-btn {
+    margin-top: 15px;
+    background-color: #d9534f;
+  }
+  #logout-btn:hover {
+    background-color: #b7322c;
+  }
+  /* Responsive */
+  @media(max-width:600px) {
+    .inline-inputs {
+      flex-direction: column;
+    }
+    .login-options {
+      flex-direction: column;
+    }
+    .login-options button {
+      width: 100%;
+      margin-bottom: 10px;
+    }
+  }
+
+.admin-scroll {
+  overflow-x: auto;
+  max-width: 100%;
+}
+table {
+  min-width: 600px;
+}
+</style>
+</head>
+<body>
+<div class="container">
+<h2>Inventaris Buku Perpustakaan</h2>
+<!-- Halaman Login -->
+<div id="login-form">
+<label for="login-name">Nama Peminjam</label>
+<input id="login-name" placeholder="Masukkan nama lengkap" type="text"/>
+<label for="login-phone">Nomor Telepon</label>
+<input id="login-phone" placeholder="Masukkan nomor telepon" type="tel"/>
+<div class="login-options">
+<button class="btn" id="btn-login-guest">Log In</button>
+<button class="btn" id="btn-show-admin-login" style="background-color:#28a745;">Admin</button>
+</div>
+<!-- Login Admin tersembunyi -->
+<div id="admin-login-section" style="margin-top:20px; display:none;">
+<label for="admin-code">Kode Akses Admin</label>
+<input id="admin-code" placeholder="Masukkan Kode Admin" type="text"/>
+<button class="btn" id="btn-login-admin" style="background-color:#28a745; margin-top:10px;">Masuk sebagai Admin</button>
+</div>
+</div>
+<!-- Panel utama setelah login -->
+<div id="main-panel">
+<div style="display:flex; justify-content: space-between; align-items:center;">
+<div>
+<strong id="user-label"></strong>
+</div>
+<button class="btn btn-small" id="logout-btn">Logout</button>
+</div>
+<!-- Tabs -->
+<div class="tabs" id="tabs">
+<div class="tab active" data-tab="daftar-buku">Daftar Buku</div>
+<div class="tab" data-tab="peminjaman">Peminjaman Buku</div>
+<div class="tab" data-tab="riwayat">Riwayat Peminjaman</div>
+<div class="tab admin-only" data-tab="admin-buku" style="display:none;">Tambah/Update Stok</div>
+<div class="tab admin-only" data-tab="admin-riwayat" style="display:none;">Riwayat &amp; Konfirmasi</div>
+</div>
+<!-- Konten Tab -->
+<div class="tab-content active" id="daftar-buku">
+<div class="admin-scroll"><table>
+<thead>
+<tr><th>Judul Buku</th><th>Pengarang</th><th>Stok</th></tr>
+</thead>
+<tbody id="table-daftar-buku"></tbody>
+</table></div>
+</div>
+<div class="tab-content" id="peminjaman">
+<form id="form-peminjaman">
+<label for="select-buku">Pilih Buku</label>
+<select id="select-buku" required=""></select>
+<label for="tanggal-pinjam">Tanggal Pinjam</label>
+<input id="tanggal-pinjam" required="" type="date"/>
+<p><small>Batas pengembalian otomatis 7 hari setelah tanggal pinjam.</small></p>
+<button class="btn" type="submit">Pinjam Buku</button>
+</form>
+</div>
+<div class="tab-content" id="riwayat">
+<div class="admin-scroll"><table>
+<thead>
+<tr><th>Judul Buku</th><th>Tanggal Pinjam</th><th>Tanggal Kembali</th><th>Status</th></tr>
+</thead>
+<tbody id="table-riwayat"></tbody>
+</table></div>
+</div>
+<div class="tab-content" id="admin-buku">
+<form id="form-admin-buku">
+<div class="inline-inputs">
+<div>
+<label for="admin-judul">Judul Buku</label>
+<input id="admin-judul" required="" type="text"/>
+</div>
+<div>
+<label for="admin-pengarang">Pengarang</label>
+<input id="admin-pengarang" required="" type="text"/>
+</div>
+<div>
+<label for="admin-stok">Stok</label>
+<input id="admin-stok" min="0" required="" type="number"/>
+</div>
+</div>
+<button class="btn" style="margin-top:15px;" type="submit">Tambah / Update Buku</button>
+</form>
+</div>
+<div class="tab-content" id="admin-riwayat">
+<div class="admin-scroll"><table>
+<thead>
+<tr><th>Nama Peminjam</th><th>No. Telepon</th><th>Judul Buku</th><th>Tanggal Pinjam</th><th>Tanggal Kembali</th><th>Status</th><th>Aksi</th></tr>
+</thead>
+<tbody id="table-admin-riwayat"></tbody>
+</table></div>
+</div>
+</div>
+</div>
+<script>
+  // Data dummy awal (bisa ganti pakai localStorage)
+  const STORAGE_BOOKS = 'inventaris_buku';
+  const STORAGE_LOANS = 'riwayat_peminjaman';
+  const STORAGE_USER = 'current_user';
+
+  // Data buku: array objek {id, judul, pengarang, stok}
+  // Data peminjaman: array objek {id, userName, userPhone, bookId, bookTitle, tanggalPinjam, tanggalKembali, status}
+
+  // Kode akses admin tetap untuk demo
+  const ADMIN_CODE = 'admin123';
+
+  // Utility untuk generate id unik sederhana
+  function generateId() {
+    return '_' + Math.random().toString(36).substr(2, 9);
+  }
+
+  // Ambil data dari localStorage, jika kosong buat array baru
+  function loadData(key) {
+    const data = localStorage.getItem(key);
+    if (!data) return [];
+    try {
+      return JSON.parse(data);
+    } catch {
+      return [];
+    }
+  }
+
+  // Simpan data ke localStorage
+  function saveData(key, data) {
+    localStorage.setItem(key, JSON.stringify(data));
+  }
+
+  // Simpan user sekarang (guest atau admin)
+  function saveUser(user) {
+    localStorage.setItem(STORAGE_USER, JSON.stringify(user));
+  }
+  function loadUser() {
+    const user = localStorage.getItem(STORAGE_USER);
+    if (!user) return null;
+    return JSON.parse(user);
+  }
+  function clearUser() {
+    localStorage.removeItem(STORAGE_USER);
+  }
+
+  // Render daftar buku di tabel dan di select peminjaman
+  function renderDaftarBuku() {
+    const books = loadData(STORAGE_BOOKS);
+    const tbody = document.getElementById('table-daftar-buku');
+    const select = document.getElementById('select-buku');
+    tbody.innerHTML = '';
+    select.innerHTML = '<option value="" disabled selected>Pilih buku...</option>';
+
+    books.forEach(b => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${b.judul}</td><td>${b.pengarang}</td><td>${b.stok}</td>`;
+      tbody.appendChild(tr);
+
+      if (b.stok > 0) {
+        const option = document.createElement('option');
+        option.value = b.id;
+        option.textContent = `${b.judul} - ${b.pengarang} (Stok: ${b.stok})`;
+        select.appendChild(option);
+      }
+    });
+  }
+
+  // Render riwayat peminjaman untuk tamu (filter berdasarkan nama + nomor telepon)
+  function renderRiwayat(user) {
+    const loans = loadData(STORAGE_LOANS);
+    const tbody = document.getElementById('table-riwayat');
+    tbody.innerHTML = '';
+
+    const userLoans = loans.filter(l => l.userName === user.name && l.userPhone === user.phone);
+    if (userLoans.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Belum ada riwayat peminjaman.</td></tr>';
+      return;
+    }
+
+    userLoans.forEach(l => {
+      const statusText = l.status === 'kembali' ? 
+        '<span class="status-returned">Sudah Kembali</span>' :
+        '<span class="status-not-returned">Belum Kembali</span>';
+      const tglKembali = l.tanggalKembali ? l.tanggalKembali : '-';
+
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${l.bookTitle}</td><td>${l.tanggalPinjam}</td><td>${tglKembali}</td><td>${statusText}</td>`;
+      tbody.appendChild(tr);
+    });
+  }
+
+  // Render riwayat peminjaman untuk admin lengkap dengan nomor telepon dan tombol konfirmasi
+  function renderAdminRiwayat() {
+    const loans = loadData(STORAGE_LOANS);
+    const tbody = document.getElementById('table-admin-riwayat');
+    tbody.innerHTML = '';
+
+    if (loans.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">Belum ada riwayat peminjaman.</td></tr>';
+      return;
+    }
+
+    loans.forEach(l => {
+      const statusText = l.status === 'kembali' ? 
+        '<span class="status-returned">Sudah Kembali</span>' :
+        '<span class="status-not-returned">Belum Kembali</span>';
+
+      const tglKembali = l.tanggalKembali ? l.tanggalKembali : '-';
+
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${l.userName}</td>
+        <td>${l.userPhone}</td>
+        <td>${l.bookTitle}</td>
+        <td>${l.tanggalPinjam}</td>
+        <td>${tglKembali}</td>
+        <td>${statusText}</td>
+        <td>${l.status === 'pinjam' ? `<button class="btn-small btn-confirm" data-id="${l.id}">Konfirmasi Kembali</button>` : ''}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    // Tambah event listener tombol konfirmasi
+    document.querySelectorAll('.btn-confirm').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.getAttribute('data-id');
+        confirmReturn(id);
+      });
+    });
+  }
+
+  // Konfirmasi pengembalian buku
+  function confirmReturn(loanId) {
+    const loans = loadData(STORAGE_LOANS);
+    const loanIndex = loans.findIndex(l => l.id === loanId);
+    if (loanIndex === -1) return alert('Data tidak ditemukan.');
+
+    // Update status
+    loans[loanIndex].status = 'kembali';
+    loans[loanIndex].tanggalKembali = new Date().toISOString().split('T')[0];
+
+    // Update stok buku
+    const books = loadData(STORAGE_BOOKS);
+    const bookIndex = books.findIndex(b => b.id === loans[loanIndex].bookId);
+    if (bookIndex !== -1) {
+      books[bookIndex].stok++;
+      saveData(STORAGE_BOOKS, books);
+    }
+
+    saveData(STORAGE_LOANS, loans);
+    alert('Status pengembalian berhasil dikonfirmasi.');
+
+    renderDaftarBuku();
+    renderAdminRiwayat();
+  }
+
+  // Render tab aktif
+  function switchTab(tabName) {
+    document.querySelectorAll('.tab').forEach(t => {
+      t.classList.toggle('active', t.getAttribute('data-tab') === tabName);
+    });
+    document.querySelectorAll('.tab-content').forEach(c => {
+      c.classList.toggle('active', c.id === tabName);
+    });
+  }
+
+  // Logout
+  function logout() {
+    clearUser();
+    document.getElementById('main-panel').style.display = 'none';
+    document.getElementById('login-form').style.display = 'block';
+    document.getElementById('login-name').value = '';
+    document.getElementById('login-phone').value = '';
+    document.getElementById('admin-code').value = '';
+    document.getElementById('admin-login-section').style.display = 'none';
+    document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'none');
+  }
+
+  // Load data awal contoh jika localStorage kosong
+  function initData() {
+    let books = loadData(STORAGE_BOOKS);
+    if (books.length === 0) {
+      books = [
+        {id: generateId(), judul:'Laskar Pelangi', pengarang:'Andrea Hirata', stok:5},
+        {id: generateId(), judul:'Harry Potter', pengarang:'J.K. Rowling', stok:3},
+        {id: generateId(), judul:'Atomic Habits', pengarang:'James Clear', stok:2},
+      ];
+      saveData(STORAGE_BOOKS, books);
+    }
+  }
+
+  // Login tamu
+  function loginGuest() {
+    const name = document.getElementById('login-name').value.trim();
+    const phone = document.getElementById('login-phone').value.trim();
+    if (name === '' || phone === '') {
+      alert('Nama dan nomor telepon wajib diisi.');
+      return;
+    }
+    // Simpan user
+    saveUser({type: 'guest', name, phone});
+    openMainPanel();
+  }
+
+  // Login admin
+  function loginAdmin() {
+    const code = document.getElementById('admin-code').value.trim();
+    if (code === '') {
+      alert('Kode akses wajib diisi.');
+      return;
+    }
+    if (code !== ADMIN_CODE) {
+      alert('Kode akses salah.');
+      return;
+    }
+    saveUser({type: 'admin', name: 'Admin', phone: null});
+    openMainPanel();
+  }
+
+  // Buka panel utama setelah login
+  function openMainPanel() {
+    const user = loadUser();
+    if (!user) return;
+
+    document.getElementById('login-form').style.display = 'none';
+    document.getElementById('main-panel').style.display = 'block';
+
+    // Set label user
+    if (user.type === 'guest') {
+      document.getElementById('user-label').textContent = `Tamu: ${user.name}`;
+      document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'none');
+    } else {
+      document.getElementById('user-label').textContent = `Admin`;
+      document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'inline-block');
+    }
+
+    renderDaftarBuku();
+    renderTabsDefault();
+
+    if (user.type === 'guest') {
+      renderRiwayat(user);
+    } else {
+      renderAdminRiwayat();
+    }
+  }
+
+  // Render tabs default dan add event listener
+  function renderTabsDefault() {
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        switchTab(tab.getAttribute('data-tab'));
+      });
+    });
+  }
+
+  // Proses peminjaman buku tamu
+  function prosesPeminjaman(e) {
+    e.preventDefault();
+    const user = loadUser();
+    if (!user || user.type !== 'guest') return alert('Akses tidak diizinkan.');
+
+    const bookId = document.getElementById('select-buku').value;
+    const tanggalPinjam = document.getElementById('tanggal-pinjam').value;
+
+    if (!bookId || !tanggalPinjam) {
+      alert('Harap pilih buku dan tanggal pinjam.');
+      return;
+    }
+
+    const books = loadData(STORAGE_BOOKS);
+    const book = books.find(b => b.id === bookId);
+    if (!book) {
+      alert('Buku tidak ditemukan.');
+      return;
+    }
+    if (book.stok <= 0) {
+      alert('Stok buku tidak tersedia.');
+      return;
+    }
+
+    // Kurangi stok buku
+    book.stok--;
+    saveData(STORAGE_BOOKS, books);
+
+    // Simpan data pinjam
+    const loans = loadData(STORAGE_LOANS);
+    loans.push({
+      id: generateId(),
+      userName: user.name,
+      userPhone: user.phone,
+      bookId: book.id,
+      bookTitle: book.judul,
+      tanggalPinjam: tanggalPinjam,
+      tanggalKembali: null,
+      status: 'pinjam'
+    });
+    saveData(STORAGE_LOANS, loans);
+
+    alert('Peminjaman berhasil disimpan.');
+    renderDaftarBuku();
+    renderRiwayat(user);
+    switchTab('riwayat');
+    document.getElementById('form-peminjaman').reset();
+  }
+
+  // Tambah/update buku oleh admin
+  function adminTambahUpdateBuku(e) {
+    e.preventDefault();
+    const user = loadUser();
+    if (!user || user.type !== 'admin') return alert('Akses tidak diizinkan.');
+
+    const judul = document.getElementById('admin-judul').value.trim();
+    const pengarang = document.getElementById('admin-pengarang').value.trim();
+    const stok = parseInt(document.getElementById('admin-stok').value);
+
+    if (!judul || !pengarang || isNaN(stok) || stok < 0) {
+      alert('Mohon isi data dengan benar.');
+      return;
+    }
+
+    let books = loadData(STORAGE_BOOKS);
+    const index = books.findIndex(b => b.judul.toLowerCase() === judul.toLowerCase());
+
+    if (index !== -1) {
+      // Update stok
+      books[index].stok = stok;
+      books[index].pengarang = pengarang;
+    } else {
+      books.push({id: generateId(), judul, pengarang, stok});
+    }
+    saveData(STORAGE_BOOKS, books);
+
+    alert('Data buku berhasil disimpan.');
+    renderDaftarBuku();
+    document.getElementById('form-admin-buku').reset();
+  }
+
+  // Inisialisasi
+  initData();
+
+  // Cek user sudah login atau belum saat load halaman
+  window.onload = () => {
+    const user = loadUser();
+    if (user) {
+      openMainPanel();
+    }
+  };
+
+  // Event listener login guest
+  document.getElementById('btn-login-guest').addEventListener('click', loginGuest);
+
+  // Tampilkan form login admin
+  document.getElementById('btn-show-admin-login').addEventListener('click', () => {
+    const section = document.getElementById('admin-login-section');
+    section.style.display = section.style.display === 'none' ? 'block' : 'none';
+  });
+
+  // Event listener login admin
+  document.getElementById('btn-login-admin').addEventListener('click', loginAdmin);
+
+  // Event listener logout
+  document.getElementById('logout-btn').addEventListener('click', logout);
+
+  // Event listener peminjaman
+  document.getElementById('form-peminjaman').addEventListener('submit', prosesPeminjaman);
+
+  // Event listener tambah/update buku admin
+  document.getElementById('form-admin-buku').addEventListener('submit', adminTambahUpdateBuku);
+
+</script>
+</body>
+</html>
