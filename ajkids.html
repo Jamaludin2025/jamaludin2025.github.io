@@ -1,4 +1,4 @@
-<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
@@ -20,29 +20,48 @@
       color: var(--text);
     }
 
-    .tab-wrapper {
+    /* Intro Page */
+    #introPage {
+      max-width: 600px;
+      margin: 5rem auto 6rem;
+      background: var(--card);
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      text-align: center;
+      position: relative;
+      padding-bottom: 6rem; /* ruang untuk tombol bawah */
+    }
+
+    #introPage img {
+      max-width: 150px;
+      margin-bottom: 1rem;
+      border-radius: 12px;
+    }
+
+    #introPage h2 {
+      margin-bottom: 3rem;
+    }
+
+    #introPage button {
       position: fixed;
-      bottom: 0;
-      width: 100%;
-      display: flex;
-      background: var(--primary);
-    }
-
-    .tab-button {
-      flex: 1;
-      padding: 1rem;
+      bottom: 4.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 0.8rem 2rem;
+      font-weight: bold;
+      font-size: 1.2rem;
+      border-radius: 10px;
       border: none;
-      background: transparent;
+      background-color: var(--primary);
       color: white;
-      font-size: 1rem;
       cursor: pointer;
+      z-index: 999;
+      width: calc(100% - 2rem);
+      max-width: 600px;
     }
 
-    .tab-button.active,
-    .tab-button:hover {
-      background-color: rgba(255,255,255,0.1);
-    }
-
+    /* Tab Beranda */
     .tab-content {
       max-width: 600px;
       margin: 2rem auto 6rem;
@@ -69,7 +88,6 @@
     }
 
     input[type="text"],
-    input[type="password"],
     input[type="file"] {
       width: 100%;
       padding: 0.6rem;
@@ -103,19 +121,11 @@
       border-radius: 12px;
     }
 
-    .nama-suara-wrapper {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 0.5rem;
-      margin-top: 1rem;
-    }
-
     #namaHewanTampil {
       text-align: center;
       font-size: 1.5rem;
+      margin-top: 1rem;
       font-weight: bold;
-      margin: 0;
     }
 
     #audioHewan {
@@ -130,33 +140,107 @@
     .center {
       text-align: center;
     }
+
+    .aksi-bawah {
+      position: fixed;
+      bottom: 4.5rem;
+      left: 0;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      padding: 0.5rem;
+      background: var(--bg);
+      z-index: 998;
+    }
+
+    /* Tombol Cari Hewan Besar dan Bold */
+    #aksiHewan button {
+      font-weight: bold;
+      font-size: 1.2rem;
+      padding: 0.8rem 2rem;
+      border-radius: 10px;
+    }
+
+    /* Tab navigasi bawah */
+    .tab-wrapper {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      display: none; /* sembunyi saat intro */
+      background: var(--primary);
+      z-index: 999;
+    }
+
+    .tab-button {
+      flex: 1;
+      padding: 1rem;
+      border: none;
+      background: transparent;
+      color: white;
+      font-size: 1rem;
+      cursor: pointer;
+      font-weight: normal;
+      transition: font-weight 0.3s ease;
+    }
+
+    .tab-button.active {
+      font-weight: bold;
+      /* Hilangkan background */
+      background-color: transparent;
+    }
+
+    /* Daftar hewan admin */
+    .daftar-hewan {
+      margin-top: 2rem;
+    }
+
+    .item-hewan {
+      padding: 0.5rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+
+    .item-hewan span {
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
 
+  <!-- Halaman Intro -->
+  <div id="introPage">
+    <h2>Apakah kamu mau mencari hewan bersamaku?</h2>
+    <img src="https://freeimage.host/i/3LEABcu" alt="Gambar dari Google Drive">
+    <button onclick="mulaiAplikasi()">Ayo Mulai</button>
+  </div>
+
   <!-- Tab Beranda -->
-  <div class="tab-content active" id="berandaTab">
+  <div class="tab-content" id="berandaTab">
     <h2>Beranda</h2>
     <div id="hewanDisplay" class="hidden">
       <img id="gambarHewan" src="" alt="Gambar Hewan" />
-      <div class="nama-suara-wrapper">
-        <div id="namaHewanTampil"></div>
-        <button onclick="putarSuara()" title="Putar suara hewan">🔊</button>
-      </div>
-      <audio id="audioHewan" style="display:none;"></audio>
-      <div class="center" style="margin-top: 1rem;">
-        <button onclick="cariHewan()">Cari Hewan</button>
-      </div>
+      <div id="namaHewanTampil"></div>
+      <audio id="audioHewan" controls style="display:none;"></audio>
     </div>
     <p class="center" id="pesanKosong">Belum ada data hewan ditampilkan.</p>
+
+    <!-- Tombol Cari -->
+    <div id="aksiHewan" class="aksi-bawah">
+      <button onclick="cariHewan()">Cari Hewan</button>
+    </div>
   </div>
 
   <!-- Tab Admin -->
   <div class="tab-content" id="adminTab">
     <div id="formLoginAdmin">
-      <h2>Login Admin</h2>
-      <label for="kodeAkses">Kode Akses:</label>
-      <input type="password" id="kodeAkses" placeholder="Masukkan kode admin" />
+      <h2>Admin</h2>
+      <label for="kodeAkses">Kode Akses Admin</label>
+      <input type="text" id="kodeAkses" placeholder="Masukkan Kode Akses" />
       <button onclick="verifikasiAdmin()">Masuk</button>
     </div>
 
@@ -173,19 +257,31 @@
       <input type="file" id="audioInput" accept="audio/*" />
 
       <button onclick="simpanDataHewan()">Simpan</button>
+
+      <div class="daftar-hewan" id="daftarHewan"></div>
     </div>
   </div>
 
   <!-- Navigasi Tab -->
   <div class="tab-wrapper">
     <button class="tab-button active" onclick="switchTab('berandaTab', this)">Beranda</button>
-    <button class="tab-button" onclick="switchTab('adminTab', this)">Admin</button>
+    <button class="tab-button" onclick="switchTab('adminTab', this)">Pengaturan</button>
   </div>
 
   <!-- Script -->
   <script>
-    const kodeAdmin = "admin123";
-    let dataHewan = [];
+    const kodeAdmin = "Admin123";
+    let daftarHewan = [];
+
+    // Mulai aplikasi: sembunyikan intro, tampilkan tab dan beranda
+    function mulaiAplikasi() {
+      document.getElementById("introPage").style.display = "none";
+      document.querySelector(".tab-wrapper").style.display = "flex";
+      switchTab('berandaTab', document.querySelector('.tab-button'));
+      if (daftarHewan.length > 0) {
+        tampilkanHewan(daftarHewan[0]);
+      }
+    }
 
     function switchTab(tabId, btn) {
       document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
@@ -200,6 +296,7 @@
       if (inputKode === kodeAdmin) {
         document.getElementById("formLoginAdmin").classList.add("hidden");
         document.getElementById("formInputHewan").classList.remove("hidden");
+        tampilkanDaftarHewan();
       } else {
         alert("Kode akses salah!");
       }
@@ -232,50 +329,73 @@
       const reader = new FileReader();
       reader.onload = function(e) {
         const audioSrc = e.target.result;
-        const hewanBaru = { nama, gambar: imgSrc, audio: audioSrc };
-        dataHewan.push(hewanBaru);
-        localStorage.setItem("dataHewan", JSON.stringify(dataHewan));
-        tampilkanHewan(hewanBaru);
+        const data = { nama, gambar: imgSrc, audio: audioSrc };
+        daftarHewan.push(data);
+        tampilkanHewan(data);
+        tampilkanDaftarHewan();
         alert("Data hewan berhasil disimpan!");
+        resetForm();
       };
       reader.readAsDataURL(audioInput.files[0]);
     }
 
-    function tampilkanHewan(hewan) {
-      if (hewan) {
-        document.getElementById("gambarHewan").src = hewan.gambar;
-        document.getElementById("namaHewanTampil").textContent = hewan.nama;
-
-        const audioEl = document.getElementById("audioHewan");
-        audioEl.src = hewan.audio;
-        audioEl.style.display = "block";
-
-        document.getElementById("hewanDisplay").classList.remove("hidden");
-        document.getElementById("pesanKosong").classList.add("hidden");
-      }
+    function resetForm() {
+      document.getElementById("gambarInput").value = "";
+      document.getElementById("gambarHewanPreview").classList.add("hidden");
+      document.getElementById("gambarHewanPreview").src = "";
+      document.getElementById("namaHewan").value = "";
+      document.getElementById("audioInput").value = "";
     }
 
-    function putarSuara() {
-      const audio = document.getElementById("audioHewan");
-      audio.play();
+    function tampilkanHewan(data) {
+      document.getElementById("gambarHewan").src = data.gambar;
+      document.getElementById("namaHewanTampil").textContent = data.nama;
+      const audioEl = document.getElementById("audioHewan");
+      audioEl.src = data.audio;
+      audioEl.style.display = "block";
+
+      document.getElementById("hewanDisplay").classList.remove("hidden");
+      document.getElementById("pesanKosong").classList.add("hidden");
+
+      // Auto play sound
+      setTimeout(() => {
+        audioEl.play().catch(() => {
+          // autoplay might fail due to browser policy
+          console.warn("Audio autoplay gagal, mungkin karena kebijakan browser.");
+        });
+      }, 200);
+    }
+
+    function tampilkanDaftarHewan() {
+      const container = document.getElementById("daftarHewan");
+      container.innerHTML = "";
+      daftarHewan.forEach((h, i) => {
+        const div = document.createElement("div");
+        div.className = "item-hewan";
+        div.innerHTML = `
+          <span>${h.nama}</span>
+          <button onclick="hapusHewan(${i})">Hapus</button>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function hapusHewan(index) {
+      daftarHewan.splice(index, 1);
+      tampilkanDaftarHewan();
+      if (daftarHewan.length === 0) {
+        document.getElementById("hewanDisplay").classList.add("hidden");
+        document.getElementById("pesanKosong").classList.remove("hidden");
+      } else {
+        tampilkanHewan(daftarHewan[0]);
+      }
     }
 
     function cariHewan() {
-      if (dataHewan.length === 0) {
-        alert("Belum ada data hewan.");
-        return;
-      }
-      const acak = Math.floor(Math.random() * dataHewan.length);
-      tampilkanHewan(dataHewan[acak]);
+      if (daftarHewan.length === 0) return;
+      const acak = daftarHewan[Math.floor(Math.random() * daftarHewan.length)];
+      tampilkanHewan(acak);
     }
-
-    window.onload = function () {
-      const simpanan = localStorage.getItem("dataHewan");
-      if (simpanan) {
-        dataHewan = JSON.parse(simpanan);
-        tampilkanHewan(dataHewan[0]);
-      }
-    };
   </script>
 </body>
 </html>
