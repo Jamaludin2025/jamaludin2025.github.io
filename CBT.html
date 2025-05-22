@@ -102,6 +102,7 @@
   <!-- Admin Dashboard -->
   <div class="admin-box hidden" id="admin-panel">
     <h3>Dashboard Admin</h3>
+    <button class="btn" onclick="kembaliLogin()">Kembali</button>
     <h4>Tambah Soal</h4>
     <input type="text" id="soal-baru" placeholder="Tulis pertanyaan">
     <input type="text" id="pilihan-a" placeholder="Pilihan A">
@@ -141,7 +142,10 @@ function mulaiUjian() {
   document.getElementById('ujian-panel').classList.remove('hidden');
   tampilSoal();
   setInterval(updateTimer, 1000);
-  window.onblur = () => alert("Jangan keluar dari ujian!");
+  window.onblur = () => alert("Jangan membuka aplikasi lain atau Google selama ujian!");
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState !== 'visible') alert("Fokus kembali ke halaman ujian!");
+  });
 }
 function tampilSoal() {
   const q = soal[index];
@@ -173,7 +177,9 @@ function selesai() {
   let skor = soal.filter((s, i) => s.k === jawaban[i]).length;
   riwayat.push({ ...peserta, skor });
   localStorage.setItem("riwayat", JSON.stringify(riwayat));
-  document.getElementById('hasil').innerHTML = `<h3>Skor Anda: ${skor}/${soal.length}</h3>`;
+  const nilai = skor / soal.length * 100;
+  const status = nilai >= 80 ? 'LULUS' : 'TIDAK LULUS';
+  document.getElementById('hasil').innerHTML = `<h3>${peserta.nama} (${peserta.nomor})</h3><p>Skor Anda: ${skor}/${soal.length} (${nilai}%)</p><h4>Status: ${status}</h4>`;
   document.getElementById('hasil').classList.remove('hidden');
   document.querySelector('#ujian-panel .question-nav').classList.add('hidden');
   document.getElementById('pertanyaan').classList.add('hidden');
@@ -192,19 +198,26 @@ function bukaAdmin() {
   document.getElementById('admin-panel').classList.remove('hidden');
   renderRiwayat();
 }
+function kembaliLogin() {
+  document.getElementById('admin-panel').classList.add('hidden');
+  document.getElementById('login-panel').classList.remove('hidden');
+}
 function tambahSoal() {
-  const q = document.getElementById('soal-baru').value;
+  const q = document.getElementById('soal-baru');
   const a = [
-    document.getElementById('pilihan-a').value,
-    document.getElementById('pilihan-b').value,
-    document.getElementById('pilihan-c').value,
-    document.getElementById('pilihan-d').value
+    document.getElementById('pilihan-a'),
+    document.getElementById('pilihan-b'),
+    document.getElementById('pilihan-c'),
+    document.getElementById('pilihan-d')
   ];
-  const k = {A:0,B:1,C:2,D:3}[document.getElementById('jawaban-betul').value.toUpperCase()];
-  if (!q || a.some(x => !x) || k == null) return alert("Lengkapi semua data!");
-  soal.push({ q, a, k });
+  const kunci = document.getElementById('jawaban-betul');
+  const k = {A:0,B:1,C:2,D:3}[kunci.value.toUpperCase()];
+  if (!q.value || a.some(x => !x.value) || k == null) return alert("Lengkapi semua data!");
+  soal.push({ q: q.value, a: a.map(x => x.value), k });
   localStorage.setItem("soal-data", JSON.stringify(soal));
   alert("Soal ditambahkan!");
+  q.value = kunci.value = '';
+  a.forEach(x => x.value = '');
 }
 function renderRiwayat() {
   const tbody = document.querySelector('#tabel-riwayat tbody');
