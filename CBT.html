@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CBT Matematika</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0; background: #eef1f5;
+    }
+    .container {
+      max-width: 900px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      margin-top: 20px;
+    }
+    h2 { text-align: center; color: #1a237e; }
+    .question-nav {
+      display: flex;
+      overflow-x: auto;
+      margin: 10px 0;
+    }
+    .question-nav button {
+      padding: 6px 10px;
+      margin: 2px;
+      border: none;
+      background: #ccc;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .question-nav button.active { background: #1a73e8; color: white; }
+    .question-box {
+      margin-top: 20px;
+    }
+    .question { font-size: 18px; margin-bottom: 10px; }
+    .options label {
+      display: block;
+      padding: 10px;
+      background: #f1f1f1;
+      margin-bottom: 5px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .options input { margin-right: 8px; }
+    .actions {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+    .btn {
+      padding: 10px 15px;
+      border: none;
+      background: #1a73e8;
+      color: white;
+      border-radius: 4px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .btn:disabled { background: #aaa; cursor: not-allowed; }
+    .timer {
+      text-align: center;
+      font-size: 18px;
+      font-weight: bold;
+      margin: 10px 0;
+    }
+    #result-box {
+      display: none;
+      font-size: 20px;
+      text-align: center;
+      margin-top: 30px;
+    }
+    .login-box {
+      max-width: 400px;
+      margin: 50px auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .login-box input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+<div class="login-box" id="login-box">
+  <h2>Login Peserta</h2>
+  <input type="text" id="nama" placeholder="Nama Lengkap">
+  <input type="text" id="nomor" placeholder="Nomor Ujian">
+  <button class="btn" onclick="mulaiUjian()">Mulai</button>
+</div>
+<div class="container hidden" id="ujian-box">
+  <div class="timer" id="timer">00:30:00</div>
+  <div class="question-nav" id="navigasiSoal"></div>
+  <div class="question-box">
+    <div class="question" id="pertanyaan"></div>
+    <div class="options" id="opsi"></div>
+  </div>
+  <div class="actions">
+    <button class="btn" onclick="prevSoal()">Sebelumnya</button>
+    <button class="btn" onclick="nextSoal()">Selanjutnya</button>
+    <button class="btn" onclick="kumpulkan()">Kumpulkan</button>
+  </div>
+  <div id="result-box"></div>
+</div>
+<script>
+const soal = [
+  { q: '5 + 7 = ?', a: ['10', '11', '12', '13'], kunci: 2 },
+  { q: '15 x 3 = ?', a: ['30', '35', '45', '50'], kunci: 2 },
+  { q: 'Akar dari 81 adalah?', a: ['8', '9', '10', '7'], kunci: 1 },
+];
+let jawaban = Array(soal.length).fill(null);
+let current = 0;
+let waktu = 30 * 60;
+
+function mulaiUjian() {
+  if (!nama.value || !nomor.value) return alert('Lengkapi data');
+  loginBox.style.display = 'none';
+  ujianBox.classList.remove('hidden');
+  tampilSoal();
+  updateNavigasi();
+  setInterval(timerTick, 1000);
+  window.onblur = () => alert('Jangan keluar dari layar ujian!');
+}
+
+function tampilSoal() {
+  const s = soal[current];
+  pertanyaan.textContent = `${current + 1}. ${s.q}`;
+  opsi.innerHTML = '';
+  s.a.forEach((x, i) => {
+    const checked = jawaban[current] === i ? 'checked' : '';
+    opsi.innerHTML += `<label><input type='radio' name='opsi' value='${i}' ${checked} onchange='jawaban[${current}] = ${i}; updateNavigasi();' /> ${x}</label>`;
+  });
+  updateNavigasi();
+}
+
+function updateNavigasi() {
+  const nav = document.getElementById('navigasiSoal');
+  nav.innerHTML = '';
+  soal.forEach((_, i) => {
+    const btn = document.createElement('button');
+    btn.textContent = i + 1;
+    if (i === current) btn.classList.add('active');
+    if (jawaban[i] !== null) btn.style.background = '#4caf50';
+    btn.onclick = () => { current = i; tampilSoal(); };
+    nav.appendChild(btn);
+  });
+}
+
+function prevSoal() {
+  if (current > 0) current--;
+  tampilSoal();
+}
+
+function nextSoal() {
+  if (current < soal.length - 1) current++;
+  tampilSoal();
+}
+
+function kumpulkan() {
+  if (!confirm('Yakin ingin mengumpulkan?')) return;
+  let benar = 0;
+  soal.forEach((s, i) => { if (jawaban[i] === s.kunci) benar++; });
+  document.querySelector('.question-box').style.display = 'none';
+  document.querySelector('.actions').style.display = 'none';
+  document.getElementById('result-box').style.display = 'block';
+  resultBox.textContent = `Skor: ${benar} dari ${soal.length}`;
+}
+
+function timerTick() {
+  if (--waktu <= 0) return kumpulkan();
+  const m = String(Math.floor(waktu / 60)).padStart(2, '0');
+  const s = String(waktu % 60).padStart(2, '0');
+  timer.textContent = `00:${m}:${s}`;
+}
+
+document.addEventListener('contextmenu', e => e.preventDefault());
+document.addEventListener('keydown', e => {
+  if (e.ctrlKey || e.key === 'F12') e.preventDefault();
+});
+</script>
+</body>
+</html>
