@@ -5,187 +5,222 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CBT Matematika</title>
   <style>
-    * { box-sizing: border-box; }
     body {
-      font-family: 'Segoe UI', sans-serif;
-      margin: 0; background: #eef1f5;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f0f2f5;
     }
     .container {
-      max-width: 900px;
+      max-width: 800px;
       margin: auto;
+      padding: 20px;
+    }
+    .hidden {
+      display: none;
+    }
+    .btn {
+      padding: 10px 20px;
+      background-color: #1a73e8;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin: 5px;
+    }
+    .btn-danger {
+      background-color: #e53935;
+    }
+    .question-box, .admin-box {
       background: white;
       padding: 20px;
       border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      margin-top: 20px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
     }
-    h2 { text-align: center; color: #1a237e; }
-    .question-nav {
-      display: flex;
-      overflow-x: auto;
-      margin: 10px 0;
-    }
-    .question-nav button {
-      padding: 6px 10px;
-      margin: 2px;
-      border: none;
-      background: #ccc;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    .question-nav button.active { background: #1a73e8; color: white; }
-    .question-box {
-      margin-top: 20px;
-    }
-    .question { font-size: 18px; margin-bottom: 10px; }
-    .options label {
-      display: block;
-      padding: 10px;
-      background: #f1f1f1;
-      margin-bottom: 5px;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    .options input { margin-right: 8px; }
-    .actions {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 20px;
-    }
-    .btn {
-      padding: 10px 15px;
-      border: none;
-      background: #1a73e8;
-      color: white;
-      border-radius: 4px;
-      font-size: 16px;
-      cursor: pointer;
-    }
-    .btn:disabled { background: #aaa; cursor: not-allowed; }
-    .timer {
-      text-align: center;
-      font-size: 18px;
-      font-weight: bold;
-      margin: 10px 0;
-    }
-    #result-box {
-      display: none;
-      font-size: 20px;
-      text-align: center;
-      margin-top: 30px;
-    }
-    .login-box {
-      max-width: 400px;
-      margin: 50px auto;
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    .login-box input {
+    input[type="text"], input[type="password"] {
       width: 100%;
       padding: 10px;
-      margin-bottom: 10px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 4px;
     }
-    .hidden { display: none; }
+    .question-nav button {
+      margin: 3px;
+      padding: 8px 12px;
+      border: none;
+      border-radius: 4px;
+      background-color: #ccc;
+      color: #000;
+    }
+    .question-nav button.answered {
+      background-color: #4caf50;
+      color: white;
+    }
+    .question-nav button.active {
+      background-color: #1a73e8;
+      color: white;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    th, td {
+      padding: 10px;
+      border: 1px solid #ccc;
+    }
   </style>
 </head>
 <body>
-<div class="login-box" id="login-box">
-  <h2>Login Peserta</h2>
-  <input type="text" id="nama" placeholder="Nama Lengkap">
-  <input type="text" id="nomor" placeholder="Nomor Ujian">
-  <button class="btn" onclick="mulaiUjian()">Mulai</button>
-</div>
-<div class="container hidden" id="ujian-box">
-  <div class="timer" id="timer">00:30:00</div>
-  <div class="question-nav" id="navigasiSoal"></div>
-  <div class="question-box">
-    <div class="question" id="pertanyaan"></div>
-    <div class="options" id="opsi"></div>
+<div class="container">
+  <!-- Login Panel -->
+  <div class="question-box" id="login-panel">
+    <h2>Login CBT</h2>
+    <input type="text" id="nama" placeholder="Nama Peserta">
+    <input type="text" id="nomor" placeholder="Nomor Ujian">
+    <button class="btn" onclick="mulaiUjian()">Mulai Ujian</button>
+    <hr>
+    <input type="password" id="admin-code" placeholder="Kode Akses Admin">
+    <button class="btn" onclick="bukaAdmin()">Login Admin</button>
   </div>
-  <div class="actions">
-    <button class="btn" onclick="prevSoal()">Sebelumnya</button>
-    <button class="btn" onclick="nextSoal()">Selanjutnya</button>
-    <button class="btn" onclick="kumpulkan()">Kumpulkan</button>
+
+  <!-- Ujian Panel -->
+  <div class="question-box hidden" id="ujian-panel">
+    <div id="timer" style="text-align:right;font-weight:bold;">00:30:00</div>
+    <div class="question-nav" id="navSoal"></div>
+    <div id="pertanyaan"></div>
+    <div id="opsi"></div>
+    <div>
+      <button class="btn" onclick="prevSoal()">Sebelumnya</button>
+      <button class="btn" onclick="nextSoal()">Selanjutnya</button>
+      <button class="btn" onclick="selesai()">Kumpulkan</button>
+    </div>
+    <div id="hasil" class="hidden"></div>
   </div>
-  <div id="result-box"></div>
+
+  <!-- Admin Dashboard -->
+  <div class="admin-box hidden" id="admin-panel">
+    <h3>Dashboard Admin</h3>
+    <h4>Tambah Soal</h4>
+    <input type="text" id="soal-baru" placeholder="Tulis pertanyaan">
+    <input type="text" id="pilihan-a" placeholder="Pilihan A">
+    <input type="text" id="pilihan-b" placeholder="Pilihan B">
+    <input type="text" id="pilihan-c" placeholder="Pilihan C">
+    <input type="text" id="pilihan-d" placeholder="Pilihan D">
+    <input type="text" id="jawaban-betul" placeholder="Kunci Jawaban (A/B/C/D)">
+    <button class="btn" onclick="tambahSoal()">Tambah Soal</button>
+
+    <h4>Riwayat Ujian Peserta</h4>
+    <table id="tabel-riwayat">
+      <thead>
+        <tr><th>Nama</th><th>Nomor</th><th>Skor</th><th>Aksi</th></tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
 </div>
 <script>
-const soal = [
-  { q: '5 + 7 = ?', a: ['10', '11', '12', '13'], kunci: 2 },
-  { q: '15 x 3 = ?', a: ['30', '35', '45', '50'], kunci: 2 },
-  { q: 'Akar dari 81 adalah?', a: ['8', '9', '10', '7'], kunci: 1 },
+const ADMIN_PASS = "admin123";
+let soal = JSON.parse(localStorage.getItem("soal-data")) || [
+  { q: "2 + 2 = ?", a: ["3", "4", "5", "6"], k: 1 },
 ];
-let jawaban = Array(soal.length).fill(null);
-let current = 0;
+let riwayat = JSON.parse(localStorage.getItem("riwayat")) || [];
+let jawaban = [];
+let index = 0;
 let waktu = 30 * 60;
+let peserta = {};
 
 function mulaiUjian() {
-  if (!nama.value || !nomor.value) return alert('Lengkapi data');
-  loginBox.style.display = 'none';
-  ujianBox.classList.remove('hidden');
+  const nama = document.getElementById('nama').value.trim();
+  const nomor = document.getElementById('nomor').value.trim();
+  if (!nama || !nomor) return alert("Lengkapi data peserta!");
+  peserta = { nama, nomor };
+  jawaban = Array(soal.length).fill(null);
+  document.getElementById('login-panel').classList.add('hidden');
+  document.getElementById('ujian-panel').classList.remove('hidden');
   tampilSoal();
-  updateNavigasi();
-  setInterval(timerTick, 1000);
-  window.onblur = () => alert('Jangan keluar dari layar ujian!');
+  setInterval(updateTimer, 1000);
+  window.onblur = () => alert("Jangan keluar dari ujian!");
 }
-
 function tampilSoal() {
-  const s = soal[current];
-  pertanyaan.textContent = `${current + 1}. ${s.q}`;
-  opsi.innerHTML = '';
-  s.a.forEach((x, i) => {
-    const checked = jawaban[current] === i ? 'checked' : '';
-    opsi.innerHTML += `<label><input type='radio' name='opsi' value='${i}' ${checked} onchange='jawaban[${current}] = ${i}; updateNavigasi();' /> ${x}</label>`;
+  const q = soal[index];
+  document.getElementById('pertanyaan').innerHTML = `<h4>${index + 1}. ${q.q}</h4>`;
+  let opsiHtml = '';
+  ['A', 'B', 'C', 'D'].forEach((l, i) => {
+    const checked = jawaban[index] === i ? 'checked' : '';
+    opsiHtml += `<label><input type='radio' name='opsi' value='${i}' ${checked} onchange='jawaban[${index}]=${i}; updateNav();'> ${l}. ${q.a[i]}</label><br>`;
   });
-  updateNavigasi();
+  document.getElementById('opsi').innerHTML = opsiHtml;
+  updateNav();
 }
-
-function updateNavigasi() {
-  const nav = document.getElementById('navigasiSoal');
+function updateNav() {
+  const nav = document.getElementById('navSoal');
   nav.innerHTML = '';
   soal.forEach((_, i) => {
     const btn = document.createElement('button');
     btn.textContent = i + 1;
-    if (i === current) btn.classList.add('active');
-    if (jawaban[i] !== null) btn.style.background = '#4caf50';
-    btn.onclick = () => { current = i; tampilSoal(); };
+    if (jawaban[i] !== null) btn.classList.add('answered');
+    if (i === index) btn.classList.add('active');
+    btn.onclick = () => { index = i; tampilSoal(); };
     nav.appendChild(btn);
   });
 }
-
-function prevSoal() {
-  if (current > 0) current--;
-  tampilSoal();
+function prevSoal() { if (index > 0) { index--; tampilSoal(); } }
+function nextSoal() { if (index < soal.length - 1) { index++; tampilSoal(); } }
+function selesai() {
+  if (!confirm("Kumpulkan ujian sekarang?")) return;
+  let skor = soal.filter((s, i) => s.k === jawaban[i]).length;
+  riwayat.push({ ...peserta, skor });
+  localStorage.setItem("riwayat", JSON.stringify(riwayat));
+  document.getElementById('hasil').innerHTML = `<h3>Skor Anda: ${skor}/${soal.length}</h3>`;
+  document.getElementById('hasil').classList.remove('hidden');
+  document.querySelector('#ujian-panel .question-nav').classList.add('hidden');
+  document.getElementById('pertanyaan').classList.add('hidden');
+  document.getElementById('opsi').classList.add('hidden');
 }
-
-function nextSoal() {
-  if (current < soal.length - 1) current++;
-  tampilSoal();
-}
-
-function kumpulkan() {
-  if (!confirm('Yakin ingin mengumpulkan?')) return;
-  let benar = 0;
-  soal.forEach((s, i) => { if (jawaban[i] === s.kunci) benar++; });
-  document.querySelector('.question-box').style.display = 'none';
-  document.querySelector('.actions').style.display = 'none';
-  document.getElementById('result-box').style.display = 'block';
-  resultBox.textContent = `Skor: ${benar} dari ${soal.length}`;
-}
-
-function timerTick() {
-  if (--waktu <= 0) return kumpulkan();
+function updateTimer() {
   const m = String(Math.floor(waktu / 60)).padStart(2, '0');
   const s = String(waktu % 60).padStart(2, '0');
-  timer.textContent = `00:${m}:${s}`;
+  document.getElementById('timer').textContent = `00:${m}:${s}`;
+  if (--waktu <= 0) selesai();
 }
-
-document.addEventListener('contextmenu', e => e.preventDefault());
-document.addEventListener('keydown', e => {
-  if (e.ctrlKey || e.key === 'F12') e.preventDefault();
-});
+function bukaAdmin() {
+  const code = document.getElementById("admin-code").value;
+  if (code !== ADMIN_PASS) return alert("Kode salah!");
+  document.getElementById('login-panel').classList.add('hidden');
+  document.getElementById('admin-panel').classList.remove('hidden');
+  renderRiwayat();
+}
+function tambahSoal() {
+  const q = document.getElementById('soal-baru').value;
+  const a = [
+    document.getElementById('pilihan-a').value,
+    document.getElementById('pilihan-b').value,
+    document.getElementById('pilihan-c').value,
+    document.getElementById('pilihan-d').value
+  ];
+  const k = {A:0,B:1,C:2,D:3}[document.getElementById('jawaban-betul').value.toUpperCase()];
+  if (!q || a.some(x => !x) || k == null) return alert("Lengkapi semua data!");
+  soal.push({ q, a, k });
+  localStorage.setItem("soal-data", JSON.stringify(soal));
+  alert("Soal ditambahkan!");
+}
+function renderRiwayat() {
+  const tbody = document.querySelector('#tabel-riwayat tbody');
+  tbody.innerHTML = '';
+  riwayat.forEach((r, i) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${r.nama}</td><td>${r.nomor}</td><td>${r.skor}</td><td><button class='btn btn-danger' onclick='hapusRiwayat(${i})'>Hapus</button></td>`;
+    tbody.appendChild(tr);
+  });
+}
+function hapusRiwayat(i) {
+  if (!confirm("Hapus riwayat ini?")) return;
+  riwayat.splice(i, 1);
+  localStorage.setItem("riwayat", JSON.stringify(riwayat));
+  renderRiwayat();
+}
 </script>
 </body>
 </html>
