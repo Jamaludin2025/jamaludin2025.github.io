@@ -219,15 +219,16 @@
     }
 
     #admin-log .log-entry button {
-      padding: 6px 10px;
-      font-size: 12px;
-      background: #ef4444;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: background-color 0.3s;
-    }
+  padding: 6px 8px;
+  font-size: 12px;
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  white-space: nowrap;
+}
 
     #admin-log .log-entry button:hover {
       background: #dc2626;
@@ -307,7 +308,7 @@
       AJ5394: "https://jamaludin2025.github.io/qr5.html",
       TES456: "halaman-rahasia.html",
     };
-    const adminKode = "Admin1507";
+    const adminKode = "Admin123";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBdt-2IQflUWNx3sdI1QHPMe1vAzsXAZcY",
@@ -463,7 +464,7 @@
             const statusColor = log.status === "Berhasil" ? "#16a34a" : log.status === "Proses" ? "#2563eb" : "#dc2626";
 
             logEl.innerHTML = `
-              <span><strong>${log.kodeAkses}</strong> - ${log.waktu} - <span style="color: ${statusColor}; font-weight: 600;">${log.status}</span></span>
+              <span><strong style="color: #16a34a;">${log.kodeAkses}</strong> - ${log.waktu} - <span style="color: ${statusColor}; font-weight: 600;">${log.status}</span></span>
               <button onclick="hapusLog('${key}')">Hapus</button>
             `;
             logContainer.appendChild(logEl);
@@ -478,7 +479,7 @@
     }
 
     async function hapusLog(key) {
-      if (confirm("Hapus log ini?")) {
+      if (confirm("Yakin ingin menghapus log ini?")) {
         try {
           await db.ref("logAktivitas/" + key).remove();
           tampilkanLog();
