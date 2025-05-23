@@ -20,6 +20,7 @@
     }
 
     .login-container {
+      animation: fadeIn 2s ease;
       background-color: #ffffff;
       padding: 40px 30px 30px 30px;
       border-radius: 10px;
@@ -29,6 +30,11 @@
       box-sizing: border-box;
       position: relative;
     }
+    
+    @keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 
     .login-container h2 {
       text-align: center;
@@ -207,27 +213,18 @@
     }
 
     #admin-log .log-entry {
-  background: #f9fafb;
-  padding: 10px;
-  margin-bottom: 8px;
-  border-radius: 8px;
-  border: 1px solid #e5e7eb;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 13px;
-  gap: 12px;
-  flex-wrap: wrap; /* agar tetap responsif di layar kecil */
-}
-
-#admin-log .log-entry span {
-  flex: 1;
-  min-width: 0;
-  word-break: break-word;
-}
+      background: #f9fafb;
+      padding: 10px;
+      margin-bottom: 8px;
+      border-radius: 8px;
+      border: 1px solid #e5e7eb;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+    }
 
     #admin-log .log-entry button {
-  display: inline-block;
   padding: 6px 8px;
   font-size: 12px;
   background: #ef4444;
@@ -237,6 +234,7 @@
   cursor: pointer;
   transition: background-color 0.3s;
   white-space: nowrap;
+  width: auto;
 }
 
     #admin-log .log-entry button:hover {
@@ -317,7 +315,7 @@
       AJ5394: "https://jamaludin2025.github.io/qr5.html",
       TES456: "halaman-rahasia.html",
     };
-    const adminKode = "Admin";
+    const adminKode = "Admin123";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBdt-2IQflUWNx3sdI1QHPMe1vAzsXAZcY",
@@ -367,17 +365,22 @@
     }
 
     async function prosesLogin() {
-      const kode = document.getElementById("kodeAkses").value.trim().toUpperCase();
-      const pesanError = document.getElementById("error-message");
-      const pesanSukses = document.getElementById("success-message");
+  const kode = document.getElementById("kodeAkses").value.trim().toUpperCase();
+  const pesanError = document.getElementById("error-message");
+  const pesanSukses = document.getElementById("success-message");
 
-      pesanError.textContent = "";
-      pesanSukses.textContent = "Selamat, Kode Akses Diterima";
+  // Bersihkan pesan dulu
+  pesanError.textContent = "";
+  pesanSukses.textContent = "";
 
-      if (!aksesMap[kode]) {
-        pesanError.textContent = "Maaf, Kode Akses Ditolak.";
-        return;
-      }
+  if (!aksesMap[kode]) {
+    pesanError.textContent = "Maaf, Kode Akses Ditolak.";
+    return;
+  }
+
+  // Kalau kode valid, tampilkan pesan sukses
+  pesanSukses.textContent = "Selamat, Kode Akses Diterima";
+}
 
       // Buat log awal status "Proses"
       const now = new Date();
@@ -473,9 +476,9 @@
             const statusColor = log.status === "Berhasil" ? "#16a34a" : log.status === "Proses" ? "#2563eb" : "#dc2626";
 
             logEl.innerHTML = `
-  <span><strong style="color: #16a34a;">${log.kodeAkses}</strong> - ${log.waktu} - <span style="color: ${statusColor}; font-weight: 600;">${log.status}</span></span>
-  <button onclick="hapusLog('${key}')" style="flex-shrink: 0;">Hapus</button>
-`;
+              <span><strong style="color: #2563eb;">${log.kodeAkses}</strong> - ${log.waktu} - <span style="color: ${statusColor}; font-weight: 600;">${log.status}</span></span>
+              <button onclick="hapusLog('${key}')">Hapus</button>
+            `;
             logContainer.appendChild(logEl);
           });
         } else {
