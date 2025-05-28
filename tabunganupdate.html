@@ -26,6 +26,7 @@
       font-weight: 600;
       color: #111827;
       margin-bottom: 12px;
+      text-align: center;
     }
     /* Cards */
     .card {
@@ -219,7 +220,7 @@
 <body>
 <div aria-label="Beranda Tabungan" class="tab-content active" id="beranda" role="main">
 <div aria-live="polite" class="card">
-<h3>Tambah Tabungan</h3>
+<h3>Projek Tabungan</h3>
 </div>
 <div aria-atomic="true" aria-live="polite" class="card" id="progressSection" style="display:none">
 <h3>Progres Tabungan: <span id="displayTarget"></span></h3>
@@ -438,9 +439,13 @@ function handlePopupSubmit() {
         renderHistory();
       }
 
-      if (savedRekap) {
-        document.getElementById('popupForm').style.display = 'none';
-        document.getElementById('rekapList').innerHTML = savedRekap;
+      // Akhir fungsi loadData()
+if (savedRekap) {
+  document.getElementById('rekapList').innerHTML = savedRekap;
+}
+
+// Tutup popup secara paksa saat load
+document.getElementById('popupForm').style.display = 'none';
       }
     }
 
