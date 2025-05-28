@@ -219,7 +219,7 @@
 <body>
 <div aria-label="Beranda Tabungan" class="tab-content active" id="beranda" role="main">
 <div aria-live="polite" class="card">
-<h3>Tambah Tabungan</h3>
+<h3>Tabungan AJ Project</h3>
 
 </div>
 <div aria-atomic="true" aria-live="polite" class="card" id="progressSection" style="display:none">
@@ -252,7 +252,7 @@
 <script>
 function openPopup() {
   if (!document.getElementById('beranda').classList.contains('active')) return;
-  document.getElementById('popupForm').style.display = 'flex';
+  document.getElementById('popupForm').style.display = 'none';
   if (target) {
     document.getElementById('popupTargetSection').style.display = 'none';
   } else {
@@ -440,7 +440,11 @@ function handlePopupSubmit() {
       }
 
       if (savedRekap) {
-        document.getElementById('rekapList').innerHTML = savedRekap;
+  document.getElementById('rekapList').innerHTML = savedRekap;
+}
+
+// Pastikan popup disembunyikan saat halaman dimuat
+document.getElementById('popupForm').style.display = 'none';
       }
     }
 
