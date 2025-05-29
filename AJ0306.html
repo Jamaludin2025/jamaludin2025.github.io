@@ -144,30 +144,38 @@
     lastLoginEl.textContent = formatDate(now);
 
     function cetakPDF() {
-  const element = document.getElementById('konten');
-  const tombolCetak = document.getElementById('tombolCetak');
-  const tombolBalas = document.getElementById('tombolBalas');
-  const tombolLoginUlang = document.getElementById('tombolLoginUlang');
+    const element = document.getElementById('konten');
+    const tombolCetak = document.getElementById('tombolCetak');
+    const tombolBalas = document.getElementById('tombolBalas');
+    const tombolLoginUlang = document.getElementById('tombolLoginUlang');
 
-  tombolCetak.style.display = 'none';
-  tombolBalas.style.display = 'none';
-  tombolLoginUlang.style.display = 'none';
+    // Sembunyikan tombol terlebih dahulu
+    tombolCetak.style.display = 'none';
+    tombolBalas.style.display = 'none';
+    tombolLoginUlang.style.display = 'none';
 
-  const opt = {
-    margin: [0.5, 0.5, 0.5, 0.5],
-    filename: 'Ucapan dari Asep Jamaludin.pdf',
-    image: { type: 'jpeg', quality: 1 },
-    html2canvas: { scale: 3, useCORS: true },
-    jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
-  };
+    // Beri sedikit jeda agar perubahan DOM dirender sempurna
+    setTimeout(() => {
+      const opt = {
+        margin: [0.5, 0.5, 0.5, 0.5], // margin dalam inci
+        filename: 'Ucapan dari Asep Jamaludin.pdf',
+        image: { type: 'jpeg', quality: 1 },
+        html2canvas: {
+          scale: 2, // cukup tinggi untuk kualitas bagus tanpa bikin error
+          useCORS: true // penting kalau pakai gambar/icon eksternal
+        },
+        jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+      };
 
-  html2pdf().set(opt).from(element).save().then(() => {
-    // Munculkan kembali tombol Balas dan Log Out
-    tombolBalas.style.display = 'inline-block';
-    tombolLoginUlang.style.display = 'inline-block';
-  });
-}
-
+      // Buat PDF dari elemen
+      html2pdf().set(opt).from(element).save().then(() => {
+        // Tampilkan kembali tombol setelah selesai
+        tombolBalas.style.display = 'inline-block';
+        tombolLoginUlang.style.display = 'inline-block';
+      });
+    }, 500); // jeda 500ms agar DOM siap sebelum diproses
+  }
+  
     function balasPesan() {
       const tombolBalas = document.getElementById('tombolBalas');
       const tombolCetak = document.getElementById('tombolCetak');
