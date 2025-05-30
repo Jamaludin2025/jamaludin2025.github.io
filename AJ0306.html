@@ -6,19 +6,26 @@
   <title>Ucapan Pernikahan</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
-
+  
+  <style>
+    @media (max-width: 600px) {
+      #konten {
+        transform: scale(0.92);
+        transform-origin: top center;
+      }
+    }
   </style>
 </head>
+<body class="bg-gradient-to-br from-blue-100 to-purple-100">
+<div id="konten" 
+     class="fade-in bg-white p-6 rounded-2xl shadow-lg w-full max-w-[900px] text-gray-800 ring-1 ring-gray-200 flex flex-col md:flex-row gap-1 mt-8">
 
-<body class="bg-gradient-to-br from-blue-100 to-purple-100 min-h-screen p-6 flex justify-center items-center">
-  <div id="konten" class="fade-in bg-white p-8 rounded-2xl shadow-lg w-full max-w-full md:max-w-[794px] text-gray-800 ring-1 ring-gray-200">
-
-    <!-- Header -->
+  <!-- Header -->
     <div class="mb-3 border-b pb-3 flex items-center gap-4">
       <div class="flex-1">
         <p class="font-bold">Log in sebagai <span id="kodeAksesDisplay" class="text-blue-700">AJ0306</span></p>
         <p class="text-sm text-gray-500">Pada <span id="lastLogin">--</span></p>
-         <p class="text-sm text-gray-600 mt-">
+         <p class="text-sm font-bold text-gray-700 mt-">
       <a href="https://jamaludin2025.github.io/halamanlogin.html" target="_blank" class="text-blue-700 font-bold hover:underline">
        Klik di sini
       </a>
@@ -57,25 +64,24 @@
     </div>
 
     <!-- Ucapan -->
-    <div class="mb-3 bg-blue-50 p-4 rounded-md">
-      <p class="mb-3 font-semibold text-left text-blue-800">Selamat atas pernikahannya.</p>
-      <p class="text-sm leading-relaxed text-justify text-gray-700">
-        Dengan pernikahan ini, maka sempurnalah kehidupan kalian. Warnailah pernikahan dengan saling menghormati,
-        menyayangi, dan saling menolong dalam ketaatan satu sama lain. Semoga Alloh selalu melimpahkan petunjuk,
-        rahmat, dan berkah kehidupan, serta rezeki yang halal dan keturunan yang sholih dan sholihah. Aammiin.
-      </p>
-    </div>
+    <div class="flex flex-col flex-1 gap-1 max-h-[350px] overflow-y-auto p-4 bg-blue-50 rounded-md">
+    <p class="font-semibold text-blue-800">Selamat atas pernikahannya.</p>
+    <p class="text-sm leading-relaxed text-justify text-gray-800">
+      Dengan pernikahan ini, maka sempurnalah kehidupan kalian. Warnailah pernikahan dengan saling menghormati,
+      menyayangi, dan saling menolong dalam ketaatan satu sama lain. Semoga Alloh selalu melimpahkan petunjuk,
+      rahmat, dan berkah kehidupan, serta rezeki yang halal dan keturunan yang sholih dan sholihah. Aammiin.
+    </p>
 
-    <!-- Penutup -->
-    <div class="text-right mb-4">
-      <p class="mb-1 italic text-gray-600">Salam hangat,</p>
-      <a href="https://wa.me/6289677484948" target="_blank" class="text-black-700 font-bold hover:underline">
-       Asep Jamaludin
+    <div class="mt-auto text-right">
+      <p class="mb-1 italic text-gray-700">Salam hangat,</p>
+      <a href="https://wa.me/6289677484948" target="_blank" class="font-bold text-blue-800 hover:underline">
+        Asep Jamaludin
+        </div>
+        </div>
       </a>
-      <hr style="border: none; border-top: 1px solid #e0e0e0; margin: 16px 0;">
-    </div>
-    
-    <!-- Catatan -->
+      <hr class="mt-2 border-gray-300" />
+
+  <!-- Catatan -->
     <div class="mb-4 italic">
   <p class="text-gray-400 text-sm font-semibold">Catatan:</p>
   <span class="text-gray-400 text-sm font-semi">
@@ -87,33 +93,31 @@
   </span>
 </div>
 
-    <!-- Tombol Aksi -->
-    <div class="text-center print:hidden flex justify-center gap-4">
-      <button
-        id="tombolBalas"
-        onclick="balasPesan()"
-        class="bg-gradient-to-r from-green-600 to-green-500 hover:from-green-700 hover:to-green-600 transition transform hover:scale-105 text-white font-semibold py-2 px-6 rounded-xl shadow-lg"
-      >
-        Balas
-      </button>
-      <button
-        id="tombolCetak"
-        onclick="cetakPDF()"
-        class="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 transition transform hover:scale-105 text-white font-semibold py-2 px-6 rounded-xl shadow-lg"
-      >
-        Unduh
-      </button>
-      <button
-        id="tombolLoginUlang"
-        onclick="loginUlang()"
-        class="bg-gradient-to-r from-red-700 to-red-500 hover:from-red-800 hover:to-red-600 transition transform hover:scale-105 text-white font-semibold py-2 px-6 rounded-xl shadow-lg"
-        style="display: none;"
-      >
-        Log Out
-      </button>
-    </div>
-
-  </div>
+<!-- Tombol aksi di bawah -->
+<div class="text-center print:hidden flex justify-center gap-4 mt-6 max-w-[900px] mx-auto">
+  <button
+    id="tombolBalas"
+    onclick="balasPesan()"
+    class="bg-gradient-to-r from-green-600 to-green-500 hover:from-green-700 hover:to-green-600 transition transform hover:scale-105 text-white font-semibold py-2 px-6 rounded-xl shadow-lg"
+  >
+    Balas
+  </button>
+  <button
+    id="tombolCetak"
+    onclick="cetakPDF()"
+    class="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 transition transform hover:scale-105 text-white font-semibold py-2 px-6 rounded-xl shadow-lg"
+  >
+    Unduh
+  </button>
+  <button
+    id="tombolLoginUlang"
+    onclick="loginUlang()"
+    class="bg-gradient-to-r from-red-700 to-red-500 hover:from-red-800 hover:to-red-600 transition transform hover:scale-105 text-white font-semibold py-2 px-6 rounded-xl shadow-lg"
+    style="display: none;"
+  >
+    Log Out
+  </button>
+</div>
 
   <script>
     function formatDate(date) {
@@ -135,29 +139,28 @@
     lastLoginEl.textContent = formatDate(now);
 
     function cetakPDF() {
-  const element = document.getElementById('konten');
-  const tombolCetak = document.getElementById('tombolCetak');
-  const tombolBalas = document.getElementById('tombolBalas');
-  const tombolLoginUlang = document.getElementById('tombolLoginUlang');
+      const element = document.getElementById('konten');
+      const tombolCetak = document.getElementById('tombolCetak');
+      const tombolBalas = document.getElementById('tombolBalas');
+      const tombolLoginUlang = document.getElementById('tombolLoginUlang');
 
-  tombolCetak.style.display = 'none';
-  tombolBalas.style.display = 'none';
-  tombolLoginUlang.style.display = 'none';
+      tombolCetak.style.display = 'none';
+      tombolBalas.style.display = 'none';
+      tombolLoginUlang.style.display = 'none';
 
-  const opt = {
-    margin: [0.5, 0.5, 0.5, 0.5],
-    filename: 'Ucapan dari Asep Jamaludin.pdf',
-    image: { type: 'jpeg', quality: 1 },
-    html2canvas: { scale: 3, useCORS: true },
-    jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
-  };
+      const opt = {
+        margin: [0.5, 0.5, 0.5, 0.5],
+        filename: 'AJ0306 - AJ Project.pdf',
+        image: { type: 'jpeg', quality: 1 },
+        html2canvas: { scale: 3, useCORS: true },
+        jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+      };
 
-  html2pdf().set(opt).from(element).save().then(() => {
-    // Munculkan kembali tombol Balas dan Log Out
-    tombolBalas.style.display = 'inline-block';
-    tombolLoginUlang.style.display = 'inline-block';
-  });
-}
+      html2pdf().set(opt).from(element).save().then(() => {
+        tombolBalas.style.display = 'inline-block';
+        tombolLoginUlang.style.display = 'inline-block';
+      });
+    }
 
     function balasPesan() {
       const tombolBalas = document.getElementById('tombolBalas');
@@ -176,60 +179,59 @@
     }
 
     function loginUlang() {
-      const urlLoginUlang = 'halamanlogin.html'; // Ganti sesuai lokasi file login kamu
+      const urlLoginUlang = 'halamanlogin.html';
       window.location.href = urlLoginUlang;
     }
   </script>
 
   <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
-<script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyBdt-2IQflUWNx3sdI1QHPMe1vAzsXAZcY",
-    authDomain: "ajproject-log.firebaseapp.com",
-    databaseURL: "https://ajproject-log-default-rtdb.firebaseio.com",
-    projectId: "ajproject-log",
-    storageBucket: "ajproject-log.appspot.com",
-    messagingSenderId: "113688767697",
-    appId: "1:113688767697:web:ca9ad012667acb7474a9f0",
-    measurementId: "G-6PLCT8D53G",
-  };
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.database();
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBdt-2IQflUWNx3sdI1QHPMe1vAzsXAZcY",
+      authDomain: "ajproject-log.firebaseapp.com",
+      databaseURL: "https://ajproject-log-default-rtdb.firebaseio.com",
+      projectId: "ajproject-log",
+      storageBucket: "ajproject-log.appspot.com",
+      messagingSenderId: "113688767697",
+      appId: "1:113688767697:web:ca9ad012667acb7474a9f0",
+      measurementId: "G-6PLCT8D53G",
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
 
-  async function updateLogStatus(kode) {
-    if (!kode) return;
-    try {
-      const snapshot = await db.ref("logAktivitas").orderByChild("kodeAkses").equalTo(kode).once("value");
-      if (snapshot.exists()) {
-        const logs = snapshot.val();
-        let lastKey = null;
-        let lastTime = 0;
-        for (const key in logs) {
-          if (logs[key].status === "Proses") {
-            const logDate = new Date(logs[key].waktu.split(" ")[0].split("-").reverse().join("-") + " " + logs[key].waktu.split(" ")[1]);
-            if (logDate.getTime() > lastTime) {
-              lastTime = logDate.getTime();
-              lastKey = key;
+    async function updateLogStatus(kode) {
+      if (!kode) return;
+      try {
+        const snapshot = await db.ref("logAktivitas").orderByChild("kodeAkses").equalTo(kode).once("value");
+        if (snapshot.exists()) {
+          const logs = snapshot.val();
+          let lastKey = null;
+          let lastTime = 0;
+          for (const key in logs) {
+            if (logs[key].status === "Proses") {
+              const logDate = new Date(logs[key].waktu.split(" ")[0].split("-").reverse().join("-") + " " + logs[key].waktu.split(" ")[1]);
+              if (logDate.getTime() > lastTime) {
+                lastTime = logDate.getTime();
+                lastKey = key;
+              }
             }
           }
+          if (lastKey) {
+            await db.ref("logAktivitas/" + lastKey).update({ status: "Berhasil" });
+          }
         }
-        if (lastKey) {
-          await db.ref("logAktivitas/" + lastKey).update({ status: "Berhasil" });
-        }
+      } catch (error) {
+        console.error("Gagal update status log:", error);
       }
-    } catch (error) {
-      console.error("Gagal update status log:", error);
     }
-  }
 
-  // Ambil kode dari URL
-  const params = new URLSearchParams(window.location.search);
-  const kode = params.get("kode");
-  if (kode) {
-    updateLogStatus(kode.toUpperCase());
-  }
-</script>
+    const params = new URLSearchParams(window.location.search);
+    const kode = params.get("kode");
+    if (kode) {
+      updateLogStatus(kode.toUpperCase());
+    }
+  </script>
 </body>
 </html>
