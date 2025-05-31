@@ -204,80 +204,125 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 
   <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyBdt-2IQflUWNx3sdI1QHPMe1vAzsXAZcY",
-      authDomain: "ajproject-log.firebaseapp.com",
-      databaseURL: "https://ajproject-log-default-rtdb.firebaseio.com",
-      projectId: "ajproject-log",
-      storageBucket: "ajproject-log.appspot.com",
-      messagingSenderId: "113688767697",
-      appId: "1:113688767697:web:403ca2eb29084bf774a9f0",
-      measurementId: "G-FXFWFFQX58"
-    };
+  const firebaseConfig = {
+    apiKey: "AIzaSyBdt-2IQflUWNx3sdI1QHPMe1vAzsXAZcY",
+    authDomain: "ajproject-log.firebaseapp.com",
+    databaseURL: "https://ajproject-log-default-rtdb.firebaseio.com",
+    projectId: "ajproject-log",
+    storageBucket: "ajproject-log.firebasestorage.app",
+    messagingSenderId: "113688767697",
+    appId: "1:113688767697:web:403ca2eb29084bf774a9f0",
+    measurementId: "G-FXFWFFQX58"
+  };
 
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-    const pollingRef = db.ref('polling');
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+  const pollingRef = db.ref('polling');
 
-    const btnContinue = document.getElementById('btn-continue');
-    const btnStop = document.getElementById('btn-stop');
-    const barContinue = document.getElementById('bar-continue');
-    const barStop = document.getElementById('bar-stop');
-    const followupSection = document.getElementById('followup-buttons');
-    const linkFeedback = document.getElementById('link-feedback');
+  const btnContinue = document.getElementById('btn-continue');
+  const btnStop = document.getElementById('btn-stop');
+  const barContinue = document.getElementById('bar-continue');
+  const barStop = document.getElementById('bar-stop');
 
-    function updatePollUI(continueVotes, stopVotes) {
-      const total = continueVotes + stopVotes;
-      const continuePercent = total === 0 ? 0 : (continueVotes / total) * 100;
-      const stopPercent = total === 0 ? 0 : (stopVotes / total) * 100;
+  // Elemen tambahan
+  const feedbackSection = document.querySelector('.feedback-section');
+  const extraBtnContainer = document.createElement('div');
+  const changeVoteText = document.createElement('p');
+  const changeVoteBtn = document.createElement('button');
+  const sendFeedbackBtn = document.createElement('a');
 
-      barContinue.style.width = continuePercent + '%';
-      barContinue.textContent = continueVotes;
+  // Gaya tombol tambahan
+  changeVoteBtn.textContent = "Ubah Pilihan";
+  changeVoteBtn.style.padding = "5px 10px";
+  changeVoteBtn.style.fontSize = "0.8rem";
+  changeVoteBtn.style.marginTop = "5px";
+  changeVoteBtn.style.borderRadius = "6px";
+  changeVoteBtn.style.border = "none";
+  changeVoteBtn.style.cursor = "pointer";
+  changeVoteBtn.style.backgroundColor = "#e5e7eb";
+  changeVoteBtn.style.color = "#1d4ed8";
+  changeVoteBtn.style.fontWeight = "bold";
 
-      barStop.style.width = stopPercent + '%';
-      barStop.textContent = stopVotes;
+  changeVoteText.textContent = "Ingin mengubah pilihan?";
+  changeVoteText.style.fontSize = "0.9rem";
+  changeVoteText.style.color = "#555";
+  changeVoteText.style.marginTop = "15px";
+  changeVoteText.style.marginBottom = "5px";
+
+  sendFeedbackBtn.className = "btn";
+  sendFeedbackBtn.style.marginTop = "10px";
+  sendFeedbackBtn.target = "_blank";
+
+  extraBtnContainer.appendChild(changeVoteText);
+  extraBtnContainer.appendChild(changeVoteBtn);
+  extraBtnContainer.appendChild(sendFeedbackBtn);
+
+  // Update UI
+  function updatePollUI(continueVotes, stopVotes) {
+    const total = continueVotes + stopVotes;
+    const continuePercent = total === 0 ? 0 : (continueVotes / total) * 100;
+    const stopPercent = total === 0 ? 0 : (stopVotes / total) * 100;
+
+    barContinue.style.width = continuePercent + '%';
+    barContinue.textContent = continueVotes;
+
+    barStop.style.width = stopPercent + '%';
+    barStop.textContent = stopVotes;
+  }
+
+  pollingRef.on('value', (snapshot) => {
+    const data = snapshot.val() || { continue: 0, stop: 0 };
+    updatePollUI(data.continue || 0, data.stop || 0);
+  });
+
+  function vote(option) {
+    const optionRef = pollingRef.child(option);
+    optionRef.transaction(current => (current || 0) + 1);
+    localStorage.setItem('aj_vote', option);
+    showExtraUI(option);
+  }
+
+  function removeVote(option) {
+    const optionRef = pollingRef.child(option);
+    optionRef.transaction(current => (current || 0) - 1);
+    localStorage.removeItem('aj_vote');
+    extraBtnContainer.remove();
+  }
+
+  function showExtraUI(option) {
+    if (option === 'continue') {
+      sendFeedbackBtn.textContent = "Kirim Masukkan";
+      sendFeedbackBtn.href = "https://qr.me-qr.com/LPMwqN1d"; // ganti URL
+      sendFeedbackBtn.classList.add("continue");
+    } else {
+      sendFeedbackBtn.textContent = "Kirim Alasan";
+      sendFeedbackBtn.href = "https://qr.me-qr.com/zBAHE2O9"; // ganti URL
+      sendFeedbackBtn.classList.add("stop");
     }
 
-    pollingRef.on('value', (snapshot) => {
-      const data = snapshot.val() || { continue: 0, stop: 0 };
-      updatePollUI(data.continue || 0, data.stop || 0);
-    });
+    feedbackSection.appendChild(extraBtnContainer);
+  }
 
-    function vote(option) {
-      const optionRef = pollingRef.child(option);
-      optionRef.transaction(current => (current || 0) + 1);
+  btnContinue.addEventListener('click', () => {
+    if (!localStorage.getItem('aj_vote')) vote('continue');
+  });
+
+  btnStop.addEventListener('click', () => {
+    if (!localStorage.getItem('aj_vote')) vote('stop');
+  });
+
+  changeVoteBtn.addEventListener('click', () => {
+    const previous = localStorage.getItem('aj_vote');
+    if (previous) {
+      removeVote(previous);
     }
+  });
 
-    function showFollowupButton(type) {
-      followupSection.style.display = 'block';
-      if (type === 'continue') {
-        linkFeedback.textContent = 'Kirim Masukkan';
-        linkFeedback.href = 'https://example.com/form-masukkan'; // Ganti URL
-      } else if (type === 'stop') {
-        linkFeedback.textContent = 'Kirim Alasan';
-        linkFeedback.href = 'https://example.com/form-keberatan'; // Ganti URL
-      }
-    }
-
-    btnContinue.addEventListener('click', () => {
-      if (localStorage.getItem('voted')) {
-        alert("Terima kasih, Anda sudah memberikan suara.");
-        return;
-      }
-      vote('continue');
-      localStorage.setItem('voted', 'true');
-      showFollowupButton('continue');
-    });
-
-    btnStop.addEventListener('click', () => {
-      if (localStorage.getItem('voted')) {
-        alert("Terima kasih, Anda sudah memberikan suara.");
-        return;
-      }
-      vote('stop');
-      localStorage.setItem('voted', 'true');
-      showFollowupButton('stop');
-    });
-  </script>
+  // Tampilkan tombol jika sudah pernah vote sebelumnya
+  window.addEventListener('DOMContentLoaded', () => {
+    const savedVote = localStorage.getItem('aj_vote');
+    if (savedVote) showExtraUI(savedVote);
+  });
+</script>
 </body>
 </html>
