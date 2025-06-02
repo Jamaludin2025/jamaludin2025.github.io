@@ -13,7 +13,7 @@
       display: flex;
       justify-content: center;
       align-items: flex-start;
-      padding: 20px 20px;
+      padding: 20px;
       color: #333;
     }
 
@@ -23,11 +23,11 @@
       padding: 40px 50px;
       border-radius: 12px;
       box-shadow: 0 15px 30px rgba(0, 0, 0, 0.25);
-      line-height: 1.2;
+      line-height: 1.6;
       color: #222;
     }
 
-    .container h1 {
+    h1 {
       font-weight: 700;
       font-size: 2.2rem;
       margin-bottom: 10px;
@@ -35,19 +35,19 @@
       text-align: center;
     }
 
-    .container p {
+    p {
       font-size: 1.1rem;
       margin-bottom: 10px;
       text-align: justify;
       text-indent: 1.5em;
     }
 
-    .container p strong {
+    p strong {
       color: #1d4ed8;
     }
 
     .feedback-section {
-      margin-top: 20px;
+      margin-top: 30px;
       padding-top: 15px;
       border-top: 1px solid #ddd;
       text-align: center;
@@ -56,93 +56,25 @@
     .feedback-title {
       font-size: 1.2rem;
       font-weight: bold;
-      margin-bottom: 10px;
+      margin-bottom: 15px;
       color: #1d4ed8;
-    }
-
-    .feedback-buttons {
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-      flex-wrap: wrap;
-      margin-bottom: 20px;
     }
 
     .btn {
       cursor: pointer;
-      display: inline-block;
-      padding: 10px 20px;
+      padding: 7px 14px;
       font-size: 1rem;
       font-weight: bold;
       border-radius: 8px;
       color: white;
+      background-color: #16a34a;
       border: none;
       transition: background-color 0.3s ease, transform 0.2s ease;
       box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
     }
 
-    .btn.continue {
+    .btn:hover {
       background-color: #1d4ed8;
-    }
-
-    .btn.continue:hover {
-      background-color: #16a34a;
-      transform: scale(1.05);
-    }
-
-    .btn.stop {
-      background-color: #1d4ed8;
-    }
-
-    .btn.stop:hover {
-      background-color: #ef4444;
-      transform: scale(1.05);
-    }
-
-    .poll-bar-container {
-      margin: 10px auto;
-      max-width: 400px;
-      text-align: left;
-    }
-
-    .poll-bar-label {
-      font-weight: 600;
-      margin-bottom: 5px;
-      color: #1d4ed8;
-    }
-
-    .poll-bar {
-      background-color: #ddd;
-      border-radius: 10px;
-      overflow: hidden;
-      height: 25px;
-      margin-bottom: 15px;
-    }
-
-    .poll-bar-fill {
-      height: 100%;
-      text-align: right;
-      padding-right: 10px;
-      color: white;
-      font-weight: 700;
-      line-height: 25px;
-      border-radius: 10px;
-    }
-
-    .poll-bar-fill.continue {
-      background-color: #16a34a;
-    }
-
-    .poll-bar-fill.stop {
-      background-color: #ef4444;
-    }
-
-    #followup-buttons .btn {
-      background-color: #1d4ed8;
-    }
-
-    #followup-buttons .btn:hover {
-      background-color: #2563eb;
       transform: scale(1.05);
     }
 
@@ -151,18 +83,23 @@
         padding: 30px 25px;
         max-width: 90%;
       }
-      .container h1 {
+
+      h1 {
         font-size: 1.2rem;
       }
-      .container p {
+
+      p {
         font-size: 0.7rem;
       }
+
       .feedback-title {
-        font-size: 0.9rem;
-      }
-      .btn {
-        padding: 6px 12px;
         font-size: 0.8rem;
+      }
+
+      .btn {
+        font-size: 0.8rem;
+        padding: 6px 12px;
+        text-decoration: none;
       }
     }
   </style>
@@ -170,159 +107,15 @@
 <body>
   <div class="container">
     <h1>Latar Belakang <br>Pembuatan AJ Project</h1>
-    <p>Memasuki usia saya yang ke-20 tahun, saya mulai sering menerima undangan pernikahan dari kerabat maupun sahabat. Dari pengalaman tersebut, muncul sebuah ide dan inovasi untuk membuat sebuah proyek yang saya beri nama <strong>AJ Project</strong>. Proyek ini dirancang sebagai sistem pencatatan dan dokumentasi kehadiran saya di acara pernikahan, yang memuat informasi seperti nama pasangan pengantin, tanggal dan alamat acara, serta bentuk bingkisan yang saya berikan baik itu berupa barang maupun uang.</p>
+    <p>Memasuki usia saya yang ke-20 tahun, saya mulai sering menerima undangan pernikahan dari kerabat maupun sahabat. Dari pengalaman tersebut, muncul sebuah ide dan inovasi untuk membuat sebuah proyek yang saya beri nama <strong>AJ Project</strong>. Proyek ini dirancang sebagai sistem pencatatan dan dokumentasi kehadiran saya di acara pernikahan, yang memuat informasi seperti nama pasangan pengantin, tanggal dan alamat acara, serta bentuk bingkisan yang saya berikan baik itu berupa uang maupun barang.</p>
     <p>Tujuan dari AJ Project ini adalah untuk memastikan bahwa pihak yang mengundang mengetahui kehadiran dan partisipasi saya dalam bentuk bingkisan ataupun uang, serta sebagai arsip pribadi dan cadangan untuk mengantisipasi permasalahan, seperti bingkisan yang hilang, tertukar, atau bingkisan yang tidak disertai dengan identitas pemberi.</p>
     <p>Sebelumnya saya juga ingin menyampaikan permohonan maaf kepada seluruh kerabat dan sahabat apabila saya belum sempat meminta izin secara langsung sebelum membuat proyek ini. Maka dari itu, apabila ada pihak yang merasa keberatan terkait pembuatan AJ Project ini atau punya saran masukkan untuk proyek ini, saya sangat terbuka untuk menerima saran dan siap berdiskusi demi kebaikan bersama.</p>
 
     <div class="feedback-section">
       <h2 class="feedback-title">Apa pendapat Anda tentang proyek ini?</h2>
       <div class="feedback-buttons">
-        <button id="btn-continue" class="btn continue">Lanjutkan</button>
-        <button id="btn-stop" class="btn stop">Hentikan</button>
-      </div>
-
-      <div class="poll-bar-container">
-        <div class="poll-bar-label"></div>
-        <div class="poll-bar">
-          <div id="bar-continue" class="poll-bar-fill continue" style="width: 0%">0</div>
-        </div>
-
-        <div class="poll-bar-label"></div>
-        <div class="poll-bar">
-          <div id="bar-stop" class="poll-bar-fill stop" style="width: 0%">0</div>
-        </div>
-      </div>
-
-      <div id="followup-buttons" style="display: none; margin-top: 15px;">
-        <a id="link-feedback" class="btn" href="#" target="_blank">Kirim</a>
-      </div>
+        <a href="https://example.com/lanjut" class="btn continue">Tulis Pendapat</a>
     </div>
   </div>
-
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
-
-  <script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyBdt-2IQflUWNx3sdI1QHPMe1vAzsXAZcY",
-    authDomain: "ajproject-log.firebaseapp.com",
-    databaseURL: "https://ajproject-log-default-rtdb.firebaseio.com",
-    projectId: "ajproject-log",
-    storageBucket: "ajproject-log.firebasestorage.app",
-    messagingSenderId: "113688767697",
-    appId: "1:113688767697:web:403ca2eb29084bf774a9f0",
-    measurementId: "G-FXFWFFQX58"
-  };
-
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.database();
-  const pollingRef = db.ref('polling');
-
-  const btnContinue = document.getElementById('btn-continue');
-  const btnStop = document.getElementById('btn-stop');
-  const barContinue = document.getElementById('bar-continue');
-  const barStop = document.getElementById('bar-stop');
-
-  // Elemen tambahan
-  const feedbackSection = document.querySelector('.feedback-section');
-  const extraBtnContainer = document.createElement('div');
-  const changeVoteText = document.createElement('p');
-  const changeVoteBtn = document.createElement('button');
-  const sendFeedbackBtn = document.createElement('a');
-
-  // Gaya tombol tambahan
-  changeVoteBtn.textContent = "Ubah Pilihan";
-  changeVoteBtn.style.padding = "5px 10px";
-  changeVoteBtn.style.fontSize = "0.8rem";
-  changeVoteBtn.style.marginTop = "5px";
-  changeVoteBtn.style.borderRadius = "6px";
-  changeVoteBtn.style.border = "none";
-  changeVoteBtn.style.cursor = "pointer";
-  changeVoteBtn.style.backgroundColor = "#e5e7eb";
-  changeVoteBtn.style.color = "#1d4ed8";
-  changeVoteBtn.style.fontWeight = "bold";
-
-  changeVoteText.textContent = "Ingin mengubah pilihan?";
-  changeVoteText.style.fontSize = "0.9rem";
-  changeVoteText.style.color = "#555";
-  changeVoteText.style.marginTop = "15px";
-  changeVoteText.style.marginBottom = "5px";
-
-  sendFeedbackBtn.className = "btn";
-  sendFeedbackBtn.style.marginTop = "10px";
-  sendFeedbackBtn.target = "_blank";
-
-  extraBtnContainer.appendChild(changeVoteText);
-  extraBtnContainer.appendChild(changeVoteBtn);
-  extraBtnContainer.appendChild(sendFeedbackBtn);
-
-  // Update UI
-  function updatePollUI(continueVotes, stopVotes) {
-    const total = continueVotes + stopVotes;
-    const continuePercent = total === 0 ? 0 : (continueVotes / total) * 100;
-    const stopPercent = total === 0 ? 0 : (stopVotes / total) * 100;
-
-    barContinue.style.width = continuePercent + '%';
-    barContinue.textContent = continueVotes;
-
-    barStop.style.width = stopPercent + '%';
-    barStop.textContent = stopVotes;
-  }
-
-  pollingRef.on('value', (snapshot) => {
-    const data = snapshot.val() || { continue: 0, stop: 0 };
-    updatePollUI(data.continue || 0, data.stop || 0);
-  });
-
-  function vote(option) {
-    const optionRef = pollingRef.child(option);
-    optionRef.transaction(current => (current || 0) + 1);
-    localStorage.setItem('aj_vote', option);
-    showExtraUI(option);
-  }
-
-  function removeVote(option) {
-    const optionRef = pollingRef.child(option);
-    optionRef.transaction(current => (current || 0) - 1);
-    localStorage.removeItem('aj_vote');
-    extraBtnContainer.remove();
-  }
-
-  function showExtraUI(option) {
-    if (option === 'continue') {
-      sendFeedbackBtn.textContent = "Kirim Masukkan";
-      sendFeedbackBtn.href = "https://qr.me-qr.com/LPMwqN1d"; // ganti URL
-      sendFeedbackBtn.classList.add("continue");
-    } else {
-      sendFeedbackBtn.textContent = "Kirim Alasan";
-      sendFeedbackBtn.href = "https://qr.me-qr.com/zBAHE2O9"; // ganti URL
-      sendFeedbackBtn.classList.add("stop");
-    }
-
-    feedbackSection.appendChild(extraBtnContainer);
-  }
-
-  btnContinue.addEventListener('click', () => {
-    if (!localStorage.getItem('aj_vote')) vote('continue');
-  });
-
-  btnStop.addEventListener('click', () => {
-    if (!localStorage.getItem('aj_vote')) vote('stop');
-  });
-
-  changeVoteBtn.addEventListener('click', () => {
-    const previous = localStorage.getItem('aj_vote');
-    if (previous) {
-      removeVote(previous);
-    }
-  });
-
-  // Tampilkan tombol jika sudah pernah vote sebelumnya
-  window.addEventListener('DOMContentLoaded', () => {
-    const savedVote = localStorage.getItem('aj_vote');
-    if (savedVote) showExtraUI(savedVote);
-  });
-</script>
 </body>
 </html>
