@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Informasi Aplikasi</title>
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #dbeafe, #eff6ff);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 20px;
+      color: #333;
+    }
+    .container {
+      background: #fff;
+      max-width: 700px;
+      padding: 40px 50px;
+      border-radius: 12px;
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.25);
+      line-height: 1.6;
+      color: #1e40af;
+    }
+    h1 {
+      color: #1d4ed8;
+      text-align: center;
+      margin-bottom: 20px;
+      font-weight: 700;
+      font-size: 1.3rem;
+    }
+    .app-icon {
+      display: block;
+      margin: 0 auto 30px auto;
+      width: 80px;
+      border-radius: 16px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
+    .info-list {
+      max-width: 650px;
+      margin: 0 auto 20px auto;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #1e40af;
+    }
+    .info-row {
+      display: flex;
+      padding: 3px 0;
+      border-bottom: 1px solid #cbd5e1;
+    }
+    .info-label {
+      flex: 0 0 150px;
+      font-weight: 700;
+      font-size: 0.7rem;
+    }
+    .info-value {
+      flex: 1;
+      font-weight: 500;
+      color: black;
+      font-size: 0.7rem;
+    }
+    .btn-download {
+      display: block;
+      margin: 0 auto 25px auto;
+      padding: 8px 10px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: white;
+      background-color: #16a34a;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      text-decoration: none;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+    .btn-download:hover {
+      background-color: #15803d;
+      transform: scale(1.05);
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #cbd5e1;
+      margin-bottom: 20px;
+    }
+    .whats-new-title {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #1d4ed8;
+      margin-bottom: 10px;
+      text-align: left;
+    }
+    .whats-new-text {
+      font-size: 0.7rem;
+      color: #334155;
+      font-weight: 500;
+      max-width: 650px;
+      margin: 0 auto;
+      text-align: justify;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Informasi Aplikasi</h1>
+    
+    <!-- Gambar dari Cloudinary -->
+    <img class="app-icon" src="https://res.cloudinary.com/dz4w1sqiv/image/upload/v1748792243/AJ_20250601_081132_0000_ilursb.png" alt="Ikon Aplikasi" />
+
+    <!-- Info Aplikasi -->
+    <div class="info-list">
+      <div class="info-row">
+        <div class="info-label">Nama Aplikasi:</div>
+        <div class="info-value">AJ Project</div>
+      </div>
+      <div class="info-row">
+        <div class="info-label">Ukuran:</div>
+        <div class="info-value">12 MB</div>
+      </div>
+      <div class="info-row">
+        <div class="info-label">Versi:</div>
+        <div class="info-value">1.0.3</div>
+      </div>
+      <div class="info-row">
+        <div class="info-label">Tanggal Rilis:</div>
+        <div class="info-value">01 Juni 2025</div>
+      </div>
+      <div class="info-row">
+        <div class="info-label">Terakhir Update:</div>
+        <div class="info-value">30 Mei 2025</div>
+      </div>
+      <div class="info-row">
+        <div class="info-label">Kompatibel:</div>
+        <div class="info-value">Android 7.0 +</div>
+      </div>
+      <div class="info-row">
+        <div class="info-label">Developer:</div>
+        <div class="info-value">AJ Developer</div>
+      </div>
+    </div>
+
+    <button class="btn-download" id="downloadBtn">Unduh Aplikasi</button>
+
+    <hr />
+
+    <div class="whats-new-title">Catatan:</div>
+    <div class="whats-new-text">
+      Mohon maaf, saat ini aplikasi masih dalam tahap pengembangan. Oleh karena itu, beberapa fitur mungkin belum dapat berfungsi secara optimal.
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('downloadBtn').addEventListener('click', function() {
+      if(confirm('Apakah Anda yakin ingin mengunduh aplikasi ini?')) {
+        // Ganti URL di bawah dengan link unduhan aplikasi kamu
+        window.location.href = 'https://example.com/download';
+      }
+    });
+  </script>
+</body>
+</html>
