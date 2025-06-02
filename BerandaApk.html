@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Halaman Log In</title>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  <style>/* Style persis seperti yang kamu berikan sebelumnya */
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: "Segoe UI", sans-serif;
+      background: linear-gradient(135deg, #dbeafe, #eff6ff);
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .login-container {
+      animation: fadeIn 2s ease;
+      background-color: #ffffff;
+      padding: 40px 30px 30px 30px;
+      border-radius: 10px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 320px;
+      box-sizing: border-box;
+      position: relative;
+    }
+    
+    @keyframes fadeIn {
+       from { opacity: 0; transform: translateY(20px); }
+       to { opacity: 1; transform: translateY(0); }
+    }
+
+    .login-container h2 {
+      text-align: center;
+      margin-bottom: 8px;
+      color: #1d4ed8;
+    }
+
+    #tanggal-hari {
+      text-align: center;
+      font-size: 14px;
+      color: #6b7280;
+      margin-bottom: 8px;
+    }
+
+    .tab-container {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      margin-bottom: 24px;
+      border-bottom: 1px solid #e0e7ff;
+    }
+
+    .tab-button {
+      background: none;
+      border: none;
+      color: #6b7280;
+      font-weight: 600;
+      font-size: 15px;
+      padding: 8px 0;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      transition: color 0.3s, border-color 0.3s;
+      outline: none;
+      box-shadow: none;
+      background-color: transparent;
+    }
+
+    .tab-button:focus,
+    .tab-button:active {
+      outline: none;
+      box-shadow: none;
+      background-color: transparent;
+    }
+
+    .tab-button.active {
+      color: #3b82f6;
+      border-bottom-color: #3b82f6;
+    }
+
+    .tab-button:hover:not(.active) {
+      color: #2563eb;
+    }
+
+    .marquee-container {
+      overflow: hidden;
+      white-space: nowrap;
+      box-sizing: border-box;
+      width: 100%;
+      border-top: 1px solid #e0e7ff;
+      border-bottom: 1px solid #e0e7ff;
+      padding: 6px 0;
+      margin-bottom: 16px;
+      background-color: #f9fafb;
+    }
+
+    .marquee-text {
+      display: inline-block;
+      padding-left: 100%;
+      animation: marquee 34s linear infinite;
+      font-size: 14px;
+      color: #374151;
+    }
+
+    @keyframes marquee {
+      0% {
+        transform: translateX(0%);
+      }
+
+      100% {
+        transform: translateX(-100%);
+      }
+    }
+
+    label {
+      font-weight: 600;
+      color: #374151;
+      display: block;
+      margin-bottom: 8px;
+      text-align: left;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 10px 12px;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 6px;
+      margin-bottom: 10px;
+      font-size: 14px;
+      transition: border 0.3s;
+    }
+
+    input[type="text"]:focus {
+      border-color: #3b82f6;
+      outline: none;
+    }
+
+    #infoKode,
+    #infoKodeAdmin {
+      display: none;
+      color: #6b7280;
+      font-size: 13px;
+      margin-top: -5px;
+      margin-bottom: 10px;
+      text-align: left;
+    }
+
+    button {
+      width: 100%;
+      background-color: #3b82f6;
+      color: white;
+      font-weight: bold;
+      padding: 12px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 15px;
+      transition: background-color 0.3s;
+      margin-top: 10px;
+    }
+
+    button:hover {
+      background-color: #2563eb;
+    }
+
+    #error-message {
+      text-align: center;
+      color: #dc2626;
+      margin-top: 15px;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    #success-message {
+      text-align: center;
+      color: #16a34a;
+      margin-top: 15px;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .footer {
+      display: flex;
+      justify-content: center;
+      font-size: 12px;
+      color: #6b7280;
+      margin-top: 30px;
+      padding: 10px 20px;
+      border-top: 1px solid #ddd;
+      gap: 8px;
+    }
+
+    .footer a {
+      color: #007bff;
+      text-decoration: none;
+    }
+
+    .footer a:hover {
+      text-decoration: underline;
+    }
+
+    #admin-log {
+      margin-top: 20px;
+      max-height: 180px;
+      overflow-y: auto;
+    }
+
+    #admin-log .log-entry {
+      background: #f9fafb;
+      padding: 10px;
+      margin-bottom: 8px;
+      border-radius: 8px;
+      border: 1px solid #e5e7eb;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+    }
+
+    #admin-log .log-entry button {
+  padding: 6px 8px;
+  font-size: 12px;
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  white-space: nowrap;
+  width: auto;
+}
+
+    #admin-log .log-entry button:hover {
+      background: #dc2626;
+    }
+
+    @media (max-width: 480px) {
+      .login-container {
+        padding: 30px 20px;
+      }
+    }</style>
+</head>
+<body>
+  <div class="login-container">
+    <h2 id="judul-form">Halaman Log In</h2>
+    <div id="tanggal-hari"></div>
+    <div class="marquee-container">
+      <div class="marquee-text">
+        Selamat datang di halaman log in AJ Project. Harap diingat kode akses Anda agar bisa log in kembali di halaman ini. Perlu diketahui bahwa projek ini masih dalam tahap pengembangan, semua informasi terbaru akan ditampilkan di sini. Jika ada kendala atau pertanyaan, silakan hubungi Customer Service di bawah.
+      </div>
+    </div>
+
+    <form id="form-login" onsubmit="return false;">
+      <label for="kodeAkses">Kode Akses</label>
+      <input
+        type="text"
+        id="kodeAkses"
+        placeholder="Masukkan Kode Akses"
+        onfocus="tampilkanInfo()"
+        onblur="sembunyikanInfo()"
+        autocomplete="off"
+      />
+      <small id="infoKode">Kode Akses Tertera di Amplop Undangan.</small>
+      <button type="button" onclick="prosesLogin()">Masuk</button>
+    </form>
+
+    <div id="error-message"></div>
+    <div id="success-message"></div>
+    <div class="footer">
+      <a href="https://qr.me-qr.com/xo95LDjX" target="_blank">Customer Service</a>
+      <span>| &copy; 2025 <a href="https://jamaludin2025.github.io/latarbelakang.html" target="_blank">AJ Project</a></span>
+    </div>
+  </div>
+  <script>const aksesMap = {
+      ABC: "https://jamaludin2025.github.io/qr15.html?kode=ABC",
+      AJ5394: "https://jamaludin2025.github.io/qr5.html",
+      TES456: "halaman-rahasia.html",
+    };
+    const adminKode = "Admin123";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBdt-2IQflUWNx3sdI1QHPMe1vAzsXAZcY",
+      authDomain: "ajproject-log.firebaseapp.com",
+      databaseURL: "https://ajproject-log-default-rtdb.firebaseio.com",
+      projectId: "ajproject-log",
+      storageBucket: "ajproject-log.appspot.com",
+      messagingSenderId: "113688767697",
+      appId: "1:113688767697:web:ca9ad012667acb7474a9f0",
+      measurementId: "G-6PLCT8D53G",
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    function switchTab(tab) {
+      document.getElementById("form-login").style.display = tab === "login" ? "block" : "none";
+      document.getElementById("form-admin").style.display = tab === "admin" ? "block" : "none";
+
+      document.getElementById("tab-login").classList.toggle("active", tab === "login");
+      document.getElementById("tab-admin").classList.toggle("active", tab === "admin");
+
+      document.getElementById("judul-form").textContent =
+        tab === "login" ? "Kartu Ucapan" : "Beranda Admin";
+
+      // Reset semua input dan pesan saat pindah tab
+      document.getElementById("kodeAkses").value = "";
+      document.getElementById("kodeAdmin").value = "";
+      document.getElementById("infoKode").style.display = "none";
+      document.getElementById("infoKodeAdmin").style.display = "none";
+      document.getElementById("error-message").textContent = "";
+      document.getElementById("success-message").textContent = "";
+      document.getElementById("admin-log").innerHTML = "";
+    }
+
+    function tampilkanInfo() {
+      document.getElementById("infoKode").style.display = "block";
+    }
+    function sembunyikanInfo() {
+      document.getElementById("infoKode").style.display = "none";
+    }
+    function tampilkanInfoAdmin() {
+      document.getElementById("infoKodeAdmin").style.display = "block";
+    }
+    function sembunyikanInfoAdmin() {
+      document.getElementById("infoKodeAdmin").style.display = "none";
+    }
+
+    async function prosesLogin() {
+  const kode = document.getElementById("kodeAkses").value.trim().toUpperCase();
+  const pesanError = document.getElementById("error-message");
+  const pesanSukses = document.getElementById("success-message");
+
+  pesanError.textContent = "";
+  pesanSukses.textContent = "";
+
+  if (!aksesMap[kode]) {
+  pesanError.textContent = "Maaf, Kode Akses Ditolak.";
+  return;
+}
+  pesanSukses.textContent = "Selamat, Kode Akses Diterima.";
+
+      // Buat log awal status "Proses"
+      const now = new Date();
+      const waktu = now.toLocaleString("id-ID", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+      });
+      const logData = {
+        kodeAkses: kode,
+        waktu: waktu,
+        status: "Proses",
+      };
+
+      try {
+        // Simpan log Proses
+        await db.ref("logAktivitas").push(logData);
+
+        // Setelah log "Proses" berhasil, redirect ke halaman tujuan
+        window.location.href = aksesMap[kode];
+      } catch (error) {
+        pesanError.textContent = "Terjadi kesalahan saat mencatat aktivitas.";
+        console.error(error);
+      }
+    }
+
+    // Fungsi ini harus dipanggil di halaman tujuan dengan kode akses di URL
+    // Contoh pemanggilan: updateLogStatus('ABC')
+    async function updateLogStatus(kode) {
+      if (!kode) return;
+      try {
+        // Ambil semua log dengan kode dan status "Proses"
+        const snapshot = await db.ref("logAktivitas").orderByChild("kodeAkses").equalTo(kode).once("value");
+        if (snapshot.exists()) {
+          const logs = snapshot.val();
+          // Cari log "Proses" terbaru untuk kode ini
+          let lastKey = null;
+          let lastTime = 0;
+          for (const key in logs) {
+            if (logs[key].status === "Proses") {
+              const logDate = new Date(logs[key].waktu.split(" ")[0].split("-").reverse().join("-") + " " + logs[key].waktu.split(" ")[1]);
+              if (logDate.getTime() > lastTime) {
+                lastTime = logDate.getTime();
+                lastKey = key;
+              }
+            }
+          }
+          if (lastKey) {
+            await db.ref("logAktivitas/" + lastKey).update({ status: "Berhasil" });
+          }
+        }
+      } catch (error) {
+        console.error("Gagal update status log:", error);
+      }
+    }
+
+    // Fungsi admin login
+    function prosesAdmin() {
+      const kodeAdminInput = document.getElementById("kodeAdmin").value.trim();
+      const pesanError = document.getElementById("error-message");
+      const pesanSukses = document.getElementById("success-message");
+
+      pesanError.textContent = "";
+      pesanSukses.textContent = "";
+
+      if (kodeAdminInput === adminKode) {
+        pesanSukses.textContent = "Selamat datang Admin!";
+        tampilkanLog();
+      } else {
+        pesanError.textContent = "Kode Admin Salah!";
+      }
+    }
+
+    // Tampilkan log di halaman admin
+    async function tampilkanLog() {
+      const logContainer = document.getElementById("admin-log");
+      logContainer.innerHTML = "Memuat data...";
+
+      try {
+        const snapshot = await db.ref("logAktivitas").once("value");
+        if (snapshot.exists()) {
+          const logs = snapshot.val();
+          const entries = Object.entries(logs).reverse(); // Tampilkan terbaru di atas
+
+          logContainer.innerHTML = "";
+          entries.forEach(([key, log]) => {
+            const logEl = document.createElement("div");
+            logEl.className = "log-entry";
+
+            const statusColor = log.status === "Berhasil" ? "#16a34a" : log.status === "Proses" ? "#2563eb" : "#dc2626";
+
+            logEl.innerHTML = `
+              <span><strong style="color: #2563eb;">${log.kodeAkses}</strong> - ${log.waktu} - <span style="color: ${statusColor}; font-weight: 600;">${log.status}</span></span>
+              <button onclick="hapusLog('${key}')">Hapus</button>
+            `;
+            logContainer.appendChild(logEl);
+          });
+        } else {
+          logContainer.innerHTML = "Belum ada log aktivitas.";
+        }
+      } catch (error) {
+        logContainer.innerHTML = "Gagal memuat data log.";
+        console.error(error);
+      }
+    }
+
+    async function hapusLog(key) {
+      if (confirm("Yakin ingin menghapus log ini?")) {
+        try {
+          await db.ref("logAktivitas/" + key).remove();
+          tampilkanLog();
+        } catch (error) {
+          alert("Gagal menghapus log.");
+          console.error(error);
+        }
+      }
+    }
+
+    // Tampilkan tanggal dan hari
+    function tampilkanTanggalHari() {
+  const hariNama = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+  const bulanNama = [
+    "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+    "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+  ];
+
+  setInterval(() => {
+    const now = new Date();
+    const hari = hariNama[now.getDay()];
+    const tanggal = now.getDate();
+    const bulan = bulanNama[now.getMonth()];
+    const tahun = now.getFullYear();
+
+    const jam = String(now.getHours()).padStart(2, '0');
+    const menit = String(now.getMinutes()).padStart(2, '0');
+    const detik = String(now.getSeconds()).padStart(2, '0');
+
+    const waktuLengkap = `${hari}, ${tanggal} ${bulan} ${tahun} - ${jam}:${menit}:${detik}`;
+    document.getElementById("tanggal-hari").textContent = waktuLengkap;
+  }, 1000);
+}
+
+// Jalankan saat pertama kali load
+tampilkanTanggalHari();</script>
+</body>
+</html>
