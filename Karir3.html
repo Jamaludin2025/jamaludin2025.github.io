@@ -9,14 +9,14 @@
       font-family: sans-serif;
       background: #f2f2f2;
       padding: 20px;
-      position: relative;
+      font-size: 14px;
     }
     h2 {
       text-align: center;
     }
     .entry {
       background: white;
-      padding: 15px;
+      padding: 12px;
       margin-bottom: 10px;
       border-radius: 10px;
       box-shadow: 0 4px 6px rgba(0,0,0,0.1);
@@ -26,6 +26,14 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .title-bar > div:first-child {
+      flex: 1;
+      font-size: 14px;
+      font-weight: bold;
+      word-break: break-word;
     }
     .lihat-btn {
       color: #007BFF;
@@ -33,26 +41,27 @@
       border: none;
       background: none;
       font-weight: bold;
+      font-size: 12px;
     }
     .hapus-btn {
       background-color: red;
       color: white;
       border: none;
-      padding: 6px 10px;
-      margin-left: 8px;
+      padding: 4px 8px;
+      font-size: 12px;
       border-radius: 6px;
       cursor: pointer;
     }
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 10px;
+      margin-top: 8px;
+      font-size: 13px;
     }
     th, td {
       border: 1px solid #ccc;
-      padding: 8px;
+      padding: 6px;
       text-align: center;
-      word-break: break-word; /* Tambahan agar teks panjang tidak meluber */
     }
     th {
       background-color: #007BFF;
@@ -66,9 +75,10 @@
     .keterangan.KELUAR { color: red; }
     .keterangan.KERJA { color: green; }
     .catatan {
-      margin-top: 8px;
+      margin-top: 6px;
       font-style: italic;
       color: #555;
+      font-size: 13px;
     }
     .fade-out {
       opacity: 0;
@@ -85,7 +95,7 @@
       color: #fff;
       padding: 10px 20px;
       border-radius: 8px;
-      font-size: 14px;
+      font-size: 13px;
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.4s ease;
@@ -100,10 +110,8 @@
   <h2>Riwayat Seleksi</h2>
   <div id="riwayatList"></div>
 
-  <!-- Toast Notification -->
   <div id="toast" class="toast"></div>
 
-  <!-- Suara Klik -->
   <audio id="clickSound" src="https://res.cloudinary.com/dz4w1sqiv/video/upload/v1748957534/Mouse_Click_-_Sound_Effect_HD_zimn5u.mp4" preload="auto"></audio>
 
   <script>
@@ -132,13 +140,13 @@
 
       wrapper.innerHTML = `
         <div class="title-bar">
-          <div><strong>${index}. ${item.perusahaan}</strong></div>
+          <div>${index}. ${item.perusahaan}</div>
           <div>
             <button class="lihat-btn" onclick="toggleDetail('${detailId}'); playClick();">Lihat Selengkapnya</button>
             <button class="hapus-btn" onclick="hapusRiwayat('${key}', this);">Hapus</button>
           </div>
         </div>
-        <div id="${detailId}" style="display:none; margin-top:10px;">
+        <div id="${detailId}" style="display:none; margin-top:8px;">
           <div><strong>Info Loker:</strong> ${item.loker}</div>
           <div><strong>Perusahaan:</strong> ${item.perusahaan}</div>
           <table>
