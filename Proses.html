@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Halaman Proses</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: sans-serif;
+      background: #f2f2f2;
+      padding: 20px;
+      font-size: 14px;
+      margin: 0;
+    }
+    .summary-box {
+      background: white;
+      padding: 12px;
+      margin: 12px auto 12px auto;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      max-width: 600px;
+      text-align: center;
+      font-weight: bold;
+      font-size: 18px;
+    }
+    .box {
+      background: white;
+      padding: 12px;
+      margin-bottom: 12px;
+      border-radius: 10px;
+      box-shadow: 0 3px 5px rgba(0,0,0,0.1);
+    }
+    .info {
+      margin-bottom: 8px;
+    }
+    .label {
+      font-weight: bold;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 8px;
+      font-size: 13px;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 6px;
+      text-align: center;
+    }
+    th {
+      background-color: #007BFF;
+      color: white;
+    }
+    .keterangan {
+      font-weight: bold;
+    }
+    .keterangan.LULUS { color: goldenrod; }
+    .keterangan.GAGAL,
+    .keterangan.UNDUR { color: red; }
+    .keterangan.KERJA { color: green; }
+
+    .fab {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 56px;
+      height: 56px;
+      font-size: 28px;
+      cursor: pointer;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+      z-index: 999;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0; top: 0;
+      width: 100%; height: 100%;
+      background-color: rgba(0,0,0,0.5);
+      padding: 20px;
+      overflow-y: auto;
+    }
+    .modal-content {
+      background: white;
+      width: 90%;
+      max-width: 500px;
+      margin: auto;
+      padding: 16px;
+      border-radius: 10px;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+      position: relative;
+    }
+    .modal-content h2 {
+      font-size: 16px;
+      text-align: center;
+    }
+    .modal-content label {
+      font-weight: bold;
+      font-size: 13px;
+    }
+    .modal-content input,
+    .modal-content select,
+    .modal-content textarea {
+      width: 100%;
+      padding: 8px;
+      margin-top: 4px;
+      margin-bottom: 12px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 13px;
+    }
+    .modal-content .button-row {
+      display: flex;
+      gap: 10px;
+    }
+    .modal-content button {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      margin-top: 15px;
+    }
+    .btn-simpan {
+      background-color: #007BFF;
+      color: white;
+      font-weight: bold;
+    }
+    .btn-batal {
+      background-color: #ccc;
+      color: black;
+      font-weight: bold;
+    }
+    .close {
+      position: absolute;
+      right: 12px;
+      top: 8px;
+      font-size: 20px;
+      cursor: pointer;
+      color: #aaa;
+    }
+    .close:hover {
+      color: #000;
+    }
+    .reset-link {
+      margin-top: 8px;
+      text-align: center;
+      font-size: 13px;
+    }
+    .reset-link a {
+      color: red;
+      cursor: pointer;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div id="summaryBox" class="summary-box">Proses Seleksi</div>
+  <div id="content"></div>
+
+  <button class="fab" onclick="openModal()">+</button>
+
+  <div class="modal" id="inputModal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal()">&times;</span>
+      <h2>Input Data Seleksi</h2>
+      <form id="inputForm">
+        <label>Nama Perusahaan</label>
+        <input type="text" id="perusahaan" required>
+
+        <label>Info Loker</label>
+        <input type="text" id="loker" required>
+
+        <label>Tanggal Seleksi</label>
+        <input type="date" id="tanggal" required>
+
+        <label>Tahap Seleksi</label>
+        <input type="text" id="tahapan" required>
+
+        <label>Tempat Seleksi</label>
+        <input type="text" id="tempat" required>
+
+        <label>Keterangan</label>
+        <select id="keterangan" required>
+          <option value="">-- Pilih --</option>
+          <option value="LULUS">LULUS</option>
+          <option value="GAGAL">GAGAL</option>
+          <option value="UNDUR">MENGUNDURKAN DIRI</option>
+          <option value="KERJA">DITERIMA KERJA</option>
+        </select>
+
+        <label id="catatanLabel" style="display:none;">Alasan</label>
+        <textarea id="catatan" rows="2" style="display:none;"></textarea>
+
+        <div class="button-row">
+          <button type="button" class="btn-batal" onclick="closeModal()">Batal</button>
+          <button type="submit" class="btn-simpan">Simpan Data</button>
+        </div>
+        <div class="reset-link">
+          Ingin menghapus semua data? <a onclick="resetProses()">Klik di sini</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <audio id="klikAudio" src="https://res.cloudinary.com/dz4w1sqiv/video/upload/v1748957534/Mouse_Click_-_Sound_Effect_HD_zimn5u.mp4" preload="auto"></audio>
+
+  <script>
+    function openModal() {
+      document.getElementById('inputModal').style.display = 'block';
+    }
+
+    function closeModal() {
+      document.getElementById('inputModal').style.display = 'none';
+      document.getElementById('inputForm').reset();
+      document.getElementById('catatan').style.display = 'none';
+      document.getElementById('catatanLabel').style.display = 'none';
+    }
+
+    window.onclick = function(event) {
+      const modal = document.getElementById('inputModal');
+      if (event.target === modal) {
+        closeModal();
+      }
+    }
+
+    function moveToRiwayat(key, item) {
+      let riwayat = JSON.parse(localStorage.getItem('riwayatData')) || {};
+      riwayat[key] = item;
+      localStorage.setItem('riwayatData', JSON.stringify(riwayat));
+    }
+
+    function formatTanggal(tgl) {
+      const date = new Date(tgl);
+      if (isNaN(date)) return tgl;
+      const d = date.getDate().toString().padStart(2, '0');
+      const m = (date.getMonth() + 1).toString().padStart(2, '0');
+      const y = date.getFullYear().toString().slice(-2);
+      return `${d}-${m}-${y}`;
+    }
+
+    function renderData() {
+      let data = JSON.parse(localStorage.getItem('prosesData')) || {};
+      const container = document.getElementById('content');
+      container.innerHTML = '';
+
+      Object.keys(data).forEach(key => {
+        const item = data[key];
+        const selesai = item.tahapan.some(d => 
+          ['GAGAL','UNDUR','KERJA'].includes(d.keterangan.toUpperCase())
+        );
+
+        if (selesai) {
+          moveToRiwayat(key, item);
+          delete data[key];
+          localStorage.setItem('prosesData', JSON.stringify(data));
+          return;
+        }
+
+        const div = document.createElement('div');
+        div.className = 'box';
+        div.innerHTML = `
+          <div class="info">
+            <div><span class="label">Info Loker:</span> ${item.loker}</div>
+            <div><span class="label">Perusahaan:</span> ${item.perusahaan}</div>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Tanggal</th>
+                <th>Tahapan</th>
+                <th>Tempat</th>
+                <th>Keterangan</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${item.tahapan.map(row => {
+                    const [y, m, d] = row.tanggal.split("-");
+                    const tanggalBaru = `${d}-${m}-${y}`;
+                     return `
+                        <tr>
+                            <td>${tanggalBaru}</td>
+                            <td>${row.tahapan}</td>
+                            <td>${row.tempat}</td>
+                            <td class="keterangan ${row.keterangan.toUpperCase()}">${row.keterangan}</td>
+                       </tr>`;
+                  }).join('')}
+            </tbody>
+          </table>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    document.getElementById('inputForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const klikAudio = document.getElementById('klikAudio');
+      klikAudio.play();
+
+      const perusahaan = document.getElementById('perusahaan').value.trim();
+      const loker = document.getElementById('loker').value.trim();
+      const tanggal = document.getElementById('tanggal').value;
+      const tahapan = document.getElementById('tahapan').value.trim();
+      const tempat = document.getElementById('tempat').value.trim();
+      const keterangan = document.getElementById('keterangan').value;
+      const catatan = document.getElementById('catatan').value.trim();
+
+      const newEntry = {
+        tanggal, tahapan, tempat, keterangan, catatan
+      };
+
+      const key = perusahaan + '|' + loker;
+      let data = JSON.parse(localStorage.getItem('prosesData')) || {};
+
+      if (!data[key]) {
+        data[key] = {
+          perusahaan,
+          loker,
+          catatan: "",
+          tahapan: []
+        };
+      }
+
+      data[key].tahapan.push(newEntry);
+
+      if (["UNDUR", "KERJA"].includes(keterangan.toUpperCase()) && catatan) {
+        data[key].catatan = catatan;
+      }
+
+      localStorage.setItem('prosesData', JSON.stringify(data));
+      alert("Data berhasil disimpan!");
+      closeModal();
+      renderData();
+    });
+
+    function resetProses() {
+      if (confirm("Apakah Anda yakin ingin menghapus semua data proses?")) {
+        localStorage.removeItem('prosesData');
+        renderData();
+        alert("Data proses berhasil dihapus.");
+      }
+    }
+
+    // Menampilkan/menyembunyikan kolom catatan
+    document.getElementById('keterangan').addEventListener('change', function () {
+      const catatan = document.getElementById('catatan');
+      const label = document.getElementById('catatanLabel');
+      if (this.value === 'UNDUR') {
+        catatan.style.display = 'block';
+        label.style.display = 'block';
+      } else {
+        catatan.style.display = 'none';
+        label.style.display = 'none';
+        catatan.value = '';
+      }
+    });
+
+    renderData();
+  </script>
+</body>
+</html>
