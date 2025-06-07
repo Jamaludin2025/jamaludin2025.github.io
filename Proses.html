@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Halaman Proses</title>
-  <style>
+<style>
     * {
       box-sizing: border-box;
     }
@@ -163,57 +163,46 @@
   </style>
 </head>
 <body>
-  <div id="summaryBox" class="summary-box">Proses Seleksi</div>
-  <div id="content"></div>
-
-  <button class="fab" onclick="openModal()">+</button>
-
-  <div class="modal" id="inputModal">
-    <div class="modal-content">
-      <span class="close" onclick="closeModal()">&times;</span>
-      <h2>Input Data Seleksi</h2>
-      <form id="inputForm">
-        <label>Nama Perusahaan</label>
-        <input type="text" id="perusahaan" required>
-
-        <label>Info Loker</label>
-        <input type="text" id="loker" required>
-
-        <label>Tanggal Seleksi</label>
-        <input type="date" id="tanggal" required>
-
-        <label>Tahap Seleksi</label>
-        <input type="text" id="tahapan" required>
-
-        <label>Tempat Seleksi</label>
-        <input type="text" id="tempat" required>
-
-        <label>Keterangan</label>
-        <select id="keterangan" required>
-          <option value="">-- Pilih --</option>
-          <option value="LULUS">LULUS</option>
-          <option value="GAGAL">GAGAL</option>
-          <option value="UNDUR">MENGUNDURKAN DIRI</option>
-          <option value="KERJA">DITERIMA KERJA</option>
-        </select>
-
-        <label id="catatanLabel" style="display:none;">Alasan</label>
-        <textarea id="catatan" rows="2" style="display:none;"></textarea>
-
-        <div class="button-row">
-          <button type="button" class="btn-batal" onclick="closeModal()">Batal</button>
-          <button type="submit" class="btn-simpan">Simpan Data</button>
-        </div>
-        <div class="reset-link">
+<div class="summary-box" id="summaryBox">Proses Seleksi</div>
+<div id="content"></div>
+<button class="fab" onclick="openModal()">+</button>
+<div class="modal" id="inputModal">
+<div class="modal-content">
+<span class="close" onclick="closeModal()">×</span>
+<h2>Input Data Seleksi</h2>
+<form id="inputForm">
+<label>Nama Perusahaan</label>
+<input id="perusahaan" required="" type="text"/>
+<label>Info Loker</label>
+<input id="loker" required="" type="text"/>
+<label>Tanggal Seleksi</label>
+<input id="tanggal" required="" type="date"/>
+<label>Tahap Seleksi</label>
+<input id="tahapan" required="" type="text"/>
+<label>Tempat Seleksi</label>
+<input id="tempat" required="" type="text"/>
+<label>Keterangan</label>
+<select id="keterangan" required="">
+<option value="">-- Pilih --</option>
+<option value="LULUS">LULUS</option>
+<option value="GAGAL">GAGAL</option>
+<option value="UNDUR">MENGUNDURKAN DIRI</option>
+<option value="KERJA">DITERIMA KERJA</option>
+</select><label id="jenisPekerjaanLabel" style="display:none;">Jenis Pekerjaan</label><input id="jenisPekerjaan" required="True" style="display:none;" type="text"/><label id="masaKerjaLabel" style="display:none;">Masa Kerja</label><div id="masaKerjaInput" style="display:none;"><input id="mulaiKerja" required="True" style="margin-bottom:8px;" type="date"/><input id="akhirKerja" required="True" type="date"/></div><label id="catatanKerjaLabel" style="display:none;">Catatan</label><textarea id="catatanKerja" rows="2" style="display:none;"></textarea>
+<label id="catatanLabel" style="display:none;">Alasan</label>
+<textarea id="catatan" rows="2" style="display:none;"></textarea>
+<div class="button-row">
+<button class="btn-batal" onclick="closeModal()" type="button">Batal</button>
+<button class="btn-simpan" type="submit">Simpan Data</button>
+</div>
+<div class="reset-link">
           Ingin menghapus semua data? <a onclick="resetProses()">Klik di sini</a>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <audio id="klikAudio" src="https://res.cloudinary.com/dz4w1sqiv/video/upload/v1748957534/Mouse_Click_-_Sound_Effect_HD_zimn5u.mp4" preload="auto"></audio>
-
-  <script>
+</div>
+</form>
+</div>
+</div>
+<audio id="klikAudio" preload="auto" src="https://res.cloudinary.com/dz4w1sqiv/video/upload/v1748957534/Mouse_Click_-_Sound_Effect_HD_zimn5u.mp4"></audio>
+<script>
     function openModal() {
       document.getElementById('inputModal').style.display = 'block';
     }
@@ -282,17 +271,13 @@
               </tr>
             </thead>
             <tbody>
-              ${item.tahapan.map(row => {
-                    const [y, m, d] = row.tanggal.split("-");
-                    const tanggalBaru = `${d}-${m}-${y}`;
-                     return `
-                        <tr>
-                            <td>${tanggalBaru}</td>
-                            <td>${row.tahapan}</td>
-                            <td>${row.tempat}</td>
-                            <td class="keterangan ${row.keterangan.toUpperCase()}">${row.keterangan}</td>
-                       </tr>`;
-                  }).join('')}
+              ${item.tahapan.map(row => `
+                <tr>
+                  <td>${formatTanggal(row.tanggal)}</td>
+                  <td>${row.tahapan}</td>
+                  <td>${row.tempat}</td>
+                  <td class="keterangan ${row.keterangan.toUpperCase()}">${row.keterangan}</td>
+                </tr>`).join('')}
             </tbody>
           </table>
         `;
@@ -365,6 +350,34 @@
     });
 
     renderData();
-  </script>
+  
+    // Tambahan input untuk DITERIMA KERJA
+    document.getElementById('keterangan').addEventListener('change', function () {
+      const catatan = document.getElementById('catatan');
+      const catatanLabel = document.getElementById('catatanLabel');
+      const kerjaFields = ['jenisPekerjaan', 'mulaiKerja', 'akhirKerja', 'catatanKerja'];
+      const kerjaLabels = ['jenisPekerjaanLabel', 'masaKerjaLabel', 'masaKerjaInput', 'catatanKerjaLabel'];
+
+      if (this.value === 'UNDUR') {
+        catatan.style.display = 'block';
+        catatanLabel.style.display = 'block';
+      } else {
+        catatan.style.display = 'none';
+        catatanLabel.style.display = 'none';
+        catatan.value = '';
+      }
+
+      if (this.value === 'KERJA') {
+        kerjaFields.forEach(id => document.getElementById(id).style.display = 'block');
+        kerjaLabels.forEach(id => document.getElementById(id).style.display = 'block');
+      } else {
+        kerjaFields.forEach(id => {
+          document.getElementById(id).style.display = 'none';
+          document.getElementById(id).value = '';
+        });
+        kerjaLabels.forEach(id => document.getElementById(id).style.display = 'none');
+      }
+    });
+</script>
 </body>
 </html>
