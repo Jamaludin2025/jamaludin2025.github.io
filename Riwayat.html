@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Halaman Riwayat</title>
-  <style>
+<style>
     body {
       font-family: sans-serif;
       background: #f2f2f2;
@@ -103,7 +103,7 @@
     }
     .keterangan.LULUS { color: goldenrod; }
     .keterangan.GAGAL,
-    .keterangan.UNDUR { color: red; }
+    .keterangan.KELUAR { color: red; }
     .keterangan.KERJA { color: green; }
     .catatan {
       margin-top: 6px;
@@ -135,29 +135,34 @@
     }
   </style>
 </head>
-<body>  
-  <div id="summaryBox" class="summary-box">Riwayat Seleksi: 0</div>
+<body>
+<div class="summary-box" id="summaryBox">Riwayat Seleksi: 0</div>
+<div class="filter-container">
+<div class="filter-bar">
+<select id="filterPerusahaan" onchange="renderRiwayat()">
+<option value="">Perusahaan</option>
+</select>
+<select id="filterLoker" onchange="renderRiwayat()">
+<option value="">Info Loker</option>
+</select>
+<select id="filterTahun" onchange="renderRiwayat()">
+<option value="">Tahun</option>
+</select>
+</div>
+</div>
+<div id="riwayatList"></div>
+<div class="toast" id="toast"></div>
+<audio id="clickSound" preload="auto" src="https://res.cloudinary.com/dz4w1sqiv/video/upload/v1748957534/Mouse_Click_-_Sound_Effect_HD_zimn5u.mp4"></audio>
+<script>
+function formatTanggal(tgl) {
+  const date = new Date(tgl);
+  if (isNaN(date)) return tgl;
+  const d = date.getDate().toString().padStart(2, '0');
+  const m = (date.getMonth() + 1).toString().padStart(2, '0');
+  const y = date.getFullYear();
+  return `${d}-${m}-${y}`;
+}
 
-  <div class="filter-container">
-    <div class="filter-bar">
-      <select id="filterPerusahaan" onchange="renderRiwayat()">
-      <option value="">Perusahaan</option>
-      </select>
-      <select id="filterLoker" onchange="renderRiwayat()">
-      <option value="">Info Loker</option>
-      </select>
-      <select id="filterTahun" onchange="renderRiwayat()">
-      <option value="">Tahun</option>
-      </select>
-    </div>
-  </div>
-
-  <div id="riwayatList"></div>
-
-  <div id="toast" class="toast"></div>
-  <audio id="clickSound" src="https://res.cloudinary.com/dz4w1sqiv/video/upload/v1748957534/Mouse_Click_-_Sound_Effect_HD_zimn5u.mp4" preload="auto"></audio>
-
-  <script>
     let data = JSON.parse(localStorage.getItem('riwayatData')) || {};
     const clickSound = document.getElementById('clickSound');
     const summaryBox = document.getElementById('summaryBox');
@@ -259,6 +264,24 @@
                             <td>${row.tempat}</td>
                             <td class="keterangan ${row.keterangan.toUpperCase()}">${row.keterangan}</td>
                        </tr>`;
+                  }).map(row => {
+                    const [y, m, d] = row.tanggal.split("-");
+                    const tanggalBaru = `${d}-${m}-${y}`;
+                    let tambahan = "";
+                    if (row.keterangan === "KERJA") {
+                      tambahan += `<tr><td colspan="4" style="text-align:left;"><strong>Jenis Pekerjaan:</strong> ${row.jenisPekerjaan || '-'}</td></tr>`;
+                      tambahan += `<tr><td colspan="4" style="text-align:left;"><strong>Masa Kerja:</strong> ${formatTanggal(row.mulaiKerja)} s.d ${formatTanggal(row.akhirKerja)}</td></tr>`;
+                      if (row.catatanKerja) {
+                        tambahan += `<tr><td colspan="4" class="catatan">Catatan: ${row.catatanKerja}</td></tr>`;
+                      }
+                    }
+                    return `
+                      <tr>
+                        <td>${tanggalBaru}</td>
+                        <td>${row.tahapan}</td>
+                        <td>${row.tempat}</td>
+                        <td class="keterangan ${row.keterangan.toUpperCase()}">${row.keterangan}</td>
+                      </tr>` + tambahan;
                   }).join('')}
                 </tbody>
               </table>
