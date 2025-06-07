@@ -1,9 +1,10 @@
 <!DOCTYPE html>
+
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Halaman Proses</title>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Halaman Proses</title>
 <style>
     * {
       box-sizing: border-box;
@@ -188,7 +189,7 @@
 <option value="GAGAL">GAGAL</option>
 <option value="UNDUR">MENGUNDURKAN DIRI</option>
 <option value="KERJA">DITERIMA KERJA</option>
-</select><label id="jenisPekerjaanLabel" style="display:none;">Jenis Pekerjaan</label><input id="jenisPekerjaan" required="True" style="display:none;" type="text"/><label id="masaKerjaLabel" style="display:none;">Masa Kerja</label><div id="masaKerjaInput" style="display:none;"><input id="mulaiKerja" required="True" style="margin-bottom:8px;" type="date"/><input id="akhirKerja" required="True" type="date"/></div><label id="catatanKerjaLabel" style="display:none;">Catatan</label><textarea id="catatanKerja" rows="2" style="display:none;"></textarea>
+</select><label id="jenisPekerjaanLabel" style="display:none;">Jenis Pekerjaan</label><input id="jenisPekerjaan" style="display:none;" type="text"/><label id="masaKerjaLabel" style="display:none;">Masa Kerja</label><div id="masaKerjaInput" style="display:none;"><input id="mulaiKerja" style="margin-bottom:8px; display:none;" type="date"/><input id="akhirKerja" style="display:none;" type="date"/></div><label id="catatanKerjaLabel" style="display:none;">Catatan</label><textarea id="catatanKerja" rows="2" style="display:none;"></textarea>
 <label id="catatanLabel" style="display:none;">Alasan</label>
 <textarea id="catatan" rows="2" style="display:none;"></textarea>
 <div class="button-row">
@@ -377,13 +378,25 @@
     }
 
     if (this.value === 'KERJA') {
-      kerjaFields.forEach(id => document.getElementById(id).style.display = 'block');
-      kerjaLabels.forEach(id => document.getElementById(id).style.display = 'block');
+      kerjaFields.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+          el.style.display = 'block';
+          el.setAttribute('required', 'required');
+        }
+      });
+      kerjaLabels.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.style.display = 'block';
+      });
     } else {
       kerjaFields.forEach(id => {
         const el = document.getElementById(id);
-        if (el) el.style.display = 'none';
-        if (el && (el.tagName === 'TEXTAREA' || el.tagName === 'INPUT')) el.value = '';
+        if (el) {
+          el.style.display = 'none';
+          el.removeAttribute('required');
+          el.value = '';
+        }
       });
       kerjaLabels.forEach(id => {
         const el = document.getElementById(id);
