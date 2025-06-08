@@ -283,7 +283,7 @@
     if (isNaN(date)) return tgl;
     const d = date.getDate().toString().padStart(2, '0');
     const m = (date.getMonth() + 1).toString().padStart(2, '0');
-    const y = date.getFullYear().toString().slice(-2);
+    const y = date.getFullYear();
     return `${d}-${m}-${y}`;
   }
 
@@ -294,9 +294,9 @@
 
     Object.keys(data).forEach(key => {
       const item = data[key];
-      const selesai = item.tahapan.some(d =>
-        ['GAGAL', 'UNDUR', 'KERJA'].includes(d.keterangan.toUpperCase())
-      );
+      const lastTahapan = item.tahapan[item.tahapan.length - 1];
+      const selesai = ['GAGAL','UNDUR','KERJA'].includes(lastTahapan.keterangan.toUpperCase());
+
 
       if (selesai) {
         moveToRiwayat(key, item);
