@@ -189,7 +189,7 @@
 <option value="GAGAL">GAGAL</option>
 <option value="UNDUR">MENGUNDURKAN DIRI</option>
 <option value="KERJA">DITERIMA KERJA</option>
-</select><label id="jenisPekerjaanLabel" style="display:none;">Jenis Pekerjaan</label><input id="jenisPekerjaan" style="display:none;" type="text"/><label id="masaKerjaLabel" style="display:none;">Masa Kerja</label><div id="masaKerjaInput" style="display:none;"><input id="mulaiKerja" style="margin-bottom:8px; display:none;" type="date"/><input id="akhirKerja" style="display:none;" type="date"/></div><label id="catatanKerjaLabel" style="display:none;">Catatan</label><textarea id="catatanKerja" rows="2" style="display:none;"></textarea>
+</select>
 <label id="catatanLabel" style="display:none;">Alasan</label>
 <textarea id="catatan" rows="2" style="display:none;"></textarea>
 <div class="button-row">
@@ -300,18 +300,9 @@
       const keterangan = document.getElementById('keterangan').value;
       const catatan = document.getElementById('catatan').value.trim();
 
-      
       const newEntry = {
         tanggal, tahapan, tempat, keterangan, catatan
       };
-
-      if (keterangan === "KERJA") {
-        newEntry.jenisPekerjaan = document.getElementById('jenisPekerjaan').value.trim();
-        newEntry.mulaiKerja = document.getElementById('mulaiKerja').value;
-        newEntry.akhirKerja = document.getElementById('akhirKerja').value;
-        newEntry.catatanKerja = document.getElementById('catatanKerja').value.trim();
-      }
-
 
       const key = perusahaan + '|' + loker;
       let data = JSON.parse(localStorage.getItem('prosesData')) || {};
@@ -360,50 +351,6 @@
     });
 
     renderData();
-  
-  // Kolom tambahan jika DITERIMA KERJA
-  document.getElementById('keterangan').addEventListener('change', function () {
-    const catatan = document.getElementById('catatan');
-    const catatanLabel = document.getElementById('catatanLabel');
-    const kerjaFields = ['jenisPekerjaan', 'mulaiKerja', 'akhirKerja', 'catatanKerja'];
-    const kerjaLabels = ['jenisPekerjaanLabel', 'masaKerjaLabel', 'masaKerjaInput', 'catatanKerjaLabel'];
-
-    if (this.value === 'UNDUR') {
-      catatan.style.display = 'block';
-      catatanLabel.style.display = 'block';
-    } else {
-      catatan.style.display = 'none';
-      catatanLabel.style.display = 'none';
-      catatan.value = '';
-    }
-
-    if (this.value === 'KERJA') {
-      kerjaFields.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) {
-          el.style.display = 'block';
-          el.setAttribute('required', 'required');
-        }
-      });
-      kerjaLabels.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.style.display = 'block';
-      });
-    } else {
-      kerjaFields.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) {
-          el.style.display = 'none';
-          el.removeAttribute('required');
-          el.value = '';
-        }
-      });
-      kerjaLabels.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.style.display = 'none';
-      });
-    }
-  });
-</script>
+  </script>
 </body>
 </html>
