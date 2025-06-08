@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Halaman Riwayat</title>
-<style>
+  <style>
     body {
       font-family: sans-serif;
       background: #f2f2f2;
@@ -135,227 +135,218 @@
     }
   </style>
 </head>
-<body>
-<div class="summary-box" id="summaryBox">Riwayat Seleksi: 0</div>
-<div class="filter-container">
-<div class="filter-bar">
-<select id="filterPerusahaan" onchange="renderRiwayat()">
-<option value="">Perusahaan</option>
-</select>
-<select id="filterLoker" onchange="renderRiwayat()">
-<option value="">Info Loker</option>
-</select>
-<select id="filterTahun" onchange="renderRiwayat()">
-<option value="">Tahun</option>
-</select>
-</div>
-</div>
-<div id="riwayatList"></div>
-<div class="toast" id="toast"></div>
-<audio id="clickSound" preload="auto" src="https://res.cloudinary.com/dz4w1sqiv/video/upload/v1748957534/Mouse_Click_-_Sound_Effect_HD_zimn5u.mp4"></audio>
-<script>
-function formatTanggal(tgl) {
-  const date = new Date(tgl);
-  if (isNaN(date)) return tgl;
-  const d = date.getDate().toString().padStart(2, '0');
-  const m = (date.getMonth() + 1).toString().padStart(2, '0');
-  const y = date.getFullYear();
-  return `${d}-${m}-${y}`;
-}
+<body>  
+  <div id="summaryBox" class="summary-box">Riwayat Seleksi: 0</div>
 
-    let data = JSON.parse(localStorage.getItem('riwayatData')) || {};
-    const clickSound = document.getElementById('clickSound');
-    const summaryBox = document.getElementById('summaryBox');
-    const listContainer = document.getElementById('riwayatList');
+  <div class="filter-container">
+    <div class="filter-bar">
+      <select id="filterPerusahaan" onchange="renderRiwayat()">
+        <option value="">Perusahaan</option>
+      </select>
+      <select id="filterLoker" onchange="renderRiwayat()">
+        <option value="">Info Loker</option>
+      </select>
+      <select id="filterTahun" onchange="renderRiwayat()">
+        <option value="">Tahun</option>
+      </select>
+    </div>
+  </div>
 
-    const tahunSelect = document.getElementById('filterTahun');
-    const perusahaanSelect = document.getElementById('filterPerusahaan');
-    const lokerSelect = document.getElementById('filterLoker');
+  <div id="riwayatList"></div>
 
-    function playClick() {
-      clickSound.currentTime = 0;
-      clickSound.play();
-    }
+  <div id="toast" class="toast"></div>
+  <audio id="clickSound" src="https://res.cloudinary.com/dz4w1sqiv/video/upload/v1748957534/Mouse_Click_-_Sound_Effect_HD_zimn5u.mp4" preload="auto"></audio>
+</body>
 
-    function showToast(message) {
-      const toast = document.getElementById('toast');
-      toast.textContent = message;
-      toast.classList.add('show');
-      setTimeout(() => toast.classList.remove('show'), 2500);
-    }
+  <script>
+  let data = JSON.parse(localStorage.getItem('riwayatData')) || {};
+  const clickSound = document.getElementById('clickSound');
+  const summaryBox = document.getElementById('summaryBox');
+  const listContainer = document.getElementById('riwayatList');
 
-    // Ambil semua filter unik
-    const tahunSet = new Set();
-    const perusahaanSet = new Set();
-    const lokerSet = new Set();
+  const tahunSelect = document.getElementById('filterTahun');
+  const perusahaanSelect = document.getElementById('filterPerusahaan');
+  const lokerSelect = document.getElementById('filterLoker');
 
-    Object.values(data).forEach(item => {
-      perusahaanSet.add(item.perusahaan);
-      lokerSet.add(item.loker);
-      item.tahapan.forEach(t => {
-        if (t.tanggal) {
-          const year = new Date(t.tanggal).getFullYear();
-          if (!isNaN(year)) tahunSet.add(year);
-        }
-      });
+  function playClick() {
+    clickSound.currentTime = 0;
+    clickSound.play();
+  }
+
+  function showToast(message) {
+    const toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2500);
+  }
+
+  function formatTanggal(tgl) {
+    if (!tgl) return '-';
+    const date = new Date(tgl);
+    if (isNaN(date)) return tgl;
+    const d = date.getDate().toString().padStart(2, '0');
+    const m = (date.getMonth() + 1).toString().padStart(2, '0');
+    const y = date.getFullYear();
+    return `${d}-${m}-${y}`;
+  }
+
+  const tahunSet = new Set();
+  const perusahaanSet = new Set();
+  const lokerSet = new Set();
+
+  Object.values(data).forEach(item => {
+    perusahaanSet.add(item.perusahaan);
+    lokerSet.add(item.loker);
+    item.tahapan.forEach(t => {
+      if (t.tanggal) {
+        const year = new Date(t.tanggal).getFullYear();
+        if (!isNaN(year)) tahunSet.add(year);
+      }
     });
+  });
 
-    tahunSelect.innerHTML = `<option value="">Tahun</option>`;
-    perusahaanSelect.innerHTML = `<option value="">Perusahaan</option>`;
-    lokerSelect.innerHTML = `<option value="">Info Loker</option>`;
+  tahunSelect.innerHTML = `<option value="">Tahun</option>`;
+  perusahaanSelect.innerHTML = `<option value="">Perusahaan</option>`;
+  lokerSelect.innerHTML = `<option value="">Info Loker</option>`;
 
-    [...perusahaanSet].sort().forEach(p => {
-      perusahaanSelect.innerHTML += `<option value="${p}">${p}</option>`;
-    });
-    [...lokerSet].sort().forEach(l => {
-      lokerSelect.innerHTML += `<option value="${l}">${l}</option>`;
-    });
-    [...tahunSet].sort().forEach(t => {
-      tahunSelect.innerHTML += `<option value="${t}">${t}</option>`;
-    });
+  [...perusahaanSet].sort().forEach(p => {
+    perusahaanSelect.innerHTML += `<option value="${p}">${p}</option>`;
+  });
+  [...lokerSet].sort().forEach(l => {
+    lokerSelect.innerHTML += `<option value="${l}">${l}</option>`;
+  });
+  [...tahunSet].sort().forEach(t => {
+    tahunSelect.innerHTML += `<option value="${t}">${t}</option>`;
+  });
 
-    function renderRiwayat() {
-      const tahun = tahunSelect.value;
-      const perusahaan = perusahaanSelect.value;
-      const loker = lokerSelect.value;
+  function renderRiwayat() {
+    const tahun = tahunSelect.value;
+    const perusahaan = perusahaanSelect.value;
+    const loker = lokerSelect.value;
 
-      listContainer.innerHTML = '';
-      let count = 0;
+    listContainer.innerHTML = '';
+    let count = 0;
 
-      Object.entries(data).forEach(([key, item], index) => {
-        const matchesTahun = !tahun || item.tahapan.some(t => new Date(t.tanggal).getFullYear().toString() === tahun);
-        const matchesPerusahaan = !perusahaan || item.perusahaan === perusahaan;
-        const matchesLoker = !loker || item.loker === loker;
+    Object.entries(data).forEach(([key, item], index) => {
+      const matchesTahun = !tahun || item.tahapan.some(t => new Date(t.tanggal).getFullYear().toString() === tahun);
+      const matchesPerusahaan = !perusahaan || item.perusahaan === perusahaan;
+      const matchesLoker = !loker || item.loker === loker;
 
-        if (matchesTahun && matchesPerusahaan && matchesLoker) {
-          count++;
-          const wrapper = document.createElement('div');
-          wrapper.className = 'entry';
-          const detailId = 'detail-' + index;
+      if (matchesTahun && matchesPerusahaan && matchesLoker) {
+        count++;
+        const wrapper = document.createElement('div');
+        wrapper.className = 'entry';
+        const detailId = 'detail-' + index;
 
-          wrapper.innerHTML = `
-            <div class="title-bar">
-              <div>${item.perusahaan}</div>
-              <div>
-                <button class="lihat-btn" onclick="toggleDetail('${detailId}'); playClick();">Lihat Selengkapnya</button>
-                <button class="hapus-btn" onclick="hapusRiwayat('${key}', this);">Hapus</button>
-              </div>
+        const kerja = item.tahapan.find(t => t.keterangan === 'KERJA');
+        wrapper.innerHTML = `
+          <div class="title-bar">
+            <div>${item.perusahaan}</div>
+            <div>
+              <button class="lihat-btn" onclick="toggleDetail('${detailId}'); playClick();">Lihat Selengkapnya</button>
+              <button class="hapus-btn" onclick="hapusRiwayat('${key}', this);">Hapus</button>
             </div>
-            <div id="${detailId}" style="display:none; margin-top:8px;">
-              <div><strong></strong> ${getIntervalText(item.tahapan)}</div>
-              <div><strong>Info Loker:</strong> ${item.loker}</div>
-              <table>
-                <thead>
-                  <tr>
-                    <th>Tanggal</th>
-                    <th>Tahapan</th>
-                    <th>Tempat</th>
-                    <th>Keterangan</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  ${item.tahapan.map(row => {
-                    const [y, m, d] = row.tanggal.split("-");
-                    const tanggalBaru = `${d}-${m}-${y}`;
-                     return `
-                        <tr>
-                            <td>${tanggalBaru}</td>
-                            <td>${row.tahapan}</td>
-                            <td>${row.tempat}</td>
-                            <td class="keterangan ${row.keterangan.toUpperCase()}">${row.keterangan}</td>
-                       </tr>`;
-                  }).map(row => {
-                    const [y, m, d] = row.tanggal.split("-");
-                    const tanggalBaru = `${d}-${m}-${y}`;
-                    let tambahan = "";
-                    if (row.keterangan === "KERJA") {
-                      tambahan += `<tr><td colspan="4" style="text-align:left;"><strong>Jenis Pekerjaan:</strong> ${row.jenisPekerjaan || '-'}</td></tr>`;
-                      tambahan += `<tr><td colspan="4" style="text-align:left;"><strong>Masa Kerja:</strong> ${formatTanggal(row.mulaiKerja)} s.d ${formatTanggal(row.akhirKerja)}</td></tr>`;
-                      if (row.catatanKerja) {
-                        tambahan += `<tr><td colspan="4" class="catatan">Catatan: ${row.catatanKerja}</td></tr>`;
-                      }
-                    }
-                    return `
-                      <tr>
-                        <td>${tanggalBaru}</td>
-                        <td>${row.tahapan}</td>
-                        <td>${row.tempat}</td>
-                        <td class="keterangan ${row.keterangan.toUpperCase()}">${row.keterangan}</td>
-                      </tr>` + tambahan;
-                  }).join('')}
-                </tbody>
-              </table>
-              ${item.catatan ? `<div class="catatan">Catatan: ${item.catatan}</div>` : ''}
-            </div>
-          `;
-          listContainer.appendChild(wrapper);
-        }
-      });
+          </div>
+          <div id="${detailId}" style="display:none; margin-top:8px;">
+            <div><strong></strong> ${getIntervalText(item.tahapan)}</div>
+            <div><strong>Info Loker:</strong> ${item.loker}</div>
+            <table>
+              <thead>
+                <tr>
+                  <th>Tanggal</th>
+                  <th>Tahapan</th>
+                  <th>Tempat</th>
+                  <th>Keterangan</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${item.tahapan.map(row => {
+                  const [y, m, d] = row.tanggal.split("-");
+                  return `
+                    <tr>
+                      <td>${d}-${m}-${y}</td>
+                      <td>${row.tahapan}</td>
+                      <td>${row.tempat}</td>
+                      <td class="keterangan ${row.keterangan.toUpperCase()}">${row.keterangan}</td>
+                    </tr>`;
+                }).join('')}
+              </tbody>
+            </table>
 
-      summaryBox.textContent = `Total Riwayat: ${count}`;
-    }
+            ${kerja ? `
+              <div class="catatan"><strong>Jenis Pekerjaan:</strong> ${kerja.jenisPekerjaan || '-'}</div>
+              <div class="catatan"><strong>Masa Kerja:</strong> ${formatTanggal(kerja.mulaiKerja)} s.d. ${formatTanggal(kerja.akhirKerja)}</div>
+              ${kerja.catatanKerja ? `<div class="catatan"><strong>Catatan Kerja:</strong> ${kerja.catatanKerja}</div>` : ''}
+            ` : ''}
 
-    function toggleDetail(id) {
-      const el = document.getElementById(id);
-      el.style.display = el.style.display === 'none' ? 'block' : 'none';
-    }
+            ${item.catatan ? `<div class="catatan"><strong>Catatan:</strong> ${item.catatan}</div>` : ''}
+          </div>
+        `;
+        listContainer.appendChild(wrapper);
+      }
+    });
 
-    function hapusRiwayat(key, button) {
-      playClick();
-      if (confirm("Yakin ingin menghapus data ini?")) {
-        if (confirm("Data akan dihapus permanen. Lanjutkan?")) {
-          const newData = JSON.parse(localStorage.getItem('riwayatData')) || {};
-          delete newData[key];
-          localStorage.setItem('riwayatData', JSON.stringify(newData));
-          data = newData;
-          button.closest('.entry').classList.add('fade-out');
-          setTimeout(() => renderRiwayat(), 500);
-          showToast("Data berhasil dihapus");
-        } else {
-          showToast("Penghapusan dibatalkan");
-        }
+    summaryBox.textContent = `Total Riwayat: ${count}`;
+  }
+
+  function toggleDetail(id) {
+    const el = document.getElementById(id);
+    el.style.display = el.style.display === 'none' ? 'block' : 'none';
+  }
+
+  function hapusRiwayat(key, button) {
+    playClick();
+    if (confirm("Yakin ingin menghapus data ini?")) {
+      if (confirm("Data akan dihapus permanen. Lanjutkan?")) {
+        const newData = JSON.parse(localStorage.getItem('riwayatData')) || {};
+        delete newData[key];
+        localStorage.setItem('riwayatData', JSON.stringify(newData));
+        data = newData;
+        button.closest('.entry').classList.add('fade-out');
+        setTimeout(() => renderRiwayat(), 500);
+        showToast("Data berhasil dihapus");
       } else {
         showToast("Penghapusan dibatalkan");
       }
+    } else {
+      showToast("Penghapusan dibatalkan");
+    }
+  }
+
+  function getIntervalText(tahapan) {
+    if (!tahapan || !Array.isArray(tahapan) || tahapan.length === 0) return '-';
+    const tanggalTerakhir = tahapan
+      .map(t => new Date(t.tanggal))
+      .filter(d => !isNaN(d))
+      .sort((a, b) => b - a)[0];
+
+    if (!tanggalTerakhir) return '-';
+
+    const today = new Date();
+    let tahun = today.getFullYear() - tanggalTerakhir.getFullYear();
+    let bulan = today.getMonth() - tanggalTerakhir.getMonth();
+    let hari = today.getDate() - tanggalTerakhir.getDate();
+
+    if (hari < 0) {
+      bulan -= 1;
+      hari += new Date(today.getFullYear(), today.getMonth(), 0).getDate();
     }
 
-    // Inisialisasi
-    
-       function getIntervalText(tahapan) {
-  if (!tahapan || !Array.isArray(tahapan) || tahapan.length === 0) return '-';
+    if (bulan < 0) {
+      tahun -= 1;
+      bulan += 12;
+    }
 
-  // Ambil tanggal terbesar (terakhir) dari tahapan
-  const tanggalTerakhir = tahapan
-    .map(t => new Date(t.tanggal))
-    .filter(d => !isNaN(d)) // pastikan valid
-    .sort((a, b) => b - a)[0];
-
-  if (!tanggalTerakhir) return '-';
-
-  const today = new Date();
-  let tahun = today.getFullYear() - tanggalTerakhir.getFullYear();
-  let bulan = today.getMonth() - tanggalTerakhir.getMonth();
-  let hari = today.getDate() - tanggalTerakhir.getDate();
-
-  if (hari < 0) {
-    bulan -= 1;
-    hari += new Date(today.getFullYear(), today.getMonth(), 0).getDate();
+    if (tahun > 0) {
+      return `${tahun} tahun ${bulan} bulan yang lalu`;
+    } else if (bulan > 0) {
+      return `${bulan} bulan ${hari} hari yang lalu`;
+    } else {
+      return `${hari} hari yang lalu`;
+    }
   }
 
-  if (bulan < 0) {
-    tahun -= 1;
-    bulan += 12;
-  }
-
-  if (tahun > 0) {
-    return `${tahun} tahun ${bulan} bulan yang lalu`;
-  } else if (bulan > 0) {
-    return `${bulan} bulan ${hari} hari yang lalu`;
-  } else {
-    return `${hari} hari yang lalu`;
-  }
-}
-    renderRiwayat();
-  </script>
+  renderRiwayat();
+</script>
 </body>
 </html>
