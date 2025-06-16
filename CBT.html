@@ -1,239 +1,292 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CBT Matematika</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Riwayat Data Pernikahan</title>
+  <link href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css" rel="stylesheet">
   <style>
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f0f0f0;
       margin: 0;
-      padding: 0;
-      background: #f0f2f5;
+      padding: 20px;
     }
+
     .container {
       max-width: 800px;
       margin: auto;
-      padding: 20px;
-    }
-    .hidden {
-      display: none;
-    }
-    .btn {
-      padding: 10px 20px;
-      background-color: #1a73e8;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      margin: 5px;
-    }
-    .btn-danger {
-      background-color: #e53935;
-    }
-    .question-box, .admin-box {
       background: white;
       padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
       margin-bottom: 20px;
     }
-    input[type="text"], input[type="password"] {
-      width: 100%;
-      padding: 10px;
-      margin: 10px 0;
-      border: 1px solid #ccc;
-      border-radius: 4px;
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
     }
-    .question-nav button {
-      margin: 3px;
-      padding: 8px 12px;
+
+    .header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .header-bar .jumlah {
+      font-weight: bold;
+      margin-right: 190px;
+    }
+
+    .header-bar .filter-icon {
+      cursor: pointer;
+      font-size: 25px;
+      color: black;
+    }
+
+    .entry {
+      background: white;
+      padding: 12px;
+      margin-bottom: 10px;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+    }
+
+    .title-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .lihat-btn {
+      color: #007BFF;
+      cursor: pointer;
       border: none;
-      border-radius: 4px;
-      background-color: #ccc;
-      color: #000;
+      background: none;
+      font-weight: bold;
+      font-size: 14px;
     }
-    .question-nav button.answered {
-      background-color: #4caf50;
+
+    .edit-btn {
+      background-color: gold;
+      color: black;
+      border: none;
+      padding: 4px 8px;
+      font-size: 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      min-width: 60px;
+    }
+
+    .hapus-btn {
+      background-color: red;
       color: white;
+      border: none;
+      padding: 4px 8px;
+      font-size: 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      min-width: 60px;
     }
-    .question-nav button.active {
-      background-color: #1a73e8;
-      color: white;
+
+    .button-group {
+      display: flex;
+      gap: 4px;
+      align-items: center;
     }
-    table {
-      width: 100%;
-      border-collapse: collapse;
+
+    .tanggal-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 8px;
+      font-size: 13px;
+    }
+
+    .tanggal-bar strong {
+      font-size: 14px;
+    }
+
+    .tanggal-bar small {
+      color: gray;
+    }
+
+    .detail {
       margin-top: 10px;
+      font-size: 14px;
+      color: #333;
+      display: none;
     }
-    th, td {
-      padding: 10px;
-      border: 1px solid #ccc;
+
+    .show {
+      display: block;
     }
   </style>
 </head>
 <body>
-<div class="container">
-  <!-- Login Panel -->
-  <div class="question-box" id="login-panel">
-    <h2>Login CBT</h2>
-    <input type="text" id="nama" placeholder="Nama Peserta">
-    <input type="text" id="nomor" placeholder="Nomor Ujian">
-    <button class="btn" onclick="mulaiUjian()">Mulai Ujian</button>
-    <hr>
-    <input type="password" id="admin-code" placeholder="Kode Akses Admin">
-    <button class="btn" onclick="bukaAdmin()">Login Admin</button>
-  </div>
-
-  <!-- Ujian Panel -->
-  <div class="question-box hidden" id="ujian-panel">
-    <div id="timer" style="text-align:right;font-weight:bold;">00:30:00</div>
-    <div class="question-nav" id="navSoal"></div>
-    <div id="pertanyaan"></div>
-    <div id="opsi"></div>
-    <div>
-      <button class="btn" onclick="prevSoal()">Sebelumnya</button>
-      <button class="btn" onclick="nextSoal()">Selanjutnya</button>
-      <button class="btn" onclick="selesai()">Kumpulkan</button>
+  <h2>Riwayat Data Pernikahan</h2>
+  <div class="container">
+    <div class="header-bar">
+      <div class="jumlah" id="jumlahData">Jumlah: 0</div>
+      <i class="ri-sticky-note-add-fill" title="Tambah Data" onclick="window.location.href='jamaludin2025.github.io/ajdev.github.io/Inputlampiran.html'"></i>
+      <i class="ri-filter-fill" title="Filter (belum aktif)"></i>
     </div>
-    <div id="hasil" class="hidden"></div>
   </div>
+  <div id="riwayatList"></div>
 
-  <!-- Admin Dashboard -->
-  <div class="admin-box hidden" id="admin-panel">
-    <h3>Dashboard Admin</h3>
-    <button class="btn" onclick="kembaliLogin()">Kembali</button>
-    <h4>Tambah Soal</h4>
-    <input type="text" id="soal-baru" placeholder="Tulis pertanyaan">
-    <input type="text" id="pilihan-a" placeholder="Pilihan A">
-    <input type="text" id="pilihan-b" placeholder="Pilihan B">
-    <input type="text" id="pilihan-c" placeholder="Pilihan C">
-    <input type="text" id="pilihan-d" placeholder="Pilihan D">
-    <input type="text" id="jawaban-betul" placeholder="Kunci Jawaban (A/B/C/D)">
-    <button class="btn" onclick="tambahSoal()">Tambah Soal</button>
+  <script>
+    function formatTanggalDanSelisih(tanggalStr) {
+  const bulanList = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+                     'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+  const tanggal = new Date(tanggalStr);
+  const sekarang = new Date();
 
-    <h4>Riwayat Ujian Peserta</h4>
-    <table id="tabel-riwayat">
-      <thead>
-        <tr><th>Nama</th><th>Nomor</th><th>Skor</th><th>Aksi</th></tr>
-      </thead>
-      <tbody></tbody>
-    </table>
+  const tanggalFormatted = `${tanggal.getDate()} ${bulanList[tanggal.getMonth()]} ${tanggal.getFullYear()}`;
+  let keterangan = '';
+
+  if (tanggal > sekarang) {
+    const selisihHari = Math.floor((tanggal - sekarang) / (1000 * 60 * 60 * 24));
+    keterangan = `${selisihHari} hari lagi`;
+  } else if (tanggal.toDateString() === sekarang.toDateString()) {
+    keterangan = 'Hari ini';
+  } else {
+    let tahun = sekarang.getFullYear() - tanggal.getFullYear();
+    let bulan = sekarang.getMonth() - tanggal.getMonth();
+    let hari = sekarang.getDate() - tanggal.getDate();
+
+    if (hari < 0) {
+      bulan -= 1;
+      hari += new Date(sekarang.getFullYear(), sekarang.getMonth(), 0).getDate();
+    }
+
+    if (bulan < 0) {
+      tahun -= 1;
+      bulan += 12;
+    }
+
+    if (tahun > 0) {
+      keterangan = `${tahun} tahun${bulan > 0 ? ' ' + bulan + ' bulan' : ''} yang lalu`;
+    } else if (bulan > 0) {
+      keterangan = `${bulan} bulan${hari > 0 ? ' ' + hari + ' hari' : ''} yang lalu`;
+    } else {
+      keterangan = `${hari} hari yang lalu`;
+    }
+  }
+
+  return { tanggalFormatted, keterangan };
+}
+
+    const data = JSON.parse(localStorage.getItem("dataPernikahan")) || [];
+    const riwayatList = document.getElementById("riwayatList");
+    const jumlahData = document.getElementById("jumlahData");
+
+    const maxShow = 15;
+    const tampilkanData = [...data].reverse().slice(0, maxShow);
+
+    jumlahData.textContent = 'Jumlah: ' + data.length;
+
+    tampilkanData.forEach((item, index) => {
+      const { tanggalFormatted, keterangan } = formatTanggalDanSelisih(item.tanggal);
+      const div = document.createElement("div");
+      div.className = "entry";
+      div.innerHTML = `
+        <div class="title-bar">
+          <div class="lihat-btn" onclick="toggleDetail(${index})">${item.kode}</div>
+          <div class="button-group">
+            <button class="edit-btn" onclick="editData('${item.kode}')">Edit</button>
+            <button class="hapus-btn" onclick="hapusData('${item.kode}')">Hapus</button>
+          </div>
+        </div>
+        <div class="detail" id="detail-${index}">
+          <div class="tanggal-bar">
+            <strong>${tanggalFormatted}</strong>
+            <small>${keterangan}</small>
+          </div>
+          <hr style="margin: 10px 0;">
+          <div style="display: flex; flex-direction: column; gap: 6px; font-size: 14px;">
+            <div style="display: flex;">
+              <div style="width: 120px; font-weight: bold; color: #888;">Data Pengantin</div><div style="width: 10px;"></div>
+            </div>
+            <div style="display: flex;">
+              <div style="width: 120px;">Nama Kerabat</div><div style="width: 10px;">:</div><div><strong>${item.kerabat}</strong></div>
+            </div>
+            <div style="display: flex;">
+              <div style="width: 120px;">Nama Pasangan</div><div style="width: 10px;">:</div><div><strong>${item.pasangan}</strong></div>
+            </div>
+            <div style="display: flex;">
+              <div style="width: 120px;"></div><div style="width: 10px;"></div>
+            </div>
+            <div style="display: flex;">
+              <div style="width: 120px; font-weight: bold; color: #888;">Data Orang Tua</div><div style="width: 10px;"></div>
+            </div>
+            <div style="display: flex;">
+              <div style="width: 120px;">Bapak Kerabat</div><div style="width: 10px;">:</div><div><strong>${item.bapak}</strong></div>
+            </div>
+            <div style="display: flex;">
+              <div style="width: 120px;">Ibu Kerabat</div><div style="width: 10px;">:</div><div><strong>${item.ibu}</strong></div>
+            </div>
+            <div style="display: flex;">
+              <div style="width: 120px;"></div><div style="width: 10px;"></div>
+            </div>
+            <div style="display: flex;">
+              <div style="width: 120px; font-weight: bold; color: #888;">Lokasi Acara</div><div style="width: 10px;"></div>
+            </div>
+            <div style="display: flex;">
+              <div style="width: 120px;">Alamat</div><div style="width: 10px;">:</div><div><strong>${item.kampung}, ${item.rt}/${item.rw}</strong></div>
+            </div>
+            <div style="display: flex;">
+              <div style="width: 120px;">Desa</div><div style="width: 10px;">:</div><div><strong>${item.desa}</strong></div>
+            </div>
+            <div style="display: flex;">
+              <div style="width: 120px;">Kecamatan</div><div style="width: 10px;">:</div><div><strong>${item.kecamatan}</strong></div>
+            </div>
+            <div style="display: flex;">
+              <div style="width: 120px;">Kabupaten</div><div style="width: 10px;">:</div><div><strong>${item.kabupaten}</strong></div>
+            </div>
+            <div style="display: flex;">
+              <div style="width: 120px;"></div><div style="width: 10px;"></div>
+            </div>
+            <div style="display: flex;">
+              <div style="width: 120px; font-weight: bold; color: #888;">Bingkisan</div><div style="width: 10px;"></div>
+            </div>
+            <div style="display: flex;">
+              <div style="width: 120px;">${item.bingkisan === 'Kado' ? 'Kado' : 'Uang'}</div>
+              <div style="width: 10px;">:</div>
+        <div>
+        <strong>
+            ${item.bingkisan === 'Kado' ? item.namaBarang + ' - ' + item.nominal : item.nominal}
+          </strong>
+        </div>
+      </div>
+    </div>
   </div>
-</div>
-<script>
-const ADMIN_PASS = "admin123";
-let soal = JSON.parse(localStorage.getItem("soal-data")) || [
-  { q: "2 + 2 = ?", a: ["3", "4", "5", "6"], k: 1 },
-];
-let riwayat = JSON.parse(localStorage.getItem("riwayat")) || [];
-let jawaban = [];
-let index = 0;
-let waktu = 30 * 60;
-let peserta = {};
+`;
+      riwayatList.appendChild(div);
+    });
 
-function mulaiUjian() {
-  const nama = document.getElementById('nama').value.trim();
-  const nomor = document.getElementById('nomor').value.trim();
-  if (!nama || !nomor) return alert("Lengkapi data peserta!");
-  peserta = { nama, nomor };
-  jawaban = Array(soal.length).fill(null);
-  document.getElementById('login-panel').classList.add('hidden');
-  document.getElementById('ujian-panel').classList.remove('hidden');
-  tampilSoal();
-  setInterval(updateTimer, 1000);
-  window.onblur = () => alert("Jangan membuka aplikasi lain atau Google selama ujian!");
-  document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState !== 'visible') alert("Fokus kembali ke halaman ujian!");
-  });
-}
-function tampilSoal() {
-  const q = soal[index];
-  document.getElementById('pertanyaan').innerHTML = `<h4>${index + 1}. ${q.q}</h4>`;
-  let opsiHtml = '';
-  ['A', 'B', 'C', 'D'].forEach((l, i) => {
-    const checked = jawaban[index] === i ? 'checked' : '';
-    opsiHtml += `<label><input type='radio' name='opsi' value='${i}' ${checked} onchange='jawaban[${index}]=${i}; updateNav();'> ${l}. ${q.a[i]}</label><br>`;
-  });
-  document.getElementById('opsi').innerHTML = opsiHtml;
-  updateNav();
-}
-function updateNav() {
-  const nav = document.getElementById('navSoal');
-  nav.innerHTML = '';
-  soal.forEach((_, i) => {
-    const btn = document.createElement('button');
-    btn.textContent = i + 1;
-    if (jawaban[i] !== null) btn.classList.add('answered');
-    if (i === index) btn.classList.add('active');
-    btn.onclick = () => { index = i; tampilSoal(); };
-    nav.appendChild(btn);
-  });
-}
-function prevSoal() { if (index > 0) { index--; tampilSoal(); } }
-function nextSoal() { if (index < soal.length - 1) { index++; tampilSoal(); } }
-function selesai() {
-  if (!confirm("Kumpulkan ujian sekarang?")) return;
-  let skor = soal.filter((s, i) => s.k === jawaban[i]).length;
-  riwayat.push({ ...peserta, skor });
-  localStorage.setItem("riwayat", JSON.stringify(riwayat));
-  const nilai = skor / soal.length * 100;
-  const status = nilai >= 80 ? 'LULUS' : 'TIDAK LULUS';
-  document.getElementById('hasil').innerHTML = `<h3>${peserta.nama} (${peserta.nomor})</h3><p>Skor Anda: ${skor}/${soal.length} (${nilai}%)</p><h4>Status: ${status}</h4>`;
-  document.getElementById('hasil').classList.remove('hidden');
-  document.querySelector('#ujian-panel .question-nav').classList.add('hidden');
-  document.getElementById('pertanyaan').classList.add('hidden');
-  document.getElementById('opsi').classList.add('hidden');
-}
-function updateTimer() {
-  const m = String(Math.floor(waktu / 60)).padStart(2, '0');
-  const s = String(waktu % 60).padStart(2, '0');
-  document.getElementById('timer').textContent = `00:${m}:${s}`;
-  if (--waktu <= 0) selesai();
-}
-function bukaAdmin() {
-  const code = document.getElementById("admin-code").value;
-  if (code !== ADMIN_PASS) return alert("Kode salah!");
-  document.getElementById('login-panel').classList.add('hidden');
-  document.getElementById('admin-panel').classList.remove('hidden');
-  renderRiwayat();
-}
-function kembaliLogin() {
-  document.getElementById('admin-panel').classList.add('hidden');
-  document.getElementById('login-panel').classList.remove('hidden');
-}
-function tambahSoal() {
-  const q = document.getElementById('soal-baru');
-  const a = [
-    document.getElementById('pilihan-a'),
-    document.getElementById('pilihan-b'),
-    document.getElementById('pilihan-c'),
-    document.getElementById('pilihan-d')
-  ];
-  const kunci = document.getElementById('jawaban-betul');
-  const k = {A:0,B:1,C:2,D:3}[kunci.value.toUpperCase()];
-  if (!q.value || a.some(x => !x.value) || k == null) return alert("Lengkapi semua data!");
-  soal.push({ q: q.value, a: a.map(x => x.value), k });
-  localStorage.setItem("soal-data", JSON.stringify(soal));
-  alert("Soal ditambahkan!");
-  q.value = kunci.value = '';
-  a.forEach(x => x.value = '');
-}
-function renderRiwayat() {
-  const tbody = document.querySelector('#tabel-riwayat tbody');
-  tbody.innerHTML = '';
-  riwayat.forEach((r, i) => {
-    const tr = document.createElement('tr');
-    tr.innerHTML = `<td>${r.nama}</td><td>${r.nomor}</td><td>${r.skor}</td><td><button class='btn btn-danger' onclick='hapusRiwayat(${i})'>Hapus</button></td>`;
-    tbody.appendChild(tr);
-  });
-}
-function hapusRiwayat(i) {
-  if (!confirm("Hapus riwayat ini?")) return;
-  riwayat.splice(i, 1);
-  localStorage.setItem("riwayat", JSON.stringify(riwayat));
-  renderRiwayat();
-}
-</script>
+    function toggleDetail(index) {
+      const detail = document.getElementById("detail-" + index);
+      detail.classList.toggle("show");
+    }
+
+    function hapusData(kode) {
+      if (confirm("Yakin ingin menghapus data ini?")) {
+        let data = JSON.parse(localStorage.getItem("dataPernikahan")) || [];
+        data = data.filter(d => d.kode !== kode);
+        localStorage.setItem("dataPernikahan", JSON.stringify(data));
+        location.reload();
+      }
+    }
+
+    function editData(kode) {
+      alert("Fungsi edit untuk kode " + kode + " akan segera ditambahkan.");
+    }
+  </script>
 </body>
 </html>
