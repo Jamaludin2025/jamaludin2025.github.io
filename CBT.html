@@ -39,9 +39,9 @@
       margin-right: 190px;
     }
 
-    .header-bar i {
+    .header-bar .filter-icon {
       cursor: pointer;
-      font-size: 24px;
+      font-size: 25px;
       color: black;
     }
 
@@ -94,6 +94,29 @@
       font-weight: bold;
       min-width: 60px;
     }
+    
+    .icon-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+  padding: 6px;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+}
+
+.icon-btn.edit {
+  color: goldenrod;
+}
+
+.icon-btn.hapus {
+  color: red;
+}
+
+.icon-btn:hover {
+  background-color: #f0f0f0;
+}
+
 
     .button-group {
       display: flex;
@@ -199,8 +222,12 @@
         <div class="title-bar">
           <div class="lihat-btn" onclick="toggleDetail(${index})">${item.kode}</div>
           <div class="button-group">
-            <button class="edit-btn" onclick="editData('${item.kode}')">Edit</button>
-            <button class="hapus-btn" onclick="hapusData('${item.kode}')">Hapus</button>
+            <button class="icon-btn edit" onclick="editData('${item.kode}')">
+  <i class="ri-edit-2-fill"></i>
+</button>
+<button class="icon-btn hapus" onclick="hapusData('${item.kode}')">
+  <i class="ri-delete-bin-6-fill"></i>
+</button>
           </div>
         </div>
         <div class="detail" id="detail-${index}">
