@@ -39,10 +39,11 @@
       margin-right: 190px;
     }
 
-    .header-bar .filter-icon {
+    .header-bar i {
+      font-size: 24px;
       cursor: pointer;
-      font-size: 25px;
       color: black;
+      margin-left: 10px;
     }
 
     .entry {
@@ -94,29 +95,28 @@
       font-weight: bold;
       min-width: 60px;
     }
-    
+
     .icon-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 20px;
-  padding: 6px;
-  border-radius: 50%;
-  transition: background-color 0.2s;
-}
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 20px;
+      padding: 6px;
+      border-radius: 50%;
+      transition: background-color 0.2s;
+    }
 
-.icon-btn.edit {
-  color: goldenrod;
-}
+    .icon-btn.edit {
+      color: goldenrod;
+    }
 
-.icon-btn.hapus {
-  color: red;
-}
+    .icon-btn.hapus {
+      color: red;
+    }
 
-.icon-btn:hover {
-  background-color: #f0f0f0;
-}
-
+    .icon-btn:hover {
+      background-color: #f0f0f0;
+    }
 
     .button-group {
       display: flex;
@@ -165,45 +165,42 @@
 
   <script>
     function formatTanggalDanSelisih(tanggalStr) {
-  const bulanList = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-                     'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
-  const tanggal = new Date(tanggalStr);
-  const sekarang = new Date();
+      const bulanList = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+      const tanggal = new Date(tanggalStr);
+      const sekarang = new Date();
+      const tanggalFormatted = `${tanggal.getDate()} ${bulanList[tanggal.getMonth()]} ${tanggal.getFullYear()}`;
+      let keterangan = '';
 
-  const tanggalFormatted = `${tanggal.getDate()} ${bulanList[tanggal.getMonth()]} ${tanggal.getFullYear()}`;
-  let keterangan = '';
+      if (tanggal > sekarang) {
+        const selisihHari = Math.floor((tanggal - sekarang) / (1000 * 60 * 60 * 24));
+        keterangan = `${selisihHari} hari lagi`;
+      } else if (tanggal.toDateString() === sekarang.toDateString()) {
+        keterangan = 'Hari ini';
+      } else {
+        let tahun = sekarang.getFullYear() - tanggal.getFullYear();
+        let bulan = sekarang.getMonth() - tanggal.getMonth();
+        let hari = sekarang.getDate() - tanggal.getDate();
 
-  if (tanggal > sekarang) {
-    const selisihHari = Math.floor((tanggal - sekarang) / (1000 * 60 * 60 * 24));
-    keterangan = `${selisihHari} hari lagi`;
-  } else if (tanggal.toDateString() === sekarang.toDateString()) {
-    keterangan = 'Hari ini';
-  } else {
-    let tahun = sekarang.getFullYear() - tanggal.getFullYear();
-    let bulan = sekarang.getMonth() - tanggal.getMonth();
-    let hari = sekarang.getDate() - tanggal.getDate();
+        if (hari < 0) {
+          bulan -= 1;
+          hari += new Date(sekarang.getFullYear(), sekarang.getMonth(), 0).getDate();
+        }
+        if (bulan < 0) {
+          tahun -= 1;
+          bulan += 12;
+        }
 
-    if (hari < 0) {
-      bulan -= 1;
-      hari += new Date(sekarang.getFullYear(), sekarang.getMonth(), 0).getDate();
+        if (tahun > 0) {
+          keterangan = `${tahun} tahun${bulan > 0 ? ' ' + bulan + ' bulan' : ''} yang lalu`;
+        } else if (bulan > 0) {
+          keterangan = `${bulan} bulan${hari > 0 ? ' ' + hari + ' hari' : ''} yang lalu`;
+        } else {
+          keterangan = `${hari} hari yang lalu`;
+        }
+      }
+
+      return { tanggalFormatted, keterangan };
     }
-
-    if (bulan < 0) {
-      tahun -= 1;
-      bulan += 12;
-    }
-
-    if (tahun > 0) {
-      keterangan = `${tahun} tahun${bulan > 0 ? ' ' + bulan + ' bulan' : ''} yang lalu`;
-    } else if (bulan > 0) {
-      keterangan = `${bulan} bulan${hari > 0 ? ' ' + hari + ' hari' : ''} yang lalu`;
-    } else {
-      keterangan = `${hari} hari yang lalu`;
-    }
-  }
-
-  return { tanggalFormatted, keterangan };
-}
 
     const data = JSON.parse(localStorage.getItem("dataPernikahan")) || [];
     const riwayatList = document.getElementById("riwayatList");
@@ -211,25 +208,18 @@
 
     const maxShow = 15;
     const tampilkanData = [...data].reverse().slice(0, maxShow);
-
     jumlahData.textContent = 'Jumlah: ' + data.length;
 
     tampilkanData.forEach((item, index) => {
       const { tanggalFormatted, keterangan } = formatTanggalDanSelisih(item.tanggal);
       const div = document.createElement("div");
       div.className = "entry";
-      div.innerHTML = `
-        <div class="title-bar">
-          <div class="lihat-btn" onclick="toggleDetail(${index})">${item.kode}</div>
-          <div class="button-group">
-            <button class="icon-btn edit" onclick="editData('${item.kode}')">
-  <i class="ri-edit-2-fill"></i>
-</button>
-<button class="icon-btn hapus" onclick="hapusData('${item.kode}')">
-  <i class="ri-delete-bin-6-fill"></i>
-</button>
-          </div>
-        </div>
+      div.innerHTML = `<div class="title-bar">
+        <div class="lihat-btn" onclick="toggleDetail(${index})">${item.kode}</div>
+        <div class="button-group">
+          <button class="edit-btn" onclick="editData('${item.kode}')">Edit</button>
+          <button class="hapus-btn" onclick="hapusData('${item.kode}')">Hapus</button>
+        </div></div>
         <div class="detail" id="detail-${index}">
           <div class="tanggal-bar">
             <strong>${tanggalFormatted}</strong>
@@ -237,63 +227,21 @@
           </div>
           <hr style="margin: 10px 0;">
           <div style="display: flex; flex-direction: column; gap: 6px; font-size: 14px;">
-            <div style="display: flex;">
-              <div style="width: 120px; font-weight: bold; color: #888;">Data Pengantin</div><div style="width: 10px;"></div>
-            </div>
-            <div style="display: flex;">
-              <div style="width: 120px;">Nama Kerabat</div><div style="width: 10px;">:</div><div><strong>${item.kerabat}</strong></div>
-            </div>
-            <div style="display: flex;">
-              <div style="width: 120px;">Nama Pasangan</div><div style="width: 10px;">:</div><div><strong>${item.pasangan}</strong></div>
-            </div>
-            <div style="display: flex;">
-              <div style="width: 120px;"></div><div style="width: 10px;"></div>
-            </div>
-            <div style="display: flex;">
-              <div style="width: 120px; font-weight: bold; color: #888;">Data Orang Tua</div><div style="width: 10px;"></div>
-            </div>
-            <div style="display: flex;">
-              <div style="width: 120px;">Bapak Kerabat</div><div style="width: 10px;">:</div><div><strong>${item.bapak}</strong></div>
-            </div>
-            <div style="display: flex;">
-              <div style="width: 120px;">Ibu Kerabat</div><div style="width: 10px;">:</div><div><strong>${item.ibu}</strong></div>
-            </div>
-            <div style="display: flex;">
-              <div style="width: 120px;"></div><div style="width: 10px;"></div>
-            </div>
-            <div style="display: flex;">
-              <div style="width: 120px; font-weight: bold; color: #888;">Lokasi Acara</div><div style="width: 10px;"></div>
-            </div>
-            <div style="display: flex;">
-              <div style="width: 120px;">Alamat</div><div style="width: 10px;">:</div><div><strong>${item.kampung}, ${item.rt}/${item.rw}</strong></div>
-            </div>
-            <div style="display: flex;">
-              <div style="width: 120px;">Desa</div><div style="width: 10px;">:</div><div><strong>${item.desa}</strong></div>
-            </div>
-            <div style="display: flex;">
-              <div style="width: 120px;">Kecamatan</div><div style="width: 10px;">:</div><div><strong>${item.kecamatan}</strong></div>
-            </div>
-            <div style="display: flex;">
-              <div style="width: 120px;">Kabupaten</div><div style="width: 10px;">:</div><div><strong>${item.kabupaten}</strong></div>
-            </div>
-            <div style="display: flex;">
-              <div style="width: 120px;"></div><div style="width: 10px;"></div>
-            </div>
-            <div style="display: flex;">
-              <div style="width: 120px; font-weight: bold; color: #888;">Bingkisan</div><div style="width: 10px;"></div>
-            </div>
-            <div style="display: flex;">
-              <div style="width: 120px;">${item.bingkisan === 'Kado' ? 'Kado' : 'Uang'}</div>
-              <div style="width: 10px;">:</div>
-        <div>
-        <strong>
-            ${item.bingkisan === 'Kado' ? item.namaBarang + ' - ' + item.nominal : item.nominal}
-          </strong>
-        </div>
-      </div>
-    </div>
-  </div>
-`;
+            <div style="display: flex;"><div style="width: 120px; font-weight: bold; color: #888;">Data Pengantin</div></div>
+            <div style="display: flex;"><div style="width: 120px;">Nama Kerabat</div><div style="width: 10px;">:</div><div><strong>${item.kerabat}</strong></div></div>
+            <div style="display: flex;"><div style="width: 120px;">Nama Pasangan</div><div style="width: 10px;">:</div><div><strong>${item.pasangan}</strong></div></div>
+            <div style="display: flex;"><div style="width: 120px; font-weight: bold; color: #888;">Data Orang Tua</div></div>
+            <div style="display: flex;"><div style="width: 120px;">Bapak Kerabat</div><div style="width: 10px;">:</div><div><strong>${item.bapak}</strong></div></div>
+            <div style="display: flex;"><div style="width: 120px;">Ibu Kerabat</div><div style="width: 10px;">:</div><div><strong>${item.ibu}</strong></div></div>
+            <div style="display: flex;"><div style="width: 120px; font-weight: bold; color: #888;">Lokasi Acara</div></div>
+            <div style="display: flex;"><div style="width: 120px;">Alamat</div><div style="width: 10px;">:</div><div><strong>${item.kampung}, ${item.rt}/${item.rw}</strong></div></div>
+            <div style="display: flex;"><div style="width: 120px;">Desa</div><div style="width: 10px;">:</div><div><strong>${item.desa}</strong></div></div>
+            <div style="display: flex;"><div style="width: 120px;">Kecamatan</div><div style="width: 10px;">:</div><div><strong>${item.kecamatan}</strong></div></div>
+            <div style="display: flex;"><div style="width: 120px;">Kabupaten</div><div style="width: 10px;">:</div><div><strong>${item.kabupaten}</strong></div></div>
+            <div style="display: flex;"><div style="width: 120px; font-weight: bold; color: #888;">Bingkisan</div></div>
+            <div style="display: flex;"><div style="width: 120px;">${item.bingkisan === 'Kado' ? 'Kado' : 'Uang'}</div><div style="width: 10px;">:</div><div><strong>${item.bingkisan === 'Kado' ? item.namaBarang + ' - ' + item.nominal : item.nominal}</strong></div></div>
+          </div>
+        </div>`;
       riwayatList.appendChild(div);
     });
 
