@@ -34,9 +34,8 @@
       align-items: center;
     }
 
-    .header-bar .jumlah {
+    .jumlah {
       font-weight: bold;
-      margin-right: 190px;
     }
 
     .header-bar i {
@@ -72,51 +71,18 @@
       font-size: 14px;
     }
 
-    .edit-btn {
-      background-color: gold;
-      color: black;
-      border: none;
+    .edit-btn, .hapus-btn {
       padding: 4px 8px;
       font-size: 12px;
       border-radius: 6px;
       cursor: pointer;
       font-weight: bold;
       min-width: 60px;
-    }
-
-    .hapus-btn {
-      background-color: red;
-      color: white;
       border: none;
-      padding: 4px 8px;
-      font-size: 12px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: bold;
-      min-width: 60px;
     }
 
-    .icon-btn {
-      background: none;
-      border: none;
-      cursor: pointer;
-      font-size: 20px;
-      padding: 6px;
-      border-radius: 50%;
-      transition: background-color 0.2s;
-    }
-
-    .icon-btn.edit {
-      color: goldenrod;
-    }
-
-    .icon-btn.hapus {
-      color: red;
-    }
-
-    .icon-btn:hover {
-      background-color: #f0f0f0;
-    }
+    .edit-btn { background-color: gold; color: black; }
+    .hapus-btn { background-color: red; color: white; }
 
     .button-group {
       display: flex;
@@ -132,14 +98,6 @@
       font-size: 13px;
     }
 
-    .tanggal-bar strong {
-      font-size: 14px;
-    }
-
-    .tanggal-bar small {
-      color: gray;
-    }
-
     .detail {
       margin-top: 10px;
       font-size: 14px;
@@ -150,6 +108,44 @@
     .show {
       display: block;
     }
+
+    /* Modal filter */
+    .filter-modal {
+      display: none;
+      grid-template-columns: 1fr 1fr auto auto;
+      gap: 10px;
+      margin-bottom: 10px;
+      background: #fff;
+      padding: 12px;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      align-items: center;
+    }
+
+    .filter-modal input, .filter-modal select {
+      padding: 6px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+      width: 100%;
+    }
+
+    .filter-modal button {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .filter-modal .cari-btn { background: #007bff; color: white; }
+    .filter-modal .reset-btn { background: #ccc; }
+
+    @media (max-width: 600px) {
+      .filter-modal {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
 </head>
 <body>
@@ -157,20 +153,46 @@
   <div class="container">
     <div class="header-bar">
       <div class="jumlah" id="jumlahData">Jumlah: 0</div>
-      <i class="ri-sticky-note-add-fill" title="Tambah Data" onclick="window.location.href='https://jamaludin2025.github.io/ajdev.github.io/Inputlampiran.html'"></i>
-      <i class="ri-filter-fill" title="Filter (belum aktif)"></i>
+      <div>
+        <i class="ri-sticky-note-add-fill" title="Tambah Data" onclick="window.location.href='https://jamaludin2025.github.io/ajdev.github.io/Inputlampiran.html'"></i>
+        <i class="ri-filter-fill" title="Filter" onclick="toggleFilterModal()"></i>
+      </div>
     </div>
   </div>
+
+  <!-- Filter Modal -->
+  <div class="container filter-modal" id="filterModal">
+    <input type="text" id="filterKeyword" placeholder="Kata kunci..." />
+    <select id="filterCategory">
+      <option value="kode">Kode</option>
+      <option value="kerabat">Nama Kerabat</option>
+      <option value="bapak">Nama Bapak</option>
+      <option value="alamat">Alamat</option>
+      <option value="tahun">Tahun</option>
+    </select>
+    <button class="cari-btn" onclick="applyFilter()">Cari</button>
+    <button class="reset-btn" onclick="resetFilter()">Reset</button>
+  </div>
+
   <div id="riwayatList"></div>
 
   <script>
+    const data = JSON.parse(localStorage.getItem("dataPernikahan")) || [];
+    const jumlahData = document.getElementById("jumlahData");
+    const riwayatList = document.getElementById("riwayatList");
+    const filterModal = document.getElementById("filterModal");
+    const maxShow = 15;
+
+    function toggleFilterModal() {
+      filterModal.style.display = filterModal.style.display === "grid" ? "none" : "grid";
+    }
+
     function formatTanggalDanSelisih(tanggalStr) {
       const bulanList = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
       const tanggal = new Date(tanggalStr);
       const sekarang = new Date();
       const tanggalFormatted = `${tanggal.getDate()} ${bulanList[tanggal.getMonth()]} ${tanggal.getFullYear()}`;
       let keterangan = '';
-
       if (tanggal > sekarang) {
         const selisihHari = Math.floor((tanggal - sekarang) / (1000 * 60 * 60 * 24));
         keterangan = `${selisihHari} hari lagi`;
@@ -180,7 +202,6 @@
         let tahun = sekarang.getFullYear() - tanggal.getFullYear();
         let bulan = sekarang.getMonth() - tanggal.getMonth();
         let hari = sekarang.getDate() - tanggal.getDate();
-
         if (hari < 0) {
           bulan -= 1;
           hari += new Date(sekarang.getFullYear(), sekarang.getMonth(), 0).getDate();
@@ -189,7 +210,6 @@
           tahun -= 1;
           bulan += 12;
         }
-
         if (tahun > 0) {
           keterangan = `${tahun} tahun${bulan > 0 ? ' ' + bulan + ' bulan' : ''} yang lalu`;
         } else if (bulan > 0) {
@@ -198,63 +218,51 @@
           keterangan = `${hari} hari yang lalu`;
         }
       }
-
       return { tanggalFormatted, keterangan };
     }
 
-    const data = JSON.parse(localStorage.getItem("dataPernikahan")) || [];
-    const riwayatList = document.getElementById("riwayatList");
-    const jumlahData = document.getElementById("jumlahData");
-
-    const maxShow = 15;
-    const tampilkanData = [...data].reverse().slice(0, maxShow);
-    jumlahData.textContent = 'Jumlah: ' + data.length;
-
-    tampilkanData.forEach((item, index) => {
-      const { tanggalFormatted, keterangan } = formatTanggalDanSelisih(item.tanggal);
-      const div = document.createElement("div");
-      div.className = "entry";
-      div.innerHTML = `<div class="title-bar">
-        <div class="lihat-btn" onclick="toggleDetail(${index})">${item.kode}</div>
-        <div class="button-group">
-          <button class="edit-btn" onclick="editData('${item.kode}')">Edit</button>
-          <button class="hapus-btn" onclick="hapusData('${item.kode}')">Hapus</button>
-        </div></div>
-        <div class="detail" id="detail-${index}">
-          <div class="tanggal-bar">
-            <strong>${tanggalFormatted}</strong>
-            <small>${keterangan}</small>
+    function renderData(sourceData) {
+      riwayatList.innerHTML = "";
+      jumlahData.textContent = "Jumlah: " + sourceData.length;
+      sourceData.slice(0, maxShow).reverse().forEach((item, index) => {
+        const { tanggalFormatted, keterangan } = formatTanggalDanSelisih(item.tanggal);
+        const div = document.createElement("div");
+        div.className = "entry";
+        div.innerHTML = `
+          <div class="title-bar">
+            <div class="lihat-btn" onclick="toggleDetail(${index})">${item.kode}</div>
+            <div class="button-group">
+              <button class="edit-btn" onclick="editData('${item.kode}')">Edit</button>
+              <button class="hapus-btn" onclick="hapusData('${item.kode}')">Hapus</button>
+            </div>
           </div>
-          <hr style="margin: 10px 0;">
-          <div style="display: flex; flex-direction: column; gap: 6px; font-size: 14px;">
-            <div style="display: flex;"><div style="width: 120px; font-weight: bold; color: #888;">Data Pengantin</div></div>
-            <div style="display: flex;"><div style="width: 120px;">Nama Kerabat</div><div style="width: 10px;">:</div><div><strong>${item.kerabat}</strong></div></div>
-            <div style="display: flex;"><div style="width: 120px;">Nama Pasangan</div><div style="width: 10px;">:</div><div><strong>${item.pasangan}</strong></div></div>
-            <div style="display: flex;"><div style="width: 120px; font-weight: bold; color: #888;">Data Orang Tua</div></div>
-            <div style="display: flex;"><div style="width: 120px;">Bapak Kerabat</div><div style="width: 10px;">:</div><div><strong>${item.bapak}</strong></div></div>
-            <div style="display: flex;"><div style="width: 120px;">Ibu Kerabat</div><div style="width: 10px;">:</div><div><strong>${item.ibu}</strong></div></div>
-            <div style="display: flex;"><div style="width: 120px; font-weight: bold; color: #888;">Lokasi Acara</div></div>
-            <div style="display: flex;"><div style="width: 120px;">Alamat</div><div style="width: 10px;">:</div><div><strong>${item.kampung}, ${item.rt}/${item.rw}</strong></div></div>
-            <div style="display: flex;"><div style="width: 120px;">Desa</div><div style="width: 10px;">:</div><div><strong>${item.desa}</strong></div></div>
-            <div style="display: flex;"><div style="width: 120px;">Kecamatan</div><div style="width: 10px;">:</div><div><strong>${item.kecamatan}</strong></div></div>
-            <div style="display: flex;"><div style="width: 120px;">Kabupaten</div><div style="width: 10px;">:</div><div><strong>${item.kabupaten}</strong></div></div>
-            <div style="display: flex;"><div style="width: 120px; font-weight: bold; color: #888;">Bingkisan</div></div>
-            <div style="display: flex;"><div style="width: 120px;">${item.bingkisan === 'Kado' ? 'Kado' : 'Uang'}</div><div style="width: 10px;">:</div><div><strong>${item.bingkisan === 'Kado' ? item.namaBarang + ' - ' + item.nominal : item.nominal}</strong></div></div>
+          <div class="detail" id="detail-${index}">
+            <div class="tanggal-bar">
+              <strong>${tanggalFormatted}</strong>
+              <small>${keterangan}</small>
+            </div>
+            <hr style="margin: 10px 0;">
+            <div style="display: flex; flex-direction: column; gap: 6px; font-size: 14px;">
+              <div><strong>Kerabat:</strong> ${item.kerabat}</div>
+              <div><strong>Bapak:</strong> ${item.bapak}</div>
+              <div><strong>Alamat:</strong> ${item.kampung}, RT/RW ${item.rt}/${item.rw}, ${item.desa}, ${item.kecamatan}, ${item.kabupaten}</div>
+              <div><strong>Bingkisan:</strong> ${item.bingkisan === 'Kado' ? item.namaBarang + ' - ' + item.nominal : item.nominal}</div>
+            </div>
           </div>
-        </div>`;
-      riwayatList.appendChild(div);
-    });
+        `;
+        riwayatList.appendChild(div);
+      });
+    }
 
     function toggleDetail(index) {
-      const detail = document.getElementById("detail-" + index);
-      detail.classList.toggle("show");
+      const el = document.getElementById("detail-" + index);
+      el.classList.toggle("show");
     }
 
     function hapusData(kode) {
       if (confirm("Yakin ingin menghapus data ini?")) {
-        let data = JSON.parse(localStorage.getItem("dataPernikahan")) || [];
-        data = data.filter(d => d.kode !== kode);
-        localStorage.setItem("dataPernikahan", JSON.stringify(data));
+        let newData = data.filter(item => item.kode !== kode);
+        localStorage.setItem("dataPernikahan", JSON.stringify(newData));
         location.reload();
       }
     }
@@ -262,6 +270,33 @@
     function editData(kode) {
       alert("Fungsi edit untuk kode " + kode + " akan segera ditambahkan.");
     }
+
+    function applyFilter() {
+      const keyword = document.getElementById("filterKeyword").value.toLowerCase();
+      const category = document.getElementById("filterCategory").value;
+
+      const filtered = data.filter(item => {
+        if (category === "alamat") {
+          const alamatGabungan = `${item.kampung} ${item.desa} ${item.kecamatan} ${item.kabupaten}`.toLowerCase();
+          return alamatGabungan.includes(keyword);
+        }
+        if (category === "tahun") {
+          return new Date(item.tanggal).getFullYear().toString().includes(keyword);
+        }
+        return (item[category] || "").toLowerCase().includes(keyword);
+      });
+
+      filterModal.style.display = "none"; // auto-hide
+      renderData(filtered);
+    }
+
+    function resetFilter() {
+      document.getElementById("filterKeyword").value = "";
+      filterModal.style.display = "none";
+      renderData(data);
+    }
+
+    renderData(data);
   </script>
 </body>
 </html>
