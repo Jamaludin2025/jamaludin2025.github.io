@@ -109,43 +109,70 @@
       display: block;
     }
 
-    /* Modal filter */
-    .filter-modal {
-      display: none;
-      grid-template-columns: 1fr 1fr auto auto;
-      gap: 10px;
-      margin-bottom: 10px;
-      background: #fff;
-      padding: 12px;
-      border-radius: 10px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      align-items: center;
-    }
+    .modal-overlay {
+  display: none;
+  position: fixed;
+  z-index: 999;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  justify-content: center;
+  align-items: center;
+}
 
-    .filter-modal input, .filter-modal select {
-      padding: 6px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      font-size: 14px;
-      width: 100%;
-    }
+.modal-box {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+  width: 90%;
+  max-width: 320px;
+}
 
-    .filter-modal button {
-      padding: 6px 12px;
-      border: none;
-      border-radius: 6px;
-      font-weight: bold;
-      cursor: pointer;
-    }
+.modal-box h3 {
+  margin-top: 0;
+  margin-bottom: 16px;
+  text-align: center;
+}
 
-    .filter-modal .cari-btn { background: #007bff; color: white; }
-    .filter-modal .reset-btn { background: #ccc; }
+.modal-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 16px;
+}
 
-    @media (max-width: 600px) {
-      .filter-modal {
-        grid-template-columns: 1fr;
-      }
-    }
+.modal-form input,
+.modal-form select {
+  padding: 6px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  width: 100%;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: space-between;
+}
+
+.modal-actions button {
+  padding: 8px 14px;
+  font-weight: bold;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.modal-actions .cari-btn {
+  background-color: #007bff;
+  color: white;
+}
+
+.modal-actions .reset-btn {
+  background-color: red;
+  color: white;
+}
   </style>
 </head>
 <body>
@@ -160,19 +187,26 @@
     </div>
   </div>
 
-  <!-- Filter Modal -->
-  <div class="container filter-modal" id="filterModal">
-    <input type="text" id="filterKeyword" placeholder="Kata kunci..." />
-    <select id="filterCategory">
-      <option value="kode">Kode</option>
-      <option value="kerabat">Nama Kerabat</option>
-      <option value="bapak">Nama Bapak</option>
-      <option value="alamat">Alamat</option>
-      <option value="tahun">Tahun</option>
-    </select>
-    <button class="cari-btn" onclick="applyFilter()">Cari</button>
-    <button class="reset-btn" onclick="resetFilter()">Reset</button>
+  <!-- Modal Filter -->
+<div class="modal-overlay" id="filterModal">
+  <div class="modal-box">
+    <h3>Kotak Pencarian Data</h3>
+    <div class="modal-form">
+      <input type="text" id="filterKeyword" placeholder="Kata kunci..." />
+      <select id="filterCategory">
+        <option value="kode">Kode</option>
+        <option value="kerabat">Nama Kerabat</option>
+        <option value="bapak">Nama Bapak</option>
+        <option value="alamat">Alamat</option>
+        <option value="tahun">Tahun</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="reset-btn" onclick="resetFilter()">Batalkan</button>
+      <button class="cari-btn" onclick="applyFilter()">Cari Data</button>
+    </div>
   </div>
+</div>
 
   <div id="riwayatList"></div>
 
@@ -184,8 +218,9 @@
     const maxShow = 15;
 
     function toggleFilterModal() {
-      filterModal.style.display = filterModal.style.display === "grid" ? "none" : "grid";
-    }
+  const modal = document.getElementById("filterModal");
+  modal.style.display = modal.style.display === "flex" ? "none" : "flex";
+}
 
     function formatTanggalDanSelisih(tanggalStr) {
       const bulanList = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
@@ -242,14 +277,64 @@
               <small>${keterangan}</small>
             </div>
             <hr style="margin: 10px 0;">
-            <div style="display: flex; flex-direction: column; gap: 6px; font-size: 14px;">
-              <div><strong>Kerabat:</strong> ${item.kerabat}</div>
-              <div><strong>Bapak:</strong> ${item.bapak}</div>
-              <div><strong>Alamat:</strong> ${item.kampung}, RT/RW ${item.rt}/${item.rw}, ${item.desa}, ${item.kecamatan}, ${item.kabupaten}</div>
-              <div><strong>Bingkisan:</strong> ${item.bingkisan === 'Kado' ? item.namaBarang + ' - ' + item.nominal : item.nominal}</div>
+          <div style="display: flex; flex-direction: column; gap: 6px; font-size: 14px;">
+            <div style="display: flex;">
+              <div style="width: 120px; font-weight: bold; color: #888;">Data Pengantin</div><div style="width: 10px;"></div>
             </div>
-          </div>
-        `;
+            <div style="display: flex;">
+              <div style="width: 120px;">Nama Kerabat</div><div style="width: 10px;">:</div><div><strong>${item.kerabat}</strong></div>
+            </div>
+            <div style="display: flex;">
+              <div style="width: 120px;">Nama Pasangan</div><div style="width: 10px;">:</div><div><strong>${item.pasangan}</strong></div>
+            </div>
+            <div style="display: flex;">
+              <div style="width: 120px;"></div><div style="width: 10px;"></div>
+            </div>
+            <div style="display: flex;">
+              <div style="width: 120px; font-weight: bold; color: #888;">Data Orang Tua</div><div style="width: 10px;"></div>
+            </div>
+            <div style="display: flex;">
+              <div style="width: 120px;">Bapak Kerabat</div><div style="width: 10px;">:</div><div><strong>${item.bapak}</strong></div>
+            </div>
+            <div style="display: flex;">
+              <div style="width: 120px;">Ibu Kerabat</div><div style="width: 10px;">:</div><div><strong>${item.ibu}</strong></div>
+            </div>
+            <div style="display: flex;">
+              <div style="width: 120px;"></div><div style="width: 10px;"></div>
+            </div>
+            <div style="display: flex;">
+              <div style="width: 120px; font-weight: bold; color: #888;">Lokasi Acara</div><div style="width: 10px;"></div>
+            </div>
+            <div style="display: flex;">
+              <div style="width: 120px;">Alamat</div><div style="width: 10px;">:</div><div><strong>${item.kampung}, ${item.rt}/${item.rw}</strong></div>
+            </div>
+            <div style="display: flex;">
+              <div style="width: 120px;">Desa</div><div style="width: 10px;">:</div><div><strong>${item.desa}</strong></div>
+            </div>
+            <div style="display: flex;">
+              <div style="width: 120px;">Kecamatan</div><div style="width: 10px;">:</div><div><strong>${item.kecamatan}</strong></div>
+            </div>
+            <div style="display: flex;">
+              <div style="width: 120px;">Kabupaten</div><div style="width: 10px;">:</div><div><strong>${item.kabupaten}</strong></div>
+            </div>
+            <div style="display: flex;">
+              <div style="width: 120px;"></div><div style="width: 10px;"></div>
+            </div>
+            <div style="display: flex;">
+              <div style="width: 120px; font-weight: bold; color: #888;">Bingkisan</div><div style="width: 10px;"></div>
+            </div>
+            <div style="display: flex;">
+              <div style="width: 120px;">${item.bingkisan === 'Kado' ? 'Kado' : 'Uang'}</div>
+              <div style="width: 10px;">:</div>
+        <div>
+        <strong>
+            ${item.bingkisan === 'Kado' ? item.namaBarang + ' - ' + item.nominal : item.nominal}
+          </strong>
+        </div>
+      </div>
+    </div>
+  </div>
+`;
         riwayatList.appendChild(div);
       });
     }
@@ -286,7 +371,7 @@
         return (item[category] || "").toLowerCase().includes(keyword);
       });
 
-      filterModal.style.display = "none"; // auto-hide
+      filterModal.style.display = "none";
       renderData(filtered);
     }
 
