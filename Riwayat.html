@@ -295,23 +295,26 @@
   }
 
   function hapusRiwayat(key, button) {
-    playClick();
-    if (confirm("Yakin ingin menghapus data riwayat ${item.perusahaan}?")) {
-      if (confirm("Data akan dihapus permanen. Lanjutkan?")) {
-        const newData = JSON.parse(localStorage.getItem('riwayatData')) || {};
-        delete newData[key];
-        localStorage.setItem('riwayatData', JSON.stringify(newData));
-        data = newData;
-        button.closest('.entry').classList.add('fade-out');
-        setTimeout(() => renderRiwayat(), 500);
-        showToast("Data berhasil dihapus");
-      } else {
-        showToast("Penghapusan dibatalkan");
-      }
+  playClick();
+
+  const data = JSON.parse(localStorage.getItem('riwayatData')) || {};
+  const perusahaan = data[key]?.perusahaan || 'perusahaan ini';
+
+  if (confirm(`Yakin ingin menghapus data riwayat dari ${perusahaan}?`)) {
+    if (confirm("Data akan dihapus permanen. Lanjutkan?")) {
+      delete data[key];
+      localStorage.setItem('riwayatData', JSON.stringify(data));
+
+      button.closest('.entry').classList.add('fade-out');
+      setTimeout(() => renderRiwayat(), 500);
+      showToast("Data berhasil dihapus");
     } else {
       showToast("Penghapusan dibatalkan");
     }
+  } else {
+    showToast("Penghapusan dibatalkan");
   }
+}
 
   function getIntervalText(tahapan) {
     if (!tahapan || !Array.isArray(tahapan) || tahapan.length === 0) return '-';
