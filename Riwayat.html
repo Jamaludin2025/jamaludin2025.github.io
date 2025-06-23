@@ -10,7 +10,6 @@
       background: #f2f2f2;
       padding: 20px;
       font-size: 14px;
-      margin: 0px;
     }
     .summary-box {
       background: white;
@@ -297,7 +296,7 @@
 
   function hapusRiwayat(key, button) {
     playClick();
-    if (confirm("Yakin ingin menghapus data ini?")) {
+    if (confirm("Yakin ingin menghapus data riwayat ${item.perusahaan}?")) {
       if (confirm("Data akan dihapus permanen. Lanjutkan?")) {
         const newData = JSON.parse(localStorage.getItem('riwayatData')) || {};
         delete newData[key];
