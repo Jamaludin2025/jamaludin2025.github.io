@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Kartu Undian Diskon</title>
+  <title>Kartu Diskon</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
@@ -11,15 +11,21 @@
       background: linear-gradient(to right, #e0f7fa, #ffffff);
       padding: 20px;
     }
-    h1 { color: #00796b; font-size: 1.4rem; }
-    h2 { color: #00796b; font-size: 1rem; }
-
+    h1 {
+      color: #00796b;
+      font-size: 1.4rem;
+    }
+    h2 {
+      color: #00796b;
+      font-size: 1rem;
+    }
     .cards {
-      display: flex;
-      flex-wrap: wrap;
+      display: grid;
+      grid-template-columns: repeat(3, 100px);
+      grid-template-rows: repeat(2, 140px);
+      gap: 10px;
       justify-content: center;
-      margin-top: 20px;
-      gap: 20px;
+      margin:30px;
     }
     .card {
       width: 100px;
@@ -35,13 +41,14 @@
       color: white;
       font-weight: bold;
       font-size: 18px;
+      flex-direction: column;
     }
-    .card:hover { transform: scale(1.05); }
+    .card:hover {
+      transform: scale(1.05);
+    }
     .revealed {
       background: #ffffff;
       color: #333;
-      font-size: 16px;
-      flex-direction: column;
     }
     .revealed span {
       font-size: 22px;
@@ -49,8 +56,10 @@
       color: #d32f2f;
       margin-top: 5px;
     }
-    .disabled { pointer-events: none; opacity: 0.6; }
-
+    .disabled {
+      pointer-events: none;
+      opacity: 0.6;
+    }
     .result-box {
       margin-top: 30px;
       padding: 15px;
@@ -59,185 +68,141 @@
       display: inline-block;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
-
-    .info-button {
-      margin-top: 25px;
-      padding: 10px 20px;
-      font-size: 0.95rem;
-      background-color: #ff7043;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background 0.3s ease;
-    }
-    .info-button:hover { background-color: #f4511e; }
-
-    /* Modal popup */
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 100;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      overflow: auto;
-      background-color: rgba(0,0,0,0.6);
-    }
-
-    .modal-content {
-      background-color: #fff;
-      margin: 10% auto;
-      padding: 20px;
-      border-radius: 10px;
-      width: 90%;
-      max-width: 500px;
-      text-align: center;
-    }
-
-    .modal-cards {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 15px;
-      margin-top: 15px;
-    }
-
-    .modal-card {
-      width: 80px;
-      height: 110px;
-      background: #fff;
-      border: 2px solid #009688;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      font-size: 14px;
-      font-weight: bold;
-      color: #d32f2f;
-    }
-
-    .close {
-      float: right;
-      font-size: 24px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    @media (max-width: 480px) {
-      .modal-content {
-        margin-top: 30%;
-      }
-    }
   </style>
 </head>
 <body>
 
-  <h1>🎁 Kupon Diskon Menarik 🎁</h1>
-  <h2>Pilih salah satu kartu dengan cermat,<br> karena kesempatan hanya diberikan satu kali.</h2>
+  <h1>🎁 Undian Kartu Diskon 🎁</h1>
+  <h2>Pilih satu kartu — kesempatan hanya sekali untuk mendapatkan kode diskon!</h2>
 
   <div id="cards" class="cards"></div>
-
   <div id="result" class="result-box" style="display:none;"></div>
-
-  <button class="info-button" onclick="showInfo()">Lihat Semua Diskon</button>
-
-  <!-- Modal -->
-  <div id="infoModal" class="modal">
-    <div class="modal-content">
-      <span class="close" onclick="closeModal()">&times;</span>
-      <h3>Diskon yang Tersedia</h3>
-      <div id="modalCards" class="modal-cards"></div>
-    </div>
-  </div>
 
   <script>
     const isAdmin = new URLSearchParams(window.location.search).has("admin");
-    const alreadyPlayed = !isAdmin && localStorage.getItem("sudahMain");
     const cardsContainer = document.getElementById("cards");
     const resultBox = document.getElementById("result");
-    const modal = document.getElementById("infoModal");
-    const modalCards = document.getElementById("modalCards");
 
     const diskonOptions = [
-      { label: "5%", kode: "PXK05Q", weight: 1 },
+      { label: "10%", kode: "PXK10N", weight: 2 },
       { label: "15%", kode: "JDF15X", weight: 5 },
-      { label: "25%", kode: "BQZ25K", weight: 14 },
-      { label: "35%", kode: "UZM35V", weight: 78 },
-      { label: "50%", kode: "WTX50Z", weight: 2 },
+      { label: "20%", kode: "BQZ20K", weight: 7 },
+      { label: "25%", kode: "UZM25V", weight: 15 },
+      { label: "35%", kode: "WTX35Z", weight: 70 },
+      { label: "50%", kode: "PUB50D", weight: 1 },
     ];
 
+    let state = JSON.parse(localStorage.getItem("diskonState")) || {
+      mainIndex: null,
+      revealed: Array(6).fill(false),
+      shuffled: []
+    };
+
     function weightedRandom(options) {
-      let totalWeight = options.reduce((sum, opt) => sum + opt.weight, 0);
-      let random = Math.random() * totalWeight;
-      for (let opt of options) {
-        if (random < opt.weight) return opt;
-        random -= opt.weight;
+      const totalWeight = options.reduce((sum, o) => sum + o.weight, 0);
+      let rand = Math.random() * totalWeight;
+      for (let i = 0; i < options.length; i++) {
+        if (rand < options[i].weight) return i;
+        rand -= options[i].weight;
       }
+      return 0;
     }
 
-    function reveal(card) {
-      if (!isAdmin && localStorage.getItem("sudahMain")) return;
+    function shuffle(array) {
+      return [...array].sort(() => 0.5 - Math.random());
+    }
 
-      const reward = weightedRandom(diskonOptions);
-      card.classList.add("revealed");
-      card.innerHTML = `
-        <div>Diskon</div>
-        <span>${reward.label}</span>
-      `;
+    function enforceUniqueReward(shuffled, mainIndex) {
+      const mainLabel = shuffled[mainIndex].label;
+      const usedLabels = new Set([mainLabel]);
 
-      resultBox.style.display = "block";
-      resultBox.innerHTML = `🎉 Kamu mendapatkan diskon <strong>${reward.label}</strong><br>
-      Gunakan kode: <strong>${reward.kode}</strong> saat checkout!`;
-
-      if (!isAdmin) {
-        localStorage.setItem("sudahMain", "true");
-        document.querySelectorAll(".card").forEach(c => c.classList.add("disabled"));
+      for (let i = 0; i < shuffled.length; i++) {
+        if (i !== mainIndex && shuffled[i].label === mainLabel) {
+          const alternatives = diskonOptions.filter(opt => !usedLabels.has(opt.label));
+          const replacement = alternatives[Math.floor(Math.random() * alternatives.length)];
+          shuffled[i] = replacement;
+          usedLabels.add(replacement.label);
+        } else {
+          usedLabels.add(shuffled[i].label);
+        }
       }
+      return shuffled;
+    }
+
+    function saveState() {
+      localStorage.setItem("diskonState", JSON.stringify(state));
     }
 
     function setupCards() {
-      for (let i = 0; i < 5; i++) {
+      if (state.shuffled.length !== 6) {
+        state.shuffled = shuffle([...diskonOptions]);
+        saveState();
+      }
+
+      if (state.mainIndex !== null) {
+        state.shuffled = enforceUniqueReward(state.shuffled, state.mainIndex);
+        saveState();
+      }
+
+      for (let i = 0; i < 6; i++) {
         const card = document.createElement("div");
         card.className = "card";
         card.textContent = "PILIH";
-        card.addEventListener("click", () => reveal(card));
         cardsContainer.appendChild(card);
+
+        if (state.revealed[i]) {
+          revealCard(i, card, true);
+        }
+
+        card.addEventListener("click", () => {
+          if (!state.revealed[i]) {
+            if (state.mainIndex === null && !isAdmin) {
+              state.mainIndex = i;
+              state.shuffled = enforceUniqueReward(state.shuffled, state.mainIndex);
+              revealCard(i, card, false, true);
+              state.revealed[i] = true;
+              saveState();
+            } else if (state.mainIndex !== null || isAdmin) {
+              revealCard(i, card);
+              state.revealed[i] = true;
+              saveState();
+            }
+          } else {
+            if (i !== state.mainIndex) {
+              hideCard(card);
+              state.revealed[i] = false;
+              saveState();
+            }
+          }
+        });
+      }
+
+      if (state.mainIndex !== null && resultBox.style.display === "none") {
+        const reward = state.shuffled[state.mainIndex];
+        resultBox.innerHTML = `🎉 Kamu mendapatkan diskon <strong>${reward.label}</strong><br>Gunakan kode: <strong>${reward.kode}</strong>`;
+        resultBox.style.display = "block";
       }
     }
 
-    function showInfo() {
-  modalCards.innerHTML = "";
-
-  // Ambil 5 diskon pertama dari urutan asli
-  diskonOptions.slice(0, 5).forEach(diskon => {
-    const card = document.createElement("div");
-    card.className = "modal-card";
-    card.innerHTML = `
-      <div>Diskon</div>
-      <div style="font-size:18px; margin-top:5px;">${diskon.label}</div>
-    `;
-    modalCards.appendChild(card);
-  });
-
-  modal.style.display = "block";
-}
-
-    function closeModal() {
-      modal.style.display = "none";
-    }
-
-    window.onclick = function(event) {
-      if (event.target == modal) {
-        closeModal();
+    function revealCard(index, card, restoring = false, isMain = false) {
+      const reward = state.shuffled[index];
+      card.classList.add("revealed");
+      card.innerHTML = `<div>Diskon</div><span>${reward.label}</span>`;
+      if (isMain || index === state.mainIndex || isAdmin && state.mainIndex === null) {
+        resultBox.innerHTML = `🎉 Kamu mendapatkan diskon <strong>${reward.label}</strong><br>Gunakan kode: <strong>${reward.kode}</strong> saat checkout!`;
+        resultBox.style.display = "block";
       }
     }
 
-    if (alreadyPlayed) {
-      cardsContainer.innerHTML = "<p><strong>Kesempatanmu sudah digunakan.<br> Silakan coba lagi di lain waktu.</strong></p>";
+    function hideCard(card) {
+      card.classList.remove("revealed");
+      card.innerHTML = "PILIH";
+    }
+
+    // Reset jika URL mengandung ?reset=true
+    if (new URLSearchParams(window.location.search).get("reset") === "true") {
+      localStorage.removeItem("diskonState");
+      location.href = location.pathname + (isAdmin ? "?admin" : "");
     } else {
       setupCards();
     }
