@@ -410,32 +410,20 @@
     }
 
     if (this.value === 'KERJA') {
-      kerjaFields.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) {
-          el.style.display = 'block';
-          el.setAttribute('required', 'required');
-        }
-      });
-      kerjaLabels.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.style.display = 'block';
-      });
-    } else {
-      kerjaFields.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) {
-          el.style.display = 'none';
-          el.removeAttribute('required');
-          el.value = '';
-        }
-      });
-      kerjaLabels.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.style.display = 'none';
-      });
+  kerjaFields.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.style.display = 'block';
+      if (id !== 'catatanKerja') {
+        el.setAttribute('required', 'required');
+      }
     }
   });
+  kerjaLabels.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = 'block';
+  });
+}
 
   // Inisialisasi data saat halaman dimuat
   renderData();
