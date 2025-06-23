@@ -401,29 +401,45 @@
     const kerjaLabels = ['jenisPekerjaanLabel', 'masaKerjaLabel', 'masaKerjaInput', 'catatanKerjaLabel'];
 
     if (this.value === 'UNDUR') {
-      catatan.style.display = 'block';
-      catatanLabel.style.display = 'block';
-    } else {
-      catatan.style.display = 'none';
-      catatanLabel.style.display = 'none';
-      catatan.value = '';
-    }
+    catatan.style.display = 'block';
+    catatanLabel.style.display = 'block';
+  } else {
+    catatan.style.display = 'none';
+    catatanLabel.style.display = 'none';
+    catatan.value = '';
+  }
 
-    if (this.value === 'KERJA') {
-  kerjaFields.forEach(id => {
-    const el = document.getElementById(id);
-    if (el) {
-      el.style.display = 'block';
-      if (id !== 'catatanKerja') {
-        el.setAttribute('required', 'required');
+  if (this.value === 'KERJA') {
+    kerjaFields.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.style.display = 'block';
+        if (id !== 'catatanKerja') {
+          el.setAttribute('required', 'required');
+        } else {
+          el.removeAttribute('required'); // pastikan catatan kerja tidak required
+        }
       }
-    }
-  });
-  kerjaLabels.forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.style.display = 'block';
-  });
-}
+    });
+    kerjaLabels.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.style.display = 'block';
+    });
+  } else {
+    kerjaFields.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.style.display = 'none';
+        el.removeAttribute('required');
+        el.value = '';
+      }
+    });
+    kerjaLabels.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.style.display = 'none';
+    });
+  }
+});
 
   // Inisialisasi data saat halaman dimuat
   renderData();
