@@ -110,16 +110,15 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 
   <script>
-    // GANTI konfigurasi ini dengan milikmu
     const firebaseConfig = {
       apiKey: "AIzaSyBdt-2IQflUWNx3sdI1QHPMe1vAzsXAZcY",
       authDomain: "ajproject-log.firebaseapp.com",
       databaseURL: "https://ajproject-log-default-rtdb.firebaseio.com",
       projectId: "ajproject-log",
-     storageBucket: "ajproject-log.firebasestorage.app",
-     messagingSenderId: "113688767697",
-     appId: "1:113688767697:web:b7b4c401f87702cd74a9f0",
-     measurementId: "G-DFV5D36PNX"
+      storageBucket: "ajproject-log.firebasestorage.app",
+      messagingSenderId: "113688767697",
+      appId: "1:113688767697:web:b7b4c401f87702cd74a9f0",
+      measurementId: "G-DFV5D36PNX"
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
@@ -179,7 +178,11 @@
         if (snap.exists()) {
           state = snap.val();
         } else {
-          state.shuffled = shuffle([...diskonOptions]);
+          state = {
+            mainIndex: null,
+            revealed: Array(6).fill(false),
+            shuffled: shuffle([...diskonOptions])
+          };
         }
         setupCards();
       });
