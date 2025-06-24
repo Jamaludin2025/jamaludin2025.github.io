@@ -1,9 +1,11 @@
+<meta name='viewport' content='width=device-width, initial-scale=1'/>
 <!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Kartu Diskon</title>
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
@@ -11,13 +13,24 @@
       background: linear-gradient(to right, #e0f7fa, #ffffff);
       padding: 20px;
     }
+    .header {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+    }
     h1 {
       color: #00796b;
       font-size: 1.4rem;
     }
     h2 {
-      color: #00796b;
+      color: black;
       font-size: 1rem;
+    }
+    .info-icon {
+      font-size: 22px;
+      color: #00796b;
+      cursor: pointer;      
     }
     .cards {
       display: grid;
@@ -25,7 +38,7 @@
       grid-template-rows: repeat(2, 140px);
       gap: 10px;
       justify-content: center;
-      margin:30px;
+      margin: 30px;
     }
     .card {
       width: 100px;
@@ -58,78 +71,138 @@
     }
     .result-box {
       margin-top: 30px;
-      padding: 20px;
-      border-radius: 12px;
+      padding: 15px;
+      border-radius: 10px;
+      font-weight: bold;
       background-color: #fff3e0;
       display: inline-block;
-      box-shadow: 0 0 12px rgba(0,0,0,0.1);
-      font-size: 1rem;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
-    .result-box strong {
-      font-size: 1.2rem;
-      color: #d32f2f;
-    }
-    .copy-btn {
+    #copyButton {
       margin-top: 10px;
+      padding: 8px 12px;
+      font-size: 18px;
+      border: none;
+      background-color: #00796b;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    #copyButton:hover {
+      background-color: #004d40;
+    }
+    #copyButton i {
+      font-size: 20px;
+    }
+
+    .kode-copy-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .kode-box {
+      padding: 8px 16px;
+      background-color: #ffe0b2;
+      color: #bf360c;
+      font-weight: bold;
+      border-radius: 5px;
+      font-size: 18px;
+      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .highlight-label {
+      color: #d32f2f;
+      font-weight: bold;
+      font-size: 17px;
+    }
+
+    /* Popup styling */
+    .popup {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+    }
+    .popup-content {
+      background: #fff;
+      padding: 20px;
+      max-width: 300px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+    .popup-content h3 {
+      color: #00796b;
+      margin-top: 1px;
+      margin-bottom: 10px;
+    }
+    .popup-content p {
+      font-size: 16px;
+      color: #333;
+      text-align: justify;
+      font-weight: bold;
+      line-height: 21px;
+    }
+    .popup-content button {
+      margin-top: 17px;
+      padding: 8px 14px;
       background-color: #00796b;
       color: white;
       border: none;
-      padding: 8px 12px;
-      border-radius: 6px;
+      border-radius: 5px;
       cursor: pointer;
-      font-size: 0.9rem;
+      font-weight: bold;
     }
-    .copy-btn:hover {
+    .popup-content button:hover {
       background-color: #004d40;
-    }
-    #resetBtn {
-      margin-top: 20px;
-      background-color: #f44336;
-      color: white;
-      border: none;
-      padding: 10px 15px;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-    #resetBtn:hover {
-      background-color: #c62828;
     }
   </style>
 </head>
 <body>
 
-  <h1>🎁 Undian Kartu Diskon 🎁</h1>
-  <h2>Pilih satu kartu -- kesempatan hanya sekali untuk mendapatkan kode diskon!</h2>
+  <div class="header">
+    <h1>Kartu Kejutan Diskon</h1>
+    <i class="ri-question-fill info-icon" onclick="openPopup()"></i>
+  </div>
+  <h2>Temukan diskon kejutan <span class="highlight-label"> hingga 50% </span><br> Ayo raih keuntungan terbaikmu sekarang.</h2>
 
   <div id="cards" class="cards"></div>
-  <div id="result" class="result-box" style="display:none;"></div>
-  <button id="resetBtn" style="display:none;">🔁 Reset Semua Pengguna</button>
+  <div id="result" class="result-box" style="display:none;">
+    <div id="resultText"></div>
+    <div class="kode-copy-container">
+      <div class="kode-box" id="kodeDiskonBox">---</div>
+      <button id="copyButton"><i class="ri-file-copy-line"></i></button>
+    </div>
+  </div>
 
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+  <!-- Popup -->
+  <div id="infoPopup" class="popup">
+    <div class="popup-content">
+      <h3>Cara Bermain Kartu Kejutan Diskon</h3>
+      <p>
+      	Anda hanya memiliki satu kesempatan untuk memilih satu dari enam kartu berisi kejutan diskon menarik sebesar 5%, 10%, 15%, 25%, 35%, atau bahkan 50%, jadi pastikan pilihan Anda tepat dan jangan lewatkan event spesial lainnya dengan terus mengikuti toko kami.
+      </p>
+      <button onclick="closePopup()">Oke, Saya Mengerti</button>
+    </div>
+  </div>
 
   <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyBdt-2IQflUWNx3sdI1QHPMe1vAzsXAZcY",
-      authDomain: "ajproject-log.firebaseapp.com",
-      databaseURL: "https://ajproject-log-default-rtdb.firebaseio.com",
-      projectId: "ajproject-log",
-      storageBucket: "ajproject-log.firebasestorage.app",
-      messagingSenderId: "113688767697",
-      appId: "1:113688767697:web:b7b4c401f87702cd74a9f0",
-      measurementId: "G-DFV5D36PNX"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-
-    const isAdmin = new URLSearchParams(window.location.search).has("admin");
     const cardsContainer = document.getElementById("cards");
     const resultBox = document.getElementById("result");
-    const resetBtn = document.getElementById("resetBtn");
-    const userId = getOrCreateUserId();
-    const diskonPath = `diskon_kartu/userData/${userId}`;
-    const versiPath = `diskon_kartu/versi`;
+    const resultText = document.getElementById("resultText");
+    const copyButton = document.getElementById("copyButton");
+    const kodeBox = document.getElementById("kodeDiskonBox");
+
+    const eventDate = "2025-06-25";
 
     const diskonOptions = [
       { label: "10%", kode: "PXK10N", weight: 2 },
@@ -139,54 +212,6 @@
       { label: "35%", kode: "WTX35Z", weight: 70 },
       { label: "50%", kode: "PUB50D", weight: 1 },
     ];
-
-    let localVersi = localStorage.getItem("versi") || "";
-    let state = {
-      mainIndex: null,
-      revealed: Array(6).fill(false),
-      shuffled: []
-    };
-
-    firebase.database().ref(versiPath).on("value", snap => {
-      const globalVersi = snap.val() || "1";
-      if (localVersi !== globalVersi) {
-        // Reset local dan Firebase data
-        localStorage.setItem("versi", globalVersi);
-        localStorage.removeItem("userId");
-        firebase.database().ref(diskonPath).remove();
-        location.reload();
-      } else {
-        loadUserData();
-      }
-    });
-
-    function getOrCreateUserId() {
-      let id = localStorage.getItem("userId");
-      if (!id) {
-        id = "user_" + Math.random().toString(36).substr(2, 9);
-        localStorage.setItem("userId", id);
-      }
-      return id;
-    }
-
-    function saveUserData() {
-      firebase.database().ref(diskonPath).set(state);
-    }
-
-    function loadUserData() {
-      firebase.database().ref(diskonPath).once("value", snap => {
-        if (snap.exists()) {
-          state = snap.val();
-        } else {
-          state = {
-            mainIndex: null,
-            revealed: Array(6).fill(false),
-            shuffled: shuffle([...diskonOptions])
-          };
-        }
-        setupCards();
-      });
-    }
 
     function shuffle(array) {
       return [...array].sort(() => 0.5 - Math.random());
@@ -208,8 +233,39 @@
       return shuffled;
     }
 
-    function setupCards() {
+    function getStorageKey(date) {
+      return "diskonState_" + date;
+    }
+
+    function saveState(key, state) {
+      localStorage.setItem(key, JSON.stringify(state));
+    }
+
+    function loadState(key) {
+      const saved = localStorage.getItem(key);
+      return saved ? JSON.parse(saved) : null;
+    }
+
+    function setupCards(date) {
       cardsContainer.innerHTML = "";
+      const storageKey = getStorageKey(date);
+      let state = loadState(storageKey);
+
+      if (!state) {
+        const shuffled = shuffle([...diskonOptions]);
+        state = {
+          mainIndex: null,
+          revealed: Array(6).fill(false),
+          shuffled: shuffled
+        };
+        saveState(storageKey, state);
+      }
+
+      if (state.mainIndex !== null) {
+        state.shuffled = enforceUniqueReward(state.shuffled, state.mainIndex);
+        saveState(storageKey, state);
+      }
+
       for (let i = 0; i < 6; i++) {
         const card = document.createElement("div");
         card.className = "card";
@@ -217,47 +273,43 @@
         cardsContainer.appendChild(card);
 
         if (state.revealed[i]) {
-          revealCard(i, card, true);
+          revealCard(i, card, true, date);
         }
 
         card.addEventListener("click", () => {
           if (!state.revealed[i]) {
-            if (state.mainIndex === null && !isAdmin) {
+            if (state.mainIndex === null) {
               state.mainIndex = i;
               state.shuffled = enforceUniqueReward(state.shuffled, state.mainIndex);
-              revealCard(i, card, false, true);
+              revealCard(i, card, false, date, true);
               state.revealed[i] = true;
-              saveUserData();
-            } else if (state.mainIndex !== null || isAdmin) {
-              revealCard(i, card);
+              saveState(storageKey, state);
+            } else {
+              revealCard(i, card, false, date);
               state.revealed[i] = true;
-              saveUserData();
+              saveState(storageKey, state);
             }
-          } else {
-            if (i !== state.mainIndex) {
-              hideCard(card);
-              state.revealed[i] = false;
-              saveUserData();
-            }
+          } else if (i !== state.mainIndex) {
+            hideCard(card);
+            state.revealed[i] = false;
+            saveState(storageKey, state);
           }
         });
       }
 
       if (state.mainIndex !== null && resultBox.style.display === "none") {
-        showResultBox(state.shuffled[state.mainIndex]);
-      }
-
-      if (isAdmin) {
-        resetBtn.style.display = "inline-block";
+        const reward = state.shuffled[state.mainIndex];
+        showResult(reward.label, reward.kode);
       }
     }
 
-    function revealCard(index, card, restoring = false, isMain = false) {
+    function revealCard(index, card, restoring = false, dateKey, isMain = false) {
+      const state = loadState(getStorageKey(dateKey));
       const reward = state.shuffled[index];
       card.classList.add("revealed");
       card.innerHTML = `<div>Diskon</div><span>${reward.label}</span>`;
-      if (isMain || index === state.mainIndex || (isAdmin && state.mainIndex === null)) {
-        showResultBox(reward);
+      if (isMain || index === state.mainIndex) {
+        showResult(reward.label, reward.kode);
       }
     }
 
@@ -266,29 +318,30 @@
       card.innerHTML = "PILIH";
     }
 
-    function showResultBox(reward) {
-      resultBox.innerHTML = `
-        <div>🎉 Kamu mendapatkan diskon <strong>${reward.label}</strong></div>
-        <div>Kode Diskon: <strong id="kodeDiskon">${reward.kode}</strong></div>
-        <button class="copy-btn" onclick="salinKode()">📋 Salin Kode</button>
-      `;
-      resultBox.style.display = "block";
-    }
+    function showResult(label, kode) {
+  resultText.innerHTML = `Wih, Kamu dapat diskon <span class="highlight-label">${label}</span> nih.<br>Gunakan kodenya saat checkout ya!`;
+  kodeBox.textContent = kode;
+  resultBox.style.display = "block";
+}
 
-    function salinKode() {
-      const kode = document.getElementById("kodeDiskon").textContent;
-      navigator.clipboard.writeText(kode).then(() => {
-        alert("Kode berhasil disalin!");
-      });
-    }
-
-    resetBtn.addEventListener("click", () => {
-      if (confirm("Yakin ingin mereset semua pengguna?")) {
-        const newVersi = Date.now().toString();
-        firebase.database().ref(versiPath).set(newVersi);
-        alert("Berhasil mereset semua pengguna!");
+    copyButton.addEventListener("click", () => {
+      if (kodeBox) {
+        navigator.clipboard.writeText(kodeBox.textContent).then(() => {
+          alert("Kode diskon disalin: " + kodeBox.textContent);
+        });
       }
     });
+
+    // Popup logic
+    function openPopup() {
+      document.getElementById("infoPopup").style.display = "flex";
+    }
+    function closePopup() {
+      document.getElementById("infoPopup").style.display = "none";
+    }
+
+    setupCards(eventDate);
   </script>
+
 </body>
 </html>
