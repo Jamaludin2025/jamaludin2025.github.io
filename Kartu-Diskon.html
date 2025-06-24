@@ -56,32 +56,81 @@
       color: #d32f2f;
       margin-top: 5px;
     }
-    .disabled {
-      pointer-events: none;
-      opacity: 0.6;
-    }
     .result-box {
       margin-top: 30px;
-      padding: 15px;
-      border-radius: 10px;
+      padding: 20px;
+      border-radius: 12px;
       background-color: #fff3e0;
       display: inline-block;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      box-shadow: 0 0 12px rgba(0,0,0,0.1);
+      font-size: 1rem;
+    }
+    .result-box strong {
+      font-size: 1.2rem;
+      color: #d32f2f;
+    }
+    .copy-btn {
+      margin-top: 10px;
+      background-color: #00796b;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+    .copy-btn:hover {
+      background-color: #004d40;
+    }
+    #resetBtn {
+      margin-top: 20px;
+      background-color: #f44336;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    #resetBtn:hover {
+      background-color: #c62828;
     }
   </style>
 </head>
 <body>
 
   <h1>🎁 Undian Kartu Diskon 🎁</h1>
-  <h2>Pilih satu kartu — kesempatan hanya sekali untuk mendapatkan kode diskon!</h2>
+  <h2>Pilih satu kartu -- kesempatan hanya sekali untuk mendapatkan kode diskon!</h2>
 
   <div id="cards" class="cards"></div>
   <div id="result" class="result-box" style="display:none;"></div>
+  <button id="resetBtn" style="display:none;">🔁 Reset Semua Pengguna</button>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 
   <script>
+    // GANTI konfigurasi ini dengan milikmu
+    const firebaseConfig = {
+      apiKey: "AIzaSyBdt-2IQflUWNx3sdI1QHPMe1vAzsXAZcY",
+      authDomain: "ajproject-log.firebaseapp.com",
+      databaseURL: "https://ajproject-log-default-rtdb.firebaseio.com",
+      projectId: "ajproject-log",
+     storageBucket: "ajproject-log.firebasestorage.app",
+     messagingSenderId: "113688767697",
+     appId: "1:113688767697:web:b7b4c401f87702cd74a9f0",
+     measurementId: "G-DFV5D36PNX"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
     const isAdmin = new URLSearchParams(window.location.search).has("admin");
     const cardsContainer = document.getElementById("cards");
     const resultBox = document.getElementById("result");
+    const resetBtn = document.getElementById("resetBtn");
+    const userId = getOrCreateUserId();
+    const diskonPath = `diskon_kartu/userData/${userId}`;
+    const versiPath = `diskon_kartu/versi`;
 
     const diskonOptions = [
       { label: "10%", kode: "PXK10N", weight: 2 },
@@ -92,20 +141,48 @@
       { label: "50%", kode: "PUB50D", weight: 1 },
     ];
 
-    let state = JSON.parse(localStorage.getItem("diskonState")) || {
+    let localVersi = localStorage.getItem("versi") || "";
+    let state = {
       mainIndex: null,
       revealed: Array(6).fill(false),
       shuffled: []
     };
 
-    function weightedRandom(options) {
-      const totalWeight = options.reduce((sum, o) => sum + o.weight, 0);
-      let rand = Math.random() * totalWeight;
-      for (let i = 0; i < options.length; i++) {
-        if (rand < options[i].weight) return i;
-        rand -= options[i].weight;
+    firebase.database().ref(versiPath).on("value", snap => {
+      const globalVersi = snap.val() || "1";
+      if (localVersi !== globalVersi) {
+        // Reset local dan Firebase data
+        localStorage.setItem("versi", globalVersi);
+        localStorage.removeItem("userId");
+        firebase.database().ref(diskonPath).remove();
+        location.reload();
+      } else {
+        loadUserData();
       }
-      return 0;
+    });
+
+    function getOrCreateUserId() {
+      let id = localStorage.getItem("userId");
+      if (!id) {
+        id = "user_" + Math.random().toString(36).substr(2, 9);
+        localStorage.setItem("userId", id);
+      }
+      return id;
+    }
+
+    function saveUserData() {
+      firebase.database().ref(diskonPath).set(state);
+    }
+
+    function loadUserData() {
+      firebase.database().ref(diskonPath).once("value", snap => {
+        if (snap.exists()) {
+          state = snap.val();
+        } else {
+          state.shuffled = shuffle([...diskonOptions]);
+        }
+        setupCards();
+      });
     }
 
     function shuffle(array) {
@@ -115,7 +192,6 @@
     function enforceUniqueReward(shuffled, mainIndex) {
       const mainLabel = shuffled[mainIndex].label;
       const usedLabels = new Set([mainLabel]);
-
       for (let i = 0; i < shuffled.length; i++) {
         if (i !== mainIndex && shuffled[i].label === mainLabel) {
           const alternatives = diskonOptions.filter(opt => !usedLabels.has(opt.label));
@@ -129,21 +205,8 @@
       return shuffled;
     }
 
-    function saveState() {
-      localStorage.setItem("diskonState", JSON.stringify(state));
-    }
-
     function setupCards() {
-      if (state.shuffled.length !== 6) {
-        state.shuffled = shuffle([...diskonOptions]);
-        saveState();
-      }
-
-      if (state.mainIndex !== null) {
-        state.shuffled = enforceUniqueReward(state.shuffled, state.mainIndex);
-        saveState();
-      }
-
+      cardsContainer.innerHTML = "";
       for (let i = 0; i < 6; i++) {
         const card = document.createElement("div");
         card.className = "card";
@@ -161,26 +224,28 @@
               state.shuffled = enforceUniqueReward(state.shuffled, state.mainIndex);
               revealCard(i, card, false, true);
               state.revealed[i] = true;
-              saveState();
+              saveUserData();
             } else if (state.mainIndex !== null || isAdmin) {
               revealCard(i, card);
               state.revealed[i] = true;
-              saveState();
+              saveUserData();
             }
           } else {
             if (i !== state.mainIndex) {
               hideCard(card);
               state.revealed[i] = false;
-              saveState();
+              saveUserData();
             }
           }
         });
       }
 
       if (state.mainIndex !== null && resultBox.style.display === "none") {
-        const reward = state.shuffled[state.mainIndex];
-        resultBox.innerHTML = `🎉 Kamu mendapatkan diskon <strong>${reward.label}</strong><br>Gunakan kode: <strong>${reward.kode}</strong>`;
-        resultBox.style.display = "block";
+        showResultBox(state.shuffled[state.mainIndex]);
+      }
+
+      if (isAdmin) {
+        resetBtn.style.display = "inline-block";
       }
     }
 
@@ -188,9 +253,8 @@
       const reward = state.shuffled[index];
       card.classList.add("revealed");
       card.innerHTML = `<div>Diskon</div><span>${reward.label}</span>`;
-      if (isMain || index === state.mainIndex || isAdmin && state.mainIndex === null) {
-        resultBox.innerHTML = `🎉 Kamu mendapatkan diskon <strong>${reward.label}</strong><br>Gunakan kode: <strong>${reward.kode}</strong> saat checkout!`;
-        resultBox.style.display = "block";
+      if (isMain || index === state.mainIndex || (isAdmin && state.mainIndex === null)) {
+        showResultBox(reward);
       }
     }
 
@@ -199,14 +263,29 @@
       card.innerHTML = "PILIH";
     }
 
-    // Reset jika URL mengandung ?reset=true
-    if (new URLSearchParams(window.location.search).get("reset") === "true") {
-      localStorage.removeItem("diskonState");
-      location.href = location.pathname + (isAdmin ? "?admin" : "");
-    } else {
-      setupCards();
+    function showResultBox(reward) {
+      resultBox.innerHTML = `
+        <div>🎉 Kamu mendapatkan diskon <strong>${reward.label}</strong></div>
+        <div>Kode Diskon: <strong id="kodeDiskon">${reward.kode}</strong></div>
+        <button class="copy-btn" onclick="salinKode()">📋 Salin Kode</button>
+      `;
+      resultBox.style.display = "block";
     }
-  </script>
 
+    function salinKode() {
+      const kode = document.getElementById("kodeDiskon").textContent;
+      navigator.clipboard.writeText(kode).then(() => {
+        alert("Kode berhasil disalin!");
+      });
+    }
+
+    resetBtn.addEventListener("click", () => {
+      if (confirm("Yakin ingin mereset semua pengguna?")) {
+        const newVersi = Date.now().toString();
+        firebase.database().ref(versiPath).set(newVersi);
+        alert("Berhasil mereset semua pengguna!");
+      }
+    });
+  </script>
 </body>
 </html>
