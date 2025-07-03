@@ -1,88 +1,144 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <title>Input Data Uang</title>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Input Uang</title>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background: #f0f4f8;
+      font-family: sans-serif;
+      margin: 0;
+      background: #f5f5f5;
+      padding: 15px;
+    }
+
+    .container {
+      background: #ffffff;
       padding: 20px;
-      max-width: 800px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      max-width: 500px;
       margin: auto;
     }
+
     h2 {
       text-align: center;
-      color: #2c3e50;
+      margin-bottom: 20px;
     }
+
     label {
       font-weight: bold;
+      display: block;
+      margin-top: 12px;
     }
+
     input, select {
       width: 100%;
       padding: 10px;
-      margin-bottom: 15px;
+      margin-top: 6px;
       border-radius: 8px;
       border: 1px solid #ccc;
+      box-sizing: border-box;
       text-transform: uppercase;
+      font-size: 14px;
     }
+
     .seri-container {
       display: flex;
       flex-wrap: wrap;
-      gap: 15px;
-      justify-content: flex-start;
+      gap: 10px;
+      margin-top: 10px;
     }
-   .seri-container input {
-     width: calc(33.33% - 10px);
-     box-sizing: border-box;
-     padding: 10px;
-     border-radius: 8px;
-     border: 1px solid #ccc;
-     text-transform: uppercase;
-   }
+
+    .seri-container input {
+      width: calc(33.33% - 10px);
+    }
+
+    .seri-container input:nth-child(n+19) {
+      width: calc(50% - 10px);
+    }
+
     button {
-      background-color: #3498db;
-      color: white;
-      padding: 12px 20px;
+      width: 100%;
+      padding: 12px;
+      margin-top: 20px;
+      font-size: 16px;
       border: none;
       border-radius: 8px;
+      background: #1976d2;
+      color: white;
       cursor: pointer;
-      font-size: 16px;
-      width: 100%;
     }
+
     button:hover {
-      background-color: #2980b9;
+      background: #125ea5;
+    }
+
+    #barcode-container {
+      text-align: center;
+      margin-top: 20px;
+      display: none;
+    }
+
+    #download-link {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 8px 16px;
+      background: #4caf50;
+      color: white;
+      border-radius: 6px;
+      text-decoration: none;
+    }
+
+    @media screen and (min-width: 768px) {
+      body {
+        padding: 30px;
+      }
+
+      .container {
+        max-width: 500px;
+      }
     }
   </style>
 </head>
 <body>
-  <h2>Form Input Uang</h2>
-  <form id="uangForm">
-    <label>Kode:</label>
-    <input type="text" id="kode" required>
+  <div class="container">
+    <h2>Input Data Uang</h2>
+    <form id="dataForm">
+      <label for="kode">Kode</label>
+      <input type="text" id="kode" required />
 
-    <label>Nominal:</label>
-    <select id="nominal">
-      <option value="Rp1.000.000">Rp1.000.000</option>
-      <option value="Rp2.000.000">Rp2.000.000</option>
-    </select>
+      <label for="nominal">Nominal</label>
+      <select id="nominal" required>
+        <option value="">Pilih Nominal</option>
+        <option value="Rp1.000.000">Rp1.000.000</option>
+        <option value="Rp2.000.000">Rp2.000.000</option>
+      </select>
 
-    <label>Pecahan:</label>
-    <select id="pecahan">
-      <option value="Rp50.000">Rp50.000</option>
-      <option value="Rp100.000">Rp100.000</option>
-    </select>
+      <label for="pecahan">Pecahan</label>
+      <select id="pecahan" required>
+        <option value="">Pilih Pecahan</option>
+        <option value="Rp50.000">Rp50.000</option>
+        <option value="Rp100.000">Rp100.000</option>
+      </select>
 
-    <label>Nomor Seri Uang (20 Lembar):</label>
-    <div class="seri-container" id="seriInputs"></div>
+      <label>Nomor Seri Uang</label>
+      <div class="seri-container" id="seriContainer"></div>
 
-    <button type="submit">Simpan ke Database</button>
-  </form>
+      <button type="button" onclick="simpanDanBarcode()">Simpan & Buat Barcode</button>
+
+      <div id="barcode-container">
+        <svg id="barcode"></svg>
+        <a id="download-link" download="barcode.png">Download Barcode</a>
+      </div>
+    </form>
+  </div>
 
   <script>
-    // Firebase config Anda
+    // Firebase Config
     const firebaseConfig = {
       apiKey: "AIzaSyBdt-2IQflUWNx3sdI1QHPMe1vAzsXAZcY",
       authDomain: "ajproject-log.firebaseapp.com",
@@ -96,39 +152,56 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // Generate 20 input nomor seri
-    const container = document.getElementById('seriInputs');
+    // Buat 20 input seri
+    const seriContainer = document.getElementById("seriContainer");
     for (let i = 1; i <= 20; i++) {
-      const input = document.createElement('input');
-      input.type = 'text';
-      input.placeholder = 'Seri ' + i;
+      const input = document.createElement("input");
+      input.type = "text";
       input.maxLength = 20;
+      input.id = `seri${i}`;
+      input.placeholder = `Seri ${i}`;
       input.style.textTransform = "uppercase";
-      container.appendChild(input);
+      seriContainer.appendChild(input);
     }
 
-    document.getElementById('uangForm').addEventListener('submit', function (e) {
-      e.preventDefault();
-      const kode = document.getElementById('kode').value.toUpperCase();
-      const nominal = document.getElementById('nominal').value;
-      const pecahan = document.getElementById('pecahan').value;
-      const seriInputs = document.querySelectorAll('#seriInputs input');
+    function simpanDanBarcode() {
+      const kode = document.getElementById("kode").value.trim().toUpperCase();
+      const nominal = document.getElementById("nominal").value;
+      const pecahan = document.getElementById("pecahan").value;
+      let seri = [];
+      for (let i = 1; i <= 20; i++) {
+        seri.push(document.getElementById(`seri${i}`).value.trim().toUpperCase());
+      }
 
-      const seri = [];
-      seriInputs.forEach(input => {
-        seri.push(input.value.toUpperCase());
-      });
+      if (!kode || !nominal || !pecahan) {
+        alert("Mohon lengkapi semua data.");
+        return;
+      }
 
-      db.ref('uang/' + kode).set({
-        kode,
-        nominal,
-        pecahan,
-        seri
-      }).then(() => {
-        alert('Data berhasil disimpan!');
-        document.getElementById('uangForm').reset();
+      const data = { kode, nominal, pecahan, seri };
+      db.ref("uang/" + kode).set(data).then(() => {
+        // Buat Barcode
+        JsBarcode("#barcode", kode, {
+          format: "CODE128",
+          lineColor: "#000",
+          width: 2,
+          height: 100,
+          displayValue: true
+        });
+
+        document.getElementById("barcode-container").style.display = "block";
+
+        setTimeout(() => {
+          const svg = document.getElementById("barcode");
+          const serializer = new XMLSerializer();
+          const svgBlob = new Blob([serializer.serializeToString(svg)], { type: "image/svg+xml;charset=utf-8" });
+          const url = URL.createObjectURL(svgBlob);
+          document.getElementById("download-link").href = url;
+        }, 300);
+      }).catch((error) => {
+        alert("Gagal menyimpan: " + error.message);
       });
-    });
+    }
   </script>
 </body>
 </html>
