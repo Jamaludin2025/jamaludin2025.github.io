@@ -16,6 +16,7 @@
       background-color: #f2f2f2;
       color: #333;
     }
+
     .container {
       max-width: 480px;
       margin: auto;
@@ -25,45 +26,61 @@
       box-shadow: 0 0 8px rgba(0,0,0,0.1);
       display: none;
     }
+
     h2 {
       text-align: center;
       margin-bottom: 0.5rem;
     }
+
     .date {
-      text-align: center;
+      text-align: left;
       font-size: 0.9rem;
       color: #777;
-      margin-bottom: 1rem;
+      margin-bottom: 0.5rem;
     }
+
+    hr {
+      border: none;
+      border-top: 1px solid #ccc;
+      margin: 0.5rem 0 1rem;
+    }
+
     svg {
       display: block;
       margin: 0 auto 1rem auto;
     }
+
     .info {
       margin-bottom: 0.6rem;
     }
+
     .info b {
       display: inline-block;
       width: 90px;
     }
+
     .seri-list {
       display: flex;
       flex-wrap: wrap;
       gap: 0.5rem;
     }
+
     .seri-column {
       flex: 1;
       min-width: 45%;
     }
+
     .seri-column li {
       list-style-type: disc;
       margin-left: 1.2rem;
     }
+
     .buttons {
       display: flex;
       justify-content: space-around;
       margin-top: 1rem;
     }
+
     .buttons button {
       padding: 0.5rem 1rem;
       border: none;
@@ -71,24 +88,29 @@
       font-weight: bold;
       cursor: pointer;
     }
+
     .edit-btn {
       background-color: orange;
       color: white;
     }
+
     .hapus-btn {
       background-color: red;
       color: white;
     }
+
     #formEdit {
       margin-top: 1rem;
       padding-top: 1rem;
       border-top: 1px dashed #aaa;
     }
+
     #formEdit label {
       font-weight: bold;
       display: block;
       margin-top: 10px;
     }
+
     #formEdit input,
     #formEdit select {
       width: 100%;
@@ -99,6 +121,7 @@
       box-sizing: border-box;
       font-size: 14px;
     }
+
     #formEdit button {
       margin-top: 12px;
       background: #4caf50;
@@ -111,9 +134,11 @@
       font-weight: bold;
       cursor: pointer;
     }
+
     #formEdit button:hover {
       background: #3c9b40;
     }
+
     #penggunaanInfo {
       background: #f9f9f9;
       padding: 10px;
@@ -128,7 +153,9 @@
   <div class="container" id="resultContainer">
     <h2 id="judul">Uang Tabungan</h2>
     <div class="date" id="tanggal"></div>
+    <hr />
     <svg id="barcode"></svg>
+
     <div class="info"><b>Kode</b>: <span id="kode"></span></div>
     <div class="info"><b>Nominal</b>: <span id="nominal"></span></div>
     <div class="info"><b>Pecahan</b>: <span id="pecahan"></span></div>
@@ -220,9 +247,9 @@
       col1.innerHTML = '';
       col2.innerHTML = '';
       const seriList = data.seri || [];
-      seriList.forEach((s, i) => {
+      seriList.filter(s => s.trim() !== "").forEach((s, i) => {
         const li = document.createElement('li');
-        li.textContent = s && s.trim() !== "" ? s : "-";
+        li.textContent = s;
         (i % 2 === 0 ? col1 : col2).appendChild(li);
       });
 
