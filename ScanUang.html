@@ -52,6 +52,8 @@
 
     .info {
       margin-bottom: 0.6rem;
+      display: flex;
+      flex-wrap: wrap;
     }
 
     .info b {
@@ -59,20 +61,10 @@
       width: 90px;
     }
 
-    .seri-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-    }
-
-    .seri-column {
+    .info span#seriList {
       flex: 1;
-      min-width: 45%;
-    }
-
-    .seri-column li {
-      list-style-type: disc;
-      margin-left: 1.2rem;
+      display: block;
+      margin-top: 4px;
     }
 
     .buttons {
@@ -159,11 +151,7 @@
     <div class="info"><b>Kode</b>: <span id="kode"></span></div>
     <div class="info"><b>Nominal</b>: <span id="nominal"></span></div>
     <div class="info"><b>Pecahan</b>: <span id="pecahan"></span></div>
-    <div class="info"><b>Seri</b>:</div>
-    <div class="seri-list">
-      <ul class="seri-column" id="seri-col-1"></ul>
-      <ul class="seri-column" id="seri-col-2"></ul>
-    </div>
+    <div class="info"><b>Seri</b>: <span id="seriList"></span></div>
 
     <div id="penggunaanInfo"></div>
 
@@ -234,7 +222,7 @@
 
       const canvas = document.getElementById("barcode");
       const ctx = canvas.getContext("2d");
-      ctx.clearRect(0, 0, canvas.width, canvas.height); // Bersihkan dulu
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
       if (data.kode) {
         JsBarcode(canvas, data.kode, {
           format: "CODE128",
@@ -245,16 +233,13 @@
         });
       }
 
-      const col1 = document.getElementById('seri-col-1');
-      const col2 = document.getElementById('seri-col-2');
-      col1.innerHTML = '';
-      col2.innerHTML = '';
+      // Tampilkan nomor seri dibagi 10-10
+      const seriSpan = document.getElementById("seriList");
       const seriList = data.seri || [];
-      seriList.filter(s => s.trim() !== "").forEach((s, i) => {
-        const li = document.createElement('li');
-        li.textContent = s;
-        (i % 2 === 0 ? col1 : col2).appendChild(li);
-      });
+      const filtered = seriList.filter(s => s.trim() !== "");
+      const bagian1 = filtered.slice(0, 10).join(" - ");
+      const bagian2 = filtered.slice(10, 20).join(" - ");
+      seriSpan.innerHTML = bagian1 + (bagian2 ? "<br>" + bagian2 : "");
 
       tampilkanPenggunaan(data.penggunaan);
     }
