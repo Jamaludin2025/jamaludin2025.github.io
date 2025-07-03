@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Input Data Uang</title>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f4f8;
+      padding: 20px;
+      max-width: 800px;
+      margin: auto;
+    }
+    h2 {
+      text-align: center;
+      color: #2c3e50;
+    }
+    label {
+      font-weight: bold;
+    }
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      text-transform: uppercase;
+    }
+    .seri-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      justify-content: flex-start;
+    }
+   .seri-container input {
+     width: calc(33.33% - 10px);
+     box-sizing: border-box;
+     padding: 10px;
+     border-radius: 8px;
+     border: 1px solid #ccc;
+     text-transform: uppercase;
+   }
+    button {
+      background-color: #3498db;
+      color: white;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      width: 100%;
+    }
+    button:hover {
+      background-color: #2980b9;
+    }
+  </style>
+</head>
+<body>
+  <h2>Form Input Uang</h2>
+  <form id="uangForm">
+    <label>Kode:</label>
+    <input type="text" id="kode" required>
+
+    <label>Nominal:</label>
+    <select id="nominal">
+      <option value="Rp1.000.000">Rp1.000.000</option>
+      <option value="Rp2.000.000">Rp2.000.000</option>
+    </select>
+
+    <label>Pecahan:</label>
+    <select id="pecahan">
+      <option value="Rp50.000">Rp50.000</option>
+      <option value="Rp100.000">Rp100.000</option>
+    </select>
+
+    <label>Nomor Seri Uang (20 Lembar):</label>
+    <div class="seri-container" id="seriInputs"></div>
+
+    <button type="submit">Simpan ke Database</button>
+  </form>
+
+  <script>
+    // Firebase config Anda
+    const firebaseConfig = {
+      apiKey: "AIzaSyBdt-2IQflUWNx3sdI1QHPMe1vAzsXAZcY",
+      authDomain: "ajproject-log.firebaseapp.com",
+      databaseURL: "https://ajproject-log-default-rtdb.firebaseio.com",
+      projectId: "ajproject-log",
+      storageBucket: "ajproject-log.firebasestorage.app",
+      messagingSenderId: "113688767697",
+      appId: "1:113688767697:web:b7b4c401f87702cd74a9f0",
+      measurementId: "G-DFV5D36PNX"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    // Generate 20 input nomor seri
+    const container = document.getElementById('seriInputs');
+    for (let i = 1; i <= 20; i++) {
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.placeholder = 'Seri ' + i;
+      input.maxLength = 20;
+      input.style.textTransform = "uppercase";
+      container.appendChild(input);
+    }
+
+    document.getElementById('uangForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      const kode = document.getElementById('kode').value.toUpperCase();
+      const nominal = document.getElementById('nominal').value;
+      const pecahan = document.getElementById('pecahan').value;
+      const seriInputs = document.querySelectorAll('#seriInputs input');
+
+      const seri = [];
+      seriInputs.forEach(input => {
+        seri.push(input.value.toUpperCase());
+      });
+
+      db.ref('uang/' + kode).set({
+        kode,
+        nominal,
+        pecahan,
+        seri
+      }).then(() => {
+        alert('Data berhasil disimpan!');
+        document.getElementById('uangForm').reset();
+      });
+    });
+  </script>
+</body>
+</html>
