@@ -2,98 +2,180 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <title>Tabungan Asep Jamaludin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scan Uang Tabungan</title>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
   <script src="https://unpkg.com/html5-qrcode"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+  <script src="https://cdn.jsdelivr.net/jsbarcode/3.11.5/JsBarcode.all.min.js"></script>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background: #f8fbff;
-      padding: 20px;
-      text-align: center;
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 1rem;
+      background-color: #f9f9f9;
+      color: #333;
     }
-    #reader {
-      width: 300px;
+    .container {
+      max-width: 480px;
       margin: auto;
-    }
-    #result {
-      margin-top: 20px;
-      padding: 15px;
-      background-color: #ecf0f1;
+      background: #fff;
+      padding: 1rem;
       border-radius: 10px;
-      display: none;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
-    ul {
-      text-align: left;
-      max-height: 200px;
-      overflow-y: auto;
+    h2 {
+      text-align: center;
+      margin-bottom: 0;
+    }
+    .date {
+      text-align: center;
+      font-size: 0.8rem;
+      color: #777;
+      margin-bottom: 1rem;
+    }
+    svg {
+      display: block;
+      margin: 0 auto 1rem auto;
+    }
+    .info {
+      margin-bottom: 1rem;
+    }
+    .info b {
+      display: inline-block;
+      width: 90px;
+    }
+    .seri-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .seri-column {
+      flex: 1;
+      min-width: 40%;
+    }
+    .seri-column li {
+      list-style-type: disc;
+      margin-left: 1.2rem;
+    }
+    .buttons {
+      display: flex;
+      justify-content: space-around;
+      margin-top: 1rem;
+    }
+    .buttons button {
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .edit-btn {
+      background-color: orange;
+      color: #fff;
+    }
+    .hapus-btn {
+      background-color: red;
+      color: #fff;
     }
   </style>
 </head>
 <body>
-  <h2>Scan QR Code Uang</h2>
-  <div id="reader"></div>
-  <div id="result">
-    <h3>Detail Uang</h3>
-    <p><strong>Kode:</strong> <span id="kode"></span></p>
-    <p><strong>Nominal:</strong> <span id="nominal"></span></p>
-    <p><strong>Pecahan:</strong> <span id="pecahan"></span></p>
-    <p><strong>Nomor Seri:</strong></p>
-    <ul id="seriList"></ul>
+<div class="container" id="resultContainer" style="display: none">
+  <h2 id="judul">Uang Tabungan</h2>
+  <div class="date" id="tanggal"></div>
+  <svg id="barcode"></svg>
+  <div class="info"><b>Kode</b>: <span id="kode"></span></div>
+  <div class="info"><b>Nominal</b>: <span id="nominal"></span></div>
+  <div class="info"><b>Pecahan</b>: <span id="pecahan"></span></div>
+  <div class="info"><b>Seri</b>:</div>
+  <div class="seri-list">
+    <ul class="seri-column" id="seri-col-1"></ul>
+    <ul class="seri-column" id="seri-col-2"></ul>
   </div>
+  <div class="buttons">
+    <button class="edit-btn">EDIT</button>
+    <button class="hapus-btn" onclick="hapusData()">HAPUS</button>
+  </div>
+</div>
 
-  <script>
-    // Firebase config Anda
-    const firebaseConfig = {
-      apiKey: "AIzaSyBdt-2IQflUWNx3sdI1QHPMe1vAzsXAZcY",
-      authDomain: "ajproject-log.firebaseapp.com",
-      databaseURL: "https://ajproject-log-default-rtdb.firebaseio.com",
-      projectId: "ajproject-log",
-      storageBucket: "ajproject-log.firebasestorage.app",
-      messagingSenderId: "113688767697",
-      appId: "1:113688767697:web:b7b4c401f87702cd74a9f0",
-      measurementId: "G-DFV5D36PNX"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
+<div id="reader" style="width: 100%"></div>
 
-    function showData(data) {
-      document.getElementById('result').style.display = 'block';
-      document.getElementById('kode').textContent = data.kode;
-      document.getElementById('nominal').textContent = data.nominal;
-      document.getElementById('pecahan').textContent = data.pecahan;
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyBdt-2IQflUWNx3sdI1QHPMe1vAzsXAZcY",
+    authDomain: "ajproject-log.firebaseapp.com",
+    databaseURL: "https://ajproject-log-default-rtdb.firebaseio.com",
+    projectId: "ajproject-log",
+    storageBucket: "ajproject-log.firebasestorage.app",
+    messagingSenderId: "113688767697",
+    appId: "1:113688767697:web:b7b4c401f87702cd74a9f0",
+    measurementId: "G-DFV5D36PNX"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
 
-      const list = document.getElementById('seriList');
-      list.innerHTML = '';
-      data.seri.forEach((item, i) => {
-        const li = document.createElement('li');
-        li.textContent = `${i + 1}. ${item}`;
-        list.appendChild(li);
-      });
+  function tampilkanData(data) {
+    document.getElementById('resultContainer').style.display = 'block';
+    document.getElementById('judul').innerText = `Uang Tabungan ${data.nama}`;
+    document.getElementById('tanggal').innerText = `Data ditambahkan pada ${data.tanggal}`;
+    document.getElementById('kode').innerText = data.kode;
+    document.getElementById('nominal').innerText = data.nominal;
+    document.getElementById('pecahan').innerText = data.pecahan;
+
+    JsBarcode("#barcode", data.kode, { format: "CODE128", displayValue: false, width: 2, height: 50 });
+
+    const col1 = document.getElementById('seri-col-1');
+    const col2 = document.getElementById('seri-col-2');
+    col1.innerHTML = '';
+    col2.innerHTML = '';
+    data.seri.forEach((s, i) => {
+      const li = document.createElement('li');
+      li.textContent = s;
+      if (i < data.seri.length / 2) col1.appendChild(li);
+      else col2.appendChild(li);
+    });
+  }
+
+  function hapusData() {
+    const password = prompt("Masukkan password untuk menghapus data:");
+    if (password !== 'Hapus123') {
+      alert("Password salah!");
+      return;
     }
+    const kode = document.getElementById('kode').innerText;
+    db.ref("uang/" + kode).remove()
+      .then(() => {
+        alert("Data berhasil dihapus.");
+        location.reload();
+      })
+      .catch((e) => alert("Gagal menghapus: " + e.message));
+  }
 
-    const scanner = new Html5Qrcode("reader");
-    scanner.start(
-      { facingMode: "environment" },
-      {
-        fps: 10,
-        qrbox: 250
-      },
-      (decodedText) => {
-        scanner.stop();
-        db.ref('uang/' + decodedText.toUpperCase()).once('value').then(snapshot => {
-          if (snapshot.exists()) {
-            showData(snapshot.val());
-          } else {
-            alert('Data tidak ditemukan di database.');
-          }
-        });
-      },
-      (err) => {
-        // ignore scan errors
-      }
-    );
-  </script>
+  const html5QrCode = new Html5Qrcode("reader");
+  Html5Qrcode.getCameras().then(cameras => {
+    if (cameras && cameras.length) {
+      html5QrCode.start(
+        cameras[0].id,
+        {
+          fps: 10,
+          qrbox: 250
+        },
+        (decodedText) => {
+          html5QrCode.stop();
+          db.ref("uang/" + decodedText).once("value", snapshot => {
+            if (snapshot.exists()) {
+              tampilkanData(snapshot.val());
+            } else {
+              alert("Data tidak ditemukan!");
+              location.reload();
+            }
+          });
+        },
+        errorMessage => {}
+      );
+    }
+  });
+</script>
 </body>
 </html>
