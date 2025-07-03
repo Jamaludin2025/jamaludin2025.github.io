@@ -103,7 +103,6 @@
   <div id="reader" style="width: 100%; margin-top: 1rem;"></div>
 
   <script>
-    // Firebase config
     const firebaseConfig = {
       apiKey: "AIzaSyBdt-2IQflUWNx3sdI1QHPMe1vAzsXAZcY",
       authDomain: "ajproject-log.firebaseapp.com",
@@ -124,7 +123,6 @@
       document.getElementById('nominal').innerText = data.nominal || '-';
       document.getElementById('pecahan').innerText = data.pecahan || '-';
 
-      // Barcode dari kode
       JsBarcode("#barcode", data.kode || '', {
         format: "CODE128",
         displayValue: false,
@@ -132,7 +130,6 @@
         height: 50
       });
 
-      // Nomor seri
       const col1 = document.getElementById('seri-col-1');
       const col2 = document.getElementById('seri-col-2');
       col1.innerHTML = '';
@@ -160,18 +157,11 @@
         .catch(e => alert("Gagal menghapus data: " + e.message));
     }
 
-    // QR Code Scanner dengan kamera belakang
     const html5QrCode = new Html5Qrcode("reader");
     const config = { fps: 10, qrbox: 250 };
 
-    const constraints = {
-      video: {
-        facingMode: { exact: "environment" }
-      }
-    };
-
     html5QrCode.start(
-      { facingMode: "environment" }, // gunakan kamera belakang
+      { facingMode: "environment" },
       config,
       (decodedText) => {
         html5QrCode.stop();
@@ -184,9 +174,7 @@
           }
         });
       },
-      (errorMessage) => {
-        // bisa diabaikan atau untuk debug
-      }
+      (errorMessage) => {}
     ).catch(err => {
       alert("Gagal mengakses kamera belakang: " + err);
     });
