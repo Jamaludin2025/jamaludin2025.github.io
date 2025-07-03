@@ -85,6 +85,17 @@
       text-decoration: none;
     }
 
+    .seri-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .seri-item {
+      flex: 1 1 45%;
+    }
+
     @media screen and (min-width: 768px) {
       body {
         padding: 30px;
@@ -100,9 +111,6 @@
   <div class="container">
     <h2>Input Data Uang</h2>
     <form id="dataForm">
-      <label for="tanggal">Tanggal</label>
-      <input type="date" id="tanggal" required />
-    
       <label for="kode">Kode</label>
       <input type="text" id="kode" required />
 
@@ -120,8 +128,23 @@
         <option value="Rp100.000">Rp100.000</option>
       </select>
 
-      <label for="seri">Nomor Seri Uang</label>
-      <input type="text" id="seri" placeholder="CONTOH: ABC123456" required />
+      <label for="tanggal">Tanggal</label>
+      <input type="date" id="tanggal" required />
+
+      <label><b>20 Nomor Seri Uang:</b></label>
+      <div class="seri-grid">
+        <!-- Buat 20 input -->
+        <script>
+          for (let i = 1; i <= 20; i++) {
+            document.write(`
+              <div class="seri-item">
+                <label for="seri${i}">Nomor Uang ke-${i}</label>
+                <input type="text" id="seri${i}" />
+              </div>
+            `);
+          }
+        </script>
+      </div>
 
       <button type="button" onclick="simpanDanBarcode()">Simpan & Buat Barcode</button>
 
@@ -146,39 +169,21 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // Auto pecahan berdasarkan nominal
-    document.getElementById("nominal").addEventListener("change", function () {
-      const pecahan = document.getElementById("pecahan");
-      if (this.value === "Rp1.000.000") {
-        pecahan.value = "Rp50.000";
-      } else if (this.value === "Rp2.000.000") {
-        pecahan.value = "Rp100.000";
-      } else {
-        pecahan.value = "";
-      }
-    });
-
-    // Auto tambah "-" setiap 9 karakter di input seri
-    document.getElementById("seri").addEventListener("input", function (e) {
-      let raw = e.target.value.replace(/-/g, "").toUpperCase(); // hapus tanda -
-      let parts = [];
-      for (let i = 0; i < raw.length; i += 9) {
-        parts.push(raw.slice(i, i + 9));
-      }
-      e.target.value = parts.join("-");
-    });
-
     function simpanDanBarcode() {
       const kode = document.getElementById("kode").value.trim().toUpperCase();
       const nominal = document.getElementById("nominal").value;
       const pecahan = document.getElementById("pecahan").value;
       const tanggal = document.getElementById("tanggal").value;
-      const seriInput = document.getElementById("seri").value.trim().toUpperCase();
-      let seri = seriInput.split("-").map(s => s.trim());
-      while (seri.length < 20) seri.push(""); // pastikan tetap 20 elemen
 
-      if (!kode || !nominal || !pecahan || !tanggal || !seriInput) {
-        alert("Mohon lengkapi semua data.");
+      // Ambil 20 input nomor seri
+      let seri = [];
+      for (let i = 1; i <= 20; i++) {
+        let val = document.getElementById(`seri${i}`).value.trim().toUpperCase();
+        seri.push(val);
+      }
+
+      if (!kode || !nominal || !pecahan || !tanggal || seri.some(s => !s)) {
+        alert("Mohon lengkapi semua data dan seluruh nomor seri.");
         return;
       }
 
