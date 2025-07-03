@@ -155,12 +155,10 @@
   const html5QrCode = new Html5Qrcode("reader");
   Html5Qrcode.getCameras().then(cameras => {
     if (cameras && cameras.length) {
+      const backCamera = cameras.find(cam => /back|rear|environment/i.test(cam.label)) || cameras[0];
       html5QrCode.start(
-        cameras[0].id,
-        {
-          fps: 10,
-          qrbox: 250
-        },
+        backCamera.id,
+        { fps: 10, qrbox: 250 },
         (decodedText) => {
           html5QrCode.stop();
           db.ref("uang/" + decodedText).once("value", snapshot => {
