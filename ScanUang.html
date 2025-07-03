@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Tabungan Asep Jamaludin</title>
+  <script src="https://unpkg.com/html5-qrcode"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f8fbff;
+      padding: 20px;
+      text-align: center;
+    }
+    #reader {
+      width: 300px;
+      margin: auto;
+    }
+    #result {
+      margin-top: 20px;
+      padding: 15px;
+      background-color: #ecf0f1;
+      border-radius: 10px;
+      display: none;
+    }
+    ul {
+      text-align: left;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+  </style>
+</head>
+<body>
+  <h2>Scan QR Code Uang</h2>
+  <div id="reader"></div>
+  <div id="result">
+    <h3>Detail Uang</h3>
+    <p><strong>Kode:</strong> <span id="kode"></span></p>
+    <p><strong>Nominal:</strong> <span id="nominal"></span></p>
+    <p><strong>Pecahan:</strong> <span id="pecahan"></span></p>
+    <p><strong>Nomor Seri:</strong></p>
+    <ul id="seriList"></ul>
+  </div>
+
+  <script>
+    // Firebase config Anda
+    const firebaseConfig = {
+      apiKey: "AIzaSyBdt-2IQflUWNx3sdI1QHPMe1vAzsXAZcY",
+      authDomain: "ajproject-log.firebaseapp.com",
+      databaseURL: "https://ajproject-log-default-rtdb.firebaseio.com",
+      projectId: "ajproject-log",
+      storageBucket: "ajproject-log.firebasestorage.app",
+      messagingSenderId: "113688767697",
+      appId: "1:113688767697:web:b7b4c401f87702cd74a9f0",
+      measurementId: "G-DFV5D36PNX"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    function showData(data) {
+      document.getElementById('result').style.display = 'block';
+      document.getElementById('kode').textContent = data.kode;
+      document.getElementById('nominal').textContent = data.nominal;
+      document.getElementById('pecahan').textContent = data.pecahan;
+
+      const list = document.getElementById('seriList');
+      list.innerHTML = '';
+      data.seri.forEach((item, i) => {
+        const li = document.createElement('li');
+        li.textContent = `${i + 1}. ${item}`;
+        list.appendChild(li);
+      });
+    }
+
+    const scanner = new Html5Qrcode("reader");
+    scanner.start(
+      { facingMode: "environment" },
+      {
+        fps: 10,
+        qrbox: 250
+      },
+      (decodedText) => {
+        scanner.stop();
+        db.ref('uang/' + decodedText.toUpperCase()).once('value').then(snapshot => {
+          if (snapshot.exists()) {
+            showData(snapshot.val());
+          } else {
+            alert('Data tidak ditemukan di database.');
+          }
+        });
+      },
+      (err) => {
+        // ignore scan errors
+      }
+    );
+  </script>
+</body>
+</html>
