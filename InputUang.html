@@ -46,6 +46,10 @@
       font-size: 14px;
     }
 
+    input[type="date"] {
+      text-transform: none;
+    }
+
     .seri-container {
       display: flex;
       flex-wrap: wrap;
@@ -108,6 +112,10 @@
   <div class="container">
     <h2>Input Data Uang</h2>
     <form id="dataForm">
+    
+    <label for="tanggal">Tanggal</label>
+      <input type="date" id="tanggal" required />
+    
       <label for="kode">Kode</label>
       <input type="text" id="kode" required />
 
@@ -138,21 +146,18 @@
   </div>
 
   <script>
-    // Firebase Config
     const firebaseConfig = {
       apiKey: "AIzaSyBdt-2IQflUWNx3sdI1QHPMe1vAzsXAZcY",
       authDomain: "ajproject-log.firebaseapp.com",
       databaseURL: "https://ajproject-log-default-rtdb.firebaseio.com",
       projectId: "ajproject-log",
-      storageBucket: "ajproject-log.firebasestorage.app",
+      storageBucket: "ajproject-log.appspot.com",
       messagingSenderId: "113688767697",
-      appId: "1:113688767697:web:b7b4c401f87702cd74a9f0",
-      measurementId: "G-DFV5D36PNX"
+      appId: "1:113688767697:web:b7b4c401f87702cd74a9f0"
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // Buat 20 input seri
     const seriContainer = document.getElementById("seriContainer");
     for (let i = 1; i <= 20; i++) {
       const input = document.createElement("input");
@@ -168,19 +173,20 @@
       const kode = document.getElementById("kode").value.trim().toUpperCase();
       const nominal = document.getElementById("nominal").value;
       const pecahan = document.getElementById("pecahan").value;
+      const tanggal = document.getElementById("tanggal").value;
       let seri = [];
       for (let i = 1; i <= 20; i++) {
         seri.push(document.getElementById(`seri${i}`).value.trim().toUpperCase());
       }
 
-      if (!kode || !nominal || !pecahan) {
+      if (!kode || !nominal || !pecahan || !tanggal) {
         alert("Mohon lengkapi semua data.");
         return;
       }
 
-      const data = { kode, nominal, pecahan, seri };
+      const data = { kode, nominal, pecahan, seri, tanggal };
+
       db.ref("uang/" + kode).set(data).then(() => {
-        // Buat Barcode
         JsBarcode("#barcode", kode, {
           format: "CODE128",
           lineColor: "#000",
