@@ -115,14 +115,24 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
+    function formatTanggal(tgl) {
+      if (!tgl) return "(tidak ada tanggal)";
+      const d = new Date(tgl);
+      const hari = String(d.getDate()).padStart(2, '0');
+      const bulan = String(d.getMonth() + 1).padStart(2, '0');
+      const tahun = d.getFullYear();
+      return `${hari}-${bulan}-${tahun}`;
+    }
+
     function tampilkanData(data) {
       document.getElementById('resultContainer').style.display = 'block';
       document.getElementById('judul').innerText = `Uang Tabungan`;
-      document.getElementById('tanggal').innerText = `Data ditambahkan pada ${data.tanggal || '(tidak ada tanggal)'}`;
+      document.getElementById('tanggal').innerText = `Data ditambahkan pada ${formatTanggal(data.tanggal)}`;
       document.getElementById('kode').innerText = data.kode || '-';
       document.getElementById('nominal').innerText = data.nominal || '-';
       document.getElementById('pecahan').innerText = data.pecahan || '-';
 
+      // Buat barcode
       JsBarcode("#barcode", data.kode || '', {
         format: "CODE128",
         displayValue: false,
@@ -130,11 +140,12 @@
         height: 50
       });
 
+      // Tampilkan seri yang tidak kosong
       const col1 = document.getElementById('seri-col-1');
       const col2 = document.getElementById('seri-col-2');
       col1.innerHTML = '';
       col2.innerHTML = '';
-      const seriList = data.seri || [];
+      const seriList = (data.seri || []).filter(s => s && s.trim() !== '');
       seriList.forEach((s, i) => {
         const li = document.createElement('li');
         li.textContent = s;
