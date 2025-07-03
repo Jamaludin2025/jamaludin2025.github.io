@@ -3,18 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Scan Uang Tabungan</title>
+  <title>Scan Uang</title>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
   <script src="https://unpkg.com/html5-qrcode"></script>
   <script src="https://cdn.jsdelivr.net/jsbarcode/3.11.5/JsBarcode.all.min.js"></script>
   <style>
     body {
-      font-family: 'Arial', sans-serif;
-      margin: 0;
-      padding: 1rem;
+      font-family: Arial, sans-serif;
       background-color: #f2f2f2;
-      color: #333;
+      padding: 1rem;
     }
     .container {
       max-width: 480px;
@@ -27,153 +25,48 @@
     }
     h2 {
       text-align: center;
-      margin-bottom: 0.5rem;
-    }
-    .date {
-      text-align: center;
-      font-size: 0.9rem;
-      color: #777;
-      margin-bottom: 1rem;
-    }
-    svg {
-      display: block;
-      margin: 0 auto 1rem auto;
     }
     .info {
-      margin-bottom: 0.6rem;
-    }
-    .info b {
-      display: inline-block;
-      width: 90px;
+      margin: 0.5rem 0;
     }
     .seri-list {
       display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
+      gap: 1rem;
+      margin-top: 0.5rem;
     }
     .seri-column {
       flex: 1;
-      min-width: 45%;
     }
     .seri-column li {
-      list-style-type: disc;
+      list-style: disc;
       margin-left: 1.2rem;
     }
-    .buttons {
-      display: flex;
-      justify-content: space-around;
-      margin-top: 1rem;
-    }
-    .buttons button {
-      padding: 0.5rem 1rem;
-      border: none;
-      border-radius: 5px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    .edit-btn {
-      background-color: orange;
-      color: white;
-    }
-    .hapus-btn {
-      background-color: red;
-      color: white;
-    }
-    #formEdit {
-      margin-top: 1rem;
-      padding-top: 1rem;
-      border-top: 1px dashed #aaa;
-    }
-    #formEdit label {
-      font-weight: bold;
+    svg {
       display: block;
-      margin-top: 10px;
+      margin: 1rem auto;
     }
-    #formEdit input,
-    #formEdit select {
-      width: 100%;
-      padding: 8px;
-      margin-top: 4px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      box-sizing: border-box;
-      font-size: 14px;
-    }
-    #formEdit button {
-      margin-top: 12px;
-      background: #4caf50;
-      color: white;
-      border: none;
-      padding: 10px;
-      width: 100%;
-      border-radius: 6px;
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    #formEdit button:hover {
-      background: #3c9b40;
-    }
-    #penggunaanInfo {
-      background: #f9f9f9;
-      padding: 10px;
-      border-radius: 6px;
-      margin-top: 10px;
-      font-size: 0.95rem;
-      line-height: 1.5;
+    #reader {
+      margin-top: 1rem;
     }
   </style>
 </head>
 <body>
   <div class="container" id="resultContainer">
-    <h2 id="judul">Uang Tabungan</h2>
-    <div class="date" id="tanggal"></div>
+    <h2>Detail Uang</h2>
+    <div class="info"><b>Kode:</b> <span id="kode"></span></div>
+    <div class="info"><b>Nominal:</b> <span id="nominal"></span></div>
+    <div class="info"><b>Pecahan:</b> <span id="pecahan"></span></div>
+    <div class="info"><b>Tanggal:</b> <span id="tanggal"></span></div>
     <svg id="barcode"></svg>
-    <div class="info"><b>Kode</b>: <span id="kode"></span></div>
-    <div class="info"><b>Nominal</b>: <span id="nominal"></span></div>
-    <div class="info"><b>Pecahan</b>: <span id="pecahan"></span></div>
-    <div class="info"><b>Seri</b>:</div>
+
+    <div class="info"><b>Nomor Seri:</b></div>
     <div class="seri-list">
       <ul class="seri-column" id="seri-col-1"></ul>
       <ul class="seri-column" id="seri-col-2"></ul>
     </div>
-
-    <div id="penggunaanInfo"></div>
-
-    <div id="formEdit" style="display:none;">
-      <label>Digunakan untuk:</label>
-      <select id="tipeGunakan" onchange="ubahTipeGunakan()">
-        <option value="">Pilih</option>
-        <option value="pribadi">Digunakan Pribadi</option>
-        <option value="pinjam">Dipinjamkan</option>
-      </select>
-
-      <div id="formPribadi" style="display:none;">
-        <label for="tglPribadi">Tanggal</label>
-        <input type="date" id="tglPribadi" />
-        <label for="ketPribadi">Keterangan</label>
-        <input type="text" id="ketPribadi" placeholder="Misal: bayar listrik" />
-      </div>
-
-      <div id="formPinjam" style="display:none;">
-        <label for="tglPinjam">Tanggal</label>
-        <input type="date" id="tglPinjam" />
-        <label for="kepada">Kepada Siapa</label>
-        <input type="text" id="kepada" placeholder="Misal: Andi" />
-        <label for="ketPinjam">Untuk Apa</label>
-        <input type="text" id="ketPinjam" placeholder="Misal: kebutuhan usaha" />
-      </div>
-
-      <button onclick="simpanPenggunaan()">Simpan</button>
-    </div>
-
-    <div class="buttons">
-      <button class="edit-btn" onclick="editData()">EDIT</button>
-      <button class="hapus-btn" onclick="hapusData()">HAPUS</button>
-    </div>
   </div>
 
-  <div id="reader" style="width: 100%; margin-top: 1rem;"></div>
+  <div id="reader"></div>
 
   <script>
     const firebaseConfig = {
@@ -187,119 +80,46 @@
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
-    let currentKode = "";
+
+    const html5QrCode = new Html5Qrcode("reader");
 
     function formatTanggal(tgl) {
-      if (!tgl) return "(tidak ada tanggal)";
+      if (!tgl) return "-";
       const d = new Date(tgl);
-      const hari = String(d.getDate()).padStart(2, '0');
-      const bulan = String(d.getMonth() + 1).padStart(2, '0');
-      const tahun = d.getFullYear();
-      return `${hari}-${bulan}-${tahun}`;
+      return `${String(d.getDate()).padStart(2, '0')}-${String(d.getMonth()+1).padStart(2, '0')}-${d.getFullYear()}`;
     }
 
     function tampilkanData(data) {
       document.getElementById('resultContainer').style.display = 'block';
-      document.getElementById('judul').innerText = `Uang Tabungan`;
-      document.getElementById('tanggal').innerText = `Data ditambahkan pada ${formatTanggal(data.tanggal)}`;
-      document.getElementById('kode').innerText = data.kode || '-';
-      document.getElementById('nominal').innerText = data.nominal || '-';
-      document.getElementById('pecahan').innerText = data.pecahan || '-';
+      document.getElementById('kode').textContent = data.kode || "-";
+      document.getElementById('nominal').textContent = data.nominal || "-";
+      document.getElementById('pecahan').textContent = data.pecahan || "-";
+      document.getElementById('tanggal').textContent = formatTanggal(data.tanggal);
 
-      currentKode = data.kode;
-
+      // Tampilkan barcode dari kode
       JsBarcode("#barcode", data.kode || '', {
         format: "CODE128",
         displayValue: false,
         width: 2,
-        height: 50
+        height: 60
       });
 
-      const col1 = document.getElementById('seri-col-1');
-      const col2 = document.getElementById('seri-col-2');
+      // Tampilkan seri
+      const col1 = document.getElementById("seri-col-1");
+      const col2 = document.getElementById("seri-col-2");
       col1.innerHTML = '';
       col2.innerHTML = '';
+
       const seriList = data.seri || [];
-      seriList.forEach((s, i) => {
+      for (let i = 0; i < 20; i++) {
+        const s = seriList[i] || "-";
         const li = document.createElement('li');
-        li.textContent = s && s.trim() !== "" ? s : "-";
+        li.textContent = s;
         (i % 2 === 0 ? col1 : col2).appendChild(li);
-      });
-
-      tampilkanPenggunaan(data.penggunaan);
-    }
-
-    function tampilkanPenggunaan(p) {
-      const div = document.getElementById("penggunaanInfo");
-      if (!p) {
-        div.innerHTML = `<b>Penggunaan:</b><br/><i>Belum ada catatan.</i>`;
-        return;
       }
-
-      let teks = `<b>Penggunaan:</b><br/>`;
-      if (p.tipe === "pribadi") {
-        teks += `Digunakan pribadi pada ${formatTanggal(p.tanggal)} untuk ${p.keterangan}.`;
-      } else if (p.tipe === "pinjam") {
-        teks += `Dipinjamkan kepada ${p.kepada} pada ${formatTanggal(p.tanggal)} untuk ${p.keterangan}.`;
-      }
-      div.innerHTML = teks;
     }
 
-    function hapusData() {
-      const password = prompt("Masukkan password untuk menghapus data:");
-      if (password !== "Hapus123") {
-        alert("Password salah!");
-        return;
-      }
-      db.ref("uang/" + currentKode).remove()
-        .then(() => {
-          alert("Data berhasil dihapus.");
-          location.reload();
-        })
-        .catch(e => alert("Gagal menghapus data: " + e.message));
-    }
-
-    function editData() {
-      const pass = prompt("Masukkan password edit:");
-      if (pass !== "Edit123") {
-        alert("Password salah.");
-        return;
-      }
-      document.getElementById("formEdit").style.display = "block";
-    }
-
-    function ubahTipeGunakan() {
-      const tipe = document.getElementById("tipeGunakan").value;
-      document.getElementById("formPribadi").style.display = tipe === "pribadi" ? "block" : "none";
-      document.getElementById("formPinjam").style.display = tipe === "pinjam" ? "block" : "none";
-    }
-
-    function simpanPenggunaan() {
-      const tipe = document.getElementById("tipeGunakan").value;
-      let penggunaan = { tipe };
-
-      if (tipe === "pribadi") {
-        penggunaan.tanggal = document.getElementById("tglPribadi").value;
-        penggunaan.keterangan = document.getElementById("ketPribadi").value.trim();
-      } else if (tipe === "pinjam") {
-        penggunaan.tanggal = document.getElementById("tglPinjam").value;
-        penggunaan.kepada = document.getElementById("kepada").value.trim();
-        penggunaan.keterangan = document.getElementById("ketPinjam").value.trim();
-      } else {
-        alert("Pilih jenis penggunaan terlebih dahulu.");
-        return;
-      }
-
-      db.ref("uang/" + currentKode + "/penggunaan").set(penggunaan)
-        .then(() => {
-          alert("Penggunaan berhasil disimpan.");
-          tampilkanPenggunaan(penggunaan);
-          document.getElementById("formEdit").style.display = "none";
-        })
-        .catch(e => alert("Gagal menyimpan: " + e.message));
-    }
-
-    const html5QrCode = new Html5Qrcode("reader");
+    // Mulai kamera & scan
     html5QrCode.start(
       { facingMode: "environment" },
       { fps: 10, qrbox: 250 },
@@ -309,14 +129,13 @@
           if (snapshot.exists()) {
             tampilkanData(snapshot.val());
           } else {
-            alert("Data tidak ditemukan!");
-            location.reload();
+            alert("Data tidak ditemukan.");
           }
         });
       },
-      () => {}
+      (err) => { /* error callback */ }
     ).catch(err => {
-      alert("Gagal mengakses kamera: " + err);
+      alert("Gagal membuka kamera: " + err);
     });
   </script>
 </body>
