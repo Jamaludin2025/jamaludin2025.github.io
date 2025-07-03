@@ -89,12 +89,30 @@
       display: block;
       margin-top: 10px;
     }
-    #formEdit input, #formEdit select {
+    #formEdit input,
+    #formEdit select {
       width: 100%;
       padding: 8px;
       margin-top: 4px;
       border: 1px solid #ccc;
       border-radius: 5px;
+      box-sizing: border-box;
+      font-size: 14px;
+    }
+    #formEdit button {
+      margin-top: 12px;
+      background: #4caf50;
+      color: white;
+      border: none;
+      padding: 10px;
+      width: 100%;
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    #formEdit button:hover {
+      background: #3c9b40;
     }
     #penggunaanInfo {
       background: #f9f9f9;
@@ -102,6 +120,7 @@
       border-radius: 6px;
       margin-top: 10px;
       font-size: 0.95rem;
+      line-height: 1.5;
     }
   </style>
 </head>
@@ -133,19 +152,19 @@
         <label for="tglPribadi">Tanggal</label>
         <input type="date" id="tglPribadi" />
         <label for="ketPribadi">Keterangan</label>
-        <input type="text" id="ketPribadi" />
+        <input type="text" id="ketPribadi" placeholder="Misal: bayar listrik" />
       </div>
 
       <div id="formPinjam" style="display:none;">
         <label for="tglPinjam">Tanggal</label>
         <input type="date" id="tglPinjam" />
         <label for="kepada">Kepada Siapa</label>
-        <input type="text" id="kepada" />
+        <input type="text" id="kepada" placeholder="Misal: Andi" />
         <label for="ketPinjam">Untuk Apa</label>
-        <input type="text" id="ketPinjam" />
+        <input type="text" id="ketPinjam" placeholder="Misal: kebutuhan usaha" />
       </div>
 
-      <button onclick="simpanPenggunaan()">Simpan Penggunaan</button>
+      <button onclick="simpanPenggunaan()">Simpan</button>
     </div>
 
     <div class="buttons">
@@ -213,16 +232,17 @@
     function tampilkanPenggunaan(p) {
       const div = document.getElementById("penggunaanInfo");
       if (!p) {
-        div.innerHTML = `<i>Belum ada catatan penggunaan.</i>`;
+        div.innerHTML = `<b>Penggunaan:</b><br/><i>Belum ada catatan.</i>`;
         return;
       }
-      let html = `<b>Penggunaan:</b><br/>`;
+
+      let teks = `<b>Penggunaan:</b><br/>`;
       if (p.tipe === "pribadi") {
-        html += `Digunakan pribadi pada ${formatTanggal(p.tanggal)}<br/>Keperluan: ${p.keterangan}`;
+        teks += `Digunakan pribadi pada ${formatTanggal(p.tanggal)} untuk ${p.keterangan}.`;
       } else if (p.tipe === "pinjam") {
-        html += `Dipinjamkan pada ${formatTanggal(p.tanggal)}<br/>Kepada: ${p.kepada}<br/>Untuk: ${p.keterangan}`;
+        teks += `Dipinjamkan kepada ${p.kepada} pada ${formatTanggal(p.tanggal)} untuk ${p.keterangan}.`;
       }
-      div.innerHTML = html;
+      div.innerHTML = teks;
     }
 
     function hapusData() {
