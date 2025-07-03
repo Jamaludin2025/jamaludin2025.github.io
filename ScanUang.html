@@ -103,7 +103,7 @@
   <div id="reader" style="width: 100%; margin-top: 1rem;"></div>
 
   <script>
-    // Firebase setup
+    // Firebase config
     const firebaseConfig = {
       apiKey: "AIzaSyBdt-2IQflUWNx3sdI1QHPMe1vAzsXAZcY",
       authDomain: "ajproject-log.firebaseapp.com",
@@ -160,29 +160,35 @@
         .catch(e => alert("Gagal menghapus data: " + e.message));
     }
 
-    // Scanner QR
+    // QR Code Scanner dengan kamera belakang
     const html5QrCode = new Html5Qrcode("reader");
-    Html5Qrcode.getCameras().then(cameras => {
-      if (cameras && cameras.length) {
-        html5QrCode.start(
-          cameras[0].id,
-          { fps: 10, qrbox: 250 },
-          (decodedText) => {
-            html5QrCode.stop();
-            db.ref("uang/" + decodedText).once("value").then(snapshot => {
-              if (snapshot.exists()) {
-                tampilkanData(snapshot.val());
-              } else {
-                alert("Data tidak ditemukan!");
-                location.reload();
-              }
-            });
-          },
-          error => {}
-        );
-      } else {
-        alert("Kamera tidak ditemukan!");
+    const config = { fps: 10, qrbox: 250 };
+
+    const constraints = {
+      video: {
+        facingMode: { exact: "environment" }
       }
+    };
+
+    html5QrCode.start(
+      { facingMode: "environment" }, // gunakan kamera belakang
+      config,
+      (decodedText) => {
+        html5QrCode.stop();
+        db.ref("uang/" + decodedText).once("value").then(snapshot => {
+          if (snapshot.exists()) {
+            tampilkanData(snapshot.val());
+          } else {
+            alert("Data tidak ditemukan!");
+            location.reload();
+          }
+        });
+      },
+      (errorMessage) => {
+        // bisa diabaikan atau untuk debug
+      }
+    ).catch(err => {
+      alert("Gagal mengakses kamera belakang: " + err);
     });
   </script>
 </body>
