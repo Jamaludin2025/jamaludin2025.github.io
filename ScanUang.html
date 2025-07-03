@@ -7,7 +7,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
   <script src="https://unpkg.com/html5-qrcode"></script>
-  <script src="https://cdn.jsdelivr.net/jsbarcode/3.11.5/JsBarcode.all.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
   <style>
     body {
       font-family: 'Arial', sans-serif;
@@ -45,7 +45,7 @@
       margin: 0.5rem 0 1rem;
     }
 
-    svg {
+    canvas {
       display: block;
       margin: 0 auto 1rem auto;
     }
@@ -154,7 +154,7 @@
     <h2 id="judul">Uang Tabungan</h2>
     <div class="date" id="tanggal"></div>
     <hr />
-    <svg id="barcode"></svg>
+    <canvas id="barcode"></canvas>
 
     <div class="info"><b>Kode</b>: <span id="kode"></span></div>
     <div class="info"><b>Nominal</b>: <span id="nominal"></span></div>
@@ -219,10 +219,7 @@
     function formatTanggal(tgl) {
       if (!tgl) return "(tidak ada tanggal)";
       const d = new Date(tgl);
-      const hari = String(d.getDate()).padStart(2, '0');
-      const bulan = String(d.getMonth() + 1).padStart(2, '0');
-      const tahun = d.getFullYear();
-      return `${hari}-${bulan}-${tahun}`;
+      return `${String(d.getDate()).padStart(2, '0')}-${String(d.getMonth() + 1).padStart(2, '0')}-${d.getFullYear()}`;
     }
 
     function tampilkanData(data) {
@@ -235,12 +232,18 @@
 
       currentKode = data.kode;
 
-      JsBarcode("#barcode", data.kode || '', {
-        format: "CODE128",
-        displayValue: false,
-        width: 2,
-        height: 50
-      });
+      const canvas = document.getElementById("barcode");
+      const ctx = canvas.getContext("2d");
+      ctx.clearRect(0, 0, canvas.width, canvas.height); // Bersihkan dulu
+      if (data.kode) {
+        JsBarcode(canvas, data.kode, {
+          format: "CODE128",
+          displayValue: true,
+          lineColor: "#000",
+          width: 2,
+          height: 60
+        });
+      }
 
       const col1 = document.getElementById('seri-col-1');
       const col2 = document.getElementById('seri-col-2');
