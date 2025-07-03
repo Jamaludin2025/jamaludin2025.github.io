@@ -54,17 +54,25 @@
       margin-bottom: 0.6rem;
       display: flex;
       flex-wrap: wrap;
+      align-items: flex-start;
     }
 
     .info b {
-      display: inline-block;
       width: 90px;
+      margin-right: 6px;
     }
 
-    .info span#seriList {
-      flex: 1;
-      display: block;
-      margin-top: 4px;
+    .seri-list2 {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    .seri-list2 .col {
+      display: flex;
+      flex-direction: column;
     }
 
     .buttons {
@@ -151,7 +159,7 @@
     <div class="info"><b>Kode</b>: <span id="kode"></span></div>
     <div class="info"><b>Nominal</b>: <span id="nominal"></span></div>
     <div class="info"><b>Pecahan</b>: <span id="pecahan"></span></div>
-    <div class="info"><b>Seri</b>: <span id="seriList"></span></div>
+    <div class="info"><b>Seri</b>: <div class="seri-list2" id="seriList"></div></div>
 
     <div id="penggunaanInfo"></div>
 
@@ -233,13 +241,31 @@
         });
       }
 
-      // Tampilkan nomor seri dibagi 10-10
-      const seriSpan = document.getElementById("seriList");
+      const seriContainer = document.getElementById("seriList");
+      seriContainer.innerHTML = "";
       const seriList = data.seri || [];
       const filtered = seriList.filter(s => s.trim() !== "");
-      const bagian1 = filtered.slice(0, 10).join(" - ");
-      const bagian2 = filtered.slice(10, 20).join(" - ");
-      seriSpan.innerHTML = bagian1 + (bagian2 ? "<br>" + bagian2 : "");
+      const kolom1 = filtered.slice(0, 10);
+      const kolom2 = filtered.slice(10, 20);
+
+      const col1 = document.createElement("div");
+      col1.className = "col";
+      kolom1.forEach(s => {
+        const div = document.createElement("div");
+        div.textContent = s;
+        col1.appendChild(div);
+      });
+
+      const col2 = document.createElement("div");
+      col2.className = "col";
+      kolom2.forEach(s => {
+        const div = document.createElement("div");
+        div.textContent = s;
+        col2.appendChild(div);
+      });
+
+      seriContainer.appendChild(col1);
+      seriContainer.appendChild(col2);
 
       tampilkanPenggunaan(data.penggunaan);
     }
