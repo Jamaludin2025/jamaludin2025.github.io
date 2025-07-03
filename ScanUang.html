@@ -3,106 +3,137 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Scan Uang Tabungan</title>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
-  <script src="https://unpkg.com/html5-qrcode"></script>
-  <script src="https://cdn.jsdelivr.net/jsbarcode/3.11.5/JsBarcode.all.min.js"></script>
+  <title>Input Uang</title>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
   <style>
     body {
-      font-family: 'Arial', sans-serif;
+      font-family: sans-serif;
       margin: 0;
-      padding: 1rem;
-      background-color: #f2f2f2;
-      color: #333;
+      background: #f5f5f5;
+      padding: 15px;
     }
+
     .container {
-      max-width: 480px;
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      max-width: 500px;
       margin: auto;
-      background: #fff;
-      padding: 1rem;
-      border-radius: 10px;
-      box-shadow: 0 0 8px rgba(0,0,0,0.1);
-      display: none;
     }
+
     h2 {
       text-align: center;
-      margin-bottom: 0.5rem;
+      margin-bottom: 20px;
     }
-    .date {
-      text-align: center;
-      font-size: 0.9rem;
-      color: #777;
-      margin-bottom: 1rem;
-    }
-    svg {
-      display: block;
-      margin: 0 auto 1rem auto;
-    }
-    .info {
-      margin-bottom: 0.6rem;
-    }
-    .info b {
-      display: inline-block;
-      width: 90px;
-    }
-    .seri-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-    }
-    .seri-column {
-      flex: 1;
-      min-width: 45%;
-    }
-    .seri-column li {
-      list-style-type: disc;
-      margin-left: 1.2rem;
-    }
-    .buttons {
-      display: flex;
-      justify-content: space-around;
-      margin-top: 1rem;
-    }
-    .buttons button {
-      padding: 0.5rem 1rem;
-      border: none;
-      border-radius: 5px;
+
+    label {
       font-weight: bold;
+      display: block;
+      margin-top: 12px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 6px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+      text-transform: uppercase;
+      font-size: 14px;
+    }
+
+    input[type="date"] {
+      text-transform: none;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      background: #1976d2;
+      color: white;
       cursor: pointer;
     }
-    .edit-btn {
-      background-color: orange;
-      color: white;
+
+    button:hover {
+      background: #125ea5;
     }
-    .hapus-btn {
-      background-color: red;
+
+    #barcode-container {
+      text-align: center;
+      margin-top: 20px;
+      display: none;
+    }
+
+    #barcode {
+      margin-bottom: 10px;
+    }
+
+    #download-link {
+      display: inline-block;
+      padding: 8px 16px;
+      background: #4caf50;
       color: white;
+      border-radius: 6px;
+      text-decoration: none;
+    }
+
+    @media screen and (min-width: 768px) {
+      body {
+        padding: 30px;
+      }
+
+      .container {
+        max-width: 500px;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="container" id="resultContainer">
-    <h2 id="judul">Uang Tabungan</h2>
-    <div class="date" id="tanggal"></div>
-    <svg id="barcode"></svg>
-    <div class="info"><b>Kode</b>: <span id="kode"></span></div>
-    <div class="info"><b>Nominal</b>: <span id="nominal"></span></div>
-    <div class="info"><b>Pecahan</b>: <span id="pecahan"></span></div>
-    <div class="info"><b>Seri</b>:</div>
-    <div class="seri-list">
-      <ul class="seri-column" id="seri-col-1"></ul>
-      <ul class="seri-column" id="seri-col-2"></ul>
-    </div>
-    <div class="buttons">
-      <button class="edit-btn">EDIT</button>
-      <button class="hapus-btn" onclick="hapusData()">HAPUS</button>
-    </div>
+  <div class="container">
+    <h2>Input Data Uang</h2>
+    <form id="dataForm">
+      <label for="kode">Kode</label>
+      <input type="text" id="kode" required />
+
+      <label for="nominal">Nominal</label>
+      <select id="nominal" required>
+        <option value="">Pilih Nominal</option>
+        <option value="Rp1.000.000">Rp1.000.000</option>
+        <option value="Rp2.000.000">Rp2.000.000</option>
+      </select>
+
+      <label for="pecahan">Pecahan</label>
+      <select id="pecahan" required>
+        <option value="">Pilih Pecahan</option>
+        <option value="Rp50.000">Rp50.000</option>
+        <option value="Rp100.000">Rp100.000</option>
+      </select>
+
+      <label for="tanggal">Tanggal</label>
+      <input type="date" id="tanggal" required />
+
+      <label for="seri">Nomor Seri Uang (pisahkan dengan "-")</label>
+      <input type="text" id="seri" placeholder="Contoh: AB123-CD456-EF789..." required />
+
+      <button type="button" onclick="simpanDanBarcode()">Simpan & Buat Barcode</button>
+
+      <div id="barcode-container">
+        <canvas id="barcode"></canvas>
+        <a id="download-link" download="barcode.png">Download Barcode</a>
+      </div>
+    </form>
   </div>
 
-  <div id="reader" style="width: 100%; margin-top: 1rem;"></div>
-
   <script>
+    // Firebase Config
     const firebaseConfig = {
       apiKey: "AIzaSyBdt-2IQflUWNx3sdI1QHPMe1vAzsXAZcY",
       authDomain: "ajproject-log.firebaseapp.com",
@@ -115,80 +146,42 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    function formatTanggal(tgl) {
-      if (!tgl) return "(tidak ada tanggal)";
-      const d = new Date(tgl);
-      const hari = String(d.getDate()).padStart(2, '0');
-      const bulan = String(d.getMonth() + 1).padStart(2, '0');
-      const tahun = d.getFullYear();
-      return `${hari}-${bulan}-${tahun}`;
-    }
+    function simpanDanBarcode() {
+      const kode = document.getElementById("kode").value.trim().toUpperCase();
+      const nominal = document.getElementById("nominal").value;
+      const pecahan = document.getElementById("pecahan").value;
+      const tanggal = document.getElementById("tanggal").value;
+      const seriInput = document.getElementById("seri").value.trim().toUpperCase();
+      let seri = seriInput.split("-").map(s => s.trim());
+      while (seri.length < 20) seri.push(""); // pastikan tetap 20 elemen
 
-    function tampilkanData(data) {
-      document.getElementById('resultContainer').style.display = 'block';
-      document.getElementById('judul').innerText = `Uang Tabungan`;
-      document.getElementById('tanggal').innerText = `Data ditambahkan pada ${formatTanggal(data.tanggal)}`;
-      document.getElementById('kode').innerText = data.kode || '-';
-      document.getElementById('nominal').innerText = data.nominal || '-';
-      document.getElementById('pecahan').innerText = data.pecahan || '-';
-
-      // Buat barcode
-      JsBarcode("#barcode", data.kode || '', {
-        format: "CODE128",
-        displayValue: false,
-        width: 2,
-        height: 50
-      });
-
-      // Tampilkan seri yang tidak kosong
-      const col1 = document.getElementById('seri-col-1');
-      const col2 = document.getElementById('seri-col-2');
-      col1.innerHTML = '';
-      col2.innerHTML = '';
-      const seriList = (data.seri || []).filter(s => s && s.trim() !== '');
-      seriList.forEach((s, i) => {
-        const li = document.createElement('li');
-        li.textContent = s;
-        (i % 2 === 0 ? col1 : col2).appendChild(li);
-      });
-    }
-
-    function hapusData() {
-      const password = prompt("Masukkan password untuk menghapus data:");
-      if (password !== "Hapus123") {
-        alert("Password salah!");
+      if (!kode || !nominal || !pecahan || !tanggal || !seriInput) {
+        alert("Mohon lengkapi semua data.");
         return;
       }
-      const kode = document.getElementById('kode').innerText;
-      db.ref("uang/" + kode).remove()
-        .then(() => {
-          alert("Data berhasil dihapus.");
-          location.reload();
-        })
-        .catch(e => alert("Gagal menghapus data: " + e.message));
-    }
 
-    const html5QrCode = new Html5Qrcode("reader");
-    const config = { fps: 10, qrbox: 250 };
+      const data = { kode, nominal, pecahan, seri, tanggal };
 
-    html5QrCode.start(
-      { facingMode: "environment" },
-      config,
-      (decodedText) => {
-        html5QrCode.stop();
-        db.ref("uang/" + decodedText).once("value").then(snapshot => {
-          if (snapshot.exists()) {
-            tampilkanData(snapshot.val());
-          } else {
-            alert("Data tidak ditemukan!");
-            location.reload();
-          }
+      db.ref("uang/" + kode).set(data).then(() => {
+        // Generate barcode ke canvas
+        const canvas = document.getElementById("barcode");
+        JsBarcode(canvas, kode, {
+          format: "CODE128",
+          lineColor: "#000",
+          width: 2,
+          height: 100,
+          displayValue: true
         });
-      },
-      (errorMessage) => {}
-    ).catch(err => {
-      alert("Gagal mengakses kamera belakang: " + err);
-    });
+
+        document.getElementById("barcode-container").style.display = "block";
+
+        // Convert to PNG link
+        const link = document.getElementById("download-link");
+        link.href = canvas.toDataURL("image/png");
+      }).catch((error) => {
+        alert("Gagal menyimpan: " + error.message);
+      });
+    }
   </script>
 </body>
 </html>
