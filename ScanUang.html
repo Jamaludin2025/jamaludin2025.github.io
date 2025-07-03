@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Scan Uang Tabungan</title>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
@@ -13,7 +13,7 @@
       font-family: 'Arial', sans-serif;
       margin: 0;
       padding: 1rem;
-      background-color: #f9f9f9;
+      background-color: #f2f2f2;
       color: #333;
     }
     .container {
@@ -22,15 +22,16 @@
       background: #fff;
       padding: 1rem;
       border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      box-shadow: 0 0 8px rgba(0,0,0,0.1);
+      display: none;
     }
     h2 {
       text-align: center;
-      margin-bottom: 0;
+      margin-bottom: 0.5rem;
     }
     .date {
       text-align: center;
-      font-size: 0.8rem;
+      font-size: 0.9rem;
       color: #777;
       margin-bottom: 1rem;
     }
@@ -39,7 +40,7 @@
       margin: 0 auto 1rem auto;
     }
     .info {
-      margin-bottom: 1rem;
+      margin-bottom: 0.6rem;
     }
     .info b {
       display: inline-block;
@@ -52,7 +53,7 @@
     }
     .seri-column {
       flex: 1;
-      min-width: 40%;
+      min-width: 45%;
     }
     .seri-column li {
       list-style-type: disc;
@@ -72,108 +73,117 @@
     }
     .edit-btn {
       background-color: orange;
-      color: #fff;
+      color: white;
     }
     .hapus-btn {
       background-color: red;
-      color: #fff;
+      color: white;
     }
   </style>
 </head>
 <body>
-<div class="container" id="resultContainer" style="display: none">
-  <h2 id="judul">Uang Tabungan</h2>
-  <div class="date" id="tanggal"></div>
-  <svg id="barcode"></svg>
-  <div class="info"><b>Kode</b>: <span id="kode"></span></div>
-  <div class="info"><b>Nominal</b>: <span id="nominal"></span></div>
-  <div class="info"><b>Pecahan</b>: <span id="pecahan"></span></div>
-  <div class="info"><b>Seri</b>:</div>
-  <div class="seri-list">
-    <ul class="seri-column" id="seri-col-1"></ul>
-    <ul class="seri-column" id="seri-col-2"></ul>
+  <div class="container" id="resultContainer">
+    <h2 id="judul">Uang Tabungan</h2>
+    <div class="date" id="tanggal"></div>
+    <svg id="barcode"></svg>
+    <div class="info"><b>Kode</b>: <span id="kode"></span></div>
+    <div class="info"><b>Nominal</b>: <span id="nominal"></span></div>
+    <div class="info"><b>Pecahan</b>: <span id="pecahan"></span></div>
+    <div class="info"><b>Seri</b>:</div>
+    <div class="seri-list">
+      <ul class="seri-column" id="seri-col-1"></ul>
+      <ul class="seri-column" id="seri-col-2"></ul>
+    </div>
+    <div class="buttons">
+      <button class="edit-btn">EDIT</button>
+      <button class="hapus-btn" onclick="hapusData()">HAPUS</button>
+    </div>
   </div>
-  <div class="buttons">
-    <button class="edit-btn">EDIT</button>
-    <button class="hapus-btn" onclick="hapusData()">HAPUS</button>
-  </div>
-</div>
 
-<div id="reader" style="width: 100%"></div>
+  <div id="reader" style="width: 100%; margin-top: 1rem;"></div>
 
-<script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyBdt-2IQflUWNx3sdI1QHPMe1vAzsXAZcY",
-    authDomain: "ajproject-log.firebaseapp.com",
-    databaseURL: "https://ajproject-log-default-rtdb.firebaseio.com",
-    projectId: "ajproject-log",
-    storageBucket: "ajproject-log.firebasestorage.app",
-    messagingSenderId: "113688767697",
-    appId: "1:113688767697:web:b7b4c401f87702cd74a9f0",
-    measurementId: "G-DFV5D36PNX"
-  };
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.database();
+  <script>
+    // Firebase setup
+    const firebaseConfig = {
+      apiKey: "AIzaSyBdt-2IQflUWNx3sdI1QHPMe1vAzsXAZcY",
+      authDomain: "ajproject-log.firebaseapp.com",
+      databaseURL: "https://ajproject-log-default-rtdb.firebaseio.com",
+      projectId: "ajproject-log",
+      storageBucket: "ajproject-log.appspot.com",
+      messagingSenderId: "113688767697",
+      appId: "1:113688767697:web:b7b4c401f87702cd74a9f0"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
 
-  function tampilkanData(data) {
-    document.getElementById('resultContainer').style.display = 'block';
-    document.getElementById('judul').innerText = `Uang Tabungan ${data.nama}`;
-    document.getElementById('tanggal').innerText = `Data ditambahkan pada ${data.tanggal}`;
-    document.getElementById('kode').innerText = data.kode;
-    document.getElementById('nominal').innerText = data.nominal;
-    document.getElementById('pecahan').innerText = data.pecahan;
+    function tampilkanData(data) {
+      document.getElementById('resultContainer').style.display = 'block';
+      document.getElementById('judul').innerText = `Uang Tabungan`;
+      document.getElementById('tanggal').innerText = `Data ditambahkan pada ${data.tanggal || '(tidak ada tanggal)'}`;
+      document.getElementById('kode').innerText = data.kode || '-';
+      document.getElementById('nominal').innerText = data.nominal || '-';
+      document.getElementById('pecahan').innerText = data.pecahan || '-';
 
-    JsBarcode("#barcode", data.kode, { format: "CODE128", displayValue: false, width: 2, height: 50 });
+      // Barcode dari kode
+      JsBarcode("#barcode", data.kode || '', {
+        format: "CODE128",
+        displayValue: false,
+        width: 2,
+        height: 50
+      });
 
-    const col1 = document.getElementById('seri-col-1');
-    const col2 = document.getElementById('seri-col-2');
-    col1.innerHTML = '';
-    col2.innerHTML = '';
-    data.seri.forEach((s, i) => {
-      const li = document.createElement('li');
-      li.textContent = s;
-      if (i < data.seri.length / 2) col1.appendChild(li);
-      else col2.appendChild(li);
+      // Nomor seri
+      const col1 = document.getElementById('seri-col-1');
+      const col2 = document.getElementById('seri-col-2');
+      col1.innerHTML = '';
+      col2.innerHTML = '';
+      const seriList = data.seri || [];
+      seriList.forEach((s, i) => {
+        const li = document.createElement('li');
+        li.textContent = s;
+        (i % 2 === 0 ? col1 : col2).appendChild(li);
+      });
+    }
+
+    function hapusData() {
+      const password = prompt("Masukkan password untuk menghapus data:");
+      if (password !== "Hapus123") {
+        alert("Password salah!");
+        return;
+      }
+      const kode = document.getElementById('kode').innerText;
+      db.ref("uang/" + kode).remove()
+        .then(() => {
+          alert("Data berhasil dihapus.");
+          location.reload();
+        })
+        .catch(e => alert("Gagal menghapus data: " + e.message));
+    }
+
+    // Scanner QR
+    const html5QrCode = new Html5Qrcode("reader");
+    Html5Qrcode.getCameras().then(cameras => {
+      if (cameras && cameras.length) {
+        html5QrCode.start(
+          cameras[0].id,
+          { fps: 10, qrbox: 250 },
+          (decodedText) => {
+            html5QrCode.stop();
+            db.ref("uang/" + decodedText).once("value").then(snapshot => {
+              if (snapshot.exists()) {
+                tampilkanData(snapshot.val());
+              } else {
+                alert("Data tidak ditemukan!");
+                location.reload();
+              }
+            });
+          },
+          error => {}
+        );
+      } else {
+        alert("Kamera tidak ditemukan!");
+      }
     });
-  }
-
-  function hapusData() {
-    const password = prompt("Masukkan password untuk menghapus data:");
-    if (password !== 'Hapus123') {
-      alert("Password salah!");
-      return;
-    }
-    const kode = document.getElementById('kode').innerText;
-    db.ref("uang/" + kode).remove()
-      .then(() => {
-        alert("Data berhasil dihapus.");
-        location.reload();
-      })
-      .catch((e) => alert("Gagal menghapus: " + e.message));
-  }
-
-  const html5QrCode = new Html5Qrcode("reader");
-  Html5Qrcode.getCameras().then(cameras => {
-    if (cameras && cameras.length) {
-      const backCamera = cameras.find(cam => /back|rear|environment/i.test(cam.label)) || cameras[0];
-      html5QrCode.start(
-        backCamera.id,
-        { fps: 10, qrbox: 250 },
-        (decodedText) => {
-          html5QrCode.stop();
-          db.ref("uang/" + decodedText).once("value", snapshot => {
-            if (snapshot.exists()) {
-              tampilkanData(snapshot.val());
-            } else {
-              alert("Data tidak ditemukan!");
-              location.reload();
-            }
-          });
-        },
-        errorMessage => {}
-      );
-    }
-  });
-</script>
+  </script>
 </body>
 </html>
