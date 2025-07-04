@@ -7,6 +7,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+  <script src="https://unpkg.com/feather-icons"></script>
   <style>
     body {
       font-family: sans-serif;
@@ -81,17 +82,19 @@
 
     .button-row {
       display: flex;
-      justify-content: center;
+      flex-direction: column;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
       margin-top: 10px;
-      flex-wrap: wrap;
     }
 
     .button-row a,
     .button-row button {
-      flex: 1 1 45%;
-      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      width: 100%;
       padding: 10px 16px;
       background: #4caf50;
       color: white;
@@ -100,6 +103,7 @@
       text-decoration: none;
       cursor: pointer;
       font-size: 14px;
+      font-weight: bold;
     }
 
     .button-row a:hover,
@@ -172,8 +176,12 @@
       <div id="barcode-container">
         <canvas id="barcode" width="300" height="150"></canvas>
         <div class="button-row">
-          <a id="download-link" download="barcode.png">Download Barcode</a>
-          <button type="button" onclick="printBarcode()">Print Barcode</button>
+          <a id="download-link" download="barcode.png">
+            <i data-feather="download"></i> Unduh
+          </a>
+          <button type="button" onclick="printBarcode()">
+            <i data-feather="printer"></i> Cetak
+          </button>
         </div>
       </div>
     </form>
@@ -237,7 +245,12 @@
         });
 
         document.getElementById("barcode-container").style.display = "block";
-        document.getElementById("download-link").href = canvas.toDataURL("image/png");
+        const downloadLink = document.getElementById("download-link");
+        downloadLink.href = canvas.toDataURL("image/png");
+        downloadLink.download = `barcode ${kode}.png`;
+
+
+        feather.replace(); // render ikon
       }).catch((error) => {
         alert("Gagal menyimpan: " + error.message);
       });
