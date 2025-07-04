@@ -172,8 +172,8 @@
 <body>
   <div class="container" id="resultContainer">
     <img class="image" src="https://res.cloudinary.com/dz4w1sqiv/image/upload/v1751588603/Tabungan Asep Jamaludin.png" alt="Ikon Tabungan" />
-    <a href="https://jamaludin2025.github.io/ScanUang.html" target="_blank">
-      <h2 id="judul">https:tiny.cc/Scan-Tabungan</h2>
+    <a href="https://jamaludin2025.github.io/ScanUang.html" target="_blank" style="text-decoration: none;">
+    <h2 id="judul">https://tiny.cc/Scan-Tabungan</h2>
     </a>
 
     <div class="date" id="tanggal"></div>
@@ -254,7 +254,7 @@
 
     function tampilkanData(data) {
       document.getElementById('resultContainer').style.display = 'block';
-      document.getElementById('judul').innerText = `Uang Tabungan`;
+      document.getElementById('judul').innerText = `https://tiny.cc/Scan-Tabungan`;
       document.getElementById('tanggal').innerText = `Data ditambahkan pada ${formatTanggal(data.tanggal)}`;
       document.getElementById('kode').innerText = data.kode || '-';
       document.getElementById('nominal').innerText = data.nominal || '-';
