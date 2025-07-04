@@ -8,6 +8,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
   <script src="https://unpkg.com/html5-qrcode"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+  <script src="https://unpkg.com/feather-icons"></script>
   <style>
     body {
       font-family: 'Arial', sans-serif;
@@ -25,6 +26,12 @@
       border-radius: 10px;
       box-shadow: 0 0 8px rgba(0,0,0,0.1);
       display: none;
+    }
+
+    .image {
+      display: block;
+      margin: 0 auto 30px auto;
+      width: 120px;
     }
 
     h2 {
@@ -87,6 +94,10 @@
       border-radius: 5px;
       font-weight: bold;
       cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 14px;
     }
 
     .edit-btn {
@@ -97,6 +108,13 @@
     .hapus-btn {
       background-color: red;
       color: white;
+    }
+
+    .buttons .edit-btn svg,
+    .buttons .hapus-btn svg {
+      width: 16px;
+      height: 16px;
+      vertical-align: middle;
     }
 
     #formEdit {
@@ -151,7 +169,11 @@
 </head>
 <body>
   <div class="container" id="resultContainer">
-    <h2 id="judul">Uang Tabungan</h2>
+    <img class="image" src="https://res.cloudinary.com/dz4w1sqiv/image/upload/v1751588603/Tabungan Asep Jamaludin.png" alt="Ikon Tabungan" />
+    <a href="https://jamaludin2025.github.io/ScanUang.html" target="_blank">
+      <h2 id="judul">Uang Tabungan</h2>
+    </a>
+
     <div class="date" id="tanggal"></div>
     <hr />
     <canvas id="barcode"></canvas>
@@ -159,7 +181,7 @@
     <div class="info"><b>Kode</b>: <span id="kode"></span></div>
     <div class="info"><b>Nominal</b>: <span id="nominal"></span></div>
     <div class="info"><b>Pecahan</b>: <span id="pecahan"></span></div>
-    <div class="info"><b>Seri</b>: <div class="seri-list2" id="seriList"></div></div>
+    <div class="info"><b>No. Seri</b>: <div class="seri-list2" id="seriList"></div></div>
 
     <div id="penggunaanInfo"></div>
 
@@ -191,12 +213,22 @@
     </div>
 
     <div class="buttons">
-      <button class="edit-btn" onclick="editData()">EDIT</button>
-      <button class="hapus-btn" onclick="hapusData()">HAPUS</button>
+      <button class="edit-btn" onclick="editData()">
+        <i data-feather="edit"></i> EDIT
+      </button>
+      <button class="hapus-btn" onclick="hapusData()">
+        <i data-feather="trash-2"></i> HAPUS
+      </button>
     </div>
   </div>
 
   <div id="reader" style="width: 100%; margin-top: 1rem;"></div>
+
+  <script>
+    feather.replace();
+  </script>
+</body>
+</html>
 
   <script>
     const firebaseConfig = {
@@ -234,7 +266,7 @@
       if (data.kode) {
         JsBarcode(canvas, data.kode, {
           format: "CODE128",
-          displayValue: true,
+          displayValue: false,
           lineColor: "#000",
           width: 2,
           height: 60
