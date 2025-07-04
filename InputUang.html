@@ -14,6 +14,7 @@
       background: #f5f5f5;
       padding: 15px;
     }
+
     .container {
       background: #ffffff;
       padding: 20px;
@@ -22,15 +23,18 @@
       max-width: 500px;
       margin: auto;
     }
+
     h2 {
       text-align: center;
       margin-bottom: 20px;
     }
+
     label {
       font-weight: bold;
       display: block;
       margin-top: 12px;
     }
+
     input, select {
       width: 100%;
       padding: 10px;
@@ -41,9 +45,11 @@
       text-transform: uppercase;
       font-size: 14px;
     }
+
     input[type="date"] {
       text-transform: none;
     }
+
     button {
       width: 100%;
       padding: 12px;
@@ -56,27 +62,36 @@
       color: white;
       cursor: pointer;
     }
+
     button:hover {
       background: #125ea5;
     }
+
     #barcode-container {
       text-align: center;
       margin-top: 20px;
       display: none;
     }
+
     #barcode {
       margin-bottom: 10px;
       background: white;
       padding: 10px;
     }
+
     .button-row {
       display: flex;
       justify-content: center;
-      gap: 10px;
+      align-items: center;
+      gap: 12px;
       margin-top: 10px;
+      flex-wrap: wrap;
     }
+
     .button-row a,
     .button-row button {
+      flex: 1 1 45%;
+      text-align: center;
       padding: 10px 16px;
       background: #4caf50;
       color: white;
@@ -84,24 +99,30 @@
       border-radius: 6px;
       text-decoration: none;
       cursor: pointer;
+      font-size: 14px;
     }
+
     .button-row a:hover,
     .button-row button:hover {
       background: #3e8e41;
     }
+
     .seri-grid {
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
       margin-top: 10px;
     }
+
     .seri-item {
       flex: 1 1 45%;
     }
+
     @media screen and (min-width: 768px) {
       body {
         padding: 30px;
       }
+
       .container {
         max-width: 500px;
       }
@@ -114,14 +135,17 @@
     <form id="dataForm">
       <label for="tanggal">Tanggal:</label>
       <input type="date" id="tanggal" required />
+
       <label for="kode">Kode:</label>
       <input type="text" id="kode" required />
+
       <label for="nominal">Nominal:</label>
       <select id="nominal" required>
         <option value="">Pilih Nominal</option>
         <option value="Rp1.000.000">Rp1.000.000</option>
         <option value="Rp2.000.000">Rp2.000.000</option>
       </select>
+
       <label for="pecahan">Pecahan:</label>
       <select id="pecahan" required>
         <option value="">Pilih Pecahan</option>
@@ -154,6 +178,8 @@
       </div>
     </form>
   </div>
+
+  <iframe id="print-frame" style="display:none;"></iframe>
 
   <script>
     const firebaseConfig = {
@@ -197,8 +223,8 @@
       db.ref("uang/" + kode).set(data).then(() => {
         const canvas = document.getElementById("barcode");
         const ctx = canvas.getContext("2d");
-        ctx.fillStyle = "#ffffff"; // putih
-        ctx.fillRect(0, 0, canvas.width, canvas.height); // latar belakang putih
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
 
         JsBarcode(canvas, kode, {
           format: "CODE128",
@@ -218,33 +244,35 @@
     }
 
     function printBarcode() {
-  const canvas = document.getElementById("barcode");
-  const dataUrl = canvas.toDataURL("image/png");
+      const canvas = document.getElementById("barcode");
+      const dataUrl = canvas.toDataURL("image/png");
 
-  const w = window.open("", "_blank");
-  w.document.open();
-  w.document.write(`
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <title>Cetak Barcode</title>
-      <style>
-        body { margin: 0; padding: 20px; text-align: center; }
-        img { max-width: 100%; }
-      </style>
-    </head>
-    <body>
-      <img src="${dataUrl}" alt="Barcode" />
-      <script>
-        window.onload = function() {
-          window.print();
-        };
-      <\/script>
-    </body>
-    </html>
-  `);
-  w.document.close();
-}
+      const iframe = document.getElementById("print-frame");
+      const doc = iframe.contentWindow.document;
+
+      doc.open();
+      doc.write(`
+        <html>
+        <head>
+          <title>Print Barcode</title>
+          <style>
+            body { margin: 0; padding: 20px; text-align: center; background: white; }
+            img { max-width: 100%; }
+          </style>
+        </head>
+        <body>
+          <img src="${dataUrl}" alt="Barcode" />
+          <script>
+            window.onload = function() {
+              window.focus();
+              window.print();
+            };
+          <\/script>
+        </body>
+        </html>
+      `);
+      doc.close();
+    }
   </script>
 </body>
 </html>
