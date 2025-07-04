@@ -1,4 +1,5 @@
 <meta content="width=device-width, initial-scale=1" name="viewport"/><!DOCTYPE html>
+
 <html lang="id">
 <head>
 <meta charset="utf-8"/>
@@ -196,17 +197,6 @@
       height: 16px;
       vertical-align: middle;
     }
-
-    @media print {
-  .container {
-    border: 2px solid #ccc;
-    padding: 20px;
-    border-radius: 12px;
-    background: white;
-    box-shadow: none;
-  }
-    }
-    
     </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script></head>
 <body>
@@ -352,7 +342,7 @@
     function tampilkanPenggunaan(p) {
       const div = document.getElementById("penggunaanInfo");
       if (!p) {
-        div.innerHTML = `<b>Penggunaan:</b><br/><i>Belum ada catatan.</i>`;
+        div.innerHTML = `<b>Penggunaan:</b><br/><i>Uang tabungan masih tersimpan dan belum digunakan.</i>`;
         return;
       }
 
@@ -412,7 +402,7 @@
 
       db.ref("uang/" + currentKode + "/penggunaan").set(penggunaan)
         .then(() => {
-          alert("Penggunaan berhasil disimpan.");
+          alert("Data berhasil disimpan.");
           tampilkanPenggunaan(penggunaan);
           document.getElementById("formEdit").style.display = "none";
         })
@@ -420,22 +410,29 @@
     }
 
     const html5QrCode = new Html5Qrcode("reader");
-    html5QrCode.start(
-      { facingMode: "environment" },
-      { fps: 10, qrbox: 250 },
-      (decodedText) => {
-        html5QrCode.stop();
-        db.ref("uang/" + decodedText).once("value").then(snapshot => {
-          if (snapshot.exists()) {
-            tampilkanData(snapshot.val());
-          } else {
-            alert("Data tidak ditemukan!");
-            location.reload();
-          }
-        });
-      },
-      () => {}
-    ).catch(err => {
-      alert("Gagal mengakses kamera: " + err);
+
+const config = {
+  fps: 10,
+  qrbox: { width: 320, height: 120 }, // Lebar dan pendek untuk barcode memanjang
+  aspectRatio: 2.5 // (opsional) agar area scan lebih lebar horizontal
+};
+
+html5QrCode.start(
+  { facingMode: "environment" },
+  config,
+  (decodedText) => {
+    html5QrCode.stop();
+    db.ref("uang/" + decodedText).once("value").then(snapshot => {
+      if (snapshot.exists()) {
+        tampilkanData(snapshot.val());
+      } else {
+        alert("Data tidak ditemukan!");
+        location.reload();
+      }
     });
+  },
+  () => {}
+).catch(err => {
+  alert("Gagal mengakses kamera: " + err);
+});
   </script>
