@@ -7,6 +7,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+  <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
   <style>
     body {
       font-family: sans-serif;
@@ -55,6 +56,7 @@
       padding: 12px;
       margin-top: 20px;
       font-size: 16px;
+      font-weight: bold;
       border: none;
       border-radius: 8px;
       background: #1976d2;
@@ -111,34 +113,33 @@
   <div class="container">
     <h2>Input Data Uang</h2>
     <form id="dataForm">
-      <label for="kode">Kode</label>
+      <label for="tanggal">Tanggal:</label>
+      <input type="date" id="tanggal" required />
+
+      <label for="kode">Kode:</label>
       <input type="text" id="kode" required />
 
-      <label for="nominal">Nominal</label>
+      <label for="nominal">Nominal:</label>
       <select id="nominal" required>
         <option value="">Pilih Nominal</option>
         <option value="Rp1.000.000">Rp1.000.000</option>
         <option value="Rp2.000.000">Rp2.000.000</option>
       </select>
 
-      <label for="pecahan">Pecahan</label>
+      <label for="pecahan">Pecahan:</label>
       <select id="pecahan" required>
         <option value="">Pilih Pecahan</option>
         <option value="Rp50.000">Rp50.000</option>
         <option value="Rp100.000">Rp100.000</option>
       </select>
 
-      <label for="tanggal">Tanggal</label>
-      <input type="date" id="tanggal" required />
-
-      <label><b>20 Nomor Seri Uang:</b></label>
+      <label><b>20 Nomor Seri:</b></label>
       <div class="seri-grid">
-        <!-- Buat 20 input -->
         <script>
           for (let i = 1; i <= 20; i++) {
             document.write(`
               <div class="seri-item">
-                <label for="seri${i}">Nomor Uang ke-${i}</label>
+                <label for="seri${i}">Nomor Seri ke-${i}</label>
                 <input type="text" id="seri${i}" />
               </div>
             `);
@@ -149,7 +150,7 @@
       <button type="button" onclick="simpanDanBarcode()">Simpan & Buat Barcode</button>
 
       <div id="barcode-container">
-        <canvas id="barcode"></canvas>
+        <div id="barcode"></div>
         <a id="download-link" download="barcode.png">Download Barcode</a>
       </div>
     </form>
@@ -169,13 +170,19 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
+    document.getElementById("nominal").addEventListener("change", function () {
+      const nominal = this.value;
+      const pecahanSelect = document.getElementById("pecahan");
+      pecahanSelect.value = nominal === "Rp1.000.000" ? "Rp50.000" :
+                            nominal === "Rp2.000.000" ? "Rp100.000" : "";
+    });
+
     function simpanDanBarcode() {
       const kode = document.getElementById("kode").value.trim().toUpperCase();
       const nominal = document.getElementById("nominal").value;
       const pecahan = document.getElementById("pecahan").value;
       const tanggal = document.getElementById("tanggal").value;
 
-      // Ambil 20 input nomor seri
       let seri = [];
       for (let i = 1; i <= 20; i++) {
         let val = document.getElementById(`seri${i}`).value.trim().toUpperCase();
@@ -190,17 +197,23 @@
       const data = { kode, nominal, pecahan, seri, tanggal };
 
       db.ref("uang/" + kode).set(data).then(() => {
-        const canvas = document.getElementById("barcode");
-        JsBarcode(canvas, kode, {
+        const barcodeDiv = document.getElementById("barcode");
+        barcodeDiv.innerHTML = ""; // Kosongkan dulu
+        let svg = document.createElement("svg");
+        JsBarcode(svg, kode, {
           format: "CODE128",
           lineColor: "#000",
           width: 2,
           height: 100,
           displayValue: true
         });
-
+        barcodeDiv.appendChild(svg);
         document.getElementById("barcode-container").style.display = "block";
-        document.getElementById("download-link").href = canvas.toDataURL("image/png");
+
+        // Screenshot pakai html2canvas
+        html2canvas(barcodeDiv).then(canvas => {
+          document.getElementById("download-link").href = canvas.toDataURL("image/png");
+        });
       }).catch((error) => {
         alert("Gagal menyimpan: " + error.message);
       });
