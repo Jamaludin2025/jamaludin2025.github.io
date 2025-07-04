@@ -1,15 +1,15 @@
-<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
+<meta content="width=device-width, initial-scale=1" name="viewport"/><!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Scan Uang Tabungan</title>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
-  <script src="https://unpkg.com/html5-qrcode"></script>
-  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
-  <script src="https://unpkg.com/feather-icons"></script>
-  <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Scan Uang Tabungan</title>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+<script src="https://unpkg.com/html5-qrcode"></script>
+<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+<script src="https://unpkg.com/feather-icons"></script>
+<style>
     body {
       font-family: 'Arial', sans-serif;
       margin: 0;
@@ -108,17 +108,6 @@
     }
 
     .hapus-btn {
-    .unduh-btn {
-      background-color: #007bff;
-      color: white;
-    }
-
-    .buttons .unduh-btn svg {
-      width: 16px;
-      height: 16px;
-      vertical-align: middle;
-    }
-
       background-color: red;
       color: white;
     }
@@ -178,77 +167,106 @@
       font-size: 0.95rem;
       line-height: 1.5;
     }
-  </style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-</head>
+  
+
+    .info {
+      display: grid;
+      grid-template-columns: 90px 10px 1fr;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      margin-bottom: 0.3rem;
+    }
+
+    .label {
+      font-weight: bold;
+    }
+
+    .titik {
+      text-align: center;
+    }
+    
+
+    .unduh-btn {
+      background-color: green;
+      color: white;
+    }
+
+    .buttons .unduh-btn svg {
+      width: 16px;
+      height: 16px;
+      vertical-align: middle;
+    }
+    </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script></head>
 <body>
-  <div class="container" id="resultContainer">
-    <img class="image" src="https://res.cloudinary.com/dz4w1sqiv/image/upload/v1751588603/Tabungan Asep Jamaludin.png" alt="Ikon Tabungan" />
-    <a href="https://jamaludin2025.github.io/ScanUang.html" target="_blank" style="text-decoration: none;">
-    <h2 id="judul">https://tiny.cc/Scan-Tabungan</h2>
-    </a>
+<div class="container" id="resultContainer">
+<img alt="Ikon Tabungan" class="image" crossorigin="anonymous" src="https://res.cloudinary.com/dz4w1sqiv/image/upload/v1751588603/Tabungan Asep Jamaludin.png"/>
+<a href="https://jamaludin2025.github.io/ScanUang.html" style="text-decoration: none;" target="_blank">
+<h2 id="judul">https://tiny.cc/Scan-Tabungan</h2>
+</a>
+<div class="date" id="tanggal"></div>
+<hr/>
+<canvas id="barcode"></canvas>
+<div class="info"><div class="label">Kode</div><div class="titik">:</div><div class="value" id="kode"></div></div>
+<div class="info"><div class="label">Nominal</div><div class="titik">:</div><div class="value" id="nominal"></div></div>
+<div class="info"><div class="label">Pecahan</div><div class="titik">:</div><div class="value" id="pecahan"></div></div>
+<div class="info"><div class="label">No. Seri</div><div class="titik">:</div><div class="value"><div class="seri-list2" id="seriList"></div></div></div>
+<div id="penggunaanInfo"></div>
+<div id="formEdit" style="display:none;">
+<label>Digunakan untuk:</label>
+<select id="tipeGunakan" onchange="ubahTipeGunakan()">
+<option value="">Pilih</option>
+<option value="pribadi">Digunakan Pribadi</option>
+<option value="pinjam">Dipinjamkan</option>
+</select>
+<div id="formPribadi" style="display:none;">
+<label for="tglPribadi">Tanggal</label>
+<input id="tglPribadi" type="date"/>
+<label for="ketPribadi">Keterangan</label>
+<input id="ketPribadi" placeholder="Digunakan untuk apa" type="text"/>
+</div>
+<div id="formPinjam" style="display:none;">
+<label for="tglPinjam">Tanggal</label>
+<input id="tglPinjam" type="date"/>
+<label for="kepada">Kepada Siapa</label>
+<input id="kepada" placeholder="Nama Peminjam" type="text"/>
+<label for="ketPinjam">Untuk Apa</label>
+<input id="ketPinjam" placeholder="Tulis Keperluannya" type="text"/>
+</div>
+<button onclick="simpanPenggunaan()">Simpan</button>
+</div>
+<div class="buttons">
 
-    <div class="date" id="tanggal"></div>
-    <hr />
-    <canvas id="barcode"></canvas>
-
-    <div class="info"><b>Kode</b>:  <span id="kode"></span></div>
-    <div class="info"><b>Nominal</b>:  <span id="nominal"></span></div>
-    <div class="info"><b>Pecahan</b>:  <span id="pecahan"></span></div>
-    <div class="info"><b>No. Seri</b>: <div class="seri-list2" id="seriList"></div></div>
-
-    <div id="penggunaanInfo"></div>
-
-    <div id="formEdit" style="display:none;">
-      <label>Digunakan untuk:</label>
-      <select id="tipeGunakan" onchange="ubahTipeGunakan()">
-        <option value="">Pilih</option>
-        <option value="pribadi">Digunakan Pribadi</option>
-        <option value="pinjam">Dipinjamkan</option>
-      </select>
-
-      <div id="formPribadi" style="display:none;">
-        <label for="tglPribadi">Tanggal</label>
-        <input type="date" id="tglPribadi" />
-        <label for="ketPribadi">Keterangan</label>
-        <input type="text" id="ketPribadi" placeholder="Misal: bayar listrik" />
-      </div>
-
-      <div id="formPinjam" style="display:none;">
-        <label for="tglPinjam">Tanggal</label>
-        <input type="date" id="tglPinjam" />
-        <label for="kepada">Kepada Siapa</label>
-        <input type="text" id="kepada" placeholder="Nama Peminjam" />
-        <label for="ketPinjam">Untuk Apa</label>
-        <input type="text" id="ketPinjam" placeholder="Tulis Keperluannya" />
-      </div>
-
-      <button onclick="simpanPenggunaan()">Simpan</button>
-    </div>
-
-    <div class="buttons">
-      <button class="edit-btn" onclick="editData()">
-        <i data-feather="edit"></i> EDIT
+<button class="unduh-btn" onclick="unduhHalaman()">
+<i data-feather="download"></i> UNDUH
+    </button>
+<button class="edit-btn" onclick="editData()">
+<i data-feather="edit"></i> EDIT
       </button>
-      
-      <button class="unduh-btn" onclick="unduhHalaman()">
-        <i data-feather="download"></i> UNDUH
+<button class="hapus-btn" onclick="hapusData()">
+<i data-feather="trash-2"></i> HAPUS
       </button>
-      <button class="hapus-btn" onclick="hapusData()">
-        <i data-feather="trash-2"></i> HAPUS
-      </button>
-    </div>
-  </div>
-
-  <div id="reader" style="width: 100%; margin-top: 1rem;"></div>
-
-  <script>
+</div>
+</div>
+<div id="reader" style="width: 100%; margin-top: 1rem;"></div>
+<script>
     feather.replace();
   </script>
 </body>
 </html>
+<script>function unduhHalaman() {
+      const element = document.getElementById('resultContainer');
+      const opt = {
+        margin: 0.5,
+        filename: `${currentKode || 'data'}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+      };
+      html2pdf().set(opt).from(element).save();
+    }
 
-  <script>
+
     const firebaseConfig = {
       apiKey: "AIzaSyBdt-2IQflUWNx3sdI1QHPMe1vAzsXAZcY",
       authDomain: "ajproject-log.firebaseapp.com",
@@ -365,20 +383,6 @@
       document.getElementById("formPinjam").style.display = tipe === "pinjam" ? "block" : "none";
     }
 
-    
-    function unduhHalaman() {
-      const element = document.getElementById('resultContainer');
-      const opt = {
-        margin: 0.5,
-        filename: `${currentKode || 'data'}.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2 },
-        jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
-      };
-      html2pdf().set(opt).from(element).save();
-    }
-
-
     function simpanPenggunaan() {
       const tipe = document.getElementById("tipeGunakan").value;
       let penggunaan = { tipe };
@@ -424,5 +428,3 @@
       alert("Gagal mengakses kamera: " + err);
     });
   </script>
-</body>
-</html>
