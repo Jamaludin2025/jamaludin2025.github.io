@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
@@ -36,7 +36,7 @@
 
     h2 {
       text-align: center;
-      font-size: 9px;
+      font-size: 10px;
       margin-top: -5px;
       margin-bottom: 0.5rem;
     }
@@ -108,6 +108,17 @@
     }
 
     .hapus-btn {
+    .unduh-btn {
+      background-color: #007bff;
+      color: white;
+    }
+
+    .buttons .unduh-btn svg {
+      width: 16px;
+      height: 16px;
+      vertical-align: middle;
+    }
+
       background-color: red;
       color: white;
     }
@@ -168,6 +179,7 @@
       line-height: 1.5;
     }
   </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 <body>
   <div class="container" id="resultContainer">
@@ -180,9 +192,9 @@
     <hr />
     <canvas id="barcode"></canvas>
 
-    <div class="info"><b>Kode</b>: <span id="kode"></span></div>
-    <div class="info"><b>Nominal</b>: <span id="nominal"></span></div>
-    <div class="info"><b>Pecahan</b>: <span id="pecahan"></span></div>
+    <div class="info"><b>Kode</b>:  <span id="kode"></span></div>
+    <div class="info"><b>Nominal</b>:  <span id="nominal"></span></div>
+    <div class="info"><b>Pecahan</b>:  <span id="pecahan"></span></div>
     <div class="info"><b>No. Seri</b>: <div class="seri-list2" id="seriList"></div></div>
 
     <div id="penggunaanInfo"></div>
@@ -206,9 +218,9 @@
         <label for="tglPinjam">Tanggal</label>
         <input type="date" id="tglPinjam" />
         <label for="kepada">Kepada Siapa</label>
-        <input type="text" id="kepada" placeholder="Misal: Andi" />
+        <input type="text" id="kepada" placeholder="Nama Peminjam" />
         <label for="ketPinjam">Untuk Apa</label>
-        <input type="text" id="ketPinjam" placeholder="Misal: kebutuhan usaha" />
+        <input type="text" id="ketPinjam" placeholder="Tulis Keperluannya" />
       </div>
 
       <button onclick="simpanPenggunaan()">Simpan</button>
@@ -217,6 +229,10 @@
     <div class="buttons">
       <button class="edit-btn" onclick="editData()">
         <i data-feather="edit"></i> EDIT
+      </button>
+      
+      <button class="unduh-btn" onclick="unduhHalaman()">
+        <i data-feather="download"></i> UNDUH
       </button>
       <button class="hapus-btn" onclick="hapusData()">
         <i data-feather="trash-2"></i> HAPUS
@@ -335,7 +351,7 @@
     }
 
     function editData() {
-      const pass = prompt("Masukkan password edit:");
+      const pass = prompt("Masukkan password untuk mengedit data:");
       if (pass !== "Edit123") {
         alert("Password salah.");
         return;
@@ -348,6 +364,20 @@
       document.getElementById("formPribadi").style.display = tipe === "pribadi" ? "block" : "none";
       document.getElementById("formPinjam").style.display = tipe === "pinjam" ? "block" : "none";
     }
+
+    
+    function unduhHalaman() {
+      const element = document.getElementById('resultContainer');
+      const opt = {
+        margin: 0.5,
+        filename: `${currentKode || 'data'}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+      };
+      html2pdf().set(opt).from(element).save();
+    }
+
 
     function simpanPenggunaan() {
       const tipe = document.getElementById("tipeGunakan").value;
