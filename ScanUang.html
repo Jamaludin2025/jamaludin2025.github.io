@@ -255,18 +255,18 @@
   </script>
 </body>
 </html>
-<script>function unduhHalaman() {
-      const element = document.getElementById('resultContainer');
-      const opt = {
-        margin: 0.5,
-        filename: `${currentKode || 'data'}.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true },
-        jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
-      };
-      html2pdf().set(opt).from(element).save();
-    }
-
+<script>
+    function unduhHalaman() {
+  const element = document.getElementById('resultContainer');
+  const opt = {
+    margin: [0.5, 0.2, 0.5, 0.2], // atas, kanan, bawah, kiri
+    filename: (currentKode || 'data') + '.pdf',
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2, useCORS: true },
+    jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+  };
+  html2pdf().set(opt).from(element).save();
+}
 
     const firebaseConfig = {
       apiKey: "AIzaSyBdt-2IQflUWNx3sdI1QHPMe1vAzsXAZcY",
