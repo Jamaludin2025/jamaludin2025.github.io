@@ -1,4 +1,4 @@
-<meta content="width=device-width, initial-scale=1" name="viewport"/><!DOCTYPE html>
+<meta name='viewport' content='width=device-width, initial-scale=1'/><meta content="width=device-width, initial-scale=1" name="viewport"/><!DOCTYPE html>
 
 <html lang="id">
 <head>
@@ -257,16 +257,16 @@
 </html>
 <script>
     function unduhHalaman() {
-  const element = document.getElementById('resultContainer');
-  const opt = {
-    margin: [0.5, 0.2, 0.5, 0.2], // atas, kanan, bawah, kiri
-    filename: (currentKode || 'data') + '.pdf',
-    image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { scale: 2, useCORS: true },
-    jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
-  };
-  html2pdf().set(opt).from(element).save();
-}
+      const element = document.getElementById('resultContainer');
+      const opt = {
+        margin: [0.5, 0.1, 0.5, 0.1],
+        filename: `${currentKode || 'data'}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+      };
+      html2pdf().set(opt).from(element).save();
+    }
 
     const firebaseConfig = {
       apiKey: "AIzaSyBdt-2IQflUWNx3sdI1QHPMe1vAzsXAZcY",
@@ -410,28 +410,22 @@
     }
 
     const html5QrCode = new Html5Qrcode("reader");
-
-const config = {
-  fps: 10,
-  qrbox: { width: 320, height: 120 }, // Lebar dan pendek untuk barcode memanjang
-};
-
-html5QrCode.start(
-  { facingMode: "environment" },
-  config,
-  (decodedText) => {
-    html5QrCode.stop();
-    db.ref("uang/" + decodedText).once("value").then(snapshot => {
-      if (snapshot.exists()) {
-        tampilkanData(snapshot.val());
-      } else {
-        alert("Data tidak ditemukan!");
-        location.reload();
-      }
+    html5QrCode.start(
+      { facingMode: "environment" },
+      { fps: 10, qrbox: 250 },
+      (decodedText) => {
+        html5QrCode.stop();
+        db.ref("uang/" + decodedText).once("value").then(snapshot => {
+          if (snapshot.exists()) {
+            tampilkanData(snapshot.val());
+          } else {
+            alert("Data tidak ditemukan!");
+            location.reload();
+          }
+        });
+      },
+      () => {}
+    ).catch(err => {
+      alert("Gagal mengakses kamera: " + err);
     });
-  },
-  () => {}
-).catch(err => {
-  alert("Gagal mengakses kamera: " + err);
-});
   </script>
