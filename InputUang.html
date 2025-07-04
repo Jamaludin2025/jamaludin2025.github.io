@@ -7,7 +7,6 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
-  <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
   <style>
     body {
       font-family: sans-serif;
@@ -15,7 +14,6 @@
       background: #f5f5f5;
       padding: 15px;
     }
-
     .container {
       background: #ffffff;
       padding: 20px;
@@ -24,18 +22,15 @@
       max-width: 500px;
       margin: auto;
     }
-
     h2 {
       text-align: center;
       margin-bottom: 20px;
     }
-
     label {
       font-weight: bold;
       display: block;
       margin-top: 12px;
     }
-
     input, select {
       width: 100%;
       padding: 10px;
@@ -46,11 +41,9 @@
       text-transform: uppercase;
       font-size: 14px;
     }
-
     input[type="date"] {
       text-transform: none;
     }
-
     button {
       width: 100%;
       padding: 12px;
@@ -63,46 +56,52 @@
       color: white;
       cursor: pointer;
     }
-
     button:hover {
       background: #125ea5;
     }
-
     #barcode-container {
       text-align: center;
       margin-top: 20px;
       display: none;
     }
-
     #barcode {
       margin-bottom: 10px;
+      background: white;
+      padding: 10px;
     }
-
-    #download-link {
-      display: inline-block;
-      padding: 8px 16px;
+    .button-row {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .button-row a,
+    .button-row button {
+      padding: 10px 16px;
       background: #4caf50;
       color: white;
+      border: none;
       border-radius: 6px;
       text-decoration: none;
+      cursor: pointer;
     }
-
+    .button-row a:hover,
+    .button-row button:hover {
+      background: #3e8e41;
+    }
     .seri-grid {
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
       margin-top: 10px;
     }
-
     .seri-item {
       flex: 1 1 45%;
     }
-
     @media screen and (min-width: 768px) {
       body {
         padding: 30px;
       }
-
       .container {
         max-width: 500px;
       }
@@ -115,17 +114,14 @@
     <form id="dataForm">
       <label for="tanggal">Tanggal:</label>
       <input type="date" id="tanggal" required />
-
       <label for="kode">Kode:</label>
       <input type="text" id="kode" required />
-
       <label for="nominal">Nominal:</label>
       <select id="nominal" required>
         <option value="">Pilih Nominal</option>
         <option value="Rp1.000.000">Rp1.000.000</option>
         <option value="Rp2.000.000">Rp2.000.000</option>
       </select>
-
       <label for="pecahan">Pecahan:</label>
       <select id="pecahan" required>
         <option value="">Pilih Pecahan</option>
@@ -150,14 +146,16 @@
       <button type="button" onclick="simpanDanBarcode()">Simpan & Buat Barcode</button>
 
       <div id="barcode-container">
-        <div id="barcode"></div>
-        <a id="download-link" download="barcode.png">Download Barcode</a>
+        <canvas id="barcode" width="300" height="150"></canvas>
+        <div class="button-row">
+          <a id="download-link" download="barcode.png">Download Barcode</a>
+          <button type="button" onclick="printBarcode()">Print Barcode</button>
+        </div>
       </div>
     </form>
   </div>
 
   <script>
-    // Firebase Config
     const firebaseConfig = {
       apiKey: "AIzaSyBdt-2IQflUWNx3sdI1QHPMe1vAzsXAZcY",
       authDomain: "ajproject-log.firebaseapp.com",
@@ -197,27 +195,56 @@
       const data = { kode, nominal, pecahan, seri, tanggal };
 
       db.ref("uang/" + kode).set(data).then(() => {
-        const barcodeDiv = document.getElementById("barcode");
-        barcodeDiv.innerHTML = ""; // Kosongkan dulu
-        let svg = document.createElement("svg");
-        JsBarcode(svg, kode, {
+        const canvas = document.getElementById("barcode");
+        const ctx = canvas.getContext("2d");
+        ctx.fillStyle = "#ffffff"; // putih
+        ctx.fillRect(0, 0, canvas.width, canvas.height); // latar belakang putih
+
+        JsBarcode(canvas, kode, {
           format: "CODE128",
-          lineColor: "#000",
+          lineColor: "#000000",
+          background: "#ffffff",
           width: 2,
           height: 100,
-          displayValue: true
+          displayValue: true,
+          margin: 10
         });
-        barcodeDiv.appendChild(svg);
-        document.getElementById("barcode-container").style.display = "block";
 
-        // Screenshot pakai html2canvas
-        html2canvas(barcodeDiv).then(canvas => {
-          document.getElementById("download-link").href = canvas.toDataURL("image/png");
-        });
+        document.getElementById("barcode-container").style.display = "block";
+        document.getElementById("download-link").href = canvas.toDataURL("image/png");
       }).catch((error) => {
         alert("Gagal menyimpan: " + error.message);
       });
     }
+
+    function printBarcode() {
+  const canvas = document.getElementById("barcode");
+  const dataUrl = canvas.toDataURL("image/png");
+
+  const w = window.open("", "_blank");
+  w.document.open();
+  w.document.write(`
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>Cetak Barcode</title>
+      <style>
+        body { margin: 0; padding: 20px; text-align: center; }
+        img { max-width: 100%; }
+      </style>
+    </head>
+    <body>
+      <img src="${dataUrl}" alt="Barcode" />
+      <script>
+        window.onload = function() {
+          window.print();
+        };
+      <\/script>
+    </body>
+    </html>
+  `);
+  w.document.close();
+}
   </script>
 </body>
 </html>
