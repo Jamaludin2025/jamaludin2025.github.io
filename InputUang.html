@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -80,35 +81,39 @@
       padding: 10px;
     }
 
-    .button-row {
+    .buttons {
       display: flex;
-      flex-direction: row;
-      align-items: center;
-      gap: 10px;
-      margin-top: 10px;
+      justify-content: space-around;
+      margin-top: 1rem;
     }
 
-    .button-row a,
-    .button-row button {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      width: 100%;
-      padding: 10px 16px;
-      background: #4caf50;
-      color: white;
+    .buttons button {
+      padding: 0.5rem 1rem;
       border: none;
-      border-radius: 6px;
-      text-decoration: none;
-      cursor: pointer;
-      font-size: 14px;
+      border-radius: 5px;
       font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 14px;
     }
 
-    .button-row a:hover,
-    .button-row button:hover {
-      background: #3e8e41;
+    .unduh-btn {
+      background-color: #4caf50;
+      color: white;
+    }
+
+    .cetak-btn {
+      background-color: #388e3c;
+      color: white;
+    }
+
+    .buttons .unduh-btn svg,
+    .buttons .cetak-btn svg {
+      width: 16px;
+      height: 16px;
+      vertical-align: middle;
     }
 
     .seri-grid {
@@ -161,12 +166,7 @@
       <div class="seri-grid">
         <script>
           for (let i = 1; i <= 20; i++) {
-            document.write(`
-              <div class="seri-item">
-                <label for="seri${i}">Nomor Seri ke-${i}</label>
-                <input type="text" id="seri${i}" />
-              </div>
-            `);
+            document.write(`<div class="seri-item"><label for="seri${i}">Nomor Seri ke-${i}</label><input type="text" id="seri${i}" /></div>`);
           }
         </script>
       </div>
@@ -175,11 +175,11 @@
 
       <div id="barcode-container">
         <canvas id="barcode" width="300" height="150"></canvas>
-        <div class="button-row">
-          <a id="download-link" download="barcode.png">
+        <div class="buttons">
+          <button class="unduh-btn" type="button" onclick="unduhBarcode()">
             <i data-feather="download"></i> UNDUH
-          </a>
-          <button type="button" onclick="printBarcode()">
+          </button>
+          <button class="cetak-btn" type="button" onclick="printBarcode()">
             <i data-feather="printer"></i> CETAK
           </button>
         </div>
@@ -245,15 +245,19 @@
         });
 
         document.getElementById("barcode-container").style.display = "block";
-        const downloadLink = document.getElementById("download-link");
-        downloadLink.href = canvas.toDataURL("image/png");
-        downloadLink.download = `barcode ${kode}.png`;
-
-
-        feather.replace(); // render ikon
+        feather.replace();
       }).catch((error) => {
         alert("Gagal menyimpan: " + error.message);
       });
+    }
+
+    function unduhBarcode() {
+      const canvas = document.getElementById("barcode");
+      const kode = document.getElementById("kode").value.trim().toUpperCase();
+      const link = document.createElement("a");
+      link.href = canvas.toDataURL("image/png");
+      link.download = kode ? `barcode ${kode}.png` : `barcode.png`;
+      link.click();
     }
 
     function printBarcode() {
