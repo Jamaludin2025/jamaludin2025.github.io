@@ -1,16 +1,18 @@
-<meta name='viewport' content='width=device-width, initial-scale=1'/><meta name='viewport' content='width=device-width, initial-scale=1'/><meta content="width=device-width, initial-scale=1" name="viewport"/><!DOCTYPE html>
-
+<!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Scan Uang Tabungan</title>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
-<script src="https://unpkg.com/html5-qrcode"></script>
-<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
-<script src="https://unpkg.com/feather-icons"></script>
-<style>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Scan Uang Tabungan</title>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+  <script src="https://unpkg.com/html5-qrcode"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+  <script src="https://unpkg.com/feather-icons"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+  <style>
     body {
       font-family: 'Arial', sans-serif;
       margin: 0;
@@ -61,15 +63,19 @@
     }
 
     .info {
-      margin-bottom: 0.6rem;
-      display: flex;
-      flex-wrap: wrap;
-      align-items: flex-start;
+      display: grid;
+      grid-template-columns: 90px 10px 1fr;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      margin-bottom: 0.3rem;
     }
 
-    .info b {
-      width: 90px;
-      margin-right: 6px;
+    .label {
+      font-weight: bold;
+    }
+
+    .titik {
+      text-align: center;
     }
 
     .seri-list2 {
@@ -103,6 +109,11 @@
       font-size: 14px;
     }
 
+    .unduh-btn {
+      background-color: green;
+      color: white;
+    }
+
     .edit-btn {
       background-color: orange;
       color: white;
@@ -113,8 +124,7 @@
       color: white;
     }
 
-    .buttons .edit-btn svg,
-    .buttons .hapus-btn svg {
+    .buttons svg {
       width: 16px;
       height: 16px;
       vertical-align: middle;
@@ -168,136 +178,106 @@
       font-size: 0.95rem;
       line-height: 1.5;
     }
-  
 
-    .info {
-      display: grid;
-      grid-template-columns: 90px 10px 1fr;
-      font-size: 0.95rem;
-      line-height: 1.6;
-      margin-bottom: 0.3rem;
+    .unduh-group {
+      position: relative;
     }
 
-    .label {
+    .popup-unduh {
+      position: absolute;
+      top: -90px;
+      left: 0;
+      background: #fff;
+      padding: 10px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+      display: none;
+      flex-direction: column;
+      gap: 6px;
+      z-index: 100;
+    }
+
+    .popup-unduh button {
+      background-color: #f0f0f0;
+      border: none;
+      padding: 6px 10px;
+      border-radius: 6px;
       font-weight: bold;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
     }
 
-    .titik {
-      text-align: center;
+    .popup-unduh button:hover {
+      background-color: #e0e0e0;
     }
-    
-
-    .unduh-btn {
-      background-color: green;
-      color: white;
-    }
-
-    .buttons .unduh-btn svg {
-      width: 16px;
-      height: 16px;
-      vertical-align: middle;
-    }
-    
-    @media print {
-  body {
-    background: none !important;
-  }
-  
-  .pdf-border {
-  border: 3px solid #999;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.3);
-  background: white;
-}
-
-  .pdf-wrapper {
-    border: 3px solid #999;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.3);
-    background: white;
-  }
-}
-    
-    </style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script></head>
+  </style>
+</head>
 <body>
-<div class="pdf-wrapper">
   <div class="container" id="resultContainer">
-<img alt="Ikon Tabungan" class="image" crossorigin="anonymous" src="https://res.cloudinary.com/dz4w1sqiv/image/upload/v1751588603/Tabungan Asep Jamaludin.png"/>
-<a href="https://jamaludin2025.github.io/ScanUang.html" style="text-decoration: none;" target="_blank">
-<h2 id="judul">https://tiny.cc/Scan-Tabungan</h2>
-</a>
-<div class="date" id="tanggal"></div>
-<hr/>
-<canvas id="barcode"></canvas>
-<div class="info"><div class="label">Kode</div><div class="titik">:</div><div class="value" id="kode"></div></div>
-<div class="info"><div class="label">Nominal</div><div class="titik">:</div><div class="value" id="nominal"></div></div>
-<div class="info"><div class="label">Pecahan</div><div class="titik">:</div><div class="value" id="pecahan"></div></div>
-<div class="info"><div class="label">No. Seri</div><div class="titik">:</div><div class="value"><div class="seri-list2" id="seriList"></div></div></div>
-<div id="penggunaanInfo"></div>
-<div id="formEdit" style="display:none;">
-<label>Digunakan untuk:</label>
-<select id="tipeGunakan" onchange="ubahTipeGunakan()">
-<option value="">Pilih</option>
-<option value="pribadi">Digunakan Pribadi</option>
-<option value="pinjam">Dipinjamkan</option>
-</select>
-<div id="formPribadi" style="display:none;">
-<label for="tglPribadi">Tanggal</label>
-<input id="tglPribadi" type="date"/>
-<label for="ketPribadi">Keterangan</label>
-<input id="ketPribadi" placeholder="Digunakan untuk apa" type="text"/>
-</div>
-<div id="formPinjam" style="display:none;">
-<label for="tglPinjam">Tanggal</label>
-<input id="tglPinjam" type="date"/>
-<label for="kepada">Kepada Siapa</label>
-<input id="kepada" placeholder="Nama Peminjam" type="text"/>
-<label for="ketPinjam">Untuk Apa</label>
-<input id="ketPinjam" placeholder="Tulis Keperluannya" type="text"/>
-</div>
-<button onclick="simpanPenggunaan()">Simpan</button>
-</div>
-<div class="buttons">
+    <img class="image" src="https://res.cloudinary.com/dz4w1sqiv/image/upload/v1751588603/Tabungan Asep Jamaludin.png" alt="Ikon Tabungan" crossorigin="anonymous" />
+    <a href="https://jamaludin2025.github.io/ScanUang.html" style="text-decoration: none;" target="_blank">
+      <h2 id="judul">https://tiny.cc/Scan-Tabungan</h2>
+    </a>
+    <div class="date" id="tanggal"></div>
+    <hr/>
+    <canvas id="barcode"></canvas>
+    <div class="info"><div class="label">Kode</div><div class="titik">:</div><div class="value" id="kode"></div></div>
+    <div class="info"><div class="label">Nominal</div><div class="titik">:</div><div class="value" id="nominal"></div></div>
+    <div class="info"><div class="label">Pecahan</div><div class="titik">:</div><div class="value" id="pecahan"></div></div>
+    <div class="info"><div class="label">No. Seri</div><div class="titik">:</div><div class="value"><div class="seri-list2" id="seriList"></div></div></div>
+    <div id="penggunaanInfo"></div>
 
-<button class="unduh-btn" onclick="unduhHalaman()">
-<i data-feather="download"></i> UNDUH
-    </button>
-<button class="edit-btn" onclick="editData()">
-<i data-feather="edit"></i> EDIT
+    <div id="formEdit" style="display:none;">
+      <label>Digunakan untuk:</label>
+      <select id="tipeGunakan" onchange="ubahTipeGunakan()">
+        <option value="">Pilih</option>
+        <option value="pribadi">Digunakan Pribadi</option>
+        <option value="pinjam">Dipinjamkan</option>
+      </select>
+      <div id="formPribadi" style="display:none;">
+        <label for="tglPribadi">Tanggal</label>
+        <input id="tglPribadi" type="date"/>
+        <label for="ketPribadi">Keterangan</label>
+        <input id="ketPribadi" type="text" placeholder="Digunakan untuk apa"/>
+      </div>
+      <div id="formPinjam" style="display:none;">
+        <label for="tglPinjam">Tanggal</label>
+        <input id="tglPinjam" type="date"/>
+        <label for="kepada">Kepada Siapa</label>
+        <input id="kepada" type="text" placeholder="Nama Peminjam"/>
+        <label for="ketPinjam">Untuk Apa</label>
+        <input id="ketPinjam" type="text" placeholder="Tulis Keperluannya"/>
+      </div>
+      <button onclick="simpanPenggunaan()">Simpan</button>
+    </div>
+
+    <div class="buttons">
+      <div class="unduh-group">
+        <button class="unduh-btn" onclick="togglePopup()">
+          <i data-feather="download"></i> UNDUH
+        </button>
+        <div id="popupUnduh" class="popup-unduh">
+          <button onclick="unduhPNG()"><i data-feather="image"></i> PNG</button>
+          <button onclick="unduhPDF()"><i data-feather="file-text"></i> PDF</button>
+        </div>
+      </div>
+
+      <button class="edit-btn" onclick="editData()">
+        <i data-feather="edit"></i> EDIT
       </button>
-<button class="hapus-btn" onclick="hapusData()">
-<i data-feather="trash-2"></i> HAPUS
+      <button class="hapus-btn" onclick="hapusData()">
+        <i data-feather="trash-2"></i> HAPUS
       </button>
- </div>
-</div>
-</div>
-<div id="reader" style="width: 100%; margin-top: 1rem;"></div>
-<script>
+    </div>
+  </div>
+
+  <div id="reader" style="width: 100%; margin-top: 1rem;"></div>
+
+  <script>
     feather.replace();
-  </script>
-</body>
-</html>
-<script>
-    function unduhHalaman() {
-  const wrapper = document.querySelector(".pdf-wrapper");
-  wrapper.classList.add("pdf-border"); // Tambahkan kotak
-
-  const element = document.getElementById('resultContainer');
-  const opt = {
-    margin: 0.5,
-    filename: `${currentKode || 'data'}.pdf`,
-    image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { scale: 2, useCORS: true },
-    jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
-  };
-
-  html2pdf().set(opt).from(wrapper).save().then(() => {
-    wrapper.classList.remove("pdf-border"); // Hapus kotak setelah PDF selesai
-  });
-}
 
     const firebaseConfig = {
       apiKey: "AIzaSyBdt-2IQflUWNx3sdI1QHPMe1vAzsXAZcY",
@@ -311,6 +291,39 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
     let currentKode = "";
+
+    function togglePopup() {
+      const popup = document.getElementById('popupUnduh');
+      popup.style.display = popup.style.display === 'flex' ? 'none' : 'flex';
+      document.addEventListener('click', function handler(e) {
+        if (!e.target.closest('.unduh-group')) {
+          popup.style.display = 'none';
+          document.removeEventListener('click', handler);
+        }
+      });
+    }
+
+    function unduhPNG() {
+      const element = document.getElementById('resultContainer');
+      html2canvas(element, { scale: 2, useCORS: true }).then(canvas => {
+        const link = document.createElement('a');
+        link.download = `${currentKode || 'data'}.png`;
+        link.href = canvas.toDataURL();
+        link.click();
+      });
+    }
+
+    function unduhPDF() {
+      const element = document.getElementById('resultContainer');
+      const opt = {
+        margin: [0.5, 0.1, 0.5, 0.1],
+        filename: `${currentKode || 'data'}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+      };
+      html2pdf().set(opt).from(element).save();
+    }
 
     function formatTanggal(tgl) {
       if (!tgl) return "(tidak ada tanggal)";
@@ -460,3 +473,5 @@
       alert("Gagal mengakses kamera: " + err);
     });
   </script>
+</body>
+</html>
