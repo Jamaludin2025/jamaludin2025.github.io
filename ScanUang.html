@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="utf-8"/>
@@ -265,12 +265,15 @@
         </div>
       </div>
 
-      <button class="edit-btn" onclick="editData()">
-        <i data-feather="edit"></i> EDIT
-      </button>
-      <button class="hapus-btn" onclick="hapusData()">
-        <i data-feather="trash-2"></i> HAPUS
-      </button>
+      <div class="unduh-group">
+        <button class="edit-btn" style="background-color: gold; color: black;" onclick="toggleAdmin()">
+          <i data-feather="tool"></i> ADMIN
+        </button>
+        <div id="popupAdmin" class="popup-unduh">
+          <button onclick="editData()"><i data-feather="edit"></i> Edit</button>
+          <button onclick="hapusData()"><i data-feather="trash-2"></i> Hapus</button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -291,6 +294,18 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
     let currentKode = "";
+
+    
+    function toggleAdmin() {
+      const popup = document.getElementById('popupAdmin');
+      popup.style.display = popup.style.display === 'flex' ? 'none' : 'flex';
+      document.addEventListener('click', function handler(e) {
+        if (!e.target.closest('.unduh-group')) {
+          popup.style.display = 'none';
+          document.removeEventListener('click', handler);
+        }
+      });
+    }
 
     function togglePopup() {
       const popup = document.getElementById('popupUnduh');
