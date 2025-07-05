@@ -1,18 +1,18 @@
-<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
+<meta content="width=device-width, initial-scale=1" name="viewport"/><!DOCTYPE html>
+
 <html lang="id">
 <head>
-  <meta charset="utf-8"/>
-  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-  <title>Scan Uang Tabungan</title>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
-  <script src="https://unpkg.com/html5-qrcode"></script>
-  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
-  <script src="https://unpkg.com/feather-icons"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-
-  <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Scan Uang Tabungan</title>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+<script src="https://unpkg.com/html5-qrcode"></script>
+<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+<script src="https://unpkg.com/feather-icons"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<style>
     body {
       font-family: 'Arial', sans-serif;
       margin: 0;
@@ -213,73 +213,73 @@
     .popup-unduh button:hover {
       background-color: #e0e0e0;
     }
-  </style>
+  
+    .cetak-btn {
+      background-color: blue;
+      color: white;
+    }
+</style>
 </head>
 <body>
-  <div class="container" id="resultContainer">
-    <img class="image" src="https://res.cloudinary.com/dz4w1sqiv/image/upload/v1751588603/Tabungan Asep Jamaludin.png" alt="Ikon Tabungan" crossorigin="anonymous" />
-    <a href="https://jamaludin2025.github.io/ScanUang.html" style="text-decoration: none;" target="_blank">
-      <h2 id="judul">https://tiny.cc/Scan-Tabungan</h2>
-    </a>
-    <div class="date" id="tanggal"></div>
-    <hr/>
-    <canvas id="barcode"></canvas>
-    <div class="info"><div class="label">Kode</div><div class="titik">:</div><div class="value" id="kode"></div></div>
-    <div class="info"><div class="label">Nominal</div><div class="titik">:</div><div class="value" id="nominal"></div></div>
-    <div class="info"><div class="label">Pecahan</div><div class="titik">:</div><div class="value" id="pecahan"></div></div>
-    <div class="info"><div class="label">No. Seri</div><div class="titik">:</div><div class="value"><div class="seri-list2" id="seriList"></div></div></div>
-    <div id="penggunaanInfo"></div>
-
-    <div id="formEdit" style="display:none;">
-      <label>Digunakan untuk:</label>
-      <select id="tipeGunakan" onchange="ubahTipeGunakan()">
-        <option value="">Pilih</option>
-        <option value="pribadi">Digunakan Pribadi</option>
-        <option value="pinjam">Dipinjamkan</option>
-      </select>
-      <div id="formPribadi" style="display:none;">
-        <label for="tglPribadi">Tanggal</label>
-        <input id="tglPribadi" type="date"/>
-        <label for="ketPribadi">Keterangan</label>
-        <input id="ketPribadi" type="text" placeholder="Digunakan untuk apa"/>
-      </div>
-      <div id="formPinjam" style="display:none;">
-        <label for="tglPinjam">Tanggal</label>
-        <input id="tglPinjam" type="date"/>
-        <label for="kepada">Kepada Siapa</label>
-        <input id="kepada" type="text" placeholder="Nama Peminjam"/>
-        <label for="ketPinjam">Untuk Apa</label>
-        <input id="ketPinjam" type="text" placeholder="Tulis Keperluannya"/>
-      </div>
-      <button onclick="simpanPenggunaan()">Simpan</button>
-    </div>
-
-    <div class="buttons">
-      <div class="unduh-group">
-        <button class="unduh-btn" onclick="togglePopup()">
-          <i data-feather="download"></i> UNDUH
+<div class="container" id="resultContainer">
+<img alt="Ikon Tabungan" class="image" crossorigin="anonymous" src="https://res.cloudinary.com/dz4w1sqiv/image/upload/v1751588603/Tabungan Asep Jamaludin.png"/>
+<a href="https://jamaludin2025.github.io/ScanUang.html" style="text-decoration: none;" target="_blank">
+<h2 id="judul">https://tiny.cc/Scan-Tabungan</h2>
+</a>
+<div class="date" id="tanggal"></div>
+<hr/>
+<canvas id="barcode"></canvas>
+<div class="info"><div class="label">Kode</div><div class="titik">:</div><div class="value" id="kode"></div></div>
+<div class="info"><div class="label">Nominal</div><div class="titik">:</div><div class="value" id="nominal"></div></div>
+<div class="info"><div class="label">Pecahan</div><div class="titik">:</div><div class="value" id="pecahan"></div></div>
+<div class="info"><div class="label">No. Seri</div><div class="titik">:</div><div class="value"><div class="seri-list2" id="seriList"></div></div></div>
+<div id="penggunaanInfo"></div>
+<div id="formEdit" style="display:none;">
+<label>Digunakan untuk:</label>
+<select id="tipeGunakan" onchange="ubahTipeGunakan()">
+<option value="">Pilih</option>
+<option value="pribadi">Digunakan Pribadi</option>
+<option value="pinjam">Dipinjamkan</option>
+</select>
+<div id="formPribadi" style="display:none;">
+<label for="tglPribadi">Tanggal</label>
+<input id="tglPribadi" type="date"/>
+<label for="ketPribadi">Keterangan</label>
+<input id="ketPribadi" placeholder="Digunakan untuk apa" type="text"/>
+</div>
+<div id="formPinjam" style="display:none;">
+<label for="tglPinjam">Tanggal</label>
+<input id="tglPinjam" type="date"/>
+<label for="kepada">Kepada Siapa</label>
+<input id="kepada" placeholder="Nama Peminjam" type="text"/>
+<label for="ketPinjam">Untuk Apa</label>
+<input id="ketPinjam" placeholder="Tulis Keperluannya" type="text"/>
+</div>
+<button onclick="simpanPenggunaan()">Simpan</button>
+</div>
+<div class="buttons">
+<div class="unduh-group">
+<button class="unduh-btn" onclick="togglePopup()">
+<i data-feather="download"></i> UNDUH
         </button>
-        <div id="popupUnduh" class="popup-unduh">
-          <button onclick="unduhPNG()"><i data-feather="image"></i> PNG</button>
-          <button onclick="unduhPDF()"><i data-feather="file-text"></i> PDF</button>
-        </div>
-      </div>
-
-      <div class="unduh-group">
-        <button class="edit-btn" style="background-color: gold; color: black;" onclick="toggleAdmin()">
-          <i data-feather="tool"></i> ADMIN
+<div class="popup-unduh" id="popupUnduh">
+<button onclick="unduhPNG()"><i data-feather="image"></i> PNG</button>
+<button onclick="unduhPDF()"><i data-feather="file-text"></i> PDF</button>
+</div>
+</div><div class="unduh-group"><button class="cetak-btn" onclick="window.location.href='preview-cetak.html'" style="background-color: blue; color: white;"><i data-feather="printer"></i> CETAK</button></div>
+<div class="unduh-group">
+<button class="edit-btn" onclick="toggleAdmin()" style="background-color: gold; color: white;">
+<i data-feather="user"></i> ADMIN
         </button>
-        <div id="popupAdmin" class="popup-unduh">
-          <button onclick="editData()"><i data-feather="edit"></i> Edit</button>
-          <button onclick="hapusData()"><i data-feather="trash-2"></i> Hapus</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div id="reader" style="width: 100%; margin-top: 1rem;"></div>
-
-  <script>
+<div class="popup-unduh" id="popupAdmin">
+<button onclick="editData()"><i data-feather="edit"></i> Edit</button>
+<button onclick="hapusData()"><i data-feather="trash-2"></i> Hapus</button>
+</div>
+</div>
+</div>
+</div>
+<div id="reader" style="width: 100%; margin-top: 1rem;"></div>
+<script>
     feather.replace();
 
     const firebaseConfig = {
