@@ -81,43 +81,40 @@
     }
 
     .buttons {
-      display: flex;
-      justify-content: center;
-      gap: 1rem;
-      margin-top: 1rem;
-      flex-wrap: wrap;
-    }
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem; /* Jarak antar tombol */
+  margin-top: 1rem;
+  flex-wrap: nowrap; /* Paksa tetap horizontal */
+}
 
-    .buttons button {
-      padding: 0.5rem 1.2rem;
-      border: none;
-      border-radius: 5px;
-      font-weight: bold;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      font-size: 14px;
-      white-space: nowrap;
-    }
+.buttons button {
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  gap: 6px;
+  white-space: nowrap;
+  background-color: #388e3c;
+  color: white;
+  min-width: 110px; /* Tambahan agar ukurannya seragam tapi tidak terlalu lebar */
+}
 
-    .unduh-btn {
-      background-color: #388e3c;
-      color: white;
-    }
+.unduh-btn:hover,
+.cetak-btn:hover {
+  background-color: #1976d2;
+}
 
-    .cetak-btn {
-      background-color: #388e3c;
-      color: white;
-    }
-
-    .buttons .unduh-btn svg,
-    .buttons .cetak-btn svg {
-      width: 16px;
-      height: 16px;
-      vertical-align: middle;
-    }
+.buttons button svg {
+  width: 16px;
+  height: 16px;
+}
 
     .seri-grid {
       display: flex;
