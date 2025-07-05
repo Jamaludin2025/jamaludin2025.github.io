@@ -202,6 +202,14 @@
   body {
     background: none !important;
   }
+  
+  .pdf-border {
+  border: 3px solid #999;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.3);
+  background: white;
+}
 
   .pdf-wrapper {
     border: 3px solid #999;
@@ -274,16 +282,22 @@
 </html>
 <script>
     function unduhHalaman() {
-      const element = document.getElementById('resultContainer');
-      const opt = {
-        margin: 0.5,
-        filename: `${currentKode || 'data'}.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true },
-        jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
-      };
-      html2pdf().set(opt).from(element).save();
-    }
+  const wrapper = document.querySelector(".pdf-wrapper");
+  wrapper.classList.add("pdf-border"); // Tambahkan kotak
+
+  const element = document.getElementById('resultContainer');
+  const opt = {
+    margin: 0.5,
+    filename: `${currentKode || 'data'}.pdf`,
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2, useCORS: true },
+    jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+  };
+
+  html2pdf().set(opt).from(wrapper).save().then(() => {
+    wrapper.classList.remove("pdf-border"); // Hapus kotak setelah PDF selesai
+  });
+}
 
     const firebaseConfig = {
       apiKey: "AIzaSyBdt-2IQflUWNx3sdI1QHPMe1vAzsXAZcY",
