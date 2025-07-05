@@ -1,4 +1,4 @@
-<meta name='viewport' content='width=device-width, initial-scale=1'/><meta content="width=device-width, initial-scale=1" name="viewport"/><!DOCTYPE html>
+<meta name='viewport' content='width=device-width, initial-scale=1'/><meta name='viewport' content='width=device-width, initial-scale=1'/><meta content="width=device-width, initial-scale=1" name="viewport"/><!DOCTYPE html>
 
 <html lang="id">
 <head>
@@ -197,10 +197,26 @@
       height: 16px;
       vertical-align: middle;
     }
+    
+    @media print {
+  body {
+    background: none !important;
+  }
+
+  .pdf-wrapper {
+    border: 3px solid #999;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    background: white;
+  }
+}
+    
     </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script></head>
 <body>
-<div class="container" id="resultContainer">
+<div class="pdf-wrapper">
+  <div class="container" id="resultContainer">
 <img alt="Ikon Tabungan" class="image" crossorigin="anonymous" src="https://res.cloudinary.com/dz4w1sqiv/image/upload/v1751588603/Tabungan Asep Jamaludin.png"/>
 <a href="https://jamaludin2025.github.io/ScanUang.html" style="text-decoration: none;" target="_blank">
 <h2 id="judul">https://tiny.cc/Scan-Tabungan</h2>
@@ -247,6 +263,7 @@
 <button class="hapus-btn" onclick="hapusData()">
 <i data-feather="trash-2"></i> HAPUS
       </button>
+ </div>
 </div>
 </div>
 <div id="reader" style="width: 100%; margin-top: 1rem;"></div>
@@ -259,7 +276,7 @@
     function unduhHalaman() {
       const element = document.getElementById('resultContainer');
       const opt = {
-        margin: [0.5, 0.1, 0.5, 0.1],
+        margin: 0.5,
         filename: `${currentKode || 'data'}.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { scale: 2, useCORS: true },
