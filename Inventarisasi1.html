@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Input Inventaris Barang</title>
+  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f2f5f9;
+      padding: 20px;
+    }
+
+    .container {
+      background: #fff;
+      max-width: 600px;
+      margin: auto;
+      padding: 25px 30px;
+      border-radius: 12px;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    label {
+      font-weight: 500;
+      margin-top: 12px;
+      display: block;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 6px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      box-sizing: border-box;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 20px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background: #0056b3;
+    }
+
+    .label-preview {
+      margin-top: 25px;
+      width: 151px; height: 75px;
+      border: 1px solid #ccc;
+      padding: 4px;
+      text-align: center;
+      background: white;
+      border-radius: 6px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    .label-preview img { width: 100%; max-height: 18px; object-fit: contain; }
+    .barcode { margin-top: 4px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Input Inventaris Barang</h2>
+
+    <label>Kode Barang</label>
+    <input type="text" id="kode" required>
+    
+    <label>Merk Barang</label>
+    <input type="text" id="merk" required>
+
+    <label>Nama Barang</label>
+    <input type="text" id="nama" required>
+
+    <label>Varian</label>
+    <input type="text" id="varian" placeholder="Contoh: Tipe, Warna, Ukuran, dll" required>
+
+    <label>Kategori Barang</label>
+    <select id="kategori">
+      <option value="Elektronik">Elektronik</option>
+      <option value="ATK">ATK</option>
+      <option value="Meja">Meja</option>
+      <option value="Kursi">Kursi</option>
+    </select>
+
+    <label>Tanggal Pembelian</label>
+    <input type="date" id="tanggal" required>
+
+    <label>Harga (Rupiah)</label>
+    <input type="text" id="harga" inputmode="numeric" pattern="[0-9]*" required>
+
+    <label>Alamat Pembelian</label>
+    <input type="text" id="alamat" placeholder="Contoh: Tokopedia, Toko Gramedia" required>
+
+    <button onclick="simpanData()">Simpan & Buat Barcode</button>
+
+    <div class="label-preview" id="labelContainer" style="display:none;">
+      <img src="https://dummyimage.com/400x80/000/fff&text=Inventarisasi+Barang+Asep+Jamaludin" alt="Header"/>
+      <div id="kodePreview" style="font-weight:bold;"></div>
+      <div style="font-size:10px;">https://tiny.cc/inventarisasi</div>
+      <svg id="barcode" class="barcode"></svg>
+    </div>
+  </div>
+
+  <script>
+    // Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyBdt-2IQflUWNx3sdI1QHPMe1vAzsXAZcY",
+      authDomain: "ajproject-log.firebaseapp.com",
+      databaseURL: "https://ajproject-log-default-rtdb.firebaseio.com",
+      projectId: "ajproject-log",
+      storageBucket: "ajproject-log.appspot.com",
+      messagingSenderId: "113688767697",
+      appId: "1:113688767697:web:b7b4c401f87702cd74a9f0"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    // Format harga ke rupiah dengan titik otomatis
+    const hargaInput = document.getElementById("harga");
+    hargaInput.addEventListener("input", function () {
+      let angka = this.value.replace(/\D/g, "");
+      this.value = new Intl.NumberFormat("id-ID").format(angka);
+    });
+
+    function simpanData() {
+      const kode = document.getElementById("kode").value.trim();
+      const nama = document.getElementById("nama").value.trim();
+      const variasi = document.getElementById("varian").value.trim();
+      const merk = document.getElementById("merk").value.trim();
+      const kategori = document.getElementById("kategori").value;
+      const tanggal = document.getElementById("tanggal").value;
+      const harga = document.getElementById("harga").value;
+      const alamat = document.getElementById("alamat").value.trim();
+
+      if (!kode || !nama || !merk || !tanggal || !harga || !alamat) {
+        alert("Harap lengkapi semua kolom!");
+        return;
+      }
+
+      // Cek kode unik
+      db.ref("inventarisasi/barang/" + kode).once("value", (snapshot) => {
+        if (snapshot.exists()) {
+          alert("Kode barang sudah terdaftar!");
+        } else {
+          const data = {
+            kode, nama, varian, merk, kategori, tanggal, harga, alamat
+          };
+          db.ref("inventarisasi/barang/" + kode).set(data, (error) => {
+            if (error) {
+              alert("Gagal menyimpan data.");
+            } else {
+              tampilkanLabel(kode);
+            }
+          });
+        }
+      });
+    }
+
+    function tampilkanLabel(kode) {
+      document.getElementById("kodePreview").textContent = kode;
+      JsBarcode("#barcode", kode, {
+        format: "CODE128",
+        width: 1.5,
+        height: 30,
+        displayValue: false
+      });
+      document.getElementById("labelContainer").style.display = "block";
+    }
+  </script>
+</body>
+</html>
