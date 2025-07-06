@@ -1,127 +1,184 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Input Inventaris Barang</title>
+  <meta charset="UTF-8">
+  <title>Input Data Inventaris</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+  <!-- Barcode & Canvas -->
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
   <style>
     body {
+      margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      background: #f2f5f9;
-      padding: 20px;
+      background: #f2f2f2;
+      color: #333;
     }
 
     .container {
-      background: #fff;
-      max-width: 600px;
+      max-width: 500px;
       margin: auto;
-      padding: 25px 30px;
-      border-radius: 12px;
-      box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+      padding: 20px;
     }
 
     h2 {
       text-align: center;
+      color: #2c3e50;
       margin-bottom: 20px;
-      color: #333;
+    }
+
+    .form-box {
+      background: #fff;
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
     }
 
     label {
-      font-weight: 500;
-      margin-top: 12px;
       display: block;
+      margin-top: 14px;
+      font-weight: 600;
     }
 
     input, select {
       width: 100%;
       padding: 10px;
-      margin-top: 6px;
+      border-radius: 10px;
       border: 1px solid #ccc;
-      border-radius: 8px;
+      margin-top: 6px;
       box-sizing: border-box;
     }
 
     button {
-      width: 100%;
-      padding: 12px;
       margin-top: 20px;
-      background: #007bff;
-      color: white;
+      padding: 12px;
+      width: 100%;
       border: none;
-      border-radius: 8px;
+      border-radius: 10px;
+      background-color: #27ae60;
+      color: white;
       font-weight: bold;
-      font-size: 16px;
       cursor: pointer;
-      transition: background 0.3s ease;
+      transition: background 0.3s;
     }
 
     button:hover {
-      background: #0056b3;
+      background-color: #219150;
     }
 
     .label-preview {
-      margin-top: 25px;
-      width: 151px; height: 75px;
-      border: 1px solid #ccc;
-      padding: 4px;
+      margin-top: 30px;
       text-align: center;
-      background: white;
-      border-radius: 6px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     }
 
-    .label-preview img { width: 100%; max-height: 18px; object-fit: contain; }
-    .barcode { margin-top: 4px; }
+    .label-box {
+      display: inline-block;
+      background: white;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      width: 200px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .label-header {
+      font-size: 10px;
+      font-weight: bold;
+      margin-bottom: 4px;
+    }
+
+    .label-kode {
+      font-size: 16px;
+      font-weight: bold;
+      margin: 4px 0;
+    }
+
+    .label-url {
+      font-size: 9px;
+      color: #777;
+      margin-bottom: 4px;
+    }
+
+    svg.barcode {
+      width: 100%;
+      height: 40px;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 12px;
+    }
+
+    .action-buttons button {
+      flex: 1;
+      background-color: #3498db;
+    }
+
+    .action-buttons button:hover {
+      background-color: #2980b9;
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <h2>Input Inventaris Barang</h2>
+    <div class="form-box">
+      <label>Kode Barang</label>
+      <input type="text" id="kode">
 
-    <label>Kode Barang</label>
-    <input type="text" id="kode" required>
-    
-    <label>Merk Barang</label>
-    <input type="text" id="merk" required>
+      <label>Nama Barang</label>
+      <input type="text" id="nama">
 
-    <label>Nama Barang</label>
-    <input type="text" id="nama" required>
+      <label>Variasi</label>
+      <input type="text" id="variasi">
 
-    <label>Varian</label>
-    <input type="text" id="varian" placeholder="Contoh: Tipe, Warna, Ukuran, dll" required>
+      <label>Merk</label>
+      <input type="text" id="merk">
 
-    <label>Kategori Barang</label>
-    <select id="kategori">
-      <option value="Elektronik">Elektronik</option>
-      <option value="ATK">ATK</option>
-      <option value="Meja">Meja</option>
-      <option value="Kursi">Kursi</option>
-    </select>
+      <label>Kategori</label>
+      <select id="kategori">
+        <option value="Elektronik">Elektronik</option>
+        <option value="Alat Tulis">Alat Tulis</option>
+        <option value="Furnitur">Furnitur</option>
+      </select>
 
-    <label>Tanggal Pembelian</label>
-    <input type="date" id="tanggal" required>
+      <label>Tanggal Pembelian</label>
+      <input type="date" id="tanggal">
 
-    <label>Harga (Rupiah)</label>
-    <input type="text" id="harga" inputmode="numeric" pattern="[0-9]*" required>
+      <label>Harga (Rp)</label>
+      <input type="text" id="harga">
 
-    <label>Alamat Pembelian</label>
-    <input type="text" id="alamat" placeholder="Contoh: Tokopedia, Toko Gramedia" required>
+      <label>Alamat Pembelian</label>
+      <input type="text" id="alamat">
 
-    <button onclick="simpanData()">Simpan & Buat Barcode</button>
+      <button onclick="simpanData()">Simpan & Buat Label</button>
+    </div>
 
-    <div class="label-preview" id="labelContainer" style="display:none;">
-      <img src="https://dummyimage.com/400x80/000/fff&text=Inventarisasi+Barang+Asep+Jamaludin" alt="Header"/>
-      <div id="kodePreview" style="font-weight:bold;"></div>
-      <div style="font-size:10px;">https://tiny.cc/inventarisasi</div>
-      <svg id="barcode" class="barcode"></svg>
+    <div class="label-preview" id="labelPreview" style="display:none;">
+      <div class="label-box" id="labelBox">
+        <div class="label-header">
+          <img src="https://res.cloudinary.com/demo/image/upload/v1700000000/label-asepjamaludin.png" width="120" alt="Inventaris">
+        </div>
+        <div class="label-kode" id="kodeView"></div>
+        <div class="label-url">https://tiny.cc/inventarisasi</div>
+        <svg id="barcode" class="barcode"></svg>
+      </div>
+
+      <div class="action-buttons">
+        <button onclick="window.print()">Cetak Label</button>
+        <button onclick="unduhLabel()">Unduh PNG</button>
+      </div>
     </div>
   </div>
 
   <script>
-    // Firebase config
+    // Firebase Setup
     const firebaseConfig = {
       apiKey: "AIzaSyBdt-2IQflUWNx3sdI1QHPMe1vAzsXAZcY",
       authDomain: "ajproject-log.firebaseapp.com",
@@ -134,56 +191,55 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // Format harga ke rupiah dengan titik otomatis
+    // Harga formatting
     const hargaInput = document.getElementById("harga");
-    hargaInput.addEventListener("input", function () {
-      let angka = this.value.replace(/\D/g, "");
-      this.value = new Intl.NumberFormat("id-ID").format(angka);
+    hargaInput.addEventListener("input", () => {
+      let clean = hargaInput.value.replace(/\D/g, "");
+      hargaInput.value = new Intl.NumberFormat("id-ID").format(clean);
     });
 
-    function simpanData() {
+    async function simpanData() {
       const kode = document.getElementById("kode").value.trim();
-      const nama = document.getElementById("nama").value.trim();
-      const variasi = document.getElementById("varian").value.trim();
-      const merk = document.getElementById("merk").value.trim();
-      const kategori = document.getElementById("kategori").value;
-      const tanggal = document.getElementById("tanggal").value;
-      const harga = document.getElementById("harga").value;
-      const alamat = document.getElementById("alamat").value.trim();
+      if (!kode) return alert("Kode barang tidak boleh kosong");
 
-      if (!kode || !nama || !merk || !tanggal || !harga || !alamat) {
-        alert("Harap lengkapi semua kolom!");
-        return;
-      }
+      const ref = db.ref("inventaris/" + kode);
+      const cek = await ref.get();
+      if (cek.exists()) return alert("Kode barang sudah terdaftar!");
 
-      // Cek kode unik
-      db.ref("inventarisasi/barang/" + kode).once("value", (snapshot) => {
-        if (snapshot.exists()) {
-          alert("Kode barang sudah terdaftar!");
-        } else {
-          const data = {
-            kode, nama, varian, merk, kategori, tanggal, harga, alamat
-          };
-          db.ref("inventarisasi/barang/" + kode).set(data, (error) => {
-            if (error) {
-              alert("Gagal menyimpan data.");
-            } else {
-              tampilkanLabel(kode);
-            }
-          });
-        }
-      });
+      const data = {
+        kode,
+        nama: document.getElementById("nama").value,
+        variasi: document.getElementById("variasi").value,
+        merk: document.getElementById("merk").value,
+        kategori: document.getElementById("kategori").value,
+        tanggal: document.getElementById("tanggal").value,
+        harga: hargaInput.value,
+        alamat: document.getElementById("alamat").value,
+        waktu: new Date().toISOString()
+      };
+
+      await ref.set(data);
+      tampilkanLabel(kode);
     }
 
     function tampilkanLabel(kode) {
-      document.getElementById("kodePreview").textContent = kode;
+      document.getElementById("labelPreview").style.display = "block";
+      document.getElementById("kodeView").innerText = kode;
       JsBarcode("#barcode", kode, {
         format: "CODE128",
-        width: 1.5,
-        height: 30,
-        displayValue: false
+        displayValue: false,
+        width: 2,
+        height: 30
       });
-      document.getElementById("labelContainer").style.display = "block";
+    }
+
+    function unduhLabel() {
+      html2canvas(document.getElementById("labelBox")).then(canvas => {
+        const link = document.createElement("a");
+        link.download = "label_" + document.getElementById("kode").value + ".png";
+        link.href = canvas.toDataURL();
+        link.click();
+      });
     }
   </script>
 </body>
