@@ -342,16 +342,26 @@
 }
 
     function unduhPDF() {
-      const element = document.getElementById('resultContainer');
-      const opt = {
-        margin: [0.5, 0.1, 0.5, 0.1],
-        filename: `${currentKode || 'data'}.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true },
-        jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
-      };
-      html2pdf().set(opt).from(element).save();
-    }
+  const element = document.getElementById('resultContainer');
+  const popup = document.getElementById('popupUnduh');
+
+  // Sembunyikan popup sementara
+  const prevDisplay = popup.style.display;
+  popup.style.display = 'none';
+
+  const opt = {
+    margin: [0.5, 0.1, 0.5, 0.1],
+    filename: `${currentKode || 'data'}.pdf`,
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2, useCORS: true },
+    jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+  };
+
+  html2pdf().set(opt).from(element).save().then(() => {
+    // Kembalikan popup seperti semula setelah PDF selesai
+    popup.style.display = prevDisplay;
+  });
+}
 
     function formatTanggal(tgl) {
       if (!tgl) return "(tidak ada tanggal)";
