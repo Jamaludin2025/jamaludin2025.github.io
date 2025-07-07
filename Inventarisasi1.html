@@ -35,10 +35,12 @@
     }
     input, select {
       width: 100%;
-      padding: 10px;
+      padding: 12px 14px;
       border: 1px solid #d1d5db;
-      border-radius: 8px;
+      border-radius: 10px;
       font-size: 14px;
+      box-sizing: border-box;
+      transition: border-color 0.3s ease;
     }
     .btn {
       width: 100%;
@@ -193,9 +195,10 @@
       kodePreview.innerText = kode;
       JsBarcode("#barcode", kode, {
         format: "CODE128",
-        width: 1.5,
-        height: 30,
+        width: 2,
+        height: 100,
         displayValue: false
+        margin: 10,
       });
 
       previewContainer.style.display = 'block';
