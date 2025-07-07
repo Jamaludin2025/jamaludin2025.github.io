@@ -260,13 +260,16 @@ document.getElementById("jenisToko").addEventListener("change", function() {
 });
 
     function downloadLabel() {
-      html2canvas(document.getElementById("labelArea")).then(canvas => {
-        const link = document.createElement("a");
-        link.download = "label-barcode.png";
-        link.href = canvas.toDataURL("image/png");
-        link.click();
-      });
-    }
+  const kode = document.getElementById("kodePreview").innerText;
+  html2canvas(document.getElementById("labelArea"), {
+    useCORS: true
+  }).then(canvas => {
+    const link = document.createElement("a");
+    link.download = `${kode}.png`;
+    link.href = canvas.toDataURL("image/png");
+    link.click();
+  });
+}
 
     function printLabel() {
       const printArea = document.getElementById("labelArea").outerHTML;
