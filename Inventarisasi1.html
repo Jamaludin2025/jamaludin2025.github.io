@@ -1,177 +1,282 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Input Barang Inventaris</title>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-  <script src="https://cdn.jsdelivr.net/jsbarcode/3.11.5/JsBarcode.all.min.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Input Data Inventaris</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Segoe UI', sans-serif;
+      background: #f3f4f6;
+      margin: 0;
       padding: 20px;
-      background: #f4f4f4;
     }
     .container {
-      background: #fff;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      max-width: 500px;
+      background: white;
+      max-width: 600px;
       margin: auto;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
     }
     h2 {
       text-align: center;
       margin-bottom: 20px;
+      color: #111827;
+    }
+    .form-group {
+      margin-bottom: 15px;
     }
     label {
       display: block;
-      margin-top: 10px;
+      margin-bottom: 5px;
+      font-weight: 500;
+      color: #374151;
     }
     input, select {
       width: 100%;
-      padding: 8px;
-      margin-top: 5px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
+      padding: 12px 14px;
+      border: 1px solid #d1d5db;
+      border-radius: 10px;
+      font-size: 14px;
+      box-sizing: border-box;
+      transition: border-color 0.3s ease;
     }
-    button {
-      margin-top: 15px;
-      padding: 10px 20px;
+    .btn {
       width: 100%;
-      background-color: #007bff;
+      padding: 12px;
+      margin-top: 15px;
+      background: #007bff;
       color: white;
       border: none;
-      border-radius: 6px;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 16px;
       cursor: pointer;
+      transition: background 0.3s ease;
     }
-    button:hover {
-      background-color: #0056b3;
+    .btn:hover {
+      background: #1e40af;
     }
-    #previewContainer {
-      margin-top: 30px;
+    .label-preview {
+      border: 1px dashed #9ca3af;
+      margin-top: 20px;
+      padding: 10px;
+      border-radius: 8px;
       text-align: center;
-      display: none;
+      background: #f9fafb;
+      width: 300px;
+      margin-left: auto;
+      margin-right: auto;
     }
-    #barcode {
-      margin-top: 10px;
+    .barcode-wrapper {
+        display: inline-block;
+}
+    .label-logo {
+    	display: block;
+        width: 100%;
+        height: auto;
+        margin-bottom: 5px;
     }
+    svg#barcode {
+      margin-top: 5px;
+    }
+    .btn-group {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 15px;
+}
+.btn-group .btn {
+  flex: 1;
+}
   </style>
 </head>
 <body>
   <div class="container">
-    <h2>Form Input Inventaris</h2>
-    <form id="formInput">
-      <label for="namaBarang">Nama Barang</label>
-      <input type="text" id="namaBarang" required>
+    <h2>Form Inventarisasi Barang</h2>
+    <form id="formBarang">
+      <div class="form-group">
+        <label>Merk</label>
+        <input type="text" id="merkBarang" />
+      </div>
+      <div class="form-group">
+        <label>Nama Barang</label>
+        <input type="text" id="namaBarang" required />
+      </div>
+      <div class="form-group">
+        <label>Variasi</label>
+        <input type="text" id="variasiBarang" />
+      </div>
+      <div class="form-group">
+        <label>Kategori Barang</label>
+        <select id="kategoriBarang" required>
+          <option value="">Pilih Kategori</option>
+          <option value="ETK">Elektronik</option>
+          <option value="FTR">Furniture</option>
+          <option value="AKB">Alat Kebersihan</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Tanggal Pembelian</label>
+        <input type="date" id="tanggalPembelian" required />
+      </div>
+      <div class="form-group">
+        <label>Harga (Rp)</label>
+        <input type="text" id="hargaBarang" inputmode="numeric" required />
+      </div>
+      <div class="form-group">
+  <label>Jenis Toko</label>
+  <select id="jenisToko" required>
+    <option value="">Pilih Jenis Toko</option>
+    <option value="Offline">Offline</option>
+    <option value="Online">Online</option>
+  </select>
+</div>
 
-      <label for="variasiBarang">Variasi Barang</label>
-      <input type="text" id="variasiBarang" required>
+<div id="tokoFields" style="display:none;">
+  <div class="form-group">
+    <label>Nama Toko</label>
+    <input type="text" id="namaToko"/>
+  </div>
+  <div class="form-group" id="alamatField" style="display:none;">
+    <label>Alamat Toko</label>
+    <input type="text" id="alamatPembelian" placeholder="Pasar Baru, Cikampek"/>
+  </div>
+  <div class="form-group" id="linkField" style="display:none;">
+    <label>Link Toko</label>
+    <input type="url" id="linkPembelian" placeholder="https://contoh-link-produk"/>
+  </div>
+</div>
 
-      <label for="merkBarang">Merk Barang</label>
-      <input type="text" id="merkBarang" required>
-
-      <label for="kategoriBarang">Kategori Barang</label>
-      <select id="kategoriBarang" required></select>
-
-      <label for="tanggalPembelian">Tanggal Pembelian</label>
-      <input type="date" id="tanggalPembelian" required>
-
-      <label for="hargaBarang">Harga Barang</label>
-      <input type="number" id="hargaBarang" required>
-
-      <label for="alamatPembelian">Alamat Pembelian</label>
-      <input type="text" id="alamatPembelian" required>
-
-      <button type="submit">Simpan & Tampilkan Barcode</button>
+      <button type="submit" class="btn">Simpan & Buat Barcode</button>
     </form>
 
-    <div id="previewContainer">
-      <h3>Kode Barang:</h3>
-      <p id="kodePreview"></p>
-      <svg id="barcode"></svg>
+    <div id="previewContainer" style="display:none;">
+      <div class="label-preview" id="labelArea">
+  <div class="barcode-wrapper">
+    <img src="https://res.cloudinary.com/dz4w1sqiv/image/upload/v1751891827/inventarisasi_barang_tvbivv.png" class="label-logo" crossorigin="anonymous" />
+    <svg id="barcode"></svg>
+  </div>
+  <div id="kodePreview" style="font-size:18px; font-weight:bold;"></div>
+</div>
+      <div class="btn-group">
+  <button onclick="downloadLabel()" class="btn">Unduh PNG</button>
+  <button onclick="printLabel()" class="btn">Cetak Label</button>
+</div>
     </div>
   </div>
 
+  <!-- Script JS Firebase & Barcode -->
+  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
   <script>
-    // Konfigurasi Firebase
     const firebaseConfig = {
-      databaseURL: "https://ajproject-log-default-rtdb.firebaseio.com/"
+      apiKey: "AIzaSyBdt-2IQflUWNx3sdI1QHPMe1vAzsXAZcY",
+      authDomain: "ajproject-log.firebaseapp.com",
+      databaseURL: "https://ajproject-log-default-rtdb.firebaseio.com",
+      projectId: "ajproject-log",
+      storageBucket: "ajproject-log.appspot.com",
+      messagingSenderId: "113688767697",
+      appId: "1:113688767697:web:b7b4c401f87702cd74a9f0"
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
+    
+    // Tampilkan kolom tambahan sesuai jenis toko
+document.getElementById("jenisToko").addEventListener("change", function() {
+  const jenis = this.value;
+  const tokoFields = document.getElementById("tokoFields");
+  const alamatField = document.getElementById("alamatField");
+  const linkField = document.getElementById("linkField");
 
-    const form = document.getElementById("formInput");
-    const kodePreview = document.getElementById("kodePreview");
-    const previewContainer = document.getElementById("previewContainer");
-    const kategoriDropdown = document.getElementById("kategoriBarang");
+  tokoFields.style.display = jenis ? "block" : "none";
+  alamatField.style.display = jenis === "Offline" ? "block" : "none";
+  linkField.style.display = jenis === "Online" ? "block" : "none";
+});
 
-    // Daftar kategori dengan kode manual
-    const kategoriList = [
-      { nama: "Alat Kebersihan", kode: "AKB" },
-      { nama: "Barang Elektronik", kode: "BEL" },
-      { nama: "Peralatan Kantor", kode: "PKT" }
-    ];
+    const form = document.getElementById('formBarang');
+    const hargaInput = document.getElementById('hargaBarang');
+    const kodePreview = document.getElementById('kodePreview');
+    const previewContainer = document.getElementById('previewContainer');
 
-    // Isi dropdown kategori
-    kategoriList.forEach(item => {
-      const option = document.createElement("option");
-      option.value = item.nama;
-      option.textContent = item.nama;
-      kategoriDropdown.appendChild(option);
+    hargaInput.addEventListener('input', function(e) {
+      let angka = this.value.replace(/\D/g, '');
+      this.value = angka.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
     });
 
-    form.addEventListener("submit", async function(e) {
-      e.preventDefault();
+    form.addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const nama = form.namaBarang.value.trim();
+  const variasi = form.variasiBarang.value.trim();
+  const merk = form.merkBarang.value.trim();
+  const kategori = form.kategoriBarang.value.trim(); // <- value akan jadi ETK, FTR, dll
+  const tgl = form.tanggalPembelian.value;
+  const harga = form.hargaBarang.value;
+  const jenisToko = form.jenisToko.value;
+  const namaToko = document.getElementById("namaToko").value;
+  const alamatPembelian = document.getElementById("alamatPembelian")?.value || "";
+  const linkPembelian = document.getElementById("linkPembelian")?.value || "";
 
-      const nama = form.namaBarang.value.trim();
-      const variasi = form.variasiBarang.value.trim();
-      const merk = form.merkBarang.value.trim();
-      const kategori = form.kategoriBarang.value.trim();
-      const tgl = form.tanggalPembelian.value;
-      const harga = form.hargaBarang.value;
-      const alamat = form.alamatPembelian.value;
+  const alamat = form.alamatPembelian.value;
 
-      const kategoriItem = kategoriList.find(item => item.nama === kategori);
-      if (!kategoriItem) {
-        alert("Kode kategori tidak ditemukan!");
-        return;
-      }
-      const kodeKategori = kategoriItem.kode;
+  const ref = db.ref("inventaris_kode");
+  const snapshot = await ref.once("value");
+  const data = snapshot.val() || {};
 
-      const ref = db.ref("inventaris_kode");
-      const snapshot = await ref.once("value");
-      const data = snapshot.val() || {};
+  let globalCounter = 1;
+  let kategoriCounter = 1;
+  let tipeCounter = 1;
 
-      let globalCounter = 1;
-      let kategoriCounter = 1;
-      let tipeCounter = 1;
+  for (let key in data) {
+    globalCounter++;
+    if (data[key].kategori === kategori) kategoriCounter++;
+    if (data[key].kategori === kategori && data[key].nama === nama) tipeCounter++;
+  }
 
-      for (let key in data) {
-        globalCounter++;
-        if (data[key].kategori === kategori) kategoriCounter++;
-        if (data[key].kategori === kategori && data[key].nama === nama) tipeCounter++;
-      }
+  const kodeKategori = kategori;
+  const kode = `${kodeKategori}${String(kategoriCounter).padStart(3, '0')}-${String(tipeCounter).padStart(2,'0')}-${String(globalCounter).padStart(3,'0')}`;
 
-      const kode = `${kodeKategori}${String(kategoriCounter).padStart(3, '0')}-${String(tipeCounter).padStart(2, '0')}-${String(globalCounter).padStart(3, '0')}`;
+  const newData = {
+  kode, nama, variasi, merk, kategori, tanggal: tgl, harga,
+  jenisToko, namaToko, alamatPembelian, linkPembelian
+};
 
-      const newData = {
-        kode, nama, variasi, merk, kategori, tanggal: tgl, harga, alamat
-      };
+  await ref.push(newData);
 
-      await ref.push(newData);
+  kodePreview.innerText = kode;
+  JsBarcode("#barcode", kode, {
+    format: "CODE128",
+    width: 1.5,
+    height: 60,
+    displayValue: false,
+    margin: 10,
+  });
 
-      kodePreview.textContent = kode;
-      JsBarcode("#barcode", kode, {
-        format: "CODE128",
-        width: 1.5,
-        height: 80,
-        displayValue: false
+  previewContainer.style.display = 'block';
+});
+
+    function downloadLabel() {
+      html2canvas(document.getElementById("labelArea")).then(canvas => {
+        const link = document.createElement("a");
+        link.download = "label-barcode.png";
+        link.href = canvas.toDataURL("image/png");
+        link.click();
       });
+    }
 
-      previewContainer.style.display = "block";
-    });
+    function printLabel() {
+      const printArea = document.getElementById("labelArea").outerHTML;
+      const win = window.open("", "", "width=400,height=600");
+      win.document.write(`<html><head><title>Cetak Label</title></head><body>${printArea}</body></html>`);
+      win.document.close();
+      win.focus();
+      win.print();
+      win.close();
+    }
   </script>
 </body>
 </html>
