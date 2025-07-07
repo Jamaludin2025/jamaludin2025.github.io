@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Input Uang</title>
+  <title>Input Uang Tabungan</title>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
@@ -15,7 +15,6 @@
       background: #f5f5f5;
       padding: 15px;
     }
-
     .container {
       background: #ffffff;
       padding: 20px;
@@ -24,118 +23,99 @@
       max-width: 500px;
       margin: auto;
     }
-
-    h2 {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-
+    h2 { text-align: center; margin-bottom: 20px; }
     label {
       font-weight: bold;
-      display: block;
+      display: flex;
+      align-items: center;
+      gap: 6px;
       margin-top: 12px;
     }
-
+    .form-label {
+  font-weight: bold;
+  display: inline-block;
+  margin-top: 12px;
+}
+    .help-icon {
+      color: #555;
+      width: 16px;
+      height: 16px;
+      vertical-align: middle;
+      cursor: pointer;
+      margin-left: 5px;
+    }
     input, select {
-      width: 100%;
-      padding: 10px;
-      margin-top: 6px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      box-sizing: border-box;
-      text-transform: uppercase;
-      font-size: 14px;
+      width: 100%; padding: 10px; margin-top: 6px; border-radius: 8px;
+      border: 1px solid #ccc; box-sizing: border-box;
+      text-transform: uppercase; font-size: 14px;
     }
-
-    input[type="date"] {
-      text-transform: none;
-    }
-
+    input[type="date"] { text-transform: none; }
     button {
-      width: 100%;
-      padding: 12px;
-      margin-top: 20px;
-      font-size: 16px;
-      font-weight: bold;
-      border: none;
-      border-radius: 8px;
+      width: 100%; padding: 12px; margin-top: 20px; font-size: 16px;
+      font-weight: bold; border: none; border-radius: 8px;
+      background: #1976d2; color: white; cursor: pointer;
+    }
+    button:hover { background: #125ea5; }
+    #barcode-container { text-align: center; margin-top: 20px; display: none; }
+    #barcode { margin-bottom: 10px; background: white; padding: 10px; }
+    .buttons {
+      display: flex; justify-content: center; align-items: center;
+      gap: 1rem; margin-top: 1rem; flex-wrap: nowrap;
+    }
+    .buttons button {
+      padding: 0.6rem 1.2rem; border: none; border-radius: 6px;
+      font-weight: bold; cursor: pointer; display: inline-flex;
+      align-items: center; justify-content: center;
+      font-size: 14px; gap: 6px; white-space: nowrap;
+      background-color: #388e3c; color: white; min-width: 110px;
+    }
+    .buttons button svg { width: 16px; height: 16px; }
+    .seri-grid { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+    .seri-item { flex: 1 1 45%; }
+    @media screen and (min-width: 768px) {
+      body { padding: 30px; }
+      .container { max-width: 500px; }
+    }
+    .popup-help {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+      padding: 15px;
+      width: 75%;
+      max-width: 300px;
+      z-index: 999;
+      text-align: center;
+    }
+    .popup-help img {
+      max-width: 100%;
+      border-radius: 6px;
+    }
+    .popup-help button {
       background: #1976d2;
       color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      margin-top: 12px;
+      font-weight: bold;
+      font-size: 14px;
       cursor: pointer;
+      display: block;
+      width: auto;
+      margin-left: auto;
+      margin-right: auto;
     }
-
-    button:hover {
-      background: #125ea5;
+    body.popup-open {
+     overflow: hidden;
     }
-
-    #barcode-container {
-      text-align: center;
-      margin-top: 20px;
-      display: none;
-    }
-
-    #barcode {
-      margin-bottom: 10px;
-      background: white;
-      padding: 10px;
-    }
-
-    .buttons {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 1rem; /* Jarak antar tombol */
-  margin-top: 1rem;
-  flex-wrap: nowrap; /* Paksa tetap horizontal */
+    #pecahanWrapper {
+  display: none;
 }
-
-.buttons button {
-  padding: 0.6rem 1.2rem;
-  border: none;
-  border-radius: 6px;
-  font-weight: bold;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 14px;
-  gap: 6px;
-  white-space: nowrap;
-  background-color: #388e3c;
-  color: white;
-  min-width: 110px; /* Tambahan agar ukurannya seragam tapi tidak terlalu lebar */
-}
-
-.unduh-btn:hover,
-.cetak-btn:hover {
-  background-color: #1976d2;
-}
-
-.buttons button svg {
-  width: 16px;
-  height: 16px;
-}
-
-    .seri-grid {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 10px;
-    }
-
-    .seri-item {
-      flex: 1 1 45%;
-    }
-
-    @media screen and (min-width: 768px) {
-      body {
-        padding: 30px;
-      }
-
-      .container {
-        max-width: 500px;
-      }
-    }
   </style>
 </head>
 <body>
@@ -145,7 +125,9 @@
       <label for="tanggal">Tanggal:</label>
       <input type="date" id="tanggal" required />
 
-      <label for="kode">Kode:</label>
+      <span class="form-label">Kode:</span>
+        <i data-feather="help-circle" class="help-icon" onclick="toggleHelp('popupHelpKode')"></i>
+      </label>
       <input type="text" id="kode" required />
 
       <label for="nominal">Nominal:</label>
@@ -155,14 +137,19 @@
         <option value="Rp2.000.000">Rp2.000.000</option>
       </select>
 
-      <label for="pecahan">Pecahan:</label>
-      <select id="pecahan" required>
-        <option value="">Pilih Pecahan</option>
-        <option value="Rp50.000">Rp50.000</option>
-        <option value="Rp100.000">Rp100.000</option>
-      </select>
+      <div id="pecahanWrapper">
+  <label for="pecahan">Pecahan:</label>
+  <select id="pecahan" required>
+    <option value="">Pilih Pecahan</option>
+    <option value="Rp50.000">Rp50.000</option>
+    <option value="Rp100.000">Rp100.000</option>
+  </select>
+</div>
 
-      <label><b>20 Nomor Seri:</b></label>
+      <label>
+        <b>20 Nomor Seri:</b>
+        <i data-feather="help-circle" class="help-icon" onclick="toggleHelp('popupHelpSeri')"></i>
+      </label>
       <div class="seri-grid">
         <script>
           for (let i = 1; i <= 20; i++) {
@@ -176,20 +163,34 @@
       <div id="barcode-container">
         <canvas id="barcode" width="300" height="150"></canvas>
         <div class="buttons">
-          <button class="unduh-btn" type="button" onclick="unduhBarcode()">
+          <button type="button" onclick="unduhBarcode()">
             <i data-feather="download"></i> UNDUH
           </button>
-          <button class="cetak-btn" type="button" onclick="printBarcode()">
+          <button type="button" onclick="printBarcode()">
             <i data-feather="printer"></i> CETAK
           </button>
+          <div class="overlay" id="popupOverlay"></div>
         </div>
       </div>
     </form>
   </div>
 
+  <!-- Popups Help -->
+  <div id="popupHelpKode" class="popup-help">
+    <img src="https://res.cloudinary.com/dz4w1sqiv/image/upload/v1751860039/Panduan%20Kode.png" alt="Panduan Kode" />
+    <button onclick="toggleHelp('popupHelpKode')">Oke, Saya Mengerti</button>
+  </div>
+
+  <div id="popupHelpSeri" class="popup-help">
+    <img src="https://res.cloudinary.com/dz4w1sqiv/image/upload/v1751860643/Panduan_Seri_soc1tb.png" alt="Panduan Nomor Seri" />
+    <button onclick="toggleHelp('popupHelpSeri')">Oke, Saya Mengerti</button>
+  </div>
+
   <iframe id="print-frame" style="display:none;"></iframe>
 
   <script>
+    feather.replace();
+
     const firebaseConfig = {
       apiKey: "AIzaSyBdt-2IQflUWNx3sdI1QHPMe1vAzsXAZcY",
       authDomain: "ajproject-log.firebaseapp.com",
@@ -201,6 +202,25 @@
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
+
+    function toggleHelp(id) {
+  const popup = document.getElementById(id);
+  const overlay = document.getElementById('popupOverlay');
+  const isVisible = popup.style.display === "block";
+
+  popup.style.display = isVisible ? "none" : "block";
+  overlay.style.display = isVisible ? "none" : "block";
+
+  document.body.classList.toggle("popup-open", !isVisible);
+
+  // Ambil semua input dan select
+  const fields = document.querySelectorAll("input, select, textarea, button");
+  fields.forEach(el => {
+    if (!el.closest('.popup-help')) {
+      el.disabled = !isVisible; // Nonaktif saat popup muncul
+    }
+  });
+}
 
     document.getElementById("nominal").addEventListener("change", function () {
       const nominal = this.value;
@@ -214,26 +234,21 @@
       const nominal = document.getElementById("nominal").value;
       const pecahan = document.getElementById("pecahan").value;
       const tanggal = document.getElementById("tanggal").value;
-
       let seri = [];
       for (let i = 1; i <= 20; i++) {
         let val = document.getElementById(`seri${i}`).value.trim().toUpperCase();
         seri.push(val);
       }
-
       if (!kode || !nominal || !pecahan || !tanggal || seri.some(s => !s)) {
         alert("Mohon lengkapi semua data dan seluruh nomor seri.");
         return;
       }
-
       const data = { kode, nominal, pecahan, seri, tanggal };
-
       db.ref("uang/" + kode).set(data).then(() => {
         const canvas = document.getElementById("barcode");
         const ctx = canvas.getContext("2d");
         ctx.fillStyle = "#ffffff";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
-
         JsBarcode(canvas, kode, {
           format: "CODE128",
           lineColor: "#000000",
@@ -243,7 +258,6 @@
           displayValue: true,
           margin: 10
         });
-
         document.getElementById("barcode-container").style.display = "block";
         feather.replace();
       }).catch((error) => {
@@ -263,10 +277,8 @@
     function printBarcode() {
       const canvas = document.getElementById("barcode");
       const dataUrl = canvas.toDataURL("image/png");
-
       const iframe = document.getElementById("print-frame");
       const doc = iframe.contentWindow.document;
-
       doc.open();
       doc.write(`
         <html>
