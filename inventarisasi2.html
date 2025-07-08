@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Scan & Lihat Barang</title>
   <style>
     body {
@@ -19,24 +19,61 @@
       padding: 20px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
-    .hidden { display: none; }
     input {
-      width: 75%; padding: 10px; border: 1px solid #ccc; border-radius: 8px;
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
     }
-    .scan-icon {
-      vertical-align: middle;
-      cursor: pointer;
-      margin-left: 10px;
+    .input-scan-row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: nowrap;
+    }
+    .scan-btn {
+      padding: 10px 14px;
+      background: #10b981;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+    }
+    .show-btn {
+      margin-top: 15px;
+      width: 100%;
+      padding: 12px;
+      background: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
     }
     #reader {
-      margin-top: 15px;
+      margin-top: 10px;
+      width: 100%;
+      max-width: 500px;
+      height: 300px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
     }
+    .hidden { display: none; }
     .detail-header img.logo {
-      width: 100%; max-width: 220px; display: block; margin: auto;
+      width: 100%;
+      max-width: 220px;
+      display: block;
+      margin: auto;
+    }
+    h2 {
+      text-align: center;
+      font-size: 14px;
+      margin-top: 5px;
+      margin-bottom: 0.5rem;
     }
     .detail-barang {
       background: #f9f9f9;
       padding: 15px;
+      border: 1px dashed #9ca3af;
       border-radius: 8px;
       margin-top: 15px;
     }
@@ -52,6 +89,10 @@
       text-align: center;
       margin-top: 10px;
     }
+    .kode-bold {
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
     .status {
       margin-top: 5px;
       font-weight: bold;
@@ -65,7 +106,7 @@
     .info-blok span {
       display: inline-block;
       width: 100px;
-      font-weight: 600;
+      font-weight: 400;
     }
     .btns {
       display: flex;
@@ -89,25 +130,28 @@
 <body>
 <div class="container">
   <div id="inputContainer">
-  <h3>Masukkan Kode Barang</h3>
-  <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-    <input type="text" id="kodeInput" placeholder="Contoh: ETK001-01-010" style="flex: 1;">
-    <button onclick="startScan()" style="padding: 10px 14px; background: #10b981; color: white; border: none; border-radius: 8px; font-weight: bold;">Scan</button>
+    <h3>Masukkan Kode Barang</h3>
+    <div class="input-scan-row">
+      <input type="text" id="kodeInput" placeholder="Contoh: ETK001-01-010">
+      <button onclick="startScan()" class="scan-btn">Scan</button>
+    </div>
+    <div id="reader" class="hidden"></div>
+    <button onclick="cariBarang()" class="show-btn">Tampilkan Barang</button>
   </div>
-  <div id="reader" class="hidden" style="margin-top: 10px;"></div>
-  <button onclick="cariBarang()" style="margin-top: 15px; width: 100%; padding: 12px; background: #2563eb; color: white; border: none; border-radius: 8px; font-weight: bold;">Cari Barang</button>
-</div>
-
   <div id="detailContainer" class="hidden">
     <div class="detail-header">
-      <img src="https://res.cloudinary.com/dw7xrzxnb/image/upload/v1720272004/label-logo.png" alt="Logo" class="logo"/>
+      <img src="https://res.cloudinary.com/dz4w1sqiv/image/upload/v1751588603/Tabungan Asep Jamaludin.png" alt="Logo" class="logo"/>
+      <a href="https://jamaludin2025.github.io/inventarisasi2.html" style="text-decoration: none;" target="_blank">
+     <h2 id="judul">https://tiny.cc/Inventarisasi-barang</h2>
+     </a>
+      <hr/>
       <img id="fotoBarang" src="" alt="Foto Barang" class="foto-barang">
       <div class="barcode-box">
-        <div id="kodeBarangText" style="font-weight:bold; margin-bottom: 5px;"></div>
+        <div id="kodeBarangText" class="kode-bold"></div>
         <canvas id="barcodeCanvas"></canvas>
         <div class="status">
-          <span style="color:orange;">KONDISI: <span id="kondisi">-</span></span>
-          <span style="color:green;">STATUS: TERSEDIA</span>
+          <span style="color:black;">KONDISI: <span style="color:orange;"><span id="kondisi">-</span></span>
+          <span style="color:black;">STATUS: <span style="color:green;"><span id="statuspinjam"></span></span>
         </div>
       </div>
     </div>
@@ -122,8 +166,6 @@
       <div class="info-blok"><span>Harga</span>: <span id="harga"></span></div>
       <div class="info-blok"><span>Toko</span>: <span id="toko"></span></div>
       <div class="info-blok"><span>Link</span>: <span id="link"></span></div>
-      <h4>Informasi Peminjaman</h4>
-      <div class="info-blok">....</div>
     </div>
     <div class="btns">
       <button onclick="unduhDetail()">UNDUH</button>
@@ -133,14 +175,14 @@
   </div>
 </div>
 
+<!-- Library & Script -->
 <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.10/minified/html5-qrcode.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
-<script src="https://unpkg.com/feather-icons"></script>
+
 <script>
-  feather.replace();
   const firebaseConfig = {
     apiKey: "AIzaSyBdt-2IQflUWNx3sdI1QHPMe1vAzsXAZcY",
     authDomain: "ajproject-log.firebaseapp.com",
@@ -152,6 +194,32 @@
   };
   firebase.initializeApp(firebaseConfig);
   const db = firebase.database();
+
+  function startScan() {
+    const reader = document.getElementById("reader");
+    reader.classList.remove("hidden");
+    reader.style.height = "300px";
+
+    const html5QrCode = new Html5Qrcode("reader");
+
+    html5QrCode.start(
+      { facingMode: "environment" },
+      { fps: 10, qrbox: 250 },
+      (decodedText) => {
+        html5QrCode.stop();
+        reader.classList.add("hidden");
+        reader.style.height = "0";
+        document.getElementById("kodeInput").value = decodedText;
+        cariBarang();
+      },
+      (error) => {
+        console.warn("Scan error:", error);
+      }
+    ).catch(err => {
+      alert("Gagal membuka kamera.");
+      console.error(err);
+    });
+  }
 
   function cariBarang() {
     const kode = document.getElementById("kodeInput").value.trim();
@@ -185,17 +253,7 @@
     document.getElementById("toko").innerText = item.toko || "-";
     document.getElementById("link").innerText = item.link || "-";
     document.getElementById("kondisi").innerText = item.kondisi || "-";
-  }
-
-  function startScan() {
-    document.getElementById("reader").classList.remove("hidden");
-    const html5QrCode = new Html5Qrcode("reader");
-    html5QrCode.start({ facingMode: "environment" }, { fps: 10, qrbox: 250 }, (decoded) => {
-      html5QrCode.stop();
-      document.getElementById("reader").classList.add("hidden");
-      document.getElementById("kodeInput").value = decoded;
-      cariBarang();
-    });
+    document.getElementById("statuspinjam").innerText = item.statuspinjam || "-";
   }
 
   function unduhDetail() {
