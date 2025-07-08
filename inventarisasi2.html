@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scan & Lihat Barang</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f3f4f6;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 700px;
+      margin: auto;
+      background: white;
+      border-radius: 15px;
+      padding: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .hidden { display: none; }
+    input {
+      width: 75%; padding: 10px; border: 1px solid #ccc; border-radius: 8px;
+    }
+    .scan-icon {
+      vertical-align: middle;
+      cursor: pointer;
+      margin-left: 10px;
+    }
+    #reader {
+      margin-top: 15px;
+    }
+    .detail-header img.logo {
+      width: 100%; max-width: 220px; display: block; margin: auto;
+    }
+    .detail-barang {
+      background: #f9f9f9;
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 15px;
+    }
+    .foto-barang {
+      width: 150px;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 10px;
+      display: block;
+      margin: auto;
+    }
+    .barcode-box {
+      text-align: center;
+      margin-top: 10px;
+    }
+    .status {
+      margin-top: 5px;
+      font-weight: bold;
+    }
+    .status span {
+      margin-right: 15px;
+    }
+    .info-blok {
+      margin-top: 10px;
+    }
+    .info-blok span {
+      display: inline-block;
+      width: 100px;
+      font-weight: 600;
+    }
+    .btns {
+      display: flex;
+      justify-content: space-around;
+      flex-wrap: wrap;
+      margin-top: 20px;
+      gap: 10px;
+    }
+    .btns button {
+      background: #007bff;
+      color: white;
+      padding: 10px 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      flex: 1;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div id="inputContainer">
+  <h3>Masukkan Kode Barang</h3>
+  <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+    <input type="text" id="kodeInput" placeholder="Contoh: ETK001-01-010" style="flex: 1;">
+    <button onclick="startScan()" style="padding: 10px 14px; background: #10b981; color: white; border: none; border-radius: 8px; font-weight: bold;">Scan</button>
+  </div>
+  <div id="reader" class="hidden" style="margin-top: 10px;"></div>
+  <button onclick="cariBarang()" style="margin-top: 15px; width: 100%; padding: 12px; background: #2563eb; color: white; border: none; border-radius: 8px; font-weight: bold;">Cari Barang</button>
+</div>
+
+  <div id="detailContainer" class="hidden">
+    <div class="detail-header">
+      <img src="https://res.cloudinary.com/dw7xrzxnb/image/upload/v1720272004/label-logo.png" alt="Logo" class="logo"/>
+      <img id="fotoBarang" src="" alt="Foto Barang" class="foto-barang">
+      <div class="barcode-box">
+        <div id="kodeBarangText" style="font-weight:bold; margin-bottom: 5px;"></div>
+        <canvas id="barcodeCanvas"></canvas>
+        <div class="status">
+          <span style="color:orange;">KONDISI: <span id="kondisi">-</span></span>
+          <span style="color:green;">STATUS: TERSEDIA</span>
+        </div>
+      </div>
+    </div>
+    <div class="detail-barang">
+      <h4>Informasi Barang</h4>
+      <div class="info-blok"><span>Merk</span>: <span id="merk"></span></div>
+      <div class="info-blok"><span>Barang</span>: <span id="nama"></span></div>
+      <div class="info-blok"><span>Variasi</span>: <span id="variasi"></span></div>
+      <div class="info-blok"><span>Kategori</span>: <span id="kategori"></span></div>
+      <h4>Informasi Pembelian</h4>
+      <div class="info-blok"><span>Tanggal</span>: <span id="tanggal"></span></div>
+      <div class="info-blok"><span>Harga</span>: <span id="harga"></span></div>
+      <div class="info-blok"><span>Toko</span>: <span id="toko"></span></div>
+      <div class="info-blok"><span>Link</span>: <span id="link"></span></div>
+      <h4>Informasi Peminjaman</h4>
+      <div class="info-blok">....</div>
+    </div>
+    <div class="btns">
+      <button onclick="unduhDetail()">UNDUH</button>
+      <button onclick="cetakDetail()">CETAK</button>
+      <button>PINJAM</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.10/minified/html5-qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+<script src="https://unpkg.com/feather-icons"></script>
+<script>
+  feather.replace();
+  const firebaseConfig = {
+    apiKey: "AIzaSyBdt-2IQflUWNx3sdI1QHPMe1vAzsXAZcY",
+    authDomain: "ajproject-log.firebaseapp.com",
+    databaseURL: "https://ajproject-log-default-rtdb.firebaseio.com",
+    projectId: "ajproject-log",
+    storageBucket: "ajproject-log.appspot.com",
+    messagingSenderId: "113688767697",
+    appId: "1:113688767697:web:b7b4c401f87702cd74a9f0"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+
+  function cariBarang() {
+    const kode = document.getElementById("kodeInput").value.trim();
+    if (!kode) return alert("Masukkan kode barang");
+    db.ref("inventaris_kode").once("value", snapshot => {
+      const data = snapshot.val();
+      for (let key in data) {
+        if (data[key].kode === kode) {
+          tampilkanDetail(data[key]);
+          return;
+        }
+      }
+      alert("Data tidak ditemukan!");
+    });
+  }
+
+  function tampilkanDetail(item) {
+    document.getElementById("inputContainer").style.display = "none";
+    document.getElementById("detailContainer").style.display = "block";
+
+    document.getElementById("fotoBarang").src = item.foto || "https://via.placeholder.com/150";
+    document.getElementById("kodeBarangText").innerText = item.kode;
+    JsBarcode("#barcodeCanvas", item.kode, { width: 1.5, height: 60, displayValue: false });
+
+    document.getElementById("merk").innerText = item.merk;
+    document.getElementById("nama").innerText = item.nama;
+    document.getElementById("variasi").innerText = item.variasi;
+    document.getElementById("kategori").innerText = item.kategori;
+    document.getElementById("tanggal").innerText = item.tanggal;
+    document.getElementById("harga").innerText = "Rp" + item.harga;
+    document.getElementById("toko").innerText = item.toko || "-";
+    document.getElementById("link").innerText = item.link || "-";
+    document.getElementById("kondisi").innerText = item.kondisi || "-";
+  }
+
+  function startScan() {
+    document.getElementById("reader").classList.remove("hidden");
+    const html5QrCode = new Html5Qrcode("reader");
+    html5QrCode.start({ facingMode: "environment" }, { fps: 10, qrbox: 250 }, (decoded) => {
+      html5QrCode.stop();
+      document.getElementById("reader").classList.add("hidden");
+      document.getElementById("kodeInput").value = decoded;
+      cariBarang();
+    });
+  }
+
+  function unduhDetail() {
+    html2canvas(document.getElementById("detailContainer")).then(canvas => {
+      const link = document.createElement("a");
+      link.download = document.getElementById("kodeBarangText").innerText + ".png";
+      link.href = canvas.toDataURL("image/png");
+      link.click();
+    });
+  }
+
+  function cetakDetail() {
+    const w = window.open();
+    w.document.write(`<html><head><title>Cetak</title></head><body>${document.getElementById("detailContainer").innerHTML}</body></html>`);
+    w.document.close();
+    w.print();
+    w.close();
+  }
+</script>
+</body>
+</html>
