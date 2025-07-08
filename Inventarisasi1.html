@@ -76,10 +76,10 @@
     	display: block;
         width: 100%;
         height: auto;
-        margin-bottom: 5px;
+        margin-bottom: 1px;
     }
     svg#barcode {
-      margin-top: 5px;
+      margin-top: 1px;
     }
     .btn-group {
   display: flex;
@@ -96,6 +96,10 @@
   <div class="container">
     <h2>Form Inventarisasi Barang</h2>
     <form id="formBarang">
+    	<div class="form-group">
+    	<label>Link Foto</label>
+        <input type="text" id="fotoBarang" placeholder="Sumber: Cloudinary" />
+      </div>
       <div class="form-group">
         <label>Merk</label>
         <input type="text" id="merkBarang" />
@@ -155,7 +159,7 @@
     <div id="previewContainer" style="display:none;">
       <div class="label-preview" id="labelArea">
   <div class="barcode-wrapper">
-    <img src="https://res.cloudinary.com/dz4w1sqiv/image/upload/v1751891827/inventarisasi_barang_tvbivv.png" class="label-logo" crossorigin="anonymous" />
+    <img src="https://res.cloudinary.com/dz4w1sqiv/image/upload/v1751895371/inventarisasi_dj8hnf.png" class="label-logo" crossorigin="anonymous" />
     <svg id="barcode"></svg>
   </div>
   <div id="kodePreview" style="font-size:18px; font-weight:bold;"></div>
