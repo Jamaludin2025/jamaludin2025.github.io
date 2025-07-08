@@ -196,30 +196,37 @@
   const db = firebase.database();
 
   function startScan() {
-    const reader = document.getElementById("reader");
-    reader.classList.remove("hidden");
-    reader.style.height = "300px";
+  const reader = document.getElementById("reader");
+  reader.classList.remove("hidden");
+  reader.style.height = "300px";
 
-    const html5QrCode = new Html5Qrcode("reader");
+  const html5QrCode = new Html5Qrcode("reader");
 
-    html5QrCode.start(
-      { facingMode: "environment" },
-      { fps: 10, qrbox: 250 },
-      (decodedText) => {
-        html5QrCode.stop();
-        reader.classList.add("hidden");
-        reader.style.height = "0";
-        document.getElementById("kodeInput").value = decodedText;
-        cariBarang();
-      },
-      (error) => {
-        console.warn("Scan error:", error);
-      }
-    ).catch(err => {
-      alert("Gagal membuka kamera.");
-      console.error(err);
-    });
-  }
+  const config = {
+    fps: 10,
+    qrbox: 250
+  };
+
+  const cameraConfig = { facingMode: "environment" }; // Gunakan kamera belakang
+
+  html5QrCode.start(
+    cameraConfig,
+    config,
+    (decodedText) => {
+      html5QrCode.stop();
+      reader.classList.add("hidden");
+      reader.style.height = "0";
+      document.getElementById("kodeInput").value = decodedText;
+      cariBarang();
+    },
+    (error) => {
+      console.warn("Scan error:", error);
+    }
+  ).catch(err => {
+    alert("Gagal membuka kamera. Pastikan akses HTTPS dan izinkan kamera.");
+    console.error("Html5QrCode error:", err);
+  });
+}
 
   function cariBarang() {
     const kode = document.getElementById("kodeInput").value.trim();
