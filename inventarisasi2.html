@@ -19,57 +19,25 @@
       padding: 20px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
-    input {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-    }
-    .input-scan-row {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      flex-wrap: nowrap;
-    }
-    .scan-btn {
-      padding: 10px 14px;
-      background: #10b981;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-weight: bold;
-    }
-    .show-btn {
-      margin-top: 15px;
-      width: 100%;
-      padding: 12px;
-      background: #2563eb;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-weight: bold;
-    }
     #reader {
-      margin-top: 10px;
       width: 100%;
       max-width: 500px;
-      height: 300px;
+      margin: 0 auto;
       border: 1px solid #ccc;
       border-radius: 10px;
     }
-    .hidden { display: none; }
+    video {
+      width: 100% !important;
+      height: auto !important;
+      border-radius: 10px;
+    }
     .detail-header img.logo {
       width: 100%;
       max-width: 220px;
       display: block;
       margin: auto;
     }
-    h2 {
-      text-align: center;
-      font-size: 14px;
-      margin-top: 5px;
-      margin-bottom: 0.5rem;
-    }
+    .hidden { display: none; }
     .detail-barang {
       background: #f9f9f9;
       padding: 15px;
@@ -96,9 +64,6 @@
     .status {
       margin-top: 5px;
       font-weight: bold;
-    }
-    .status span {
-      margin-right: 15px;
     }
     .info-blok {
       margin-top: 10px;
@@ -129,29 +94,21 @@
 </head>
 <body>
 <div class="container">
-  <div id="inputContainer">
-    <h3>Masukkan Kode Barang</h3>
-    <div class="input-scan-row">
-      <input type="text" id="kodeInput" placeholder="Contoh: ETK001-01-010">
-      <button onclick="startScan()" class="scan-btn">Scan</button>
-    </div>
-    <div id="reader" class="hidden"></div>
-    <button onclick="cariBarang()" class="show-btn">Tampilkan Barang</button>
-  </div>
+  <div id="reader"></div>
   <div id="detailContainer" class="hidden">
     <div class="detail-header">
       <img src="https://res.cloudinary.com/dz4w1sqiv/image/upload/v1751588603/Tabungan Asep Jamaludin.png" alt="Logo" class="logo"/>
-      <a href="https://jamaludin2025.github.io/inventarisasi2.html" style="text-decoration: none;" target="_blank">
-     <h2 id="judul">https://tiny.cc/Inventarisasi-barang</h2>
-     </a>
+      <a href="https://jamaludin2025.github.io/inventarisasi2.html" target="_blank" style="text-decoration: none;">
+        <h2>https://tiny.cc/Inventarisasi-barang</h2>
+      </a>
       <hr/>
       <img id="fotoBarang" src="" alt="Foto Barang" class="foto-barang">
       <div class="barcode-box">
         <div id="kodeBarangText" class="kode-bold"></div>
         <canvas id="barcodeCanvas"></canvas>
         <div class="status">
-          <span style="color:black;">KONDISI: <span style="color:orange;"><span id="kondisi">-</span></span>
-          <span style="color:black;">STATUS: <span style="color:green;"><span id="statuspinjam"></span></span>
+          <span style="color:black;">KONDISI: <span style="color:orange;" id="kondisi">-</span></span>
+          <span style="color:black;">STATUS: <span style="color:green;" id="statuspinjam">-</span></span>
         </div>
       </div>
     </div>
@@ -174,111 +131,83 @@
     </div>
   </div>
 </div>
-
-<!-- Library & Script -->
 <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.10/minified/html5-qrcode.min.js"></script>
+<script src="https://unpkg.com/html5-qrcode"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
-
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 <script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyBdt-2IQflUWNx3sdI1QHPMe1vAzsXAZcY",
-    authDomain: "ajproject-log.firebaseapp.com",
-    databaseURL: "https://ajproject-log-default-rtdb.firebaseio.com",
-    projectId: "ajproject-log",
-    storageBucket: "ajproject-log.appspot.com",
-    messagingSenderId: "113688767697",
-    appId: "1:113688767697:web:b7b4c401f87702cd74a9f0"
-  };
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.database();
+const firebaseConfig = {
+  apiKey: "AIzaSyBdt-2IQflUWNx3sdI1QHPMe1vAzsXAZcY",
+  authDomain: "ajproject-log.firebaseapp.com",
+  databaseURL: "https://ajproject-log-default-rtdb.firebaseio.com",
+  projectId: "ajproject-log",
+  storageBucket: "ajproject-log.appspot.com",
+  messagingSenderId: "113688767697",
+  appId: "1:113688767697:web:b7b4c401f87702cd74a9f0"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
 
-  function startScan() {
-  const reader = document.getElementById("reader");
-  reader.classList.remove("hidden");
-  reader.style.height = "300px";
+const html5QrCode = new Html5Qrcode("reader");
+html5QrCode.start(
+  { facingMode: { exact: "environment" } },
+  { fps: 10, qrbox: 250 },
+  (decodedText) => {
+    html5QrCode.stop();
+    cariBarang(decodedText);
+  },
+  (error) => {
+    console.log("Scan error", error);
+  }
+).catch(err => alert("Gagal membuka kamera: " + err));
 
-  const html5QrCode = new Html5Qrcode("reader");
-
-  const config = {
-    fps: 10,
-    qrbox: 250
-  };
-
-  const cameraConfig = { facingMode: "environment" }; // Gunakan kamera belakang
-
-  html5QrCode.start(
-    cameraConfig,
-    config,
-    (decodedText) => {
-      html5QrCode.stop();
-      reader.classList.add("hidden");
-      reader.style.height = "0";
-      document.getElementById("kodeInput").value = decodedText;
-      cariBarang();
-    },
-    (error) => {
-      console.warn("Scan error:", error);
+function cariBarang(kode) {
+  db.ref("inventaris_kode").once("value", snapshot => {
+    const data = snapshot.val();
+    for (let key in data) {
+      if (data[key].kode === kode) {
+        tampilkanDetail(data[key]);
+        return;
+      }
     }
-  ).catch(err => {
-    alert("Gagal membuka kamera. Pastikan akses HTTPS dan izinkan kamera.");
-    console.error("Html5QrCode error:", err);
+    alert("Data tidak ditemukan!");
   });
 }
 
-  function cariBarang() {
-    const kode = document.getElementById("kodeInput").value.trim();
-    if (!kode) return alert("Masukkan kode barang");
-    db.ref("inventaris_kode").once("value", snapshot => {
-      const data = snapshot.val();
-      for (let key in data) {
-        if (data[key].kode === kode) {
-          tampilkanDetail(data[key]);
-          return;
-        }
-      }
-      alert("Data tidak ditemukan!");
-    });
-  }
+function tampilkanDetail(item) {
+  document.getElementById("detailContainer").classList.remove("hidden");
+  document.getElementById("fotoBarang").src = item.foto || "https://via.placeholder.com/150";
+  document.getElementById("kodeBarangText").innerText = item.kode;
+  JsBarcode("#barcodeCanvas", item.kode, { width: 1.5, height: 60, displayValue: false });
+  document.getElementById("merk").innerText = item.merk;
+  document.getElementById("nama").innerText = item.nama;
+  document.getElementById("variasi").innerText = item.variasi;
+  document.getElementById("kategori").innerText = item.kategori;
+  document.getElementById("tanggal").innerText = item.tanggal;
+  document.getElementById("harga").innerText = "Rp" + item.harga;
+  document.getElementById("toko").innerText = item.toko || "-";
+  document.getElementById("link").innerText = item.link || "-";
+  document.getElementById("kondisi").innerText = item.kondisi || "-";
+  document.getElementById("statuspinjam").innerText = item.statuspinjam || "-";
+}
 
-  function tampilkanDetail(item) {
-    document.getElementById("inputContainer").style.display = "none";
-    document.getElementById("detailContainer").style.display = "block";
+function unduhDetail() {
+  html2canvas(document.getElementById("detailContainer")).then(canvas => {
+    const link = document.createElement("a");
+    link.download = document.getElementById("kodeBarangText").innerText + ".png";
+    link.href = canvas.toDataURL("image/png");
+    link.click();
+  });
+}
 
-    document.getElementById("fotoBarang").src = item.foto || "https://via.placeholder.com/150";
-    document.getElementById("kodeBarangText").innerText = item.kode;
-    JsBarcode("#barcodeCanvas", item.kode, { width: 1.5, height: 60, displayValue: false });
-
-    document.getElementById("merk").innerText = item.merk;
-    document.getElementById("nama").innerText = item.nama;
-    document.getElementById("variasi").innerText = item.variasi;
-    document.getElementById("kategori").innerText = item.kategori;
-    document.getElementById("tanggal").innerText = item.tanggal;
-    document.getElementById("harga").innerText = "Rp" + item.harga;
-    document.getElementById("toko").innerText = item.toko || "-";
-    document.getElementById("link").innerText = item.link || "-";
-    document.getElementById("kondisi").innerText = item.kondisi || "-";
-    document.getElementById("statuspinjam").innerText = item.statuspinjam || "-";
-  }
-
-  function unduhDetail() {
-    html2canvas(document.getElementById("detailContainer")).then(canvas => {
-      const link = document.createElement("a");
-      link.download = document.getElementById("kodeBarangText").innerText + ".png";
-      link.href = canvas.toDataURL("image/png");
-      link.click();
-    });
-  }
-
-  function cetakDetail() {
-    const w = window.open();
-    w.document.write(`<html><head><title>Cetak</title></head><body>${document.getElementById("detailContainer").innerHTML}</body></html>`);
-    w.document.close();
-    w.print();
-    w.close();
-  }
+function cetakDetail() {
+  const w = window.open();
+  w.document.write(`<html><head><title>Cetak</title></head><body>${document.getElementById("detailContainer").innerHTML}</body></html>`);
+  w.document.close();
+  w.print();
+  w.close();
+}
 </script>
 </body>
 </html>
