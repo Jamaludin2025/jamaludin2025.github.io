@@ -1,4 +1,4 @@
-<meta name='viewport' content='width=device-width, initial-scale=1'/><meta name='viewport' content='width=device-width, initial-scale=1'/><meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
+<meta name='viewport' content='width=device-width, initial-scale=1'/><meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
@@ -30,9 +30,13 @@
       height: auto !important;
       border-radius: 10px;
     }
+    .detail-barang h4.heading-top {
+      margin-top: 4px;
+      margin-bottom: 6px;
+   }
     .detail-header hr {
       border: none;
-      border-top: 1px solid #ccc;
+      border-top: 1px solid #d1d5db;
       margin: 10px 0;
     }
     .detail-header img.logo {
@@ -41,10 +45,6 @@
       display: block;
       margin: auto;
     }
-    .detail-barang h4.heading-top {
-      margin-top: 4px;
-      margin-bottom: 6px;
-   }
     .detail-barang h4 {
       margin-bottom: 6px;
     }
@@ -59,7 +59,7 @@
     }
     h2 {
       text-align: center;
-      font-size: 13px;
+      font-size: 14px;
       margin-top: 5px;
       margin-bottom: 0.5rem;
     }
@@ -79,12 +79,12 @@
       font-weight: bold;
       margin-bottom: 5px;
     }
-    .status {
+        .status {
      display: flex;
      justify-content: center;
      gap: 20px;
      margin-top: 5px;
-     font-size: 15px;
+     font-size: 13px;
     }
    .status-item {
     display: flex;
@@ -120,10 +120,7 @@
      word-break: break-word;
      text-decoration: none;
    }
-   .info-blok .value:hover {
-      text-decoration: underline;
-      color: #2563eb; /* Biru hover */
-   }
+  
     .btns {
       display: flex;
       justify-content: space-around;
@@ -189,7 +186,7 @@
   <div id="reader"></div>
   <div id="detailContainer" class="hidden">
     <div class="detail-header">
-      <img src="https://res.cloudinary.com/dz4w1sqiv/image/upload/v1751891827/inventarisasi_barang_tvbivv.png" alt="Logo" class="logo"/>
+      <img src="https://res.cloudinary.com/dz4w1sqiv/image/upload/v1751588603/Tabungan Asep Jamaludin.png" alt="Logo" class="logo"/>
       <a href="https://jamaludin2025.github.io/inventarisasi2.html" target="_blank" style="text-decoration: none;">
         <h2>https://tiny.cc/inventarisasi-barang</h2></a>
         <hr>
@@ -207,8 +204,7 @@
     <span id="statuspinjam" class="status-value" style="color:green;">-</span>
   </div>
 </div>
-
-    <div class="detail-barang">	
+    <div class="detail-barang">    	
   <h4 class="heading-top">Informasi Barang</h4>
   <div class="info-blok">
     <span class="label">Merk</span>
@@ -275,8 +271,8 @@
         </select>
       </div>
       <div style="margin-top:10px; display:flex; justify-content:space-between;">
-        <button type="button" class="btn" onclick="tutupFormPinjam()">BATAL</button>
-        <button type="submit" class="btn">KIRIM</button>
+        <button type="button" class="btn" onclick="tutupFormPinjam()">Batal</button>
+        <button type="submit" class="btn">Kirim</button>
       </div>
     </form>
   </div>
