@@ -82,28 +82,24 @@
     .status {
      display: flex;
      justify-content: center;
-    gap: 20px;
-    margin-top: 5px;
-    font-size: 15px;
-   }
-
-.status-item {
-  display: flex;
-  gap: 4px;
-  align-items: center;
-}
-
-.status-label {
-  font-weight: 600;
-  color: black;
-  text-transform: uppercase;
-}
-
-.status-value {
-  font-weight: 600;
-  text-transform: uppercase;
-}
-
+     gap: 20px;
+     margin-top: 5px;
+     font-size: 15px;
+    }
+   .status-item {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+  }
+  .status-label {
+   font-weight: 600;
+   color: black;
+   text-transform: uppercase;
+ }
+ .status-value {
+   font-weight: 600;
+   text-transform: uppercase;
+ }
     .info-blok {
       display: grid;
       grid-template-columns: 100px 10px 1fr;
@@ -124,14 +120,9 @@
      word-break: break-word;
      text-decoration: none;
    }
-   #link {
-     color: #2563eb;
-     text-decoration: underline;
-     word-break: break-word;
-   }
-
-   #link:hover {
-     color: #1d4ed8;
+   .info-blok .value:hover {
+      text-decoration: underline;
+      color: #2563eb; /* Biru hover */
    }
     .btns {
       display: flex;
@@ -217,7 +208,7 @@
   </div>
 </div>
 
-    <div class="detail-barang">    	
+    <div class="detail-barang">	
   <h4 class="heading-top">Informasi Barang</h4>
   <div class="info-blok">
     <span class="label">Merk</span>
