@@ -121,43 +121,75 @@
       font-weight: bold;
       flex: 1;
     }
-    #formPinjamModal {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0,0,0,0.4);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
+    #formPinjamModal .form-group {
+      margin-bottom: 12px;
     }
 
-  .popup-box {
-     background: white;
-     padding: 20px;
-     border-radius: 12px;
-     width: 90%;
-     max-width: 360px;
-     box-shadow: 0 8px 24px rgba(0,0,0,0.2);
-     animation: popupFade 0.3s ease;
+   #formPinjamModal label {
+     display: block;
+     font-weight: 500;
+     margin-bottom: 6px;
+     color: #374151;
+   }
+
+   #formPinjamModal input,
+   #formPinjamModal select {
+     width: 100%;
+     padding: 10px 12px;
+     border: 1px solid #d1d5db;
+     border-radius: 8px;
+     font-size: 14px;
+     box-sizing: border-box;
+   }
+
+  #formPinjamModal button.btn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-weight: bold;
+    cursor: pointer;
+    width: 48%;
+    transition: background 0.3s ease;
   }
 
- .popup-buttons {
-     margin-top: 15px;
-     display: flex;
-     justify-content: space-between;
-     gap: 10px;
- }
-
-@keyframes popupFade {
-  from { transform: scale(0.95); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
-}
+  #formPinjamModal button.btn:hover {
+    background-color: #0056b3;
+  }
+  
   #statuspinjam {
      text-transform: uppercase;
   }
+  
+  .modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-box {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 360px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+  animation: fadeIn 0.25s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
 
   </style>
 </head>
@@ -233,10 +265,11 @@
   <button onclick="bukaFormPinjam()">PINJAM</button>
 </div>
 
-  <div id="formPinjamModal" class="hidden">
-  <div class="popup-box">
-    <h3>Formulir Peminjaman</h3>
+  <div id="formPinjamModal" class="hidden modal-overlay">
+  <div class="modal-box">
+    <h3 style="text-align:center; margin-bottom:10px;">Formulir Peminjaman</h3>
     <form id="formPinjam">
+      <!-- semua form-group tetap -->
       <div class="form-group"><label>Nama Peminjam</label><input type="text" id="namaPeminjam" required /></div>
       <div class="form-group"><label>No. HP</label><input type="tel" id="nomorHP" required /></div>
       <div class="form-group"><label>Tanggal Pinjam</label><input type="date" id="tanggalPinjam" required /></div>
@@ -248,7 +281,7 @@
           <option value="5">5 hari</option>
         </select>
       </div>
-      <div class="popup-buttons">
+      <div style="margin-top:10px; display:flex; justify-content:space-between;">
         <button type="button" class="btn" onclick="tutupFormPinjam()">Batal</button>
         <button type="submit" class="btn">Kirim</button>
       </div>
