@@ -162,6 +162,10 @@
      text-transform: uppercase;
   }
   
+  body.modal-open {
+     overflow: hidden;
+  }
+
   .modal-overlay {
   position: fixed;
   top: 0;
@@ -263,6 +267,7 @@
   <button onclick="unduhDetail()">UNDUH</button>
   <button onclick="cetakDetail()">CETAK</button>
   <button onclick="bukaFormPinjam()">PINJAM</button>
+</div>
 </div>
 
   <div id="formPinjamModal" class="hidden modal-overlay">
@@ -407,10 +412,12 @@ function tampilkanDetail(item) {
 
      function bukaFormPinjam() {
   document.getElementById("formPinjamModal").classList.remove("hidden");
+  document.body.classList.add("modal-open"); //
 }
 
 function tutupFormPinjam() {
   document.getElementById("formPinjamModal").classList.add("hidden");
+  document.body.classList.remove("modal-open"); //
 }
 
 function unduhDetail() {
