@@ -305,7 +305,11 @@ function tampilkanDetail(item) {
   document.getElementById("detailContainer").classList.remove("hidden");
   document.getElementById("fotoBarang").src = item.foto || "https://via.placeholder.com/150";
   document.getElementById("kodeBarangText").innerText = item.kode;
-  JsBarcode("#barcodeCanvas", item.kode, { width: 1.5, height: 60, displayValue: false });
+  JsBarcode("#barcodeCanvas", item.kode, {
+    width: 1.5,
+    height: 60,
+    displayValue: false
+  });
   document.getElementById("merk").innerText = item.merk;
   document.getElementById("nama").innerText = item.nama;
   document.getElementById("variasi").innerText = item.variasi;
@@ -313,25 +317,21 @@ function tampilkanDetail(item) {
   document.getElementById("tanggal").innerText = item.tanggal;
   document.getElementById("harga").innerText = "Rp" + item.harga;
   document.getElementById("toko").innerText = item.namaToko || "-";
+
   const linkSpan = document.getElementById("link");
   const linkValue = item.linkPembelian || item.alamatPembelian || "-";
   linkSpan.innerText = linkValue;
   linkSpan.href = (linkValue.startsWith("http") ? linkValue : "#");
+
   document.getElementById("kondisi").innerText = item.kondisi || "-";
+
   if (item.statuspinjam === "Dipinjam") {
-  document.getElementById("statuspinjam").innerText = "Dipinjam";
-  document.getElementById("statuspinjam").style.color = "red";
-} else {
-  document.getElementById("statuspinjam").innerText = "Tersedia";
-  document.getElementById("statuspinjam").style.color = "green";
-}
-
-    function bukaFormPinjam() {
-  document.getElementById("formPinjamModal").classList.remove("hidden");
-}
-
-function tutupFormPinjam() {
-  document.getElementById("formPinjamModal").classList.add("hidden");
+    document.getElementById("statuspinjam").innerText = "Dipinjam";
+    document.getElementById("statuspinjam").style.color = "red";
+  } else {
+    document.getElementById("statuspinjam").innerText = "Tersedia";
+    document.getElementById("statuspinjam").style.color = "green";
+  }
 }
 
 function unduhDetail() {
