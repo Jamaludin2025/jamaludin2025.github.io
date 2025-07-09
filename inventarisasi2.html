@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
@@ -128,7 +128,7 @@
       <div class="info-blok"><span>Tanggal</span>: <span id="tanggal"></span></div>
       <div class="info-blok"><span>Harga</span>: <span id="harga"></span></div>
       <div class="info-blok"><span>Toko</span>: <span id="toko"></span></div>
-      <div class="info-blok"><span>Link</span>: <span id="link"></span></div>
+      <div class="info-blok"><span>Link</span>: <a id="link" href="#" target="_blank">-</a></div>
     </div>
     <div class="btns">
       <button onclick="unduhDetail()">UNDUH</button>
@@ -192,8 +192,11 @@ function tampilkanDetail(item) {
   document.getElementById("kategori").innerText = item.kategori;
   document.getElementById("tanggal").innerText = item.tanggal;
   document.getElementById("harga").innerText = "Rp" + item.harga;
-  document.getElementById("toko").innerText = item.toko || "-";
-  document.getElementById("link").innerText = item.link || "-";
+  document.getElementById("toko").innerText = item.namaToko || "-";
+  const linkSpan = document.getElementById("link");
+  const linkValue = item.linkPembelian || item.alamatPembelian || "-";
+  linkSpan.innerText = linkValue;
+  linkSpan.href = (linkValue.startsWith("http") ? linkValue : "#");
   document.getElementById("kondisi").innerText = item.kondisi || "-";
   document.getElementById("statuspinjam").innerText = item.statuspinjam || "-";
 }
