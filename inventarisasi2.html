@@ -72,13 +72,29 @@
       font-weight: bold;
     }
     .info-blok {
-      margin-top: 10px;
-    }
-    .info-blok span {
-      display: inline-block;
-      width: 100px;
-      font-weight: 400;
-    }
+      display: grid;
+      grid-template-columns: 100px 10px 1fr;
+      column-gap: 5px;
+      margin-top: 8px;
+      align-items: start;
+   }
+   .info-blok .label {
+     font-weight: 500;
+     color: #111827;
+     word-break: break-word;
+   }
+   .info-blok .separator {
+     text-align: center;
+   }
+   .info-blok .value {
+     color: #1f2937;
+     word-break: break-word;
+     text-decoration: none;
+   }
+   .info-blok .value:hover {
+      text-decoration: underline;
+      color: #2563eb; /* Biru hover */
+   }
     .btns {
       display: flex;
       justify-content: space-around;
@@ -120,16 +136,47 @@
     </div>
     <div class="detail-barang">
       <h4>Informasi Barang</h4>
-      <div class="info-blok"><span>Merk</span>: <span id="merk"></span></div>
-      <div class="info-blok"><span>Barang</span>: <span id="nama"></span></div>
-      <div class="info-blok"><span>Variasi</span>: <span id="variasi"></span></div>
-      <div class="info-blok"><span>Kategori</span>: <span id="kategori"></span></div>
+      <div class="info-blok">
+  <span class="label">Merk</span>
+  <span class="separator">:</span>
+  <span class="value" id="merk"></span>
+</div>
+     <div class="info-blok">
+  <span class="label">Barang</span>
+  <span class="separator">:</span>
+  <span class="value" id="nama"></span>
+</div>
+     <div class="info-blok">
+  <span class="label">Variasi</span>
+  <span class="separator">:</span>
+  <span class="value" id="variasi"></span>
+</div>
+      <div class="info-blok">
+  <span class="label">Kategori</span>
+  <span class="separator">:</span>
+  <span class="value" id="kategori"></span>
+</div>
       <h4>Informasi Pembelian</h4>
-      <div class="info-blok"><span>Tanggal</span>: <span id="tanggal"></span></div>
-      <div class="info-blok"><span>Harga</span>: <span id="harga"></span></div>
-      <div class="info-blok"><span>Toko</span>: <span id="toko"></span></div>
-      <div class="info-blok"><span>Link</span>: <a id="link" href="#" target="_blank">-</a></div>
-    </div>
+      <div class="info-blok">
+  <span class="label">Tanggal</span>
+  <span class="separator">:</span>
+  <span class="value" id="tanggal"></span>
+</div>
+      <div class="info-blok">
+  <span class="label">Harga</span>
+  <span class="separator">:</span>
+  <span class="value" id="harga"></span>
+</div>
+      <div class="info-blok">
+  <span class="label">Toko</span>
+  <span class="separator">:</span>
+  <span class="value" id="toko"></span>
+</div>
+      <div class="info-blok">
+  <span class="label">Link</span>
+  <span class="separator">:</span>
+  <a id="link" href="#" target="_blank" class="value">-</a>
+</div>
     <div class="btns">
       <button onclick="unduhDetail()">UNDUH</button>
       <button onclick="cetakDetail()">CETAK</button>
@@ -202,9 +249,13 @@ function tampilkanDetail(item) {
 }
 
 function unduhDetail() {
-  html2canvas(document.getElementById("detailContainer")).then(canvas => {
+  const kode = document.getElementById("kodeBarangText").innerText;
+  html2canvas(document.querySelector(".container"), {
+    useCORS: true,
+    backgroundColor: null  // agar transparan di luar container
+  }).then(canvas => {
     const link = document.createElement("a");
-    link.download = document.getElementById("kodeBarangText").innerText + ".png";
+    link.download = kode + ".png";
     link.href = canvas.toDataURL("image/png");
     link.click();
   });
