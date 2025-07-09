@@ -121,8 +121,7 @@
     <div class="detail-header">
       <img src="https://res.cloudinary.com/dz4w1sqiv/image/upload/v1751588603/Tabungan Asep Jamaludin.png" alt="Logo" class="logo"/>
       <a href="https://jamaludin2025.github.io/inventarisasi2.html" target="_blank" style="text-decoration: none;">
-        <h2>https://tiny.cc/Inventarisasi-barang</h2>
-      </a>
+        <h2>https://tiny.cc/Inventarisasi-barang</h2></a>
       <hr/>
       <img id="fotoBarang" src="" alt="Foto Barang" class="foto-barang">
       <div class="barcode-box">
@@ -264,12 +263,59 @@ function unduhDetail() {
 }
 
 function cetakDetail() {
-  const w = window.open();
-  w.document.write(`<html><head><title>Cetak</title></head><body>${document.getElementById("detailContainer").innerHTML}</body></html>`);
-  w.document.close();
-  w.print();
-  w.close();
+  const detail = document.querySelector(".container"); // atau bisa juga "#detailContainer" kalau mau lebih sempit
+
+  const printWindow = window.open('', '', 'width=800,height=1000');
+  printWindow.document.write('<html><head><title>Cetak Detail Barang</title>');
+
+  // Tambahkan style agar cetak tetap rapi
+  printWindow.document.write(`
+    <style>
+      body {
+        font-family: 'Segoe UI', sans-serif;
+        padding: 20px;
+      }
+      .detail-barang {
+        border: 1px dashed #9ca3af;
+        padding: 15px;
+        border-radius: 8px;
+      }
+      .info-blok {
+        display: grid;
+        grid-template-columns: 100px 10px 1fr;
+        column-gap: 5px;
+        margin-top: 8px;
+        align-items: start;
+      }
+      .label { font-weight: bold; }
+      .foto-barang {
+        width: 150px;
+        height: 150px;
+        object-fit: cover;
+        border-radius: 10px;
+        display: block;
+        margin: auto;
+      }
+      h2, h4 {
+        text-align: center;
+        margin-bottom: 10px;
+      }
+    </style>
+  `);
+
+  printWindow.document.write('</head><body>');
+  printWindow.document.write(detail.innerHTML); // isi dari elemen yang ingin dicetak
+  printWindow.document.write('</body></html>');
+  printWindow.document.close();
+
+  // Tunggu konten selesai dimuat sebelum print
+  printWindow.onload = function () {
+    printWindow.focus();
+    printWindow.print();
+    printWindow.close();
+  };
 }
+
 </script>
 </body>
 </html>
