@@ -31,6 +31,11 @@
       height: auto !important;
       border-radius: 10px;
     }
+    .detail-header hr {
+      border: none;
+      border-top: 1px solid #d1d5db;
+      margin: 10px 0;
+    }
     .detail-header img.logo {
       width: 100%;
       max-width: 220px;
@@ -122,7 +127,7 @@
       <img src="https://res.cloudinary.com/dz4w1sqiv/image/upload/v1751588603/Tabungan Asep Jamaludin.png" alt="Logo" class="logo"/>
       <a href="https://jamaludin2025.github.io/inventarisasi2.html" target="_blank" style="text-decoration: none;">
         <h2>https://tiny.cc/Inventarisasi-barang</h2></a>
-      <hr/>
+        <hr>
       <img id="fotoBarang" src="" alt="Foto Barang" class="foto-barang">
       <div class="barcode-box">
         <div id="kodeBarangText" class="kode-bold"></div>
@@ -263,12 +268,16 @@ function unduhDetail() {
 }
 
 function cetakDetail() {
-  const detail = document.querySelector(".container"); // atau bisa juga "#detailContainer" kalau mau lebih sempit
+  const detail = document.querySelector(".container"); // Ganti sesuai kebutuhan
+
+  if (!detail) {
+    alert("Elemen yang ingin dicetak tidak ditemukan!");
+    return;
+  }
 
   const printWindow = window.open('', '', 'width=800,height=1000');
   printWindow.document.write('<html><head><title>Cetak Detail Barang</title>');
 
-  // Tambahkan style agar cetak tetap rapi
   printWindow.document.write(`
     <style>
       body {
@@ -304,11 +313,10 @@ function cetakDetail() {
   `);
 
   printWindow.document.write('</head><body>');
-  printWindow.document.write(detail.innerHTML); // isi dari elemen yang ingin dicetak
+  printWindow.document.write(detail.innerHTML);
   printWindow.document.write('</body></html>');
   printWindow.document.close();
 
-  // Tunggu konten selesai dimuat sebelum print
   printWindow.onload = function () {
     printWindow.focus();
     printWindow.print();
