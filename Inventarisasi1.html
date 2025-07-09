@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
@@ -214,6 +214,7 @@ document.getElementById("jenisToko").addEventListener("change", function() {
 
     form.addEventListener('submit', async function(e) {
   e.preventDefault();
+  const foto = form.fotoBarang.value.trim();
   const nama = form.namaBarang.value.trim();
   const variasi = form.variasiBarang.value.trim();
   const merk = form.merkBarang.value.trim();
@@ -246,7 +247,7 @@ document.getElementById("jenisToko").addEventListener("change", function() {
 
   const newData = {
   kode, nama, variasi, merk, kategori, tanggal: tgl, harga,
-  jenisToko, namaToko, alamatPembelian, linkPembelian
+  jenisToko, namaToko, alamatPembelian, linkPembelian, foto // tambahkan "foto" di sini
 };
 
   await ref.push(newData);
