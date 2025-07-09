@@ -23,7 +23,6 @@
       width: 100%;
       max-width: 500px;
       margin: 0 auto;
-      border: 1px solid #ccc;
       border-radius: 10px;
     }
     video {
@@ -33,7 +32,7 @@
     }
     .detail-header hr {
       border: none;
-      border-top: 1px solid #d1d5db;
+      border-top: 1px solid #ccc;
       margin: 10px 0;
     }
     .detail-header img.logo {
@@ -56,7 +55,7 @@
     }
     h2 {
       text-align: center;
-      font-size: 14px;
+      font-size: 13px;
       margin-top: 5px;
       margin-bottom: 0.5rem;
     }
@@ -79,6 +78,7 @@
     .status {
       margin-top: 5px;
       font-weight: bold;
+      gap: 15px;
     }
     .info-blok {
       display: grid;
@@ -100,7 +100,7 @@
      word-break: break-word;
      text-decoration: none;
    }
-   .info-blok .value:hover {
+   .info-blok .value .a :hover {
       text-decoration: underline;
       color: #2563eb; /* Biru hover */
    }
@@ -169,9 +169,9 @@
   <div id="reader"></div>
   <div id="detailContainer" class="hidden">
     <div class="detail-header">
-      <img src="https://res.cloudinary.com/dz4w1sqiv/image/upload/v1751588603/Tabungan Asep Jamaludin.png" alt="Logo" class="logo"/>
+      <img src="https://res.cloudinary.com/dz4w1sqiv/image/upload/v1751891827/inventarisasi_barang_tvbivv.png" alt="Logo" class="logo"/>
       <a href="https://jamaludin2025.github.io/inventarisasi2.html" target="_blank" style="text-decoration: none;">
-        <h2>https://tiny.cc/Inventarisasi-barang</h2></a>
+        <h2>https://tiny.cc/inventarisasi-barang</h2></a>
         <hr>
       <img id="fotoBarang" src="" alt="Foto Barang" class="foto-barang">
       <div class="barcode-box">
@@ -251,8 +251,8 @@
         </select>
       </div>
       <div style="margin-top:10px; display:flex; justify-content:space-between;">
-        <button type="button" class="btn" onclick="tutupFormPinjam()">Batal</button>
-        <button type="submit" class="btn">Kirim</button>
+        <button type="button" class="btn" onclick="tutupFormPinjam()">BATAL</button>
+        <button type="submit" class="btn">KIRIM</button>
       </div>
     </form>
   </div>
