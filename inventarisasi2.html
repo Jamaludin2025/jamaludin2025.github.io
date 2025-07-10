@@ -160,6 +160,7 @@
      font-weight: 500;
      margin-bottom: 6px;
      color: #374151;
+     text-align: left;
    }
 
    #formPinjamModal input,
@@ -309,6 +310,15 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
+const kategoriMap = {
+  ETK: "Elektronik",
+  AKB: "Alat Kebersihan",
+  FTR: "Furnitur",
+  PKS: "Perkakas",
+  PDR: "Peralatan Dapur"
+  // Tambahkan sesuai kebutuhan
+};
+
 const html5QrCode = new Html5Qrcode("reader");
 html5QrCode.start(
   { facingMode: { exact: "environment" } },
@@ -386,8 +396,14 @@ function tampilkanDetail(item) {
   document.getElementById("merk").innerText = item.merk;
   document.getElementById("nama").innerText = item.nama;
   document.getElementById("variasi").innerText = item.variasi;
-  document.getElementById("kategori").innerText = item.kategori;
-  document.getElementById("tanggal").innerText = item.tanggal;
+  document.getElementById("kategori").innerText = kategoriMap[item.kategori] || item.kategori || "-";
+  
+  const tgl = new Date(item.tanggal);
+  const dd = String(tgl.getDate()).padStart(2, '0');
+  const mm = String(tgl.getMonth() + 1).padStart(2, '0');
+  const yyyy = tgl.getFullYear();
+  document.getElementById("tanggal").innerText = `${dd}-${mm}-${yyyy}`;
+
   document.getElementById("harga").innerText = "Rp" + item.harga;
   document.getElementById("toko").innerText = item.namaToko || "-";
 
@@ -417,14 +433,22 @@ function tutupFormPinjam() {
 
 function unduhDetail() {
   const kode = document.getElementById("kodeBarangText").innerText;
+
+  // Sembunyikan tombol sementara
+  const tombol = document.querySelector(".btns");
+  tombol.style.display = "none";
+
   html2canvas(document.querySelector(".container"), {
     useCORS: true,
-    backgroundColor: null  // agar transparan di luar container
+    backgroundColor: null
   }).then(canvas => {
     const link = document.createElement("a");
     link.download = kode + ".png";
     link.href = canvas.toDataURL("image/png");
     link.click();
+
+    // Tampilkan kembali tombol setelah unduh
+    tombol.style.display = "flex";
   });
 }
 
