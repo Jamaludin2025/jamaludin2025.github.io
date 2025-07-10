@@ -200,7 +200,7 @@
   <div id="reader"></div>
   <div id="detailContainer" class="hidden">
     <div class="detail-header">
-      <img src="https://res.cloudinary.com/dz4w1sqiv/image/upload/v1751588603/Tabungan Asep Jamaludin.png" alt="Logo" class="logo"/>
+      <img src="https://res.cloudinary.com/dz4w1sqiv/image/upload/v1752147855/inven_barang_yywlva.png" alt="Logo" class="logo"/>
       <a href="https://jamaludin2025.github.io/inventarisasi2.html" target="_blank" style="text-decoration: none;">
         <h2>https://tiny.cc/inventarisasi-barang</h2></a>
         <hr>
@@ -372,10 +372,24 @@ document.getElementById("formPinjam").addEventListener("submit", function(e) {
     for (let key in data) {
       if (data[key].kode === kode) {
         firebase.database().ref("inventaris_kode/" + key + "/statuspinjam").set("Dipinjam");
+        firebase.database().ref("inventaris_kode/" + key + "/namaPeminjam").set(nama);
+        firebase.database().ref("inventaris_kode/" + key + "/batasPinjam").set(durasi);        
         break;
       }
     }
   });
+  
+  // Hitung tanggal batas pengembalian
+const tglPinjam = new Date(tanggal);
+tglPinjam.setDate(tglPinjam.getDate() + parseInt(durasi));
+
+const dd = String(tglPinjam.getDate()).padStart(2, '0');
+const mm = String(tglPinjam.getMonth() + 1).padStart(2, '0');
+const yyyy = tglPinjam.getFullYear();
+const batasTanggal = `${dd}-${mm}-${yyyy}`;
+
+// Tampilkan notifikasi
+alert(`Barang berhasil dipinjam. Mohon untuk mengembalikan barang sesuai dengan batas waktu yang telah disepakati yaitu pada ${batasTanggal}.`);
 
   document.getElementById("statuspinjam").innerText = "Dipinjam";
   document.getElementById("statuspinjam").style.color = "red";
@@ -421,10 +435,20 @@ function tampilkanDetail(item) {
     document.getElementById("statuspinjam").innerText = "Tersedia";
     document.getElementById("statuspinjam").style.color = "green";
   }
-}
+    window.statusPinjamSekarang = item.statuspinjam;
+    window.namaPeminjamAktif = item.namaPeminjam || "-";
+    window.batasPinjamAktif = item.batasPinjam || "-";
+  }
 
      function bukaFormPinjam() {
+  if (window.statusPinjamSekarang === "Dipinjam") {
+    alert(`Mohon maaf, barang ini sedang dipinjam oleh ${window.namaPeminjamAktif}. Anda dapat meminjamnya setelah batas pinjam selesai.`);
+    return;
+  }
+
   document.getElementById("formPinjamModal").classList.remove("hidden");
+  document.body.classList.add("modal-open");
+  document.getElementById("reader").style.display = "none";
 }
 
 function tutupFormPinjam() {
