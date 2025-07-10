@@ -1,4 +1,4 @@
-<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
+<meta name='viewport' content='width=device-width, initial-scale=1'/><meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
@@ -232,18 +232,45 @@ document.getElementById("jenisToko").addEventListener("change", function() {
   const snapshot = await ref.once("value");
   const data = snapshot.val() || {};
 
-  let globalCounter = 1;
-  let kategoriCounter = 1;
-  let tipeCounter = 1;
+  let kodeJenis = "";
+let maxJenis = 0;
+let jumlahSejenis = 0;
+let totalBarang = 0;
 
-  for (let key in data) {
-    globalCounter++;
-    if (data[key].kategori === kategori) kategoriCounter++;
-    if (data[key].kategori === kategori && data[key].nama === nama) tipeCounter++;
+for (let key in data) {
+  const item = data[key];
+  totalBarang++;
+
+  // Cek apakah kombinasi kategori + nama + variasi + merk sudah ada
+  if (
+    item.kategori === kategori &&
+    item.nama === nama &&
+    item.variasi === variasi &&
+    item.merk === merk
+  ) {
+    if (!kodeJenis) {
+      kodeJenis = item.kode.split("-")[0]; // AKB001
+    }
+    jumlahSejenis++;
   }
 
-  const kodeKategori = kategori;
-  const kode = `${kodeKategori}${String(kategoriCounter).padStart(3, '0')}-${String(tipeCounter).padStart(2,'0')}-${String(globalCounter).padStart(3,'0')}`;
+  // Cek kode jenis terbesar
+  const kodePrefix = item.kode.split("-")[0]; // AKB001
+  const kodeAngka = parseInt(kodePrefix.replace(kategori, ""));
+  if (kodeAngka > maxJenis) {
+    maxJenis = kodeAngka;
+  }
+}
+
+// Jika belum ada kodeJenis, buat baru
+if (!kodeJenis) {
+  const nextKode = String(maxJenis + 1).padStart(3, "0");
+  kodeJenis = kategori + nextKode;
+}
+
+const kodeUrut = String(jumlahSejenis + 1).padStart(2, "0");
+const kodeGlobal = String(totalBarang + 1).padStart(3, "0");
+const kode = `${kodeJenis}-${kodeUrut}-${kodeGlobal}`;
 
   const newData = {
   kode, nama, variasi, merk, kategori, tanggal: tgl, harga,
