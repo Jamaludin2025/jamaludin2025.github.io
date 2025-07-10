@@ -59,7 +59,7 @@
     }
     h2 {
       text-align: center;
-      font-size: 14px;
+      font-size: 13px;
       margin-top: 5px;
       margin-bottom: 0.5rem;
     }
@@ -112,6 +112,11 @@
      color: #111827;
      word-break: break-word;
    }
+   .info-blok .label,
+   .info-blok .value {
+     text-align: left;
+   }
+
    .info-blok .separator {
      text-align: center;
    }
@@ -119,7 +124,14 @@
      color: #1f2937;
      word-break: break-word;
      text-decoration: none;
-   }
+  }
+  .info-blok a.value {
+     color: #2563eb;
+     text-decoration: underline;
+  }
+  .info-blok a.value:hover {
+     color: #1d4ed8;
+  }
   
     .btns {
       display: flex;
