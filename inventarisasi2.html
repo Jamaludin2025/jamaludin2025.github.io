@@ -284,6 +284,15 @@
           <option value="5">5 hari</option>
         </select>
       </div>
+      <div class="form-group">
+  <label for="kuantitas">Kuantitas</label>
+  <select id="kuantitas" onchange="handleKuantitasChange()">
+    <option value="satuan">Satuan</option>
+    <option value="sebagian">Sebagian</option>
+    <option value="keseluruhan">Keseluruhan</option>
+  </select>
+</div>
+<div class="form-group" id="pilihanBarang" style="display: none;"></div>
       <div style="margin-top:10px; display:flex; justify-content:space-between;">
         <button type="button" class="btn" onclick="tutupFormPinjam()">Batal</button>
         <button type="submit" class="btn">Kirim</button>
@@ -345,6 +354,38 @@ function cariBarang(kode) {
   });
 }
 
+function handleKuantitasChange() {
+  const kuantitas = document.getElementById("kuantitas").value;
+  const container = document.getElementById("pilihanBarang");
+  container.innerHTML = "";
+  container.style.display = "none";
+
+  if (kuantitas === "satuan") return;
+
+  const kodeAktif = document.getElementById("kodeBarangText").innerText;
+  const prefix = kodeAktif.split("-")[0]; // Contoh: AKB001 dari AKB001-01-001
+
+  firebase.database().ref("inventaris_kode").once("value", snapshot => {
+    const data = snapshot.val();
+    let checkboxHTML = "";
+
+    for (let key in data) {
+      const kode = data[key].kode;
+      if (kode.startsWith(prefix)) {
+        checkboxHTML += `
+          <label style="display:block;">
+            <input type="checkbox" name="kodeDipilih" value="${kode}" ${kuantitas === "keseluruhan" ? "checked" : ""}>
+            ${kode}
+          </label>
+        `;
+      }
+    }
+
+    container.innerHTML = checkboxHTML;
+    container.style.display = "block";
+  });
+}
+
 document.getElementById("formPinjam").addEventListener("submit", function(e) {
   e.preventDefault();
 
@@ -353,31 +394,43 @@ document.getElementById("formPinjam").addEventListener("submit", function(e) {
   const hp = document.getElementById("nomorHP").value;
   const tanggal = document.getElementById("tanggalPinjam").value;
   const durasi = document.getElementById("batasPinjam").value;
+  const kuantitas = document.getElementById("kuantitas").value;
+let kodeDipinjam = [];
+
+if (kuantitas === "satuan") {
+  kodeDipinjam = [kode];
+} else {
+  kodeDipinjam = [...document.querySelectorAll('input[name="kodeDipilih"]:checked')].map(cb => cb.value);
+}
+
 
   const dataPinjam = {
-    kodeBarang: kode,
-    namaPeminjam: nama,
-    nomorHP: hp,
-    tanggalPinjam: tanggal,
-    batasPinjam: durasi,
-    status: "Dipinjam"
-  };
+  kodeBarang: kodeDipinjam,
+  namaPeminjam: nama,
+  nomorHP: hp,
+  tanggalPinjam: tanggal,
+  batasPinjam: durasi,
+  kuantitas: kuantitas,
+  status: "Dipinjam"
+};
 
   // Simpan ke Firebase di /peminjaman_barang
   firebase.database().ref("peminjaman_barang").push(dataPinjam);
 
-  // Update status barang di /inventaris_kode
-  firebase.database().ref("inventaris_kode").once("value", snapshot => {
-    const data = snapshot.val();
-    for (let key in data) {
-      if (data[key].kode === kode) {
-        firebase.database().ref("inventaris_kode/" + key + "/statuspinjam").set("Dipinjam");
-        firebase.database().ref("inventaris_kode/" + key + "/namaPeminjam").set(nama);
-        firebase.database().ref("inventaris_kode/" + key + "/batasPinjam").set(durasi);        
-        break;
-      }
+// Update status semua barang yang dipinjam (termasuk sebagian/keseluruhan)
+firebase.database().ref("inventaris_kode").once("value", snapshot => {
+  const data = snapshot.val();
+  for (let key in data) {
+    const kodeData = data[key].kode;
+    if (kodeDipinjam.includes(kodeData)) {
+      firebase.database().ref("inventaris_kode/" + key).update({
+        statuspinjam: "Dipinjam",
+        namaPeminjam: nama,
+        batasPinjam: durasi
+      });
     }
-  });
+  }
+});
   
   // Hitung tanggal batas pengembalian
 const tglPinjam = new Date(tanggal);
