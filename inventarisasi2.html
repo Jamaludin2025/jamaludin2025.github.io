@@ -1,4 +1,4 @@
-<meta name='viewport' content='width=device-width, initial-scale=1'/><meta name='viewport' content='width=device-width, initial-scale=1'/><meta name='viewport' content='width=device-width, initial-scale=1'/><meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
+<meta name='viewport' content='width=device-width, initial-scale=1'/><meta name='viewport' content='width=device-width, initial-scale=1'/><meta name='viewport' content='width=device-width, initial-scale=1'/><meta name='viewport' content='width=device-width, initial-scale=1'/><meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
@@ -409,10 +409,10 @@ function handleKuantitasChange() {
       const kode = data[key].kode;
       if (kode.startsWith(prefix)) {
         checkboxHTML += `
-  <div class="checkbox-item">
+  <label class="checkbox-item">
     <input type="checkbox" name="kodeDipilih" value="${kode}" ${kuantitas === "keseluruhan" ? "checked" : ""}>
-    <div class="kode-label">${kode}</div>
-  </div>
+    <span class="kode-label">${kode}</span>
+  </label>
 `;
       }
     }
