@@ -196,19 +196,30 @@
   display: flex;
   align-items: center;
   margin-bottom: 6px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  background-color: #f3f4f6;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.checkbox-item:hover {
+  background-color: #e5e7eb;
 }
 
 .checkbox-item input[type="checkbox"] {
-  margin-right: 8px;
-  transform: scale(1.1); /* biar lebih jelas */
+  margin-right: 10px;
+  transform: scale(1.1);
   cursor: pointer;
 }
 
 .checkbox-item .kode-label {
   font-size: 14px;
-  color: #111827;
   font-weight: 500;
+  color: #1f2937;
+  white-space: nowrap;
 }
+
 #pilihanBarang {
   max-height: 200px;
   overflow-y: auto;
@@ -216,6 +227,13 @@
   border: 1px solid #d1d5db;
   border-radius: 6px;
   background: #fff;
+}
+
+.form-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 12px;
+  margin-bottom: 0; 
 }
 
   </style>
@@ -318,7 +336,7 @@
   </select>
 </div>
 <div class="form-group" id="pilihanBarang" style="display: none;"></div>
-      <div style="margin-top:10px; display:flex; justify-content:space-between;">
+      <div class="form-buttons">
         <button type="button" class="btn" onclick="tutupFormPinjam()">Batal</button>
         <button type="submit" class="btn">Kirim</button>
       </div>
@@ -398,12 +416,10 @@ function handleKuantitasChange() {
       const kode = data[key].kode;
       if (kode.startsWith(prefix)) {
         checkboxHTML += `
-  <div class="checkbox-item">
-    <label>
-      <input type="checkbox" name="kodeDipilih" value="${kode}" ${kuantitas === "keseluruhan" ? "checked" : ""}>
-      <span class="kode-label">${kode}</span>
-    </label>
-  </div>
+  <label class="checkbox-item">
+    <input type="checkbox" name="kodeDipilih" value="${kode}" ${kuantitas === "keseluruhan" ? "checked" : ""}>
+    <span class="kode-label">${kode}</span>
+  </label>
 `;
       }
     }
