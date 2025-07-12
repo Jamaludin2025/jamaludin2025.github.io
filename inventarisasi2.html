@@ -319,11 +319,10 @@
     <option value="keseluruhan">Keseluruhan</option>
   </select>
 </div>
-<div class="form-group" id="pilihanBarang" style="display: none;"></div>
-      <div style="margin-top:10px; display:flex; justify-content:space-between;">
-        <button type="button" class="btn" onclick="tutupFormPinjam()">Batal</button>
-        <button type="submit" class="btn">Kirim</button>
-      </div>
+<div class="form-group" id="pilihanBarangContainer" style="display: none;">
+  <label>Barang yang serupa dengan <span id="prefixKode"></span></label>
+  <select id="pilihanBarangSelect" multiple size="5" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #ccc;"></select>
+</div>
     </form>
   </div>
 </div>
@@ -383,30 +382,35 @@ function cariBarang(kode) {
 
 function handleKuantitasChange() {
   const kuantitas = document.getElementById("kuantitas").value;
-  const container = document.getElementById("pilihanBarang");
-  container.innerHTML = "";
+  const container = document.getElementById("pilihanBarangContainer");
+  const select = document.getElementById("pilihanBarangSelect");
+  const prefixLabel = document.getElementById("prefixKode");
+
   container.style.display = "none";
+  select.innerHTML = "";
 
   if (kuantitas === "satuan") return;
 
   const kodeAktif = document.getElementById("kodeBarangText").innerText;
-  const prefix = kodeAktif.split("-")[0]; // Contoh: AKB001 dari AKB001-01-001
+  const prefix = kodeAktif.split("-")[0]; // Contoh: AKB001
+
+  prefixLabel.textContent = prefix;
+  container.style.display = "block";
 
   firebase.database().ref("inventaris_kode").once("value", snapshot => {
     const data = snapshot.val();
-    let checkboxHTML = "";
-
     for (let key in data) {
       const kode = data[key].kode;
       if (kode.startsWith(prefix)) {
-        checkboxHTML += `
-  <label class="checkbox-item">
-    <input type="checkbox" name="kodeDipilih" value="${kode}" ${kuantitas === "keseluruhan" ? "checked" : ""}>
-    <span class="kode-label">${kode}</span>
-  </label>
-`;
+        const option = document.createElement("option");
+        option.value = kode;
+        option.textContent = kode;
+        if (kuantitas === "keseluruhan") option.selected = true;
+        select.appendChild(option);
       }
     }
+  });
+}
 
     container.innerHTML = checkboxHTML;
     container.style.display = "block";
@@ -427,7 +431,7 @@ let kodeDipinjam = [];
 if (kuantitas === "satuan") {
   kodeDipinjam = [kode];
 } else {
-  kodeDipinjam = [...document.querySelectorAll('input[name="kodeDipilih"]:checked')].map(cb => cb.value);
+  kodeDipinjam = Array.from(document.getElementById("pilihanBarangSelect").selectedOptions).map(opt => opt.value);
 }
 
 
