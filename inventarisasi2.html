@@ -223,6 +223,19 @@
   color: #1f2937;
 }
 
+.status-biru {
+  color: #2563eb; /* biru */
+  font-weight: bold;
+}
+.status-hijau {
+  color: #16a34a; /* hijau */
+  font-weight: bold;
+}
+.status-merah {
+  color: #dc2626; /* merah */
+  font-weight: bold;
+}
+
   .kondisi-baru { color: #16a34a; font-weight: bold; }            /* hijau terang */
   .kondisi-sangatbaik { color: #059669; font-weight: bold; }      /* hijau tua */
   .kondisi-baik { color: #2563eb; font-weight: bold; }            /* biru */
@@ -474,7 +487,7 @@ if (kuantitas === "satuan") {
   firebase.database().ref("peminjaman_barang").push(dataPinjam);
   
   document.getElementById("containerPeminjaman").classList.remove("hidden");
-document.getElementById("statuspinjamBaru").innerText = "Proses";
+document.getElementById("statuspinjamBaru").innerText = "Menunggu Konfirmasi";
 document.getElementById("namaPeminjamAktif").innerText = nama;
 
 const tglPinjam = new Date(tanggal);
@@ -499,14 +512,6 @@ firebase.database().ref("inventaris_kode").once("value", snapshot => {
   }
 });
   
-  // Hitung tanggal batas pengembalian
-const tglPinjam = new Date(tanggal);
-tglPinjam.setDate(tglPinjam.getDate() + parseInt(durasi));
-
-const dd = String(tglPinjam.getDate()).padStart(2, '0');
-const mm = String(tglPinjam.getMonth() + 1).padStart(2, '0');
-const yyyy = tglPinjam.getFullYear();
-const batasTanggal = `${dd}-${mm}-${yyyy}`;
 
 // Tampilkan notifikasi
 alert(`Barang berhasil dipinjam. Mohon untuk mengembalikan barang sesuai dengan batas waktu yang telah disepakati yaitu pada ${batasTanggal}.`);
@@ -578,9 +583,28 @@ kondisiEl.innerText = item.kondisi || "-";
 kondisiEl.className = classKondisi;
 
 
-  if (item.statuspinjam === "Proses" || item.statuspinjam === "Disetujui" || item.statuspinjam === "Ditolak") {
+  if (
+  item.statuspinjam === "Menunggu Konfirmasi" ||
+  item.statuspinjam === "Disetujui" ||
+  item.statuspinjam === "Ditolak"
+) {
   document.getElementById("containerPeminjaman").classList.remove("hidden");
-  document.getElementById("statuspinjamBaru").innerText = item.statuspinjam;
+  const statusText = item.statuspinjam;
+const statusEl = document.getElementById("statuspinjamBaru");
+statusEl.innerText = statusText;
+
+// Reset kelas dulu
+statusEl.classList.remove("status-biru", "status-hijau", "status-merah");
+
+// Tambahkan kelas warna sesuai status
+if (statusText === "Menunggu Konfirmasi") {
+  statusEl.classList.add("status-biru");
+} else if (statusText === "Disetujui") {
+  statusEl.classList.add("status-hijau");
+} else if (statusText === "Ditolak") {
+  statusEl.classList.add("status-merah");
+}
+
   document.getElementById("namaPeminjamAktif").innerText = item.namaPeminjam || "-";
 
   const tglPinjam = new Date(item.tanggal);
@@ -591,21 +615,6 @@ kondisiEl.className = classKondisi;
   document.getElementById("tglKembaliAktif").innerText = `${dd}-${mm}-${yyyy}`;
 } else {
   document.getElementById("containerPeminjaman").classList.add("hidden");
-}
-
-  document.getElementById("statuspinjamBaru").innerText = item.statuspinjam;
-  document.getElementById("namaPeminjamAktif").innerText = item.namaPeminjam || "-";
-
-  const tglPinjam = new Date(item.tanggal);
-  tglPinjam.setDate(tglPinjam.getDate() + parseInt(item.batasPinjam || 0));
-  const dd = String(tglPinjam.getDate()).padStart(2, '0');
-  const mm = String(tglPinjam.getMonth() + 1).padStart(2, '0');
-  const yyyy = tglPinjam.getFullYear();
-  document.getElementById("tglKembaliAktif").innerText = `${dd}-${mm}-${yyyy}`;
-
-  document.getElementById("blokPeminjaman").classList.remove("hidden");
-} else {
-  document.getElementById("blokPeminjaman").classList.add("hidden");
 }
 
     window.statusPinjamSekarang = item.statuspinjam;
