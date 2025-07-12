@@ -122,9 +122,11 @@
      text-align: center;
    }
    .info-blok .value {
-     color: #1f2937;
-     word-break: break-word;
-     text-decoration: none;
+  color: #1f2937;
+  word-break: break-word;
+  text-decoration: none;
+  text-align: left;
+
   }
   .info-blok a.value {
      color: #2563eb;
@@ -152,7 +154,8 @@
       flex: 1;
     }
     #formPinjamModal .form-group {
-      margin-bottom: 12px;
+      margin-top: 20px;
+      margin-bottom: 6px;
     }
 
    #formPinjamModal label {
@@ -295,8 +298,9 @@
   </div>
 </div>
 
-<h4>Informasi Peminjaman</h4>
-<div id="blokPeminjaman" class="hidden">
+<div id="containerPeminjaman" class="hidden">
+  <h4>Informasi Peminjaman</h4>
+  <div id="blokPeminjaman">
   <div class="info-blok">
     <span class="label">Status</span>
     <span class="separator">:</span>
@@ -463,11 +467,22 @@ if (kuantitas === "satuan") {
   tanggalPinjam: tanggal,
   batasPinjam: durasi,
   kuantitas: kuantitas,
-  status: "Disetujui"
+  status: "Menunggu Konfirmasi"
 };
 
   // Simpan ke Firebase di /peminjaman_barang
   firebase.database().ref("peminjaman_barang").push(dataPinjam);
+  
+  document.getElementById("containerPeminjaman").classList.remove("hidden");
+document.getElementById("statuspinjamBaru").innerText = "Proses";
+document.getElementById("namaPeminjamAktif").innerText = nama;
+
+const tglPinjam = new Date(tanggal);
+tglPinjam.setDate(tglPinjam.getDate() + parseInt(durasi));
+const dd = String(tglPinjam.getDate()).padStart(2, '0');
+const mm = String(tglPinjam.getMonth() + 1).padStart(2, '0');
+const yyyy = tglPinjam.getFullYear();
+document.getElementById("tglKembaliAktif").innerText = `${dd}-${mm}-${yyyy}`;
 
 // Update status semua barang yang dipinjam (termasuk sebagian/keseluruhan)
 firebase.database().ref("inventaris_kode").once("value", snapshot => {
@@ -498,6 +513,11 @@ alert(`Barang berhasil dipinjam. Mohon untuk mengembalikan barang sesuai dengan 
 
   document.getElementById("statuspinjam").innerText = "Dipinjam";
   document.getElementById("statuspinjam").style.color = "red";
+  document.getElementById("containerPeminjaman").classList.remove("hidden");
+  document.getElementById("statuspinjamBaru").innerText = "Disetujui";
+  document.getElementById("namaPeminjamAktif").innerText = nama;
+  document.getElementById("tglKembaliAktif").innerText = batasTanggal;
+
 
   tutupFormPinjam();
 });
@@ -536,19 +556,19 @@ const kondisiNilai = (item.kondisi || "-").toLowerCase();
 
 let classKondisi = "";
 switch (kondisiNilai) {
-  case "Baru":
+  case "baru":
     classKondisi = "kondisi-baru"; break;
-  case "Sangat Baik":
+  case "sangat baik":
     classKondisi = "kondisi-sangatbaik"; break;
-  case "Baik":
+  case "baik":
     classKondisi = "kondisi-baik"; break;
-  case "Cukup":
+  case "cukup":
     classKondisi = "kondisi-cukup"; break;
-  case "Perlu Perbaikan":
+  case "perlu perbaikan":
     classKondisi = "kondisi-perludiperbaiki"; break;
-  case "Rusak Ringan":
+  case "rusak ringan":
     classKondisi = "kondisi-rusakringan"; break;
-  case "Rusak Berat":
+  case "rusak berat":
     classKondisi = "kondisi-rusakberat"; break;
   default:
     classKondisi = "";
@@ -558,7 +578,21 @@ kondisiEl.innerText = item.kondisi || "-";
 kondisiEl.className = classKondisi;
 
 
-  if (item.statuspinjam === "Disetujui" || item.statuspinjam === "Ditolak") {
+  if (item.statuspinjam === "Proses" || item.statuspinjam === "Disetujui" || item.statuspinjam === "Ditolak") {
+  document.getElementById("containerPeminjaman").classList.remove("hidden");
+  document.getElementById("statuspinjamBaru").innerText = item.statuspinjam;
+  document.getElementById("namaPeminjamAktif").innerText = item.namaPeminjam || "-";
+
+  const tglPinjam = new Date(item.tanggal);
+  tglPinjam.setDate(tglPinjam.getDate() + parseInt(item.batasPinjam || 0));
+  const dd = String(tglPinjam.getDate()).padStart(2, '0');
+  const mm = String(tglPinjam.getMonth() + 1).padStart(2, '0');
+  const yyyy = tglPinjam.getFullYear();
+  document.getElementById("tglKembaliAktif").innerText = `${dd}-${mm}-${yyyy}`;
+} else {
+  document.getElementById("containerPeminjaman").classList.add("hidden");
+}
+
   document.getElementById("statuspinjamBaru").innerText = item.statuspinjam;
   document.getElementById("namaPeminjamAktif").innerText = item.namaPeminjam || "-";
 
