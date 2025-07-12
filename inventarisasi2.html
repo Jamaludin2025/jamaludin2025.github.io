@@ -312,9 +312,15 @@
   </div>
 </div>
 
-<div id="containerPeminjaman" class="hidden">
+<div id="containerPeminjaman">
   <h4>Informasi Peminjaman</h4>
-  <div id="blokPeminjaman">
+  <!-- Pesan default jika tidak dipinjam -->
+<div id="pesanTersedia" class="info-blok">
+  <span class="value status-hijau">Barang tersedia untuk dipinjam</span>
+</div>
+
+<!-- Blok detail peminjaman yang akan ditampilkan hanya jika status aktif -->
+<div id="blokPeminjaman" class="hidden">
   <div class="info-blok">
     <span class="label">Status</span>
     <span class="separator">:</span>
@@ -330,6 +336,8 @@
     <span class="separator">:</span>
     <span class="value" id="tglKembaliAktif"></span>
   </div>
+</div>
+
 <div class="btns">
   <button onclick="unduhDetail()">UNDUH</button>
   <button onclick="cetakDetail()">CETAK</button>
@@ -582,11 +590,47 @@ kondisiEl.innerText = item.kondisi || "-";
 kondisiEl.className = classKondisi;
 
 
-  if (
+  const blokPeminjaman = document.getElementById("blokPeminjaman");
+const pesanTersedia = document.getElementById("pesanTersedia");
+const statusEl = document.getElementById("statuspinjamBaru");
+const namaPeminjamEl = document.getElementById("namaPeminjamAktif");
+const tglKembaliEl = document.getElementById("tglKembaliAktif");
+
+if (
   item.statuspinjam === "Menunggu Konfirmasi" ||
   item.statuspinjam === "Disetujui" ||
   item.statuspinjam === "Ditolak"
 ) {
+  blokPeminjaman.classList.remove("hidden");
+  pesanTersedia.classList.add("hidden");
+
+  // Set status
+  statusEl.innerText = item.statuspinjam;
+  statusEl.className = "value"; // Reset dulu
+  if (item.statuspinjam === "Menunggu Konfirmasi") {
+    statusEl.classList.add("status-biru");
+  } else if (item.statuspinjam === "Disetujui") {
+    statusEl.classList.add("status-hijau");
+  } else if (item.statuspinjam === "Ditolak") {
+    statusEl.classList.add("status-merah");
+  }
+
+  // Nama Peminjam
+  namaPeminjamEl.innerText = item.namaPeminjam || "-";
+
+  // Tanggal kembali
+  const tglPinjam = new Date(item.tanggal);
+  tglPinjam.setDate(tglPinjam.getDate() + parseInt(item.batasPinjam || 0));
+  const dd = String(tglPinjam.getDate()).padStart(2, '0');
+  const mm = String(tglPinjam.getMonth() + 1).padStart(2, '0');
+  const yyyy = tglPinjam.getFullYear();
+  tglKembaliEl.innerText = `${dd}-${mm}-${yyyy}`;
+} else {
+  // Barang tidak sedang dipinjam
+  blokPeminjaman.classList.add("hidden");
+  pesanTersedia.classList.remove("hidden");
+}
+
   document.getElementById("containerPeminjaman").classList.remove("hidden");
   const statusText = item.statuspinjam;
 const statusEl = document.getElementById("statuspinjamBaru");
