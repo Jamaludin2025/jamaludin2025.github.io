@@ -1,4 +1,4 @@
-<meta name='viewport' content='width=device-width, initial-scale=1'/><meta name='viewport' content='width=device-width, initial-scale=1'/><meta name='viewport' content='width=device-width, initial-scale=1'/><meta name='viewport' content='width=device-width, initial-scale=1'/><meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
+<meta name='viewport' content='width=device-width, initial-scale=1'/><meta name='viewport' content='width=device-width, initial-scale=1'/><meta name='viewport' content='width=device-width, initial-scale=1'/><meta name='viewport' content='width=device-width, initial-scale=1'/><meta name='viewport' content='width=device-width, initial-scale=1'/><meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
@@ -235,16 +235,7 @@
       <div class="barcode-box">
         <div id="kodeBarangText" class="kode-bold"></div>
         <canvas id="barcodeCanvas"></canvas>
-        <div class="status">
-  <div class="status-item">
-    <span class="status-label">KONDISI:</span>
-    <span id="kondisi" class="status-value" style="color:orange;">-</span>
-  </div>
-  <div class="status-item">
-    <span class="status-label">STATUS:</span>
-    <span id="statuspinjam" class="status-value" style="color:green;">-</span>
-  </div>
-</div>
+        
     <div class="detail-barang">    	
   <h4 class="heading-top">Informasi Barang</h4>
   <div class="info-blok">
@@ -267,6 +258,11 @@
     <span class="separator">:</span>
     <span class="value" id="kategori"></span>
   </div>
+  <div class="info-blok">
+  <span class="label">Kondisi</span>
+  <span class="separator">:</span>
+  <span class="value" id="kondisi"></span>
+</div>
 
   <h4>Informasi Pembelian</h4>
   <div class="info-blok">
@@ -288,6 +284,25 @@
     <span class="label">Link</span>
     <span class="separator">:</span>
     <a id="link" href="#" target="_blank" class="value">-</a>
+  </div>
+</div>
+
+<h4>Informasi Peminjaman</h4>
+<div id="blokPeminjaman" class="hidden">
+  <div class="info-blok">
+    <span class="label">Status</span>
+    <span class="separator">:</span>
+    <span class="value" id="statuspinjamBaru"></span>
+  </div>
+  <div class="info-blok">
+    <span class="label">Peminjam</span>
+    <span class="separator">:</span>
+    <span class="value" id="namaPeminjamAktif"></span>
+  </div>
+  <div class="info-blok">
+    <span class="label">Tgl Kembali</span>
+    <span class="separator">:</span>
+    <span class="value" id="tglKembaliAktif"></span>
   </div>
 </div>
 
@@ -412,11 +427,6 @@ function handleKuantitasChange() {
   });
 }
 
-    container.innerHTML = checkboxHTML;
-    container.style.display = "block";
-  });
-}
-
 document.getElementById("formPinjam").addEventListener("submit", function(e) {
   e.preventDefault();
 
@@ -434,7 +444,6 @@ if (kuantitas === "satuan") {
   kodeDipinjam = Array.from(document.getElementById("pilihanBarangSelect").selectedOptions).map(opt => opt.value);
 }
 
-
   const dataPinjam = {
   kodeBarang: kodeDipinjam,
   namaPeminjam: nama,
@@ -442,7 +451,7 @@ if (kuantitas === "satuan") {
   tanggalPinjam: tanggal,
   batasPinjam: durasi,
   kuantitas: kuantitas,
-  status: "Dipinjam"
+  status: "Disetujui"
 };
 
   // Simpan ke Firebase di /peminjaman_barang
@@ -512,13 +521,22 @@ function tampilkanDetail(item) {
 
   document.getElementById("kondisi").innerText = item.kondisi || "-";
 
-  if (item.statuspinjam === "Dipinjam") {
-    document.getElementById("statuspinjam").innerText = "Dipinjam";
-    document.getElementById("statuspinjam").style.color = "red";
-  } else {
-    document.getElementById("statuspinjam").innerText = "Tersedia";
-    document.getElementById("statuspinjam").style.color = "green";
-  }
+  if (item.statuspinjam === "Disetujui" || item.statuspinjam === "Ditolak") {
+  document.getElementById("statuspinjamBaru").innerText = item.statuspinjam;
+  document.getElementById("namaPeminjamAktif").innerText = item.namaPeminjam || "-";
+
+  const tglPinjam = new Date(item.tanggal);
+  tglPinjam.setDate(tglPinjam.getDate() + parseInt(item.batasPinjam || 0));
+  const dd = String(tglPinjam.getDate()).padStart(2, '0');
+  const mm = String(tglPinjam.getMonth() + 1).padStart(2, '0');
+  const yyyy = tglPinjam.getFullYear();
+  document.getElementById("tglKembaliAktif").innerText = `${dd}-${mm}-${yyyy}`;
+
+  document.getElementById("blokPeminjaman").classList.remove("hidden");
+} else {
+  document.getElementById("blokPeminjaman").classList.add("hidden");
+}
+
     window.statusPinjamSekarang = item.statuspinjam;
     window.namaPeminjamAktif = item.namaPeminjam || "-";
     window.batasPinjamAktif = item.batasPinjam || "-";
