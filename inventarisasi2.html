@@ -220,6 +220,14 @@
   color: #1f2937;
 }
 
+  .kondisi-baru { color: #16a34a; font-weight: bold; }            /* hijau terang */
+  .kondisi-sangatbaik { color: #059669; font-weight: bold; }      /* hijau tua */
+  .kondisi-baik { color: #2563eb; font-weight: bold; }            /* biru */
+  .kondisi-cukup { color: #f59e0b; font-weight: bold; }           /* oranye */
+  .kondisi-perludiperbaiki { color: #f97316; font-weight: bold; } /* oranye kemerahan */
+  .kondisi-rusakringan { color: #dc2626; font-weight: bold; }     /* merah */
+  .kondisi-rusakberat { color: #4b5563; font-weight: bold; }      /* abu gelap */
+
   </style>
 </head>
 <body>
@@ -337,6 +345,10 @@
 <div class="form-group" id="pilihanBarangContainer" style="display: none;">
   <label>Barang yang serupa dengan <span id="prefixKode"></span></label>
   <select id="pilihanBarangSelect" multiple size="5" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #ccc;"></select>
+</div>
+<div style="margin-top:10px; display:flex; justify-content:space-between;">
+  <button type="button" class="btn" onclick="tutupFormPinjam()">BATAL</button>
+  <button type="submit" class="btn">KIRIM</button>
 </div>
     </form>
   </div>
@@ -519,7 +531,32 @@ function tampilkanDetail(item) {
   linkSpan.innerText = linkValue;
   linkSpan.href = (linkValue.startsWith("http") ? linkValue : "#");
 
-  document.getElementById("kondisi").innerText = item.kondisi || "-";
+  const kondisiEl = document.getElementById("kondisi");
+const kondisiNilai = (item.kondisi || "-").toLowerCase();
+
+let classKondisi = "";
+switch (kondisiNilai) {
+  case "Baru":
+    classKondisi = "kondisi-baru"; break;
+  case "Sangat Baik":
+    classKondisi = "kondisi-sangatbaik"; break;
+  case "Baik":
+    classKondisi = "kondisi-baik"; break;
+  case "Cukup":
+    classKondisi = "kondisi-cukup"; break;
+  case "Perlu Perbaikan":
+    classKondisi = "kondisi-perludiperbaiki"; break;
+  case "Rusak Ringan":
+    classKondisi = "kondisi-rusakringan"; break;
+  case "Rusak Berat":
+    classKondisi = "kondisi-rusakberat"; break;
+  default:
+    classKondisi = "";
+}
+
+kondisiEl.innerText = item.kondisi || "-";
+kondisiEl.className = classKondisi;
+
 
   if (item.statuspinjam === "Disetujui" || item.statuspinjam === "Ditolak") {
   document.getElementById("statuspinjamBaru").innerText = item.statuspinjam;
