@@ -294,7 +294,7 @@
     <span class="value" id="toko"></span>
   </div>
   <div class="info-blok">
-    <span class="label">Link</span>
+    <span class="label">Alamat</span>
     <span class="separator">:</span>
     <a id="link" href="#" target="_blank" class="value">-</a>
   </div>
@@ -518,23 +518,38 @@ function tampilkanDetail(item) {
   document.getElementById("toko").innerText = item.namaToko || "-";
 
   const linkSpan = document.getElementById("link");
-const linkValue = item.linkPembelian || item.alamatPembelian || "-";
 
-if (item.linkPembelian) {
+if (item.jenisToko === "online" && item.linkPembelian) {
   linkSpan.innerText = item.linkPembelian;
   linkSpan.href = item.linkPembelian;
-  linkSpan.classList.add("value"); // tetap link
-  linkSpan.classList.remove("no-underline");
+  linkSpan.style.textDecoration = "underline";
+  linkSpan.style.color = "#2563eb";
 } else {
-  // Offline, tampilkan alamat biasa
+  // Tampilkan alamat sebagai teks biasa
   linkSpan.innerText = item.alamatPembelian || "-";
-  linkSpan.href = "#";
-  linkSpan.classList.remove("value");
+  linkSpan.href = "#"; // jangan arahkan ke mana-mana
   linkSpan.style.textDecoration = "none";
-  linkSpan.style.color = "#1f2937"; // agar sama seperti teks biasa
+  linkSpan.style.color = "#1f2937"; // warna teks biasa
 }
 
-  document.getElementById("kondisi").innerText = item.kondisi || "-";
+  const kondisiText = (item.kondisi || "-").toLowerCase();
+const kondisiSpan = document.getElementById("kondisi");
+
+let warna = "black";
+switch (kondisiText) {
+  case "baik":
+    warna = "green"; break;
+  case "cukup baik":
+    warna = "goldenrod"; break;
+  case "rusak ringan":
+    warna = "orange"; break;
+  case "rusak berat":
+    warna = "red"; break;
+}
+
+kondisiSpan.innerText = kondisiText.toUpperCase();
+kondisiSpan.style.color = warna;
+
 
   if (item.statuspinjam === "Dipinjam") {
     document.getElementById("statuspinjam").innerText = "Dipinjam";
