@@ -297,6 +297,25 @@
     <span class="separator">:</span>
     <a id="link" href="#" target="_blank" class="value">-</a>
   </div>
+  
+  <h4>Informasi Peminjaman</h4>
+<div id="blokPeminjaman" style="display: none;">
+  <div class="info-blok">
+    <span class="label">Status</span>
+    <span class="separator">:</span>
+    <span class="value" id="statuspinjam"></span>
+  </div>
+  <div class="info-blok">
+    <span class="label">Nama Peminjam</span>
+    <span class="separator">:</span>
+    <span class="value" id="namaPeminjamData"></span>
+  </div>
+  <div class="info-blok">
+    <span class="label">Tgl Kembali</span>
+    <span class="separator">:</span>
+    <span class="value" id="tglTempo"></span>
+  </div>
+</div>
 </div>
 
 <div class="btns">
@@ -552,13 +571,32 @@ kondisiEl.style.textAlign = "left";              // jaga agar sejajar info lain
 kondisiEl.style.fontWeight = "600";              // samakan ketebalan info lainnya
 
 
-  if (item.statuspinjam === "Dipinjam") {
-    document.getElementById("statuspinjam").innerText = "Dipinjam";
-    document.getElementById("statuspinjam").style.color = "red";
-  } else {
-    document.getElementById("statuspinjam").innerText = "Tersedia";
-    document.getElementById("statuspinjam").style.color = "green";
-  }
+  const statusEl = document.getElementById("statuspinjam");
+const peminjamEl = document.getElementById("namaPeminjamData");
+const tempoEl = document.getElementById("tglTempo");
+const blokPeminjaman = document.getElementById("blokPeminjaman");
+
+if (item.statuspinjam === "Dipinjam") {
+  statusEl.innerText = "DIPINJAM";
+  statusEl.style.color = "red";
+  peminjamEl.innerText = item.namaPeminjam || "-";
+
+  const tglPinjam = new Date(item.tanggal);
+  tglPinjam.setDate(tglPinjam.getDate() + parseInt(item.batasPinjam || 0));
+  const dd = String(tglPinjam.getDate()).padStart(2, '0');
+  const mm = String(tglPinjam.getMonth() + 1).padStart(2, '0');
+  const yyyy = tglPinjam.getFullYear();
+  tempoEl.innerText = `${dd}-${mm}-${yyyy}`;
+
+  blokPeminjaman.style.display = "block";
+} else {
+  statusEl.innerText = "TERSEDIA";
+  statusEl.style.color = "green";
+  peminjamEl.innerText = "-";
+  tempoEl.innerText = "-";
+  blokPeminjaman.style.display = "none"; // disembunyikan jika tidak dipinjam
+}
+
     window.statusPinjamSekarang = item.statuspinjam;
     window.namaPeminjamAktif = item.namaPeminjam || "-";
     window.batasPinjamAktif = item.batasPinjam || "-";
