@@ -244,16 +244,10 @@
       <div class="barcode-box">
         <div id="kodeBarangText" class="kode-bold"></div>
         <canvas id="barcodeCanvas"></canvas>
-        <div class="status">
-  <div class="status-item">
-    <span class="status-label">KONDISI:</span>
-    <span id="kondisi" class="status-value" style="color:orange;">-</span>
-  </div>
   <div class="status-item">
     <span class="status-label">STATUS:</span>
     <span id="statuspinjam" class="status-value" style="color:green;">-</span>
   </div>
-</div>
     <div class="detail-barang">    	
   <h4 class="heading-top">Informasi Barang</h4>
   <div class="info-blok">
@@ -276,6 +270,11 @@
     <span class="separator">:</span>
     <span class="value" id="kategori"></span>
   </div>
+  <div class="info-blok">
+  <span class="label">Kondisi</span>
+  <span class="separator">:</span>
+  <span class="value" id="kondisi"></span>
+</div>
 
   <h4>Informasi Pembelian</h4>
   <div class="info-blok">
@@ -533,9 +532,9 @@ if (item.jenisToko === "online" && item.linkPembelian) {
 }
 
   const kondisiText = (item.kondisi || "-").toLowerCase();
-const kondisiSpan = document.getElementById("kondisi");
+const kondisiEl = document.getElementById("kondisi");
 
-let warna = "black";
+let warna = "#1f2937"; // fallback warna netral
 switch (kondisiText) {
   case "baik":
     warna = "green"; break;
@@ -547,8 +546,10 @@ switch (kondisiText) {
     warna = "red"; break;
 }
 
-kondisiSpan.innerText = kondisiText.toUpperCase();
-kondisiSpan.style.color = warna;
+kondisiEl.innerText = kondisiText.toUpperCase(); // huruf kapital
+kondisiEl.style.color = warna;                   // warna sesuai status
+kondisiEl.style.textAlign = "left";              // jaga agar sejajar info lain
+kondisiEl.style.fontWeight = "600";              // samakan ketebalan info lainnya
 
 
   if (item.statuspinjam === "Dipinjam") {
