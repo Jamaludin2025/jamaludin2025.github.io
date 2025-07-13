@@ -1,203 +1,1698 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Halaman Riwayat</title>
-  <style>
-    body {
-      font-family: sans-serif;
-      background: #f2f2f2;
-      padding: 20px;
-      font-size: 14px;
-    }
-    h2 {
-      text-align: center;
-    }
-    .entry {
-      background: white;
-      padding: 12px;
-      margin-bottom: 10px;
-      border-radius: 10px;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-      transition: opacity 0.5s ease-out, transform 0.5s ease-out;
-    }
-    .title-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-    .title-bar > div:first-child {
-      flex: 1;
-      font-size: 14px;
-      font-weight: bold;
-      word-break: break-word;
-    }
-    .lihat-btn {
-      color: #007BFF;
-      cursor: pointer;
-      border: none;
-      background: none;
-      font-weight: bold;
-      font-size: 12px;
-    }
-    .hapus-btn {
-      background-color: red;
-      color: white;
-      border: none;
-      padding: 4px 8px;
-      font-size: 12px;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 8px;
-      font-size: 13px;
-    }
-    th, td {
-      border: 1px solid #ccc;
-      padding: 6px;
-      text-align: center;
-    }
-    th {
-      background-color: #007BFF;
-      color: white;
-    }
-    .keterangan {
-      font-weight: bold;
-    }
-    .keterangan.LULUS { color: goldenrod; }
-    .keterangan.GAGAL,
-    .keterangan.KELUAR { color: red; }
-    .keterangan.KERJA { color: green; }
-    .catatan {
-      margin-top: 6px;
-      font-style: italic;
-      color: #555;
-      font-size: 13px;
-    }
-    .fade-out {
-      opacity: 0;
-      transform: translateY(-10px);
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perpustakaan Digital Impian (Gabungan)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
 
-    /* Toast Style */
-    .toast {
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(0,0,0,0.8);
-      color: #fff;
-      padding: 10px 20px;
-      border-radius: 8px;
-      font-size: 13px;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.4s ease;
-      z-index: 1000;
-    }
-    .toast.show {
-      opacity: 1;
-    }
-  </style>
+    <style>
+        /* CSS Umum */
+        :root {
+            --primary-color: #3498db; /* Biru cerah untuk user */
+            --admin-primary-color: #27ae60; /* Hijau untuk admin */
+            --secondary-color: #2c3e50;
+            --accent-color: #e74c3c;
+            --text-dark: #333;
+            --text-light: #f4f4f4;
+            --bg-light: #f9f9f9;
+            --bg-dark: #2980b9;
+            --border-color: #ddd;
+            --shadow-light: 0 4px 8px rgba(0, 0, 0, 0.1);
+            --shadow-medium: 0 8px 16px rgba(0, 0, 0, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background-color: var(--bg-light);
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px 0;
+        }
+
+        /* --- Header --- */
+        .main-header {
+            background-color: var(--secondary-color);
+            color: var(--text-light);
+            padding: 15px 0;
+            box-shadow: var(--shadow-light);
+        }
+
+        .main-header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .main-header .logo {
+            font-size: 1.8em;
+            font-weight: 700;
+            margin-right: 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .main-header .logo i {
+            margin-right: 10px;
+            color: var(--primary-color); /* Default user color */
+        }
+        
+        /* Admin specific header color */
+        .admin-dashboard .main-header .logo i {
+            color: var(--admin-primary-color);
+        }
+
+        .main-nav ul {
+            list-style: none;
+            display: flex;
+        }
+
+        .main-nav ul li a {
+            color: var(--text-light);
+            text-decoration: none;
+            padding: 10px 15px;
+            transition: background-color 0.3s ease;
+            border-radius: 5px;
+        }
+
+        .main-nav ul li a:hover,
+        .main-nav ul li a.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--primary-color); /* Default user color */
+        }
+        /* Admin specific nav hover color */
+        .admin-dashboard .main-nav ul li a:hover,
+        .admin-dashboard .main-nav ul li a.active {
+            color: var(--admin-primary-color);
+        }
+
+        .user-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: 600;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* Button styles for user */
+        .btn-login {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        .btn-login:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        .btn-register {
+            background-color: var(--accent-color);
+            color: white;
+        }
+        .btn-register:hover {
+            background-color: #c0392b;
+            transform: translateY(-2px);
+        }
+
+        .btn-logout {
+            background-color: #f39c12;
+            color: white;
+        }
+        .btn-logout:hover {
+            background-color: #e67e22;
+        }
+
+        /* Button styles for admin */
+        .admin-dashboard .btn-primary {
+            background-color: var(--admin-primary-color);
+            color: white;
+        }
+        .admin-dashboard .btn-primary:hover {
+            background-color: #2ecc71;
+            transform: translateY(-2px);
+        }
+
+        .admin-dashboard .btn-danger {
+            background-color: var(--accent-color);
+            color: white;
+        }
+        .admin-dashboard .btn-danger:hover {
+            background-color: #c0392b;
+            transform: translateY(-2px);
+        }
+
+        .admin-dashboard .btn-info {
+            background-color: #3498db;
+            color: white;
+        }
+        .admin-dashboard .btn-info:hover {
+            background-color: #2980b9;
+        }
+
+        .admin-dashboard .btn-warning {
+            background-color: #f39c12;
+            color: white;
+        }
+        .admin-dashboard .btn-warning:hover {
+            background-color: #e67e22;
+        }
+
+        .user-info {
+            color: var(--text-light);
+            margin-right: 10px;
+            font-size: 0.95em;
+        }
+
+        /* --- Main Content Sections (User) --- */
+        .main-content {
+            padding-top: 40px;
+            padding-bottom: 40px;
+        }
+
+        .hero-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(to right, var(--primary-color), var(--bg-dark));
+            color: var(--text-light);
+            padding: 60px 40px;
+            border-radius: 15px;
+            margin-bottom: 50px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: var(--shadow-medium);
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+        }
+
+        .hero-text {
+            flex: 1;
+            z-index: 1;
+        }
+
+        .hero-text h2 {
+            font-size: 3em;
+            margin-bottom: 15px;
+            line-height: 1.2;
+            font-weight: 700;
+        }
+
+        .hero-text p {
+            font-size: 1.1em;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+
+        .search-bar {
+            display: flex;
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            max-width: 500px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .search-bar input {
+            flex-grow: 1;
+            padding: 15px 20px;
+            border: none;
+            font-size: 1em;
+            outline: none;
+        }
+
+        .search-bar button {
+            background-color: var(--accent-color);
+            color: white;
+            padding: 15px 25px;
+            border: none;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s ease;
+        }
+
+        .search-bar button:hover {
+            background-color: #c0392b;
+        }
+
+        .hero-image {
+            flex-shrink: 0;
+            margin-left: 40px;
+            z-index: 1;
+        }
+
+        .hero-image img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: var(--shadow-medium);
+            transform: rotate(5deg) scale(1.05);
+            transition: transform 0.5s ease;
+        }
+
+        .hero-image img:hover {
+            transform: rotate(0deg) scale(1.1);
+        }
+
+        /* Featured Books */
+        .featured-books {
+            margin-bottom: 50px;
+        }
+
+        .featured-books h3, .about-us-mini h3 {
+            font-size: 2em;
+            text-align: center;
+            margin-bottom: 30px;
+            color: var(--secondary-color);
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .featured-books h3::after, .about-us-mini h3::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            bottom: 0;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 4px;
+            background-color: var(--primary-color); /* User color */
+            border-radius: 2px;
+        }
+
+        .book-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+        }
+
+        .book-card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: var(--shadow-light);
+            overflow: hidden;
+            text-align: center;
+            padding: 20px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .book-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .book-card img {
+            max-width: 100%;
+            height: 250px;
+            object-fit: cover;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .book-card h4 {
+            font-size: 1.1em;
+            margin-bottom: 5px;
+            color: var(--secondary-color);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .book-card p {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .book-card .btn-borrow {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+            display: block;
+            margin-top: auto;
+        }
+
+        .book-card .btn-borrow:hover {
+            background-color: #2980b9;
+        }
+
+        .book-card .btn-borrow.disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        /* About Us Mini */
+        .about-us-mini {
+            margin-bottom: 50px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .feature-item {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: var(--shadow-light);
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .feature-item:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .feature-item i {
+            font-size: 3em;
+            color: var(--primary-color); /* User color */
+            margin-bottom: 15px;
+        }
+
+        .feature-item h4 {
+            font-size: 1.3em;
+            color: var(--secondary-color);
+            margin-bottom: 10px;
+        }
+
+        .feature-item p {
+            font-size: 0.95em;
+            color: #555;
+        }
+
+        /* --- Footer --- */
+        .main-footer {
+            background-color: var(--secondary-color);
+            color: var(--text-light);
+            padding: 30px 0;
+            text-align: center;
+            font-size: 0.9em;
+        }
+
+        .main-footer .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .main-footer p {
+            margin: 0;
+        }
+
+        .social-links a {
+            color: var(--text-light);
+            font-size: 1.5em;
+            margin-left: 15px;
+            transition: color 0.3s ease;
+        }
+
+        .social-links a:hover {
+            color: var(--primary-color); /* User color */
+        }
+        /* Admin specific social links hover color */
+        .admin-dashboard .social-links a:hover {
+            color: var(--admin-primary-color);
+        }
+
+        /* --- Modal Styles --- */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1000; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: var(--shadow-medium);
+            width: 90%;
+            max-width: 400px;
+            position: relative;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .close-button {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            cursor: pointer;
+        }
+
+        .close-button:hover,
+        .close-button:focus {
+            color: #333;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .modal-content h2 {
+            text-align: center;
+            color: var(--secondary-color);
+            margin-bottom: 25px;
+            font-size: 1.8em;
+        }
+
+        .modal-content form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .modal-content input[type="text"],
+        .modal-content input[type="email"],
+        .modal-content input[type="password"] {
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            font-size: 1em;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .modal-content input[type="text"]:focus,
+        .modal-content input[type="email"]:focus,
+        .modal-content input[type="password"]:focus {
+            border-color: var(--primary-color);
+        }
+        /* Admin specific modal input focus */
+        .admin-dashboard .modal-content input[type="text"]:focus,
+        .admin-dashboard .modal-content input[type="email"]:focus,
+        .admin-dashboard .modal-content input[type="password"]:focus {
+            border-color: var(--admin-primary-color);
+        }
+
+        .modal-content button[type="submit"] {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+        }
+
+        .modal-content button[type="submit"]:hover {
+            background-color: #2980b9;
+        }
+        /* Admin specific modal submit button */
+        .admin-dashboard .modal-content button[type="submit"] {
+            background-color: var(--admin-primary-color);
+        }
+        .admin-dashboard .modal-content button[type="submit"]:hover {
+            background-color: #2ecc71;
+        }
+
+        .modal-content p {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 0.9em;
+        }
+
+        .modal-content p a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .modal-content p a:hover {
+            text-decoration: underline;
+        }
+
+        #error-message {
+            color: var(--accent-color);
+            text-align: center;
+            margin-top: 10px;
+            font-size: 0.9em;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- Admin Dashboard Specific Styles --- */
+        .admin-dashboard {
+            /* Styles for admin sections */
+            /* Background/colors can be overridden if needed */
+        }
+        
+        .admin-dashboard section {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: var(--shadow-light);
+            margin-bottom: 30px;
+        }
+
+        .admin-dashboard h2 {
+            font-size: 2em;
+            color: var(--secondary-color);
+            margin-bottom: 25px;
+            text-align: center;
+            position: relative;
+            padding-bottom: 10px;
+        }
+        .admin-dashboard h2::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            bottom: 0;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 4px;
+            background-color: var(--admin-primary-color); /* Admin color */
+            border-radius: 2px;
+        }
+
+        .admin-dashboard form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+        }
+
+        .admin-dashboard form label {
+            font-weight: 600;
+            color: var(--secondary-color);
+        }
+
+        .admin-dashboard form input[type="text"],
+        .admin-dashboard form input[type="email"],
+        .admin-dashboard form input[type="password"],
+        .admin-dashboard form input[type="url"],
+        .admin-dashboard form textarea {
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            font-size: 1em;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .admin-dashboard form input:focus,
+        .admin-dashboard form textarea:focus {
+            border-color: var(--admin-primary-color);
+        }
+
+        .admin-dashboard form button[type="submit"] {
+            background-color: var(--admin-primary-color);
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+        }
+
+        .admin-dashboard form button[type="submit"]:hover {
+            background-color: #2ecc71;
+        }
+
+        /* Table Styles (Admin) */
+        .admin-dashboard table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .admin-dashboard table th, .admin-dashboard table td {
+            border: 1px solid #eee;
+            padding: 12px 15px;
+            text-align: left;
+        }
+
+        .admin-dashboard table th {
+            background-color: var(--admin-primary-color);
+            color: white;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.9em;
+        }
+
+        .admin-dashboard table tr:nth-child(even) {
+            background-color: #f8f8f8;
+        }
+
+        .admin-dashboard table tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .admin-dashboard table td img {
+            width: 60px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 3px;
+        }
+
+        .admin-dashboard .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .admin-dashboard .action-buttons .btn {
+            padding: 6px 10px;
+            font-size: 0.85em;
+        }
+
+
+        /* --- Responsiveness --- */
+        @media (max-width: 992px) {
+            .main-header .container {
+                flex-direction: column;
+                gap: 15px;
+            }
+            .main-nav ul {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            .main-nav ul li a {
+                padding: 8px 12px;
+            }
+            .user-actions {
+                margin-top: 10px;
+            }
+
+            .hero-section {
+                flex-direction: column;
+                text-align: center;
+                padding: 40px 20px;
+            }
+            .hero-text h2 {
+                font-size: 2.2em;
+            }
+            .hero-image {
+                margin-left: 0;
+                margin-top: 30px;
+            }
+            .hero-image img {
+                max-width: 80%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-header .logo {
+                font-size: 1.5em;
+            }
+            .main-nav ul {
+                flex-direction: column;
+                align-items: center;
+                gap: 5px;
+            }
+            .main-nav ul li a {
+                padding: 5px 10px;
+            }
+
+            .hero-text h2 {
+                font-size: 1.8em;
+            }
+            .hero-text p {
+                font-size: 1em;
+            }
+            .search-bar {
+                flex-direction: column;
+            }
+            .search-bar button {
+                width: 100%;
+                padding: 12px;
+            }
+
+            .book-grid, .features-grid {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            }
+
+            .main-footer .container {
+                flex-direction: column;
+                gap: 15px;
+            }
+            .social-links {
+                margin-top: 10px;
+            }
+
+            /* Admin table responsiveness */
+            .admin-dashboard table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+            .admin-dashboard table thead, .admin-dashboard table tbody, .admin-dashboard table th, .admin-dashboard table td, .admin-dashboard table tr {
+                display: block;
+            }
+            .admin-dashboard table thead tr {
+                position: absolute;
+                top: -9999px;
+                left: -9999px;
+            }
+            .admin-dashboard table tr {
+                border: 1px solid #eee;
+                margin-bottom: 10px;
+            }
+            .admin-dashboard table td {
+                border: none;
+                border-bottom: 1px solid #eee;
+                position: relative;
+                padding-left: 50%;
+                text-align: right;
+            }
+            .admin-dashboard table td:before {
+                position: absolute;
+                top: 6px;
+                left: 6px;
+                width: 45%;
+                padding-right: 10px;
+                white-space: nowrap;
+                text-align: left;
+                font-weight: 600;
+                color: var(--secondary-color);
+            }
+            /* Labeling the data cells for admin tables */
+            .admin-dashboard #booksTable td:nth-of-type(1):before { content: "Cover"; }
+            .admin-dashboard #booksTable td:nth-of-type(2):before { content: "Judul"; }
+            .admin-dashboard #booksTable td:nth-of-type(3):before { content: "Penulis"; }
+            .admin-dashboard #booksTable td:nth-of-type(4):before { content: "Deskripsi"; }
+            .admin-dashboard #booksTable td:nth-of-type(5):before { content: "Aksi"; }
+
+            .admin-dashboard #borrowedBooksTable td:nth-of-type(1):before { content: "Cover"; }
+            .admin-dashboard #borrowedBooksTable td:nth-of-type(2):before { content: "Judul"; }
+            .admin-dashboard #borrowedBooksTable td:nth-of-type(3):before { content: "Penulis"; }
+            .admin-dashboard #borrowedBooksTable td:nth-of-type(4):before { content: "Dipinjam Oleh"; }
+            .admin-dashboard #borrowedBooksTable td:nth-of-type(5):before { content: "Tanggal Pinjam"; }
+            .admin-dashboard #borrowedBooksTable td:nth-of-type(6):before { content: "Aksi"; }
+        }
+
+        @media (max-width: 480px) {
+            .book-grid, .features-grid {
+                grid-template-columns: 1fr;
+            }
+            .hero-image img {
+                max-width: 100%;
+            }
+        }
+        /* CSS Berakhir Di Sini */
+    </style>
 </head>
 <body>
-  <h2>Riwayat Seleksi</h2>
-  <div id="riwayatList"></div>
-
-  <div id="toast" class="toast"></div>
-
-  <audio id="clickSound" src="https://res.cloudinary.com/dz4w1sqiv/video/upload/v1748957534/Mouse_Click_-_Sound_Effect_HD_zimn5u.mp4" preload="auto"></audio>
-
-  <script>
-    const data = JSON.parse(localStorage.getItem('riwayatData')) || {};
-    const container = document.getElementById('riwayatList');
-    const clickSound = document.getElementById('clickSound');
-
-    function playClick() {
-      clickSound.currentTime = 0;
-      clickSound.play();
-    }
-
-    function showToast(message) {
-      const toast = document.getElementById('toast');
-      toast.textContent = message;
-      toast.classList.add('show');
-      setTimeout(() => toast.classList.remove('show'), 2500);
-    }
-
-    let index = 1;
-    Object.keys(data).forEach(key => {
-      const item = data[key];
-      const wrapper = document.createElement('div');
-      wrapper.className = 'entry';
-      const detailId = 'detail-' + index;
-
-      wrapper.innerHTML = `
-        <div class="title-bar">
-          <div>${index}. ${item.perusahaan}</div>
-          <div>
-            <button class="lihat-btn" onclick="toggleDetail('${detailId}'); playClick();">Lihat Selengkapnya</button>
-            <button class="hapus-btn" onclick="hapusRiwayat('${key}', this);">Hapus</button>
-          </div>
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2>Masuk ke Akun Anda</h2>
+            <form id="loginForm">
+                <label for="loginEmail">Email:</label>
+                <input type="email" id="loginEmail" placeholder="Email" required>
+                <label for="loginPassword">Password:</label>
+                <input type="password" id="loginPassword" placeholder="Password" required>
+                <button type="submit">Masuk</button>
+                <p id="loginErrorMessage" style="color: var(--accent-color);"></p>
+                <p>Belum punya akun? <a href="#" id="switchToRegister">Daftar di sini</a></p>
+            </form>
         </div>
-        <div id="${detailId}" style="display:none; margin-top:8px;">
-          <div><strong>Info Loker:</strong> ${item.loker}</div>
-          <div><strong>Perusahaan:</strong> ${item.perusahaan}</div>
-          <table>
-            <thead>
-              <tr>
-                <th>Tanggal</th>
-                <th>Tahapan</th>
-                <th>Tempat</th>
-                <th>Keterangan</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${item.tahapan.map(row => `
-                <tr>
-                  <td>${row.tanggal}</td>
-                  <td>${row.tahapan}</td>
-                  <td>${row.tempat}</td>
-                  <td class="keterangan ${row.keterangan.toUpperCase()}">${row.keterangan}</td>
-                </tr>`).join('')}
-            </tbody>
-          </table>
-          ${item.catatan ? `<div class="catatan">Catatan: ${item.catatan}</div>` : ''}
+    </div>
+
+    <div id="registerModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2>Daftar Akun Baru</h2>
+            <form id="registerForm">
+                <label for="registerEmail">Email:</label>
+                <input type="email" id="registerEmail" placeholder="Email" required>
+                <label for="registerPassword">Password:</label>
+                <input type="password" id="registerPassword" placeholder="Password" required>
+                <button type="submit">Daftar</button>
+                <p id="registerErrorMessage" style="color: var(--accent-color);"></p>
+                <p>Sudah punya akun? <a href="#" id="switchToLogin">Masuk di sini</a></p>
+            </form>
         </div>
-      `;
-      container.appendChild(wrapper);
-      index++;
-    });
+    </div>
 
-    function toggleDetail(id) {
-      const el = document.getElementById(id);
-      el.style.display = el.style.display === 'none' ? 'block' : 'none';
-    }
+    <div id="userDashboard">
+        <header class="main-header">
+            <div class="container">
+                <h1 class="logo"><i class="fas fa-book-reader"></i> Perpustakaan Digital</h1>
+                <nav class="main-nav">
+                    <ul>
+                        <li><a href="#" class="active">Beranda</a></li>
+                        <li><a href="#">Katalog</a></li>
+                        <li><a href="#">Tentang Kami</a></li>
+                        <li><a href="#">Kontak</a></li>
+                    </ul>
+                </nav>
+                <div class="user-actions">
+                    <span id="userDisplayName" class="user-info" style="display: none;"></span>
+                    <button class="btn btn-login" id="loginButton"><i class="fas fa-sign-in-alt"></i> Masuk</button>
+                    <button class="btn btn-register" id="registerButton"><i class="fas fa-user-plus"></i> Daftar</button>
+                    <button class="btn btn-logout" id="logoutButton" style="display: none;"><i class="fas fa-sign-out-alt"></i> Keluar</button>
+                </div>
+            </div>
+        </header>
 
-    function hapusRiwayat(key, button) {
-      playClick();
-      if (confirm("Yakin ingin menghapus data ini?")) {
-        if (confirm("Data akan dihapus permanen. Lanjutkan?")) {
-          const data = JSON.parse(localStorage.getItem('riwayatData')) || {};
-          delete data[key];
-          localStorage.setItem('riwayatData', JSON.stringify(data));
-          const entry = button.closest('.entry');
-          entry.classList.add('fade-out');
-          setTimeout(() => entry.remove(), 500);
-          showToast("✅ Data berhasil dihapus");
-        } else {
-          showToast("❌ Penghapusan dibatalkan");
+        <main class="main-content container">
+            <section class="hero-section">
+                <div class="hero-text">
+                    <h2>Jelajahi Dunia Pengetahuan di Genggamanmu</h2>
+                    <p>Temukan ribuan buku dari berbagai genre. Pinjam, baca, dan pelajari hal baru setiap hari.</p>
+                    <div class="search-bar">
+                        <input type="text" id="searchInput" placeholder="Cari judul, penulis, atau ISBN...">
+                        <button id="searchButton"><i class="fas fa-search"></i> Cari</button>
+                    </div>
+                </div>
+                <div class="hero-image">
+                    <img src="https://via.placeholder.com/400x300/e0e0e0/ffffff?text=Ilustrasi+Buku" alt="Ilustrasi Buku Perpustakaan">
+                </div>
+            </section>
+
+            <section class="featured-books">
+                <h3>Buku Pilihan Kami</h3>
+                <div class="book-grid" id="bookGrid">
+                    </div>
+            </section>
+
+            <section class="about-us-mini">
+                <h3>Mengapa Memilih Kami?</h3>
+                <div class="features-grid">
+                    <div class="feature-item">
+                        <i class="fas fa-book-open"></i>
+                        <h4>Koleksi Luas</h4>
+                        <p>Ribuan judul buku dari berbagai kategori dan penulis terkenal.</p>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-mobile-alt"></i>
+                        <h4>Akses Mudah</h4>
+                        <p>Pinjam dan baca kapan saja, di mana saja dari perangkat favoritmu.</p>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-hand-holding-heart"></i>
+                        <h4>Pengalaman Terbaik</h4>
+                        <p>Antarmuka yang intuitif dan fitur yang memudahkanmu.</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="main-footer">
+            <div class="container">
+                <p>&copy; 2025 Perpustakaan Digital Impian. Hak Cipta Dilindungi.</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+        </footer>
+    </div> <div id="adminDashboard" style="display: none;">
+        <header class="main-header">
+            <div class="container">
+                <h1 class="logo"><i class="fas fa-tools"></i> Admin Panel</h1>
+                <nav class="main-nav">
+                    <ul>
+                        <li><a href="#" class="active" id="adminNavManageBooks">Manajemen Buku</a></li>
+                        <li><a href="#" id="adminNavBorrowedBooks">Buku Dipinjam</a></li>
+                    </ul>
+                </nav>
+                <div class="user-actions">
+                    <span id="adminDisplayName" class="user-info"></span>
+                    <button class="btn btn-warning" id="adminLogoutButton"><i class="fas fa-sign-out-alt"></i> Keluar</button>
+                </div>
+            </div>
+        </header>
+
+        <main class="main-content container">
+            <section id="bookManagementSection" class="admin-section">
+                <h2>Manajemen Buku</h2>
+                <form id="bookForm">
+                    <input type="hidden" id="bookId">
+                    <label for="bookTitle">Judul Buku:</label>
+                    <input type="text" id="bookTitle" placeholder="Judul Buku" required>
+
+                    <label for="bookAuthor">Penulis:</label>
+                    <input type="text" id="bookAuthor" placeholder="Penulis" required>
+
+                    <label for="bookCover">URL Cover (opsional):</label>
+                    <input type="url" id="bookCover" placeholder="https://example.com/cover.jpg">
+
+                    <label for="bookDescription">Deskripsi (opsional):</label>
+                    <textarea id="bookDescription" placeholder="Deskripsi singkat buku" rows="3"></textarea>
+
+                    <button type="submit" class="btn btn-primary" id="submitBookButton">Tambah Buku</button>
+                    <button type="button" class="btn btn-info" id="cancelEditButton" style="display: none;">Batal Edit</button>
+                </form>
+
+                <h3>Daftar Buku</h3>
+                <table id="booksTable">
+                    <thead>
+                        <tr>
+                            <th>Cover</th>
+                            <th>Judul</th>
+                            <th>Penulis</th>
+                            <th>Deskripsi</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        </tbody>
+                </table>
+            </section>
+
+            <section id="borrowedBooksSection" class="admin-section" style="display: none;">
+                <h2>Buku yang Sedang Dipinjam</h2>
+                <table id="borrowedBooksTable">
+                    <thead>
+                        <tr>
+                            <th>Cover</th>
+                            <th>Judul</th>
+                            <th>Penulis</th>
+                            <th>Dipinjam Oleh</th>
+                            <th>Tanggal Pinjam</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        </tbody>
+                </table>
+            </section>
+        </main>
+
+        <footer class="main-footer">
+            <div class="container">
+                <p>&copy; 2025 Admin Perpustakaan Digital. Hak Cipta Dilindungi.</p>
+            </div>
+        </footer>
+    </div> <script>
+        // JavaScript Dimulai Di Sini
+        // Konfigurasi Firebase Anda
+        const firebaseConfig = {
+            apiKey: "AIzaSyASXJiNqbekENXpk7C5U5XjE6gImfNUBwg",
+            authDomain: "pustakapribadi-25.firebaseapp.com",
+            projectId: "pustakapribadi-25",
+            storageBucket: "pustakapribadi-25.firebasestorage.app",
+            messagingSenderId: "828550020946",
+            appId: "1:828550020946:web:65322f2092d1927c43c48b"
+        };
+
+        // Inisialisasi Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        const booksCollection = db.collection('books');
+        const usersCollection = db.collection('users');
+
+        // --- Elemen UI (Global) ---
+        const userDashboard = document.getElementById('userDashboard');
+        const adminDashboard = document.getElementById('adminDashboard');
+
+        const loginModal = document.getElementById('loginModal');
+        const registerModal = document.getElementById('registerModal');
+        const closeButtons = document.querySelectorAll('.close-button'); // Added this
+        const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+        const loginErrorMessage = document.getElementById('loginErrorMessage');
+        const registerErrorMessage = document.getElementById('registerErrorMessage');
+        const switchToRegisterLink = document.getElementById('switchToRegister');
+        const switchToLoginLink = document.getElementById('switchToLogin');
+
+        let currentUser = null; // Menyimpan objek pengguna yang sedang login
+        let currentUserRole = 'guest'; // Menyimpan peran pengguna (guest, user, admin)
+
+        // --- Elemen UI (User Dashboard) ---
+        const loginButton = document.getElementById('loginButton');
+        const registerButton = document.getElementById('registerButton');
+        const logoutButton = document.getElementById('logoutButton');
+        const userDisplayName = document.getElementById('userDisplayName');
+        const bookGrid = document.getElementById('bookGrid');
+        const searchInput = document.getElementById('searchInput');
+        const searchButton = document.getElementById('searchButton');
+
+        // --- Elemen UI (Admin Dashboard) ---
+        const adminDisplayName = document.getElementById('adminDisplayName');
+        const adminLogoutButton = document.getElementById('adminLogoutButton');
+        const adminNavManageBooks = document.getElementById('adminNavManageBooks');
+        const adminNavBorrowedBooks = document.getElementById('adminNavBorrowedBooks');
+        const bookManagementSection = document.getElementById('bookManagementSection');
+        const borrowedBooksSection = document.getElementById('borrowedBooksSection');
+
+        const bookForm = document.getElementById('bookForm');
+        const bookIdInput = document.getElementById('bookId');
+        const bookTitleInput = document.getElementById('bookTitle');
+        const bookAuthorInput = document.getElementById('bookAuthor');
+        const bookCoverInput = document='url' id="bookCover" placeholder="https://example.com/cover.jpg">
+
+                    <label for="bookDescription">Deskripsi (opsional):</label>
+                    <textarea id="bookDescription" placeholder="Deskripsi singkat buku" rows="3"></textarea>
+
+                    <button type="submit" class="btn btn-primary" id="submitBookButton">Tambah Buku</button>
+                    <button type="button" class="btn btn-info" id="cancelEditButton" style="display: none;">Batal Edit</button>
+                </form>
+
+                <h3>Daftar Buku</h3>
+                <table id="booksTable">
+                    <thead>
+                        <tr>
+                            <th>Cover</th>
+                            <th>Judul</th>
+                            <th>Penulis</th>
+                            <th>Deskripsi</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        </tbody>
+                </table>
+            </section>
+
+            <section id="borrowedBooksSection" class="admin-section" style="display: none;">
+                <h2>Buku yang Sedang Dipinjam</h2>
+                <table id="borrowedBooksTable">
+                    <thead>
+                        <tr>
+                            <th>Cover</th>
+                            <th>Judul</th>
+                            <th>Penulis</th>
+                            <th>Dipinjam Oleh</th>
+                            <th>Tanggal Pinjam</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        </tbody>
+                </table>
+            </section>
+        </main>
+
+        <footer class="main-footer">
+            <div class="container">
+                <p>&copy; 2025 Admin Perpustakaan Digital. Hak Cipta Dilindungi.</p>
+            </div>
+        </footer>
+    </div> <script>
+        // JavaScript Dimulai Di Sini
+        // Konfigurasi Firebase Anda (SUDAH DIUBAH SESUAI PERMINTAAN ANDA)
+        const firebaseConfig = {
+            apiKey: "AIzaSyASXJiNqbekENXpk7C5U5XjE6gImfNUBwg",
+            authDomain: "pustakapribadi-25.firebaseapp.com",
+            projectId: "pustakapribadi-25",
+            storageBucket: "pustakapribadi-25.firebasestorage.app",
+            messagingSenderId: "828550020946",
+            appId: "1:828550020946:web:65322f2092d1927c43c48b"
+        };
+
+        // Inisialisasi Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        const booksCollection = db.collection('books');
+        const usersCollection = db.collection('users');
+
+        // --- Elemen UI (Global) ---
+        const userDashboard = document.getElementById('userDashboard');
+        const adminDashboard = document.getElementById('adminDashboard');
+
+        const loginModal = document.getElementById('loginModal');
+        const registerModal = document.getElementById('registerModal');
+        const closeButtons = document.querySelectorAll('.close-button'); 
+        const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+        const loginErrorMessage = document.getElementById('loginErrorMessage');
+        const registerErrorMessage = document.getElementById('registerErrorMessage');
+        const switchToRegisterLink = document.getElementById('switchToRegister');
+        const switchToLoginLink = document.getElementById('switchToLogin');
+
+        let currentUser = null; // Menyimpan objek pengguna yang sedang login
+        let currentUserRole = 'guest'; // Menyimpan peran pengguna (guest, user, admin)
+
+        // --- Elemen UI (User Dashboard) ---
+        const loginButton = document.getElementById('loginButton');
+        const registerButton = document.getElementById('registerButton');
+        const logoutButton = document.getElementById('logoutButton');
+        const userDisplayName = document.getElementById('userDisplayName');
+        const bookGrid = document.getElementById('bookGrid');
+        const searchInput = document.getElementById('searchInput');
+        const searchButton = document.getElementById('searchButton');
+
+        // --- Elemen UI (Admin Dashboard) ---
+        const adminDisplayName = document.getElementById('adminDisplayName');
+        const adminLogoutButton = document.getElementById('adminLogoutButton');
+        const adminNavManageBooks = document.getElementById('adminNavManageBooks');
+        const adminNavBorrowedBooks = document.getElementById('adminNavBorrowedBooks');
+        const bookManagementSection = document.getElementById('bookManagementSection');
+        const borrowedBooksSection = document.getElementById('borrowedBooksSection');
+
+        const bookForm = document.getElementById('bookForm');
+        const bookIdInput = document.getElementById('bookId');
+        const bookTitleInput = document.getElementById('bookTitle');
+        const bookAuthorInput = document.getElementById('bookAuthor');
+        const bookCoverInput = document.getElementById('bookCover'); // Corrected typo here
+        const bookDescriptionInput = document.getElementById('bookDescription');
+        const submitBookButton = document.getElementById('submitBookButton');
+        const cancelEditButton = document.getElementById('cancelEditButton');
+        const booksTableBody = document.querySelector('#booksTable tbody');
+        const borrowedBooksTableBody = document.querySelector('#borrowedBooksTable tbody');
+
+        const ADMIN_EMAIL = 'asep4211p@gmail.com'; // DIUBAH SESUAI PERMINTAAN ANDA
+
+        // --- MODAL UTILITIES ---
+        // These were likely commented out or somehow missed in the previous version
+        loginButton.addEventListener('click', () => {
+            loginModal.style.display = 'flex';
+            loginErrorMessage.textContent = '';
+            registerModal.style.display = 'none'; // Ensure register modal is hidden
+        });
+
+        registerButton.addEventListener('click', () => {
+            registerModal.style.display = 'flex';
+            registerErrorMessage.textContent = '';
+            loginModal.style.display = 'none'; // Ensure login modal is hidden
+        });
+
+        closeButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                loginModal.style.display = 'none';
+                registerModal.style.display = 'none';
+            });
+        });
+
+        window.addEventListener('click', (event) => {
+            if (event.target == loginModal) {
+                loginModal.style.display = 'none';
+            }
+            if (event.target == registerModal) {
+                registerModal.style.display = 'none';
+            }
+        });
+
+        switchToRegisterLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            loginModal.style.display = 'none';
+            registerModal.style.display = 'flex';
+            registerForm.reset(); // Clear form on switch
+            registerErrorMessage.textContent = '';
+        });
+
+        switchToLoginLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            registerModal.style.display = 'none';
+            loginModal.style.display = 'flex';
+            loginForm.reset(); // Clear form on switch
+            loginErrorMessage.textContent = '';
+        });
+
+        // --- AUTHENTICATION FUNCTIONS ---
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = loginForm.loginEmail.value;
+            const password = loginForm.loginPassword.value;
+
+            try {
+                await auth.signInWithEmailAndPassword(email, password);
+                loginModal.style.display = 'none';
+                alert('Login berhasil!');
+                // onAuthStateChanged akan menangani tampilan dashboard
+            } catch (error) {
+                console.error("Error login:", error.code, error.message);
+                loginErrorMessage.textContent = `Login gagal: ${error.message}`;
+            }
+        });
+
+        registerForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = registerForm.registerEmail.value;
+            const password = registerForm.registerPassword.value;
+
+            try {
+                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                const user = userCredential.user;
+
+                // Tentukan peran saat pendaftaran
+                const role = (email === ADMIN_EMAIL) ? 'admin' : 'user';
+
+                await usersCollection.doc(user.uid).set({
+                    email: user.email,
+                    registeredAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    role: role, // Simpan peran di Firestore
+                    borrowedBooks: []
+                });
+
+                registerModal.style.display = 'none';
+                alert('Pendaftaran berhasil! Selamat datang.');
+                // onAuthStateChanged akan menangani tampilan dashboard
+            } catch (error) {
+                console.error("Error pendaftaran:", error.code, error.message);
+                registerErrorMessage.textContent = `Pendaftaran gagal: ${error.message}`;
+            }
+        });
+
+        logoutButton.addEventListener('click', async () => {
+            try {
+                await auth.signOut();
+                alert('Anda telah berhasil keluar.');
+                // onAuthStateChanged akan menangani tampilan dashboard
+            } catch (error) {
+                console.error("Error logout:", error);
+                alert('Gagal keluar: ' + error.message);
+            }
+        });
+
+        adminLogoutButton.addEventListener('click', async () => {
+            // Ini sama dengan logoutButton karena auth.signOut() mengakhiri sesi global
+            try {
+                await auth.signOut();
+                alert('Anda telah keluar dari panel admin.');
+                // onAuthStateChanged akan menangani tampilan dashboard
+            } catch (error) {
+                console.error("Error admin logout:", error);
+                alert('Gagal keluar: ' + error.message);
+            }
+        });
+
+        // --- AUTH STATE CHANGE LISTENER (Kunci Penentuan Dashboard) ---
+        auth.onAuthStateChanged(async (user) => {
+            currentUser = user; // Update variabel global currentUser
+
+            if (user) {
+                // Pengguna sedang login, ambil peran mereka dari Firestore
+                try {
+                    const userDoc = await usersCollection.doc(user.uid).get();
+                    if (userDoc.exists) {
+                        currentUserRole = userDoc.data().role || 'user'; // Default ke 'user' jika tidak ada peran
+                    } else {
+                        // Jika data user tidak ada di Firestore (misal, user lama yang login lagi sebelum implementasi role)
+                        // Buat entri baru dengan peran default 'user'
+                        await usersCollection.doc(user.uid).set({
+                            email: user.email,
+                            registeredAt: firebase.firestore.FieldValue.serverTimestamp(),
+                            role: 'user',
+                            borrowedBooks: []
+                        }, { merge: true }); // Gunakan merge agar tidak menimpa jika sudah ada sebagian data
+                        currentUserRole = 'user';
+                    }
+                } catch (error) {
+                    console.error("Error getting user role:", error);
+                    currentUserRole = 'user'; // Fallback to user role on error
+                }
+
+                // Tampilkan dashboard sesuai peran
+                if (currentUserRole === 'admin') {
+                    userDashboard.style.display = 'none';
+                    adminDashboard.style.display = 'block';
+                    adminDisplayName.textContent = `Halo, Admin (${user.email})`;
+                    fetchAndDisplayBooksAdmin();
+                    fetchAndDisplayBorrowedBooks();
+                } else {
+                    // Default ke user dashboard
+                    adminDashboard.style.display = 'none';
+                    userDashboard.style.display = 'block';
+                    userDisplayName.textContent = `Halo, ${user.email}`;
+                    userDisplayName.style.display = 'inline';
+                    loginButton.style.display = 'none';
+                    registerButton.style.display = 'none';
+                    logoutButton.style.display = 'inline';
+                    fetchAndDisplayBooksUser();
+                }
+            } else {
+                // Pengguna tidak login (guest)
+                currentUserRole = 'guest';
+                adminDashboard.style.display = 'none';
+                userDashboard.style.display = 'block';
+                userDisplayName.style.display = 'none';
+                loginButton.style.display = 'inline';
+                registerButton.style.display = 'inline';
+                logoutButton.style.display = 'none';
+                fetchAndDisplayBooksUser(); // Tampilkan buku untuk guest
+            }
+        });
+
+        // --- USER DASHBOARD FUNCTIONS ---
+        async function fetchAndDisplayBooksUser(searchTerm = '') {
+            bookGrid.innerHTML = '<p style="text-align: center; grid-column: 1 / -1; color: #555;">Memuat buku...</p>';
+            try {
+                let querySnapshot = await booksCollection.orderBy('title').get();
+                let books = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+                if (searchTerm) {
+                    const lowerCaseSearchTerm = searchTerm.toLowerCase();
+                    books = books.filter(book =>
+                        book.title.toLowerCase().includes(lowerCaseSearchTerm) ||
+                        book.author.toLowerCase().includes(lowerCaseSearchTerm) ||
+                        (book.description && book.description.toLowerCase().includes(lowerCaseSearchTerm))
+                    );
+                }
+
+                if (books.length === 0) {
+                    bookGrid.innerHTML = '<p style="text-align: center; grid-column: 1 / -1; color: #555;">Tidak ada buku ditemukan.</p>';
+                    return;
+                }
+
+                bookGrid.innerHTML = '';
+
+                books.forEach(book => {
+                    const bookCard = document.createElement('div');
+                    bookCard.classList.add('book-card');
+
+                    const isBorrowed = book.borrowedBy && book.borrowedBy !== '';
+                    const isBorrowedByCurrentUser = currentUser && book.borrowedBy === currentUser.uid;
+                    const buttonText = isBorrowedByCurrentUser ? 'Sudah Dipinjam' : (isBorrowed ? 'Tidak Tersedia' : 'Pinjam Buku');
+                    const buttonClass = isBorrowed ? 'btn-borrow disabled' : 'btn-borrow';
+                    const buttonAction = isBorrowed ? 'javascript:void(0)' : `borrowBook('${book.id}')`;
+
+                    bookCard.innerHTML = `
+                        <img src="${book.cover || 'https://via.placeholder.com/200x250/e0e0e0/ffffff?text=No+Cover'}" alt="${book.title} Cover">
+                        <h4>${book.title}</h4>
+                        <p>${book.author}</p>
+                        <a href="${buttonAction}" class="${buttonClass}" data-book-id="${book.id}">${buttonText}</a>
+                    `;
+                    bookGrid.appendChild(bookCard);
+                });
+
+            } catch (error) {
+                console.error("Error fetching user books:", error);
+                bookGrid.innerHTML = '<p style="text-align: center; grid-column: 1 / -1; color: var(--accent-color);">Gagal memuat buku. Silakan coba lagi.</p>';
+            }
         }
-      } else {
-        showToast("❌ Penghapusan dibatalkan");
-      }
-    }
-  </script>
+
+        searchButton.addEventListener('click', () => {
+            const searchTerm = searchInput.value.trim();
+            fetchAndDisplayBooksUser(searchTerm);
+        });
+
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                const searchTerm = searchInput.value.trim();
+                fetchAndDisplayBooksUser(searchTerm);
+            }
+        });
+
+        async function borrowBook(bookId) {
+            if (!currentUser) {
+                alert('Anda harus login untuk meminjam buku.');
+                loginModal.style.display = 'flex';
+                return;
+            }
+
+            const bookRef = booksCollection.doc(bookId);
+            try {
+                await db.runTransaction(async (transaction) => {
+                    const bookDoc = await transaction.get(bookRef);
+
+                    if (!bookDoc.exists) {
+                        throw "Buku tidak ditemukan!";
+                    }
+
+                    const bookData = bookDoc.data();
+                    if (bookData.borrowedBy && bookData.borrowedBy !== '') {
+                        throw "Buku ini sudah dipinjam oleh orang lain.";
+                    }
+
+                    transaction.update(bookRef, {
+                        borrowedBy: currentUser.uid,
+                        borrowDate: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+
+                    const userRef = usersCollection.doc(currentUser.uid);
+                    transaction.update(userRef, {
+                        borrowedBooks: firebase.firestore.FieldValue.arrayUnion(bookId)
+                    });
+                });
+
+                alert('Buku berhasil dipinjam!');
+                fetchAndDisplayBooksUser();
+            } catch (error) {
+                console.error("Error meminjam buku:", error);
+                alert('Gagal meminjam buku: ' + error);
+            }
+        }
+        window.borrowBook = borrowBook; // Expose to global scope for inline onclick
+
+
+        // --- ADMIN DASHBOARD FUNCTIONS ---
+        adminNavManageBooks.addEventListener('click', (e) => {
+            e.preventDefault();
+            bookManagementSection.style.display = 'block';
+            borrowedBooksSection.style.display = 'none';
+            adminNavManageBooks.classList.add('active');
+            adminNavBorrowedBooks.classList.remove('active');
+            fetchAndDisplayBooksAdmin();
+        });
+
+        adminNavBorrowedBooks.addEventListener('click', (e) => {
+            e.preventDefault();
+            bookManagementSection.style.display = 'none';
+            borrowedBooksSection.style.display = 'block';
+            adminNavManageBooks.classList.remove('active');
+            adminNavBorrowedBooks.classList.add('active');
+            fetchAndDisplayBorrowedBooks();
+        });
+
+        bookForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const bookId = bookIdInput.value;
+            const title = bookTitleInput.value;
+            const author = bookAuthorInput.value;
+            const cover = bookCoverInput.value;
+            const description = bookDescriptionInput.value;
+
+            const bookData = {
+                title,
+                author,
+                cover: cover || 'https://via.placeholder.com/200x250/e0e0e0/ffffff?text=No+Cover',
+                description,
+                borrowedBy: '',
+                borrowDate: null
+            };
+
+            try {
+                if (bookId) {
+                    await booksCollection.doc(bookId).update(bookData);
+                    alert('Buku berhasil diperbarui!');
+                } else {
+                    await booksCollection.add(bookData);
+                    alert('Buku berhasil ditambahkan!');
+                }
+                bookForm.reset();
+                bookIdInput.value = '';
+                submitBookButton.textContent = 'Tambah Buku';
+                cancelEditButton.style.display = 'none';
+                fetchAndDisplayBooksAdmin();
+                fetchAndDisplayBorrowedBooks(); // Juga refresh daftar pinjaman
+            } catch (error) {
+                console.error("Error saving book:", error);
+                alert('Gagal menyimpan buku: ' + error.message);
+            }
+        });
+
+        cancelEditButton.addEventListener('click', () => {
+            bookForm.reset();
+            bookIdInput.value = '';
+            submitBookButton.textContent = 'Tambah Buku';
+            cancelEditButton.style.display = 'none';
+        });
+
+        async function fetchAndDisplayBooksAdmin() {
+            booksTableBody.innerHTML = '<tr><td colspan="5" style="text-align: center;">Memuat daftar buku...</td></tr>';
+            try {
+                const snapshot = await booksCollection.orderBy('title').get();
+                booksTableBody.innerHTML = '';
+
+                if (snapshot.empty) {
+                    booksTableBody.innerHTML = '<tr><td colspan="5" style="text-align: center;">Belum ada buku ditambahkan.</td></tr>';
+                    return;
+                }
+
+                snapshot.docs.forEach(doc => {
+                    const book = { id: doc.id, ...doc.data() };
+                    const row = booksTableBody.insertRow();
+                    row.innerHTML = `
+                        <td><img src="${book.cover}" alt="${book.title} Cover"></td>
+                        <td>${book.title}</td>
+                        <td>${book.author}</td>
+                        <td>${book.description || '-'}</td>
+                        <td class="action-buttons">
+                            <button class="btn btn-info" onclick="editBook('${book.id}', \`${book.title}\`, \`${book.author}\`, \`${book.cover}\`, \`${book.description ? book.description.replace(/'/g, "\\'") : ''}\`)"><i class="fas fa-edit"></i> Edit</button>
+                            <button class="btn btn-danger" onclick="deleteBook('${book.id}')"><i class="fas fa-trash"></i> Hapus</button>
+                        </td>
+                    `;
+                });
+            } catch (error) {
+                console.error("Error fetching books for admin:", error);
+                booksTableBody.innerHTML = '<tr><td colspan="5" style="color: var(--accent-color); text-align: center;">Gagal memuat daftar buku.</td></tr>';
+            }
+        }
+
+        async function editBook(id, title, author, cover, description) {
+            bookIdInput.value = id;
+            bookTitleInput.value = title;
+            bookAuthorInput.value = author;
+            bookCoverInput.value = cover;
+            bookDescriptionInput.value = description;
+            submitBookButton.textContent = 'Perbarui Buku';
+            cancelEditButton.style.display = 'inline-block';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        window.editBook = editBook;
+
+        async function deleteBook(id) {
+            if (confirm('Apakah Anda yakin ingin menghapus buku ini?')) {
+                try {
+                    await booksCollection.doc(id).delete();
+                    alert('Buku berhasil dihapus!');
+                    fetchAndDisplayBooksAdmin();
+                    fetchAndDisplayBorrowedBooks();
+                } catch (error) {
+                    console.error("Error deleting book:", error);
+                    alert('Gagal menghapus buku: ' + error.message);
+                }
+            }
+        }
+        window.deleteBook = deleteBook;
+
+        async function fetchAndDisplayBorrowedBooks() {
+            borrowedBooksTableBody.innerHTML = '<tr><td colspan="6" style="text-align: center;">Memuat buku yang dipinjam...</td></tr>';
+            try {
+                const snapshot = await booksCollection.where('borrowedBy', '!=', '').get();
+                borrowedBooksTableBody.innerHTML = '';
+
+                if (snapshot.empty) {
+                    borrowedBooksTableBody.innerHTML = '<tr><td colspan="6" style="text-align: center;">Tidak ada buku yang sedang dipinjam.</td></tr>';
+                    return;
+                }
+
+                for (const doc of snapshot.docs) {
+                    const book = { id: doc.id, ...doc.data() };
+                    let borrowerEmail = 'Unknown User';
+
+                    if (book.borrowedBy) {
+                        const userDoc = await usersCollection.doc(book.borrowedBy).get();
+                        if (userDoc.exists) {
+                            borrowerEmail = userDoc.data().email || 'Email not set';
+                        } else {
+                            borrowerEmail = `UID: ${book.borrowedBy}`;
+                        }
+                    }
+
+                    const borrowDate = book.borrowDate ? new Date(book.borrowDate.toDate()).toLocaleString() : '-';
+
+                    const row = borrowedBooksTableBody.insertRow();
+                    row.innerHTML = `
+                        <td><img src="${book.cover}" alt="${book.title} Cover"></td>
+                        <td>${book.title}</td>
+                        <td>${book.author}</td>
+                        <td>${borrowerEmail}</td>
+                        <td>${borrowDate}</td>
+                        <td class="action-buttons">
+                            <button class="btn btn-primary" onclick="returnBook('${book.id}')"><i class="fas fa-undo"></i> Kembalikan</button>
+                        </td>
+                    `;
+                }
+
+            } catch (error) {
+                console.error("Error fetching borrowed books:", error);
+                borrowedBooksTableBody.innerHTML = '<tr><td colspan="6" style="color: var(--accent-color); text-align: center;">Gagal memuat buku yang dipinjam.</td></tr>';
+            }
+        }
+
+        async function returnBook(bookId) {
+            if (confirm('Apakah Anda yakin ingin mengembalikan buku ini?')) {
+                const bookRef = booksCollection.doc(bookId);
+                try {
+                    await db.runTransaction(async (transaction) => {
+                        const bookDoc = await transaction.get(bookRef);
+
+                        if (!bookDoc.exists) {
+                            throw "Buku tidak ditemukan!";
+                        }
+
+                        const bookData = bookDoc.data();
+                        if (!bookData.borrowedBy || bookData.borrowedBy === '') {
+                            throw "Buku ini tidak sedang dipinjam.";
+                        }
+
+                        transaction.update(bookRef, {
+                            borrowedBy: '',
+                            borrowDate: null
+                        });
+
+                        const userRef = usersCollection.doc(bookData.borrowedBy);
+                        transaction.update(userRef, {
+                            borrowedBooks: firebase.firestore.FieldValue.arrayRemove(bookId)
+                        });
+                    });
+
+                    alert('Buku berhasil dikembalikan!');
+                    fetchAndDisplayBorrowedBooks();
+                    fetchAndDisplayBooksAdmin();
+                    fetchAndDisplayBooksUser(); // Refresh user view as well
+                } catch (error) {
+                    console.error("Error returning book:", error);
+                    alert('Gagal mengembalikan buku: ' + error);
+                }
+            }
+        }
+        window.returnBook = returnBook; // Expose to global scope
+        // JavaScript Berakhir Di Sini
+    </script>
 </body>
 </html>
