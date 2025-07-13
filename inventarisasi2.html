@@ -103,7 +103,7 @@
  }
     .info-blok {
       display: grid;
-      grid-template-columns: 70px 10px 1fr;
+      grid-template-columns: 85px 10px 1fr;
       column-gap: 3px;
       margin-top: 8px;
       align-items: start;
@@ -244,10 +244,6 @@
       <div class="barcode-box">
         <div id="kodeBarangText" class="kode-bold"></div>
         <canvas id="barcodeCanvas"></canvas>
-  <div class="status-item">
-    <span class="status-label">STATUS:</span>
-    <span id="statuspinjam" class="status-value" style="color:green;">-</span>
-  </div>
     <div class="detail-barang">    	
   <h4 class="heading-top">Informasi Barang</h4>
   <div class="info-blok">
@@ -306,12 +302,12 @@
     <span class="value" id="statuspinjam"></span>
   </div>
   <div class="info-blok">
-    <span class="label">Nama Peminjam</span>
+    <span class="label">Peminjam</span>
     <span class="separator">:</span>
     <span class="value" id="namaPeminjamData"></span>
   </div>
   <div class="info-blok">
-    <span class="label">Tgl Kembali</span>
+    <span class="label">Tgl. Kembali</span>
     <span class="separator">:</span>
     <span class="value" id="tglTempo"></span>
   </div>
