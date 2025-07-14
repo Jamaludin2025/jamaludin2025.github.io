@@ -533,17 +533,24 @@ function tampilkanDetail(item) {
 
   const linkSpan = document.getElementById("link");
 
-if (item.jenisToko === "online" && item.linkPembelian) {
+if (item.linkPembelian) {
+  // Toko online, tampilkan sebagai hyperlink
   linkSpan.innerText = item.linkPembelian;
   linkSpan.href = item.linkPembelian;
   linkSpan.style.textDecoration = "underline";
   linkSpan.style.color = "#2563eb";
-} else {
-  // Tampilkan alamat sebagai teks biasa
-  linkSpan.innerText = item.alamatPembelian || "-";
-  linkSpan.href = "#"; // jangan arahkan ke mana-mana
+} else if (item.alamatPembelian) {
+  // Toko offline, tampilkan sebagai teks biasa
+  linkSpan.innerText = item.alamatPembelian;
+  linkSpan.href = "#";
   linkSpan.style.textDecoration = "none";
-  linkSpan.style.color = "#1f2937"; // warna teks biasa
+  linkSpan.style.color = "#1f2937";
+} else {
+  // Tidak ada data
+  linkSpan.innerText = "-";
+  linkSpan.href = "#";
+  linkSpan.style.textDecoration = "none";
+  linkSpan.style.color = "#1f2937";
 }
 
   const kondisiText = (item.kondisi || "-").toLowerCase();
@@ -575,6 +582,7 @@ const blokPeminjaman = document.getElementById("blokPeminjaman");
 if (item.statuspinjam === "Dipinjam") {
   statusEl.innerText = "DIPINJAM";
   statusEl.style.color = "red";
+  statusEl.style.fontWeight = "bold";  
   peminjamEl.innerText = item.namaPeminjam || "-";
 
   const tglPinjam = new Date(item.tanggal);
@@ -588,6 +596,7 @@ if (item.statuspinjam === "Dipinjam") {
 } else {
   statusEl.innerText = "TERSEDIA";
   statusEl.style.color = "green";
+  statusEl.style.fontWeight = "bold";
   peminjamEl.innerText = "-";
   tempoEl.innerText = "-";
   blokPeminjaman.style.display = "none"; // disembunyikan jika tidak dipinjam
