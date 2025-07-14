@@ -423,23 +423,42 @@ function handleKuantitasChange() {
   label.innerText = `Barang yang serupa (${prefix})`;
 
   firebase.database().ref("inventaris_kode").once("value", snapshot => {
-    const data = snapshot.val();
-    
-    for (let key in data) {
-      const kode = data[key].kode;
-      if (kode.startsWith(prefix)) {
-        const option = document.createElement("option");
-        option.value = kode;
-        option.text = kode;
-        if (kuantitas === "keseluruhan") {
-          option.selected = true;
-        }
-        dropdown.appendChild(option);
+  const data = snapshot.val();
+
+  for (let key in data) {
+    const kode = data[key].kode;
+    const status = data[key].statuspinjam;
+
+    if (kode.startsWith(prefix)) {
+      const option = document.createElement("option");
+      option.value = kode;
+      option.text = kode;
+
+      if (status === "Dipinjam") {
+        option.disabled = true;
+        option.style.color = "gray";
+        option.text += " (Sedang dipinjam)";
+      } else if (kuantitas === "keseluruhan") {
+        option.selected = true;
       }
+
+      dropdown.appendChild(option);
     }
-    dropdownGroup.style.display = "block";
+  }
+
+  // Tangani klik manual pada dropdown
+  dropdown.addEventListener("change", () => {
+    const selectedOptions = Array.from(dropdown.selectedOptions);
+    selectedOptions.forEach(opt => {
+      if (opt.disabled) {
+        opt.selected = false;
+        alert(`Barang dengan kode ${opt.value} sedang dipinjam dan tidak dapat dipilih.`);
+      }
+    });
   });
-}
+
+  dropdownGroup.style.display = "block";
+});
 
 
 document.getElementById("formPinjam").addEventListener("submit", function(e) {
