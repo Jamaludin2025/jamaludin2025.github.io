@@ -596,16 +596,12 @@ kondisiEl.style.textAlign = "left";              // jaga agar sejajar info lain
 kondisiEl.style.fontWeight = "600";              // samakan ketebalan info lainnya
 
 
-  const statusEl = document.getElementById("statuspinjam");
+const statusEl = document.getElementById("statuspinjam");
 const peminjamEl = document.getElementById("namaPeminjamData");
 const tempoEl = document.getElementById("tglTempo");
 const blokPeminjaman = document.getElementById("blokPeminjaman");
 
 const statusText = item.statuspinjam || "-";
-const statusEl = document.getElementById("statuspinjam");
-const peminjamEl = document.getElementById("namaPeminjamData");
-const tempoEl = document.getElementById("tglTempo");
-const blokPeminjaman = document.getElementById("blokPeminjaman");
 
 let warna = "#1f2937";
 
@@ -636,7 +632,7 @@ if (["Menunggu Persetujuan", "Disetujui", "Ditolak"].includes(statusText)) {
   const dd = String(tglPinjam.getDate()).padStart(2, '0');
   const mm = String(tglPinjam.getMonth() + 1).padStart(2, '0');
   const yyyy = tglPinjam.getFullYear();
-  tempoEl.innerText = `${dd}-${mm}-${yyyy}
+  tempoEl.innerText = `${dd}-${mm}-${yyyy}`;
 
 
     window.statusPinjamSekarang = item.statuspinjam;
