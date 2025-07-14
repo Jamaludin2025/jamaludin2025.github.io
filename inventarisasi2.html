@@ -523,8 +523,8 @@ const batasTanggal = `${dd}-${mm}-${yyyy}`;
 // Tampilkan notifikasi
 alert(`Formulir berhasil dikirim. Mohon untuk menunggu persetujuan dari pemilik dengan cara klik refresh atau bersedia menunggu sampai mendapat persetujuan dari pemilik.`);
 
-  document.getElementById("statuspinjam").innerText = "Dipinjam";
-  document.getElementById("statuspinjam").style.color = "red";
+  document.getElementById("statuspinjam").innerText = "MENUNGGU PERSETUJUAN";
+document.getElementById("statuspinjam").style.color = "#2563eb";
 
   tutupFormPinjam();
 });
@@ -603,25 +603,23 @@ const blokPeminjaman = document.getElementById("blokPeminjaman");
 
 const statusText = item.statuspinjam || "-";
 
-let warna = "#1f2937";
+let warnaStatus = "#1f2937";
 
 switch (statusText) {
   case "Menunggu Persetujuan":
-    warna = "#2563eb"; // biru
-    break;
+    warnaStatus = "#2563eb"; break;
   case "Disetujui":
-    warna = "green";
-    break;
+    warnaStatus = "green"; break;
   case "Ditolak":
-    warna = "red";
-    break;
+    warnaStatus = "red"; break;
   default:
-    warna = "#6b7280";
+    warnaStatus = "#6b7280";
 }
 
 statusEl.innerText = statusText.toUpperCase();
-statusEl.style.color = warna;
+statusEl.style.color = warnaStatus;
 statusEl.style.fontWeight = "bold";
+
 
 // Tampilkan blok hanya jika status valid
 if (["Menunggu Persetujuan", "Disetujui", "Ditolak"].includes(statusText)) {
