@@ -180,8 +180,8 @@
     border-radius: 8px;
     padding: 10px 16px;
     font-weight: bold;
-    margin-top: 20px;
-    margin-bottom: 10px;
+    margin-top: 14px;
+    margin-bottom: 6px;
     cursor: pointer;
     width: 48%;
     transition: background 0.3s ease;
@@ -349,8 +349,8 @@
   <select id="dropdownBarang" multiple></select>
 </div>
       <div style="margin-top:10px; display:flex; justify-content:space-between;">
-        <button type="button" class="btn" onclick="tutupFormPinjam()">Batal</button>
-        <button type="submit" class="btn">Kirim</button>
+        <button type="button" class="btn" onclick="tutupFormPinjam()">BATAL</button>
+        <button type="submit" class="btn">KIRIM</button>
       </div>
     </form>
   </div>
@@ -503,10 +503,10 @@ firebase.database().ref("inventaris_kode").once("value", snapshot => {
     const kodeData = data[key].kode;
     if (kodeDipinjam.includes(kodeData)) {
       firebase.database().ref("inventaris_kode/" + key).update({
-        statuspinjam: "Dipinjam",
-        namaPeminjam: nama,
-        batasPinjam: durasi
-      });
+  statuspinjam: "Menunggu Persetujuan",
+  namaPeminjam: nama,
+  batasPinjam: durasi
+});
     }
   }
 });
@@ -521,7 +521,7 @@ const yyyy = tglPinjam.getFullYear();
 const batasTanggal = `${dd}-${mm}-${yyyy}`;
 
 // Tampilkan notifikasi
-alert(`Barang berhasil dipinjam. Mohon untuk mengembalikan barang sesuai dengan batas waktu yang telah disepakati yaitu pada ${batasTanggal}.`);
+alert(`Formulir berhasil dikirim. Mohon untuk menunggu persetujuan dari pemilik dengan cara klik refresh atau bersedia menunggu sampai mendapat persetujuan dari pemilik.`);
 
   document.getElementById("statuspinjam").innerText = "Dipinjam";
   document.getElementById("statuspinjam").style.color = "red";
@@ -601,10 +601,34 @@ const peminjamEl = document.getElementById("namaPeminjamData");
 const tempoEl = document.getElementById("tglTempo");
 const blokPeminjaman = document.getElementById("blokPeminjaman");
 
-if (item.statuspinjam === "Dipinjam") {
-  statusEl.innerText = "DIPINJAM";
-  statusEl.style.color = "red";
-  statusEl.style.fontWeight = "bold";  
+const statusText = item.statuspinjam || "-";
+const statusEl = document.getElementById("statuspinjam");
+const peminjamEl = document.getElementById("namaPeminjamData");
+const tempoEl = document.getElementById("tglTempo");
+const blokPeminjaman = document.getElementById("blokPeminjaman");
+
+let warna = "#1f2937";
+
+switch (statusText) {
+  case "Menunggu Persetujuan":
+    warna = "#2563eb"; // biru
+    break;
+  case "Disetujui":
+    warna = "green";
+    break;
+  case "Ditolak":
+    warna = "red";
+    break;
+  default:
+    warna = "#6b7280";
+}
+
+statusEl.innerText = statusText.toUpperCase();
+statusEl.style.color = warna;
+statusEl.style.fontWeight = "bold";
+
+// Tampilkan blok hanya jika status valid
+if (["Menunggu Persetujuan", "Disetujui", "Ditolak"].includes(statusText)) {
   peminjamEl.innerText = item.namaPeminjam || "-";
 
   const tglPinjam = new Date(item.tanggal);
@@ -612,28 +636,18 @@ if (item.statuspinjam === "Dipinjam") {
   const dd = String(tglPinjam.getDate()).padStart(2, '0');
   const mm = String(tglPinjam.getMonth() + 1).padStart(2, '0');
   const yyyy = tglPinjam.getFullYear();
-  tempoEl.innerText = `${dd}-${mm}-${yyyy}`;
+  tempoEl.innerText = `${dd}-${mm}-${yyyy}
 
-  blokPeminjaman.style.display = "block";
-} else {
-  statusEl.innerText = "TERSEDIA";
-  statusEl.style.color = "green";
-  statusEl.style.fontWeight = "bold";
-  peminjamEl.innerText = "-";
-  tempoEl.innerText = "-";
-  blokPeminjaman.style.display = "none"; // disembunyikan jika tidak dipinjam
-}
 
     window.statusPinjamSekarang = item.statuspinjam;
     window.namaPeminjamAktif = item.namaPeminjam || "-";
     window.batasPinjamAktif = item.batasPinjam || "-";
   }
 
-     function bukaFormPinjam() {
-  if (window.statusPinjamSekarang === "Dipinjam") {
-    alert(`Mohon maaf, barang ini sedang dipinjam oleh ${window.namaPeminjamAktif}. Anda dapat meminjamnya setelah batas pinjam selesai.`);
-    return;
-  }
+     if (window.statusPinjamSekarang !== undefined && window.statusPinjamSekarang !== "Ditolak") {
+  alert(`Mohon maaf, barang sedang dalam proses atau sudah dipinjam. Anda tidak dapat meminjam barang ini.`);
+  return;
+}
 
   document.getElementById("formPinjamModal").classList.remove("hidden");
   document.body.classList.add("modal-open");
