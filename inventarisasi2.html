@@ -1,4 +1,4 @@
-<meta name='viewport' content='width=device-width, initial-scale=1'/><meta name='viewport' content='width=device-width, initial-scale=1'/><meta name='viewport' content='width=device-width, initial-scale=1'/><meta name='viewport' content='width=device-width, initial-scale=1'/><meta name='viewport' content='width=device-width, initial-scale=1'/><meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
+<meta name='viewport' content='width=device-width, initial-scale=1'/><meta name='viewport' content='width=device-width, initial-scale=1'/><meta name='viewport' content='width=device-width, initial-scale=1'/><meta name='viewport' content='width=device-width, initial-scale=1'/><meta name='viewport' content='width=device-width, initial-scale=1'/><meta name='viewport' content='width=device-width, initial-scale=1'/><meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
@@ -37,7 +37,7 @@
    }
     .detail-header hr {
       border: none;
-      border-top: 1px solid #d1d5db;
+      border-top: 1px solid #9ca3af;
       margin: 10px 0;
     }
     .detail-header img.logo {
@@ -103,7 +103,7 @@
  }
     .info-blok {
       display: grid;
-      grid-template-columns: 85px 10px 1fr;
+      grid-template-columns: 80px 10px 1fr;
       column-gap: 3px;
       margin-top: 8px;
       align-items: start;
@@ -307,7 +307,7 @@
     <span class="value" id="namaPeminjamData"></span>
   </div>
   <div class="info-blok">
-    <span class="label">Tgl. Kembali</span>
+    <span class="label">Kembali</span>
     <span class="separator">:</span>
     <span class="value" id="tglTempo"></span>
   </div>
@@ -316,7 +316,7 @@
 
 <div class="btns">
   <button onclick="unduhDetail()">UNDUH</button>
-  <button onclick="cetakDetail()">CETAK</button>
+  <button onclick="muatUlangDetail()">REFRESH</button>
   <button onclick="bukaFormPinjam()">PINJAM</button>
 </div>
 
@@ -634,61 +634,23 @@ function unduhDetail() {
   });
 }
 
-function cetakDetail() {
-  const detail = document.querySelector(".container"); // Ganti sesuai kebutuhan
-
-  if (!detail) {
-    alert("Elemen yang ingin dicetak tidak ditemukan!");
+function muatUlangDetail() {
+  const kode = document.getElementById("kodeBarangText").innerText;
+  if (!kode) {
+    alert("Kode barang tidak ditemukan.");
     return;
   }
 
-  const printWindow = window.open('', '', 'width=800,height=1000');
-  printWindow.document.write('<html><head><title>Cetak Detail Barang</title>');
-
-  printWindow.document.write(`
-    <style>
-      body {
-        font-family: 'Segoe UI', sans-serif;
-        padding: 20px;
+  firebase.database().ref("inventaris_kode").once("value", snapshot => {
+    const data = snapshot.val();
+    for (let key in data) {
+      if (data[key].kode === kode) {
+        tampilkanDetail(data[key]);
+        return;
       }
-      .detail-barang {
-        border: 1px dashed #9ca3af;
-        padding: 15px;
-        border-radius: 8px;
-      }
-      .info-blok {
-        display: grid;
-        grid-template-columns: 100px 10px 1fr;
-        column-gap: 5px;
-        margin-top: 8px;
-        align-items: start;
-      }
-      .label { font-weight: bold; }
-      .foto-barang {
-        width: 150px;
-        height: 150px;
-        object-fit: cover;
-        border-radius: 10px;
-        display: block;
-        margin: auto;
-      }
-      h2, h4 {
-        text-align: center;
-        margin-bottom: 10px;
-      }
-    </style>
-  `);
-
-  printWindow.document.write('</head><body>');
-  printWindow.document.write(detail.innerHTML);
-  printWindow.document.write('</body></html>');
-  printWindow.document.close();
-
-  printWindow.onload = function () {
-    printWindow.focus();
-    printWindow.print();
-    printWindow.close();
-  };
+    }
+    alert("Data barang tidak ditemukan.");
+  });
 }
 
 </script>
