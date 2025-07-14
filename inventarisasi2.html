@@ -1,4 +1,4 @@
-<meta name='viewport' content='width=device-width, initial-scale=1'/><meta name='viewport' content='width=device-width, initial-scale=1'/><meta name='viewport' content='width=device-width, initial-scale=1'/><meta name='viewport' content='width=device-width, initial-scale=1'/><meta name='viewport' content='width=device-width, initial-scale=1'/><meta name='viewport' content='width=device-width, initial-scale=1'/><meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
+<meta name='viewport' content='width=device-width, initial-scale=1'/><meta name='viewport' content='width=device-width, initial-scale=1'/><meta name='viewport' content='width=device-width, initial-scale=1'/><meta name='viewport' content='width=device-width, initial-scale=1'/><meta name='viewport' content='width=device-width, initial-scale=1'/><meta name='viewport' content='width=device-width, initial-scale=1'/><meta name='viewport' content='width=device-width, initial-scale=1'/><meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
@@ -180,8 +180,6 @@
     border-radius: 8px;
     padding: 10px 16px;
     font-weight: bold;
-    margin-top: 14px;
-    margin-bottom: 6px;
     cursor: pointer;
     width: 48%;
     transition: background 0.3s ease;
@@ -349,8 +347,8 @@
   <select id="dropdownBarang" multiple></select>
 </div>
       <div style="margin-top:10px; display:flex; justify-content:space-between;">
-        <button type="button" class="btn" onclick="tutupFormPinjam()">BATAL</button>
-        <button type="submit" class="btn">KIRIM</button>
+        <button type="button" class="btn" onclick="tutupFormPinjam()">Batal</button>
+        <button type="submit" class="btn">Kirim</button>
       </div>
     </form>
   </div>
@@ -490,7 +488,7 @@ kodeDipinjam = Array.from(selectedOptions).map(opt => opt.value);
   tanggalPinjam: tanggal,
   batasPinjam: durasi,
   kuantitas: kuantitas,
-  status: "Menunggu Persetujuan"
+  status: "Dipinjam"
 };
 
   // Simpan ke Firebase di /peminjaman_barang
@@ -521,10 +519,10 @@ const yyyy = tglPinjam.getFullYear();
 const batasTanggal = `${dd}-${mm}-${yyyy}`;
 
 // Tampilkan notifikasi
-alert(`Formulir berhasil dikirim. Mohon untuk menunggu persetujuan dari pemilik dengan cara klik refresh atau bersedia menunggu sampai mendapat persetujuan dari pemilik.`);
+alert(`Barang berhasil dipinjam. Mohon untuk mengembalikan barang sesuai dengan batas waktu yang telah disepakati yaitu pada ${batasTanggal}.`);
 
-  document.getElementById("statuspinjam").innerText = "MENUNGGU PERSETUJUAN";
-document.getElementById("statuspinjam").style.color = "#2563eb";
+  document.getElementById("statuspinjam").innerText = "Dipinjam";
+  document.getElementById("statuspinjam").style.color = "red";
 
   tutupFormPinjam();
 });
@@ -596,30 +594,36 @@ kondisiEl.style.textAlign = "left";              // jaga agar sejajar info lain
 kondisiEl.style.fontWeight = "600";              // samakan ketebalan info lainnya
 
 
-const statusEl = document.getElementById("statuspinjam");
+  const statusEl = document.getElementById("statuspinjam");
 const peminjamEl = document.getElementById("namaPeminjamData");
 const tempoEl = document.getElementById("tglTempo");
 const blokPeminjaman = document.getElementById("blokPeminjaman");
 
 const statusText = item.statuspinjam || "-";
+const statusEl = document.getElementById("statuspinjam");
+const peminjamEl = document.getElementById("namaPeminjamData");
+const tempoEl = document.getElementById("tglTempo");
+const blokPeminjaman = document.getElementById("blokPeminjaman");
 
-let warnaStatus = "#1f2937";
+let warna = "#1f2937";
 
 switch (statusText) {
   case "Menunggu Persetujuan":
-    warnaStatus = "#2563eb"; break;
+    warna = "#2563eb"; // biru
+    break;
   case "Disetujui":
-    warnaStatus = "green"; break;
+    warna = "green";
+    break;
   case "Ditolak":
-    warnaStatus = "red"; break;
+    warna = "red";
+    break;
   default:
-    warnaStatus = "#6b7280";
+    warna = "#6b7280";
 }
 
 statusEl.innerText = statusText.toUpperCase();
-statusEl.style.color = warnaStatus;
+statusEl.style.color = warna;
 statusEl.style.fontWeight = "bold";
-
 
 // Tampilkan blok hanya jika status valid
 if (["Menunggu Persetujuan", "Disetujui", "Ditolak"].includes(statusText)) {
@@ -632,16 +636,21 @@ if (["Menunggu Persetujuan", "Disetujui", "Ditolak"].includes(statusText)) {
   const yyyy = tglPinjam.getFullYear();
   tempoEl.innerText = `${dd}-${mm}-${yyyy}`;
 
+  blokPeminjaman.style.display = "block";
+} else {
+  blokPeminjaman.style.display = "none";
+}
 
     window.statusPinjamSekarang = item.statuspinjam;
     window.namaPeminjamAktif = item.namaPeminjam || "-";
     window.batasPinjamAktif = item.batasPinjam || "-";
   }
 
-     if (window.statusPinjamSekarang !== undefined && window.statusPinjamSekarang !== "Ditolak") {
-  alert(`Mohon maaf, barang sedang dalam proses atau sudah dipinjam. Anda tidak dapat meminjam barang ini.`);
-  return;
-}
+     function bukaFormPinjam() {
+  if (window.statusPinjamSekarang === "Dipinjam") {
+    alert(`Mohon maaf, barang ini sedang dipinjam oleh ${window.namaPeminjamAktif}. Anda dapat meminjamnya setelah batas pinjam selesai.`);
+    return;
+  }
 
   document.getElementById("formPinjamModal").classList.remove("hidden");
   document.body.classList.add("modal-open");
