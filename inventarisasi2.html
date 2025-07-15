@@ -1,4 +1,4 @@
-<meta name='viewport' content='width=device-width, initial-scale=1'/><meta name='viewport' content='width=device-width, initial-scale=1'/><meta name='viewport' content='width=device-width, initial-scale=1'/><meta name='viewport' content='width=device-width, initial-scale=1'/><meta name='viewport' content='width=device-width, initial-scale=1'/><meta name='viewport' content='width=device-width, initial-scale=1'/><meta name='viewport' content='width=device-width, initial-scale=1'/><meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
+<meta name='viewport' content='width=device-width, initial-scale=1'/><meta name='viewport' content='width=device-width, initial-scale=1'/><meta name='viewport' content='width=device-width, initial-scale=1'/><meta name='viewport' content='width=device-width, initial-scale=1'/><meta name='viewport' content='width=device-width, initial-scale=1'/><meta name='viewport' content='width=device-width, initial-scale=1'/><meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
@@ -180,6 +180,8 @@
     border-radius: 8px;
     padding: 10px 16px;
     font-weight: bold;
+    margin-top: 14px;
+    margin-bottom: 6px;
     cursor: pointer;
     width: 48%;
     transition: background 0.3s ease;
@@ -347,8 +349,8 @@
   <select id="dropdownBarang" multiple></select>
 </div>
       <div style="margin-top:10px; display:flex; justify-content:space-between;">
-        <button type="button" class="btn" onclick="tutupFormPinjam()">Batal</button>
-        <button type="submit" class="btn">Kirim</button>
+        <button type="button" class="btn" onclick="tutupFormPinjam()">BATAL</button>
+        <button type="submit" class="btn">KIRIM</button>
       </div>
     </form>
   </div>
@@ -488,7 +490,7 @@ kodeDipinjam = Array.from(selectedOptions).map(opt => opt.value);
   tanggalPinjam: tanggal,
   batasPinjam: durasi,
   kuantitas: kuantitas,
-  status: "Dipinjam"
+  status: "Menunggu Persetujuan"
 };
 
   // Simpan ke Firebase di /peminjaman_barang
@@ -519,10 +521,10 @@ const yyyy = tglPinjam.getFullYear();
 const batasTanggal = `${dd}-${mm}-${yyyy}`;
 
 // Tampilkan notifikasi
-alert(`Barang berhasil dipinjam. Mohon untuk mengembalikan barang sesuai dengan batas waktu yang telah disepakati yaitu pada ${batasTanggal}.`);
+alert(`Formulir berhasil dikirim. Mohon untuk menunggu persetujuan dari pemilik dengan cara klik refresh atau bersedia menunggu sampai mendapat persetujuan dari pemilik.`);
 
-  document.getElementById("statuspinjam").innerText = "Dipinjam";
-  document.getElementById("statuspinjam").style.color = "red";
+  document.getElementById("statuspinjam").innerText = "MENUNGGU PERSETUJUAN";
+document.getElementById("statuspinjam").style.color = "#2563eb";
 
   tutupFormPinjam();
 });
@@ -594,36 +596,30 @@ kondisiEl.style.textAlign = "left";              // jaga agar sejajar info lain
 kondisiEl.style.fontWeight = "600";              // samakan ketebalan info lainnya
 
 
-  const statusEl = document.getElementById("statuspinjam");
-const peminjamEl = document.getElementById("namaPeminjamData");
-const tempoEl = document.getElementById("tglTempo");
-const blokPeminjaman = document.getElementById("blokPeminjaman");
-
-const statusText = item.statuspinjam || "-";
 const statusEl = document.getElementById("statuspinjam");
 const peminjamEl = document.getElementById("namaPeminjamData");
 const tempoEl = document.getElementById("tglTempo");
 const blokPeminjaman = document.getElementById("blokPeminjaman");
 
-let warna = "#1f2937";
+const statusText = item.statuspinjam || "-";
+
+let warnaStatus = "#1f2937";
 
 switch (statusText) {
   case "Menunggu Persetujuan":
-    warna = "#2563eb"; // biru
-    break;
+    warnaStatus = "#2563eb"; break;
   case "Disetujui":
-    warna = "green";
-    break;
+    warnaStatus = "green"; break;
   case "Ditolak":
-    warna = "red";
-    break;
+    warnaStatus = "red"; break;
   default:
-    warna = "#6b7280";
+    warnaStatus = "#6b7280";
 }
 
 statusEl.innerText = statusText.toUpperCase();
-statusEl.style.color = warna;
+statusEl.style.color = warnaStatus;
 statusEl.style.fontWeight = "bold";
+
 
 // Tampilkan blok hanya jika status valid
 if (["Menunggu Persetujuan", "Disetujui", "Ditolak"].includes(statusText)) {
@@ -636,23 +632,40 @@ if (["Menunggu Persetujuan", "Disetujui", "Ditolak"].includes(statusText)) {
   const yyyy = tglPinjam.getFullYear();
   tempoEl.innerText = `${dd}-${mm}-${yyyy}`;
 
-  blokPeminjaman.style.display = "block";
-} else {
-  blokPeminjaman.style.display = "none";
-}
 
     window.statusPinjamSekarang = item.statuspinjam;
     window.namaPeminjamAktif = item.namaPeminjam || "-";
     window.batasPinjamAktif = item.batasPinjam || "-";
   }
 
-     function bukaFormPinjam() {
-  if (window.statusPinjamSekarang === "Dipinjam") {
-    alert(`Mohon maaf, barang ini sedang dipinjam oleh ${window.namaPeminjamAktif}. Anda dapat meminjamnya setelah batas pinjam selesai.`);
+     const btnPinjam = document.querySelector('.btns button[onclick="bukaFormPinjam()"]');
+
+// Pastikan tombol selalu aktif secara teknis, tapi logika dikontrol lewat status
+btnPinjam.disabled = false;
+btnPinjam.style.opacity = 1;
+btnPinjam.style.cursor = "pointer";
+
+// Atur ulang event handler agar logika alert hanya aktif saat tombol diklik
+btnPinjam.onclick = () => {
+  const status = (window.statusPinjamSekarang || "").toLowerCase();
+  const namaPeminjam = window.namaPeminjamAktif || "-";
+
+  if (status === "menunggu persetujuan" || status === "disetujui") {
+    alert(`Mohon maaf, barang ini sedang dipinjam oleh ${namaPeminjam}.`);
     return;
   }
 
-  document.getElementById("formPinjamModal").classList.remove("hidden");
+  // Jika tidak dipinjam, buka form peminjaman
+  bukaFormPinjam();
+};
+
+// Jika status sedang dipinjam, beri gaya visual tombol agar terlihat nonaktif
+if (["menunggu persetujuan", "disetujui"].includes((statusText || "").toLowerCase())) {
+  btnPinjam.style.opacity = 0.6;
+  btnPinjam.style.cursor = "not-allowed";
+}
+
+
   document.body.classList.add("modal-open");
   document.getElementById("reader").style.display = "none";
 }
