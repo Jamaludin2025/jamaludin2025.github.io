@@ -638,24 +638,26 @@ if (["Menunggu Persetujuan", "Disetujui", "Ditolak"].includes(statusText)) {
     window.batasPinjamAktif = item.batasPinjam || "-";
   }
 
-     const btnPinjam = document.querySelector('.btns button[onclick="bukaFormPinjam()"]');
-
+     const btnPinjam = document.querySelector('.btns button:nth-child(3)'); // PINJAM tombol ke-3
 const statusLower = (statusText || "").toLowerCase();
 const sedangDipinjam = statusLower === "menunggu persetujuan" || statusLower === "disetujui";
 const namaPeminjam = item.namaPeminjam || "-";
 
-btnPinjam.disabled = false;
-btnPinjam.style.opacity = 1;
-btnPinjam.style.cursor = "pointer";
+// Hapus semua event sebelumnya (dari HTML "onclick")
+btnPinjam.replaceWith(btnPinjam.cloneNode(true));
+const btnBaru = document.querySelector('.btns button:nth-child(3)');
 
-// Atur ulang fungsi klik
-btnPinjam.onclick = () => {
+btnBaru.disabled = false;
+btnBaru.style.opacity = 1;
+btnBaru.style.cursor = "pointer";
+
+btnBaru.addEventListener("click", () => {
   if (sedangDipinjam) {
     alert(`Mohon maaf, barang ini sedang dipinjam oleh ${namaPeminjam}.`);
   } else {
     bukaFormPinjam();
   }
-};
+});
 
 // Jika status sedang dipinjam, beri gaya visual tombol agar terlihat nonaktif
 if (["menunggu persetujuan", "disetujui"].includes((statusText || "").toLowerCase())) {
