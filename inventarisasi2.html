@@ -420,6 +420,7 @@ alert(`Barang berhasil dipinjam. Mohon untuk mengembalikan barang sesuai dengan 
 document.getElementById("statuspinjam").style.color = "#2563eb";
 
   tutupFormPinjam();
+  muatUlangDetail();
 });
 
 
@@ -474,7 +475,7 @@ switch (kondisi) {
 }
   
   // Informasi Peminjaman
-if (item.statuspinjam === "Dipinjam" || item.statuspinjam === "Menunggu Persetujuan") {
+if (["Dipinjam", "Menunggu Persetujuan", "Disetujui", "Ditolak"].includes(item.statuspinjam)) {
   document.getElementById("dataPeminjam").innerText = item.namaPeminjam || "-";
   document.getElementById("dataHP").innerText = item.nomorHP || "-";
 
