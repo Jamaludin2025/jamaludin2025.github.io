@@ -378,7 +378,7 @@ document.getElementById("formPinjam").addEventListener("submit", function(e) {
     nomorHP: hp,
     tanggalPinjam: tanggal,
     batasPinjam: durasi,
-    status: "Dipinjam"
+    status: "Menunggu Persetujuan"
   };
 
   // Simpan ke Firebase di /peminjaman_barang
@@ -391,7 +391,7 @@ document.getElementById("formPinjam").addEventListener("submit", function(e) {
     if (data[key].kode === kode) {
       const ref = firebase.database().ref("inventaris_kode/" + key);
       ref.update({
-        statuspinjam: "Dipinjam",
+        statuspinjam: "Menunggu Persetujuan",
         namaPeminjam: nama,
         nomorHP: hp,
         tanggalPinjam: tanggal,
@@ -472,23 +472,34 @@ if (item.statuspinjam === "Dipinjam") {
 }
 
 
-  if (item.statuspinjam === "Dipinjam") {
-    document.getElementById("statuspinjam").innerText = "Dipinjam";
-    document.getElementById("statuspinjam").style.color = "red";
-  } else {
-    document.getElementById("statuspinjam").innerText = "Tersedia";
+  const status = item.statuspinjam || "-";
+document.getElementById("statuspinjam").innerText = status;
+
+switch (status) {
+  case "Menunggu Persetujuan":
+    document.getElementById("statuspinjam").style.color = "#2563eb"; // biru
+    break;
+  case "Disetujui":
     document.getElementById("statuspinjam").style.color = "green";
-  }
+    break;
+  case "Ditolak":
+    document.getElementById("statuspinjam").style.color = "red";
+    break;
+  default:
+    document.getElementById("statuspinjam").style.color = "#6b7280"; // abu
+    break;
+}
+
     window.statusPinjamSekarang = item.statuspinjam;
     window.namaPeminjamAktif = item.namaPeminjam || "-";
     window.batasPinjamAktif = item.batasPinjam || "-";
   }
 
      function bukaFormPinjam() {
-  if (window.statusPinjamSekarang === "Dipinjam") {
-    alert(`Mohon maaf, barang ini sedang dipinjam oleh ${window.namaPeminjamAktif}. Anda dapat meminjamnya setelah batas pinjam selesai.`);
-    return;
-  }
+  if (["Menunggu Persetujuan", "Disetujui"].includes(window.statusPinjamSekarang)) {
+  alert(`Mohon maaf, barang ini sedang dalam proses atau sudah dipinjam oleh ${window.namaPeminjamAktif}.`);
+  return;
+}
 
   document.getElementById("formPinjamModal").classList.remove("hidden");
   document.body.classList.add("modal-open");
