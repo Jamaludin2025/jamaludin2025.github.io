@@ -659,15 +659,17 @@ btnBaru.addEventListener("click", () => {
   }
 });
 
-// Jika status sedang dipinjam, beri gaya visual tombol agar terlihat nonaktif
-if (["menunggu persetujuan", "disetujui"].includes((statusText || "").toLowerCase())) {
-  btnPinjam.style.opacity = 0.6;
-  btnPinjam.style.cursor = "not-allowed";
+// Terapkan gaya ke tombol baru yang benar-benar aktif
+if (sedangDipinjam) {
+  btnBaru.style.opacity = 0.6;
+  btnBaru.style.cursor = "not-allowed";
 }
-
-
   document.body.classList.add("modal-open");
   document.getElementById("reader").style.display = "none";
+}
+
+function bukaFormPinjam() {
+  document.getElementById("formPinjamModal").classList.remove("hidden");
 }
 
 function tutupFormPinjam() {
