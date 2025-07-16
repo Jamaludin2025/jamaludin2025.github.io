@@ -499,9 +499,6 @@ if (["Dipinjam", "Menunggu Persetujuan", "Disetujui", "Ditolak"].includes(status
   blokPeminjaman.classList.add("hidden");
 }
 
-  const status = item.statuspinjam || "-";
-document.getElementById("statuspinjam").innerText = status;
-
 switch (status) {
   case "Menunggu Persetujuan":
     document.getElementById("statuspinjam").style.color = "#2563eb"; // biru
