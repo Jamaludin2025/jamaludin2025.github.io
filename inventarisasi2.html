@@ -262,6 +262,23 @@
     <span class="separator">:</span>
     <a id="link" href="#" target="_blank" class="value">-</a>
   </div>
+  
+  <h4>Informasi Peminjaman</h4>
+<div class="info-blok">
+  <span class="label">Peminjam</span>
+  <span class="separator">:</span>
+  <span class="value" id="dataPeminjam">-</span>
+</div>
+<div class="info-blok">
+  <span class="label">No. HP</span>
+  <span class="separator">:</span>
+  <span class="value" id="dataHP">-</span>
+</div>
+<div class="info-blok">
+  <span class="label">Kembali</span>
+  <span class="separator">:</span>
+  <span class="value" id="dataKembali">-</span>
+</div>
 </div>
 
 <div class="btns">
@@ -368,16 +385,22 @@ document.getElementById("formPinjam").addEventListener("submit", function(e) {
 
   // Update status barang di /inventaris_kode
   firebase.database().ref("inventaris_kode").once("value", snapshot => {
-    const data = snapshot.val();
-    for (let key in data) {
-      if (data[key].kode === kode) {
-        firebase.database().ref("inventaris_kode/" + key + "/statuspinjam").set("Dipinjam");
-        firebase.database().ref("inventaris_kode/" + key + "/namaPeminjam").set(nama);
-        firebase.database().ref("inventaris_kode/" + key + "/batasPinjam").set(durasi);        
-        break;
-      }
+  const data = snapshot.val();
+  for (let key in data) {
+    if (data[key].kode === kode) {
+      const ref = firebase.database().ref("inventaris_kode/" + key);
+      ref.update({
+        statuspinjam: "Dipinjam",
+        namaPeminjam: nama,
+        nomorHP: hp,
+        tanggalPinjam: tanggal,
+        batasPinjam: durasi
+      });
+      break;
     }
-  });
+  }
+});
+
   
   // Hitung tanggal batas pengembalian
 const tglPinjam = new Date(tanggal);
@@ -427,6 +450,26 @@ function tampilkanDetail(item) {
   linkSpan.href = (linkValue.startsWith("http") ? linkValue : "#");
 
   document.getElementById("kondisi").innerText = item.kondisi || "-";
+  
+  // Informasi Peminjaman
+if (item.statuspinjam === "Dipinjam") {
+  document.getElementById("dataPeminjam").innerText = item.namaPeminjam || "-";
+  document.getElementById("dataHP").innerText = item.nomorHP || "-";
+
+  const tgl = new Date(item.tanggalPinjam);
+  tgl.setDate(tgl.getDate() + parseInt(item.batasPinjam || 0));
+
+  const dd = String(tgl.getDate()).padStart(2, '0');
+  const mm = String(tgl.getMonth() + 1).padStart(2, '0');
+  const yyyy = tgl.getFullYear();
+
+  document.getElementById("dataKembali").innerText = `${dd}-${mm}-${yyyy}`;
+} else {
+  document.getElementById("dataPeminjam").innerText = "-";
+  document.getElementById("dataHP").innerText = "-";
+  document.getElementById("dataKembali").innerText = "-";
+}
+
 
   if (item.statuspinjam === "Dipinjam") {
     document.getElementById("statuspinjam").innerText = "Dipinjam";
