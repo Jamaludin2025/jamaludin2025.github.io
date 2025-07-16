@@ -284,7 +284,7 @@
 
 <div class="btns">
   <button onclick="unduhDetail()">UNDUH</button>
-  <button onclick="cetakDetail()">CETAK</button>
+  <button onclick="muatUlangDetail()">REFRESH</button>
   <button onclick="bukaFormPinjam()">PINJAM</button>
 </div>
 
@@ -303,8 +303,8 @@
         </select>
       </div>
       <div style="margin-top:10px; display:flex; justify-content:space-between;">
-        <button type="button" class="btn" onclick="tutupFormPinjam()">Batal</button>
-        <button type="submit" class="btn">Kirim</button>
+        <button type="button" class="btn" onclick="tutupFormPinjam()">BATAL</button>
+        <button type="submit" class="btn">KIRIM</button>
       </div>
     </form>
   </div>
@@ -520,61 +520,23 @@ function unduhDetail() {
   });
 }
 
-function cetakDetail() {
-  const detail = document.querySelector(".container"); // Ganti sesuai kebutuhan
-
-  if (!detail) {
-    alert("Elemen yang ingin dicetak tidak ditemukan!");
+function muatUlangDetail() {
+  const kode = document.getElementById("kodeBarangText").innerText;
+  if (!kode) {
+    alert("Kode barang tidak ditemukan.");
     return;
   }
 
-  const printWindow = window.open('', '', 'width=800,height=1000');
-  printWindow.document.write('<html><head><title>Cetak Detail Barang</title>');
-
-  printWindow.document.write(`
-    <style>
-      body {
-        font-family: 'Segoe UI', sans-serif;
-        padding: 20px;
+  firebase.database().ref("inventaris_kode").once("value", snapshot => {
+    const data = snapshot.val();
+    for (let key in data) {
+      if (data[key].kode === kode) {
+        tampilkanDetail(data[key]);
+        return;
       }
-      .detail-barang {
-        border: 1px dashed #9ca3af;
-        padding: 15px;
-        border-radius: 8px;
-      }
-      .info-blok {
-        display: grid;
-        grid-template-columns: 100px 10px 1fr;
-        column-gap: 5px;
-        margin-top: 8px;
-        align-items: start;
-      }
-      .label { font-weight: bold; }
-      .foto-barang {
-        width: 150px;
-        height: 150px;
-        object-fit: cover;
-        border-radius: 10px;
-        display: block;
-        margin: auto;
-      }
-      h2, h4 {
-        text-align: center;
-        margin-bottom: 10px;
-      }
-    </style>
-  `);
-
-  printWindow.document.write('</head><body>');
-  printWindow.document.write(detail.innerHTML);
-  printWindow.document.write('</body></html>');
-  printWindow.document.close();
-
-  printWindow.onload = function () {
-    printWindow.focus();
-    printWindow.print();
-    printWindow.close();
-  };
+    }
+    alert("Data barang tidak ditemukan.");
+  });
 }
 
 </script>
