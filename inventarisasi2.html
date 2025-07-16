@@ -416,8 +416,8 @@ const batasTanggal = `${dd}-${mm}-${yyyy}`;
 // Tampilkan notifikasi
 alert(`Barang berhasil dipinjam. Mohon untuk mengembalikan barang sesuai dengan batas waktu yang telah disepakati yaitu pada ${batasTanggal}.`);
 
-  document.getElementById("statuspinjam").innerText = "Dipinjam";
-  document.getElementById("statuspinjam").style.color = "red";
+  document.getElementById("statuspinjam").innerText = "Menunggu Persetujuan";
+document.getElementById("statuspinjam").style.color = "#2563eb";
 
   tutupFormPinjam();
 });
@@ -474,7 +474,7 @@ switch (kondisi) {
 }
   
   // Informasi Peminjaman
-if (item.statuspinjam === "Dipinjam") {
+if (item.statuspinjam === "Dipinjam" || item.statuspinjam === "Menunggu Persetujuan") {
   document.getElementById("dataPeminjam").innerText = item.namaPeminjam || "-";
   document.getElementById("dataHP").innerText = item.nomorHP || "-";
 
@@ -491,7 +491,6 @@ if (item.statuspinjam === "Dipinjam") {
   document.getElementById("dataHP").innerText = "-";
   document.getElementById("dataKembali").innerText = "-";
 }
-
 
   const status = item.statuspinjam || "-";
 document.getElementById("statuspinjam").innerText = status;
