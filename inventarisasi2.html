@@ -260,26 +260,28 @@
     <a id="link" href="#" target="_blank" class="value">-</a>
   </div>
   
+  <div id="peminjamanSection" class="hidden">
   <h4>Informasi Peminjaman</h4>
-<div class="info-blok">
-  <span class="label">Status</span>
-  <span class="separator">:</span>
-  <span class="value" id="statuspinjam">-</span>
-</div>
-<div class="info-blok">
-  <span class="label">Peminjam</span>
-  <span class="separator">:</span>
-  <span class="value" id="dataPeminjam">-</span>
-</div>
-<div class="info-blok">
-  <span class="label">No. HP</span>
-  <span class="separator">:</span>
-  <span class="value" id="dataHP">-</span>
-</div>
-<div class="info-blok">
-  <span class="label">Kembali</span>
-  <span class="separator">:</span>
-  <span class="value" id="dataKembali">-</span>
+  <div class="info-blok">
+    <span class="label">Status</span>
+    <span class="separator">:</span>
+    <span class="value" id="statuspinjam">-</span>
+  </div>
+  <div class="info-blok">
+    <span class="label">Peminjam</span>
+    <span class="separator">:</span>
+    <span class="value" id="dataPeminjam">-</span>
+  </div>
+  <div class="info-blok">
+    <span class="label">No. HP</span>
+    <span class="separator">:</span>
+    <span class="value" id="dataHP">-</span>
+  </div>
+  <div class="info-blok">
+    <span class="label">Kembali</span>
+    <span class="separator">:</span>
+    <span class="value" id="dataKembali">-</span>
+  </div>
 </div>
 </div>
 
@@ -475,7 +477,13 @@ switch (kondisi) {
 }
   
   // Informasi Peminjaman
-if (["Dipinjam", "Menunggu Persetujuan", "Disetujui", "Ditolak"].includes(item.statuspinjam)) {
+const status = item.statuspinjam || "-";
+document.getElementById("statuspinjam").innerText = status;
+
+const blokPeminjaman = document.getElementById("peminjamanSection");
+if (["Dipinjam", "Menunggu Persetujuan", "Disetujui", "Ditolak"].includes(status)) {
+  blokPeminjaman.classList.remove("hidden");
+
   document.getElementById("dataPeminjam").innerText = item.namaPeminjam || "-";
   document.getElementById("dataHP").innerText = item.nomorHP || "-";
 
@@ -488,9 +496,7 @@ if (["Dipinjam", "Menunggu Persetujuan", "Disetujui", "Ditolak"].includes(item.s
 
   document.getElementById("dataKembali").innerText = `${dd}-${mm}-${yyyy}`;
 } else {
-  document.getElementById("dataPeminjam").innerText = "-";
-  document.getElementById("dataHP").innerText = "-";
-  document.getElementById("dataKembali").innerText = "-";
+  blokPeminjaman.classList.add("hidden");
 }
 
   const status = item.statuspinjam || "-";
