@@ -98,8 +98,8 @@
    color: black;
  }
  .status-value {
-   font-weight: 600;
-   text-transform: uppercase;
+   font-weight: bold;
+   text-transform: none;
  }
     .info-blok {
       display: grid;
@@ -190,7 +190,7 @@
   }
   
   #statuspinjam {
-     text-transform: uppercase;
+     text-transform: none;
   }
 
   </style>
@@ -450,7 +450,27 @@ function tampilkanDetail(item) {
   linkSpan.innerText = linkValue;
   linkSpan.href = (linkValue.startsWith("http") ? linkValue : "#");
 
-  document.getElementById("kondisi").innerText = item.kondisi || "-";
+  const kondisiEl = document.getElementById("kondisi");
+const kondisi = (item.kondisi || "-").toLowerCase();
+kondisiEl.innerText = item.kondisi || "-";
+
+// Atur warna berdasarkan nilai kondisi
+switch (kondisi) {
+  case "baik":
+    kondisiEl.style.color = "green";
+    break;
+  case "cukup baik":
+    kondisiEl.style.color = "goldenrod"; // kuning gelap agar terbaca
+    break;
+  case "rusak ringan":
+    kondisiEl.style.color = "orange";
+    break;
+  case "rusak berat":
+    kondisiEl.style.color = "red";
+    break;
+  default:
+    kondisiEl.style.color = "#374151"; // abu default
+}
   
   // Informasi Peminjaman
 if (item.statuspinjam === "Dipinjam") {
