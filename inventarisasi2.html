@@ -173,7 +173,7 @@
      box-sizing: border-box;
    }
 
-  #buttonsend button.btn {
+  #formPinjamModal button.btn {
     background-color: #007bff;
     color: white;
     border: none;
@@ -185,7 +185,7 @@
     transition: background 0.3s ease;
   }
 
-  #buttonsend button.btn:hover {
+  #formPinjamModal button.btn:hover {
     background-color: #0056b3;
   }
   
@@ -353,15 +353,12 @@
   <label id="labelDropdownBarang">Barang yang serupa</label>
   <select id="dropdownBarang" multiple></select>
 </div>
-</div>
-      <div id="buttonsend" class="hidden">
       <div style="margin-top:10px; display:flex; justify-content:space-between;">
         <button type="button" class="btn" onclick="tutupFormPinjam()">BATAL</button>
         <button type="submit" class="btn">KIRIM</button>
       </div>
     </form>
   </div>
-</div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
@@ -413,7 +410,7 @@ function cariBarang(kode) {
         return;
       }
     }
-    alert("Data tidak ditemukan!");
+    alert("Data barang tidak ditemukan, silakan pindai ulang!");
   });
 }
 
