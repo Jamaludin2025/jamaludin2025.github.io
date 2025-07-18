@@ -173,7 +173,7 @@
      box-sizing: border-box;
    }
 
-  #formPinjamModal button.btn {
+  #buttonsend button.btn {
     background-color: #007bff;
     color: white;
     border: none;
@@ -181,7 +181,7 @@
     padding: 10px 16px;
     font-weight: bold;
     cursor: pointer;
-    width: 48%;
+    width: 30%;
     transition: background 0.3s ease;
   }
 
@@ -353,6 +353,8 @@
   <label id="labelDropdownBarang">Barang yang serupa</label>
   <select id="dropdownBarang" multiple></select>
 </div>
+</div>
+      <div id="buttonsend" class="hidden">
       <div style="margin-top:10px; display:flex; justify-content:space-between;">
         <button type="button" class="btn" onclick="tutupFormPinjam()">BATAL</button>
         <button type="submit" class="btn">KIRIM</button>
@@ -528,9 +530,8 @@ document.getElementById("dataKembali").innerText = batasTanggal;
   document.getElementById("dataHP").innerText = hp;
   document.getElementById("dataKembali").innerText = batasTanggal;
 
-  alert(`Barang berhasil dipinjam. Mohon dikembalikan sebelum ${batasTanggal}.`);
-
   tutupFormPinjam(); // menutup form setelah submit
+  alert(`Barang berhasil dipinjam. Mohon dikembalikan sebelum ${batasTanggal}.`);
 });
 
 
