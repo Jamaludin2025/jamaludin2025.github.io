@@ -496,23 +496,25 @@ document.getElementById("dataKembali").innerText = batasTanggal;
       const kodeData = data[key].kode;
       if (kodeDipinjam.includes(kodeData)) {
         firebase.database().ref("inventaris_kode/" + key).update({
-          statuspinjam: "Dipinjam",
-          namaPeminjam: nama,
-          batasPinjam: durasi
-        });
+  statuspinjam: "Menunggu Persetujuan",
+  namaPeminjam: nama,
+  nomorHP: hp,
+  batasPinjam: durasi,
+  tanggalPinjam: tanggal
+});
       }
     }
   });
 
   // 🔽 Ganti bagian di bawah ini:
   // Hitung tanggal batas pengembalian
-  const tglPinjam = new Date(tanggal);
-  tglPinjam.setDate(tglPinjam.getDate() + parseInt(durasi));
-
-  const dd = String(tglPinjam.getDate()).padStart(2, '0');
-  const mm = String(tglPinjam.getMonth() + 1).padStart(2, '0');
-  const yyyy = tglPinjam.getFullYear();
-  const batasTanggal = `${dd}-${mm}-${yyyy}`;
+  const tglPinjam = new Date(item.tanggalPinjam || item.tanggal);
+tglPinjam.setDate(tglPinjam.getDate() + parseInt(item.batasPinjam || 0));
+const dd = String(tglPinjam.getDate()).padStart(2, '0');
+const mm = String(tglPinjam.getMonth() + 1).padStart(2, '0');
+const yyyy = tglPinjam.getFullYear();
+const batasTanggal = `${dd}-${mm}-${yyyy}`;
+document.getElementById("dataKembali").innerText = batasTanggal;
 
   // ❌ Ini bagian lama yang harus DIGANTI:
   // alert(`Barang berhasil dipinjam. Mohon untuk mengembalikan barang sesuai dengan batas waktu yang telah disepakati yaitu pada ${batasTanggal}.`);
