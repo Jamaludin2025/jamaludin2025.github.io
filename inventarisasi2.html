@@ -506,31 +506,26 @@ document.getElementById("dataKembali").innerText = batasTanggal;
     }
   });
 
-  // 🔽 Ganti bagian di bawah ini:
+  
   // Hitung tanggal batas pengembalian
-  const tglPinjam = new Date(item.tanggalPinjam || item.tanggal);
-tglPinjam.setDate(tglPinjam.getDate() + parseInt(item.batasPinjam || 0));
+const tglPinjam = new Date(tanggal);  // gunakan dari form, bukan item.tanggal
+tglPinjam.setDate(tglPinjam.getDate() + parseInt(durasi));
 const dd = String(tglPinjam.getDate()).padStart(2, '0');
 const mm = String(tglPinjam.getMonth() + 1).padStart(2, '0');
 const yyyy = tglPinjam.getFullYear();
 const batasTanggal = `${dd}-${mm}-${yyyy}`;
+
+// Tampilkan hasil ke UI
+document.getElementById("peminjamanSection").classList.remove("hidden");
+document.getElementById("statuspinjam").innerText = "Menunggu Persetujuan";
+document.getElementById("statuspinjam").style.color = "#2563eb";
+document.getElementById("dataPeminjam").innerText = nama;
+document.getElementById("dataHP").innerText = hp;
 document.getElementById("dataKembali").innerText = batasTanggal;
 
-  // ❌ Ini bagian lama yang harus DIGANTI:
-  // alert(`Barang berhasil dipinjam. Mohon untuk mengembalikan barang sesuai dengan batas waktu yang telah disepakati yaitu pada ${batasTanggal}.`);
-  // document.getElementById("statuspinjam").innerText = "Dipinjam";
-  // document.getElementById("statuspinjam").style.color = "red";
+// Tutup form
+tutupFormPinjam();
 
-  // ✅ Ganti dengan ini:
-  document.getElementById("peminjamanSection").classList.remove("hidden");
-
-  document.getElementById("statuspinjam").innerText = "Dipinjam";
-  document.getElementById("statuspinjam").style.color = "red";
-  document.getElementById("dataPeminjam").innerText = nama;
-  document.getElementById("dataHP").innerText = hp;
-  document.getElementById("dataKembali").innerText = batasTanggal;
-
-  tutupFormPinjam(); // menutup form setelah submit
   alert(`Barang berhasil dipinjam. Mohon dikembalikan sebelum ${batasTanggal}.`);
 });
 
