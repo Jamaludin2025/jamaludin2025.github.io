@@ -478,18 +478,17 @@ if (pilihan === "Sebagian") {
   firebase.database().ref("inventaris_kode").once("value", snapshot => {
   const data = snapshot.val();
   for (let key in data) {
-    if (data[key].kode === kode) {
-      const ref = firebase.database().ref("inventaris_kode/" + key);
-      ref.update({
-        statuspinjam: "Menunggu Persetujuan",
-        namaPeminjam: nama,
-        nomorHP: hp,
-        tanggalPinjam: tanggal,
-        batasPinjam: durasi
-      });
-      break;
-    }
+  if ((barangTerpilih.length ? barangTerpilih : [kode]).includes(data[key].kode)) {
+    const ref = firebase.database().ref("inventaris_kode/" + key);
+    ref.update({
+      statuspinjam: "Menunggu Persetujuan",
+      namaPeminjam: nama,
+      nomorHP: hp,
+      tanggalPinjam: tanggal,
+      batasPinjam: durasi
+    });
   }
+}
 });
 
 
@@ -503,13 +502,17 @@ const yyyy = tglPinjam.getFullYear();
 const batasTanggal = `${dd}-${mm}-${yyyy}`;
 
 // Tampilkan notifikasi
-alert(`Barang berhasil dipinjam. Mohon untuk mengembalikan barang sesuai dengan batas waktu yang telah disepakati yaitu pada ${batasTanggal}.`);
+alert(`Formulir berhasil diajukan. Klik tombol REFRESH dan pastikan status disetujui oleh pemilik.`);
 
-  document.getElementById("statuspinjam").innerText = "Menunggu Persetujuan";
+document.getElementById("statuspinjam").innerText = "Menunggu Persetujuan";
 document.getElementById("statuspinjam").style.color = "#2563eb";
 
-  tutupFormPinjam();
-  muatUlangDetail();
+document.getElementById("formPinjam").reset();
+document.getElementById("groupBarangSerupa").classList.add("hidden");
+
+tutupFormPinjam();
+muatUlangDetail();
+
 });
 
 
@@ -634,6 +637,8 @@ firebase.database().ref("inventaris_kode").once("value", snapshot => {
 
 function tutupFormPinjam() {
   document.getElementById("formPinjamModal").classList.add("hidden");
+  document.getElementById("formPinjam").reset(); // <-- Membersihkan form
+  document.getElementById("groupBarangSerupa").classList.add("hidden"); // Sembunyikan dropdown jika sempat muncul
 }
 
 function unduhDetail() {
