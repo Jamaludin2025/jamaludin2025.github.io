@@ -628,9 +628,38 @@ firebase.database().ref("inventaris_kode").once("value", snapshot => {
 });
 
 
-    window.statusPinjamSekarang = item.statuspinjam;
+        window.statusPinjamSekarang = item.statuspinjam;
     window.namaPeminjamAktif = item.namaPeminjam || "-";
     window.batasPinjamAktif = item.batasPinjam || "-";
+
+    // Jika data peminjam belum lengkap, ambil dari /peminjaman_barang
+    if (!item.namaPeminjam || !item.tanggalPinjam || !item.batasPinjam) {
+      firebase.database().ref("peminjaman_barang").once("value", snap => {
+        const dataPeminjaman = snap.val();
+        for (let key in dataPeminjaman) {
+          const entry = dataPeminjaman[key];
+          if (entry.kodeBarang && entry.kodeBarang.includes(item.kode)) {
+            document.getElementById("dataPeminjam").innerText = entry.namaPeminjam || "-";
+            document.getElementById("dataHP").innerText = entry.nomorHP || "-";
+
+            if (entry.tanggalPinjam && entry.batasPinjam) {
+              const tgl = new Date(entry.tanggalPinjam);
+              tgl.setDate(tgl.getDate() + parseInt(entry.batasPinjam));
+
+              const dd = String(tgl.getDate()).padStart(2, '0');
+              const mm = String(tgl.getMonth() + 1).padStart(2, '0');
+              const yyyy = tgl.getFullYear();
+
+              document.getElementById("dataKembali").innerText = `${dd}-${mm}-${yyyy}`;
+            } else {
+              document.getElementById("dataKembali").innerText = "-";
+            }
+            break;
+          }
+        }
+      });
+    }
+
     document.getElementById("kuantitas").dispatchEvent(new Event("change"));
   }
 
