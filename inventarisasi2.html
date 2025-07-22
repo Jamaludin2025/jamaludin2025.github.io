@@ -1,4 +1,4 @@
-<meta name='viewport' content='width=device-width, initial-scale=1'/><meta name='viewport' content='width=device-width, initial-scale=1'/><meta name='viewport' content='width=device-width, initial-scale=1'/><meta name='viewport' content='width=device-width, initial-scale=1'/><meta name='viewport' content='width=device-width, initial-scale=1'/><meta name='viewport' content='width=device-width, initial-scale=1'/><meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
+<meta name='viewport' content='width=device-width, initial-scale=1'/><meta name='viewport' content='width=device-width, initial-scale=1'/><meta name='viewport' content='width=device-width, initial-scale=1'/><meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
@@ -98,7 +98,7 @@
    color: black;
  }
  .status-value {
-   font-weight: 600;
+   font-weight: bold;
    text-transform: none;
  }
     .info-blok {
@@ -181,7 +181,7 @@
     padding: 10px 16px;
     font-weight: bold;
     cursor: pointer;
-    width: 30%;
+    width: 48%;
     transition: background 0.3s ease;
   }
 
@@ -191,44 +191,8 @@
   
   #kondisi,
   #statuspinjam {
-    font-weight: bold;
-}
- .checkbox-item {
-  display: flex;
-  align-items: center;
-  margin-bottom: 6px;
-  padding: 6px 8px;
-  border-radius: 6px;
-  background-color: #f3f4f6;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-.checkbox-item:hover {
-  background-color: #e5e7eb;
-}
-
-.checkbox-item input[type="checkbox"] {
-  margin-right: 8px;
-  transform: scale(1.1);
-  cursor: pointer;
-}
-
-.checkbox-item .kode-label {
-  font-size: 14px;
-  font-weight: 500;
-  color: #1f2937;
-  white-space: nowrap;
-}
-
-#pilihanBarang {
-  max-height: 200px;
-  overflow-y: auto;
-  padding: 5px 10px;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  background: #fff;
-}
+     font-weight: bold;
+  }
 
   </style>
 </head>
@@ -296,7 +260,7 @@
     <a id="link" href="#" target="_blank" class="value">-</a>
   </div>
   
-<div id="peminjamanSection" class="hidden">
+  <div id="peminjamanSection" class="hidden">
   <h4>Informasi Peminjaman</h4>
   <div class="info-blok">
     <span class="label">Status</span>
@@ -342,24 +306,28 @@
         </select>
       </div>
       <div class="form-group">
-  <label for="kuantitas">Kuantitas</label>
-  <select id="kuantitas" onchange="handleKuantitasChange()">
-    <option value="satuan">Satuan</option>
-    <option value="sebagian">Sebagian</option>
-    <option value="keseluruhan">Keseluruhan</option>
+  <label>Kuantitas</label>
+  <select id="kuantitas" required>
+    <option value="Satuan" selected>Satuan</option>
+    <option value="Sebagian">Sebagian</option>
+    <option value="Keseluruhan">Keseluruhan</option>
   </select>
 </div>
-<div class="form-group" id="groupDropdownBarang" style="display: none;">
-  <label id="labelDropdownBarang">Barang yang serupa</label>
-  <select id="dropdownBarang" multiple></select>
+
+<!-- Tambahan dropdown barang serupa -->
+<div class="form-group hidden" id="groupBarangSerupa">
+  <label>Pilih Barang Serupa</label>
+  <select id="dropdownBarangSerupa" multiple size="6" style="height:auto;">
+    <!-- Akan diisi dari JavaScript -->
+  </select>
 </div>
+
       <div style="margin-top:10px; display:flex; justify-content:space-between;">
         <button type="button" class="btn" onclick="tutupFormPinjam()">BATAL</button>
         <button type="submit" class="btn">KIRIM</button>
       </div>
     </form>
   </div>
-</div>
 
 <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
 <script src="https://unpkg.com/html5-qrcode"></script>
@@ -378,6 +346,9 @@ const firebaseConfig = {
 };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
+
+let semuaBarangSerupa = [];  // <-- DEKLARASI GLOBAL
+let barangTerpilih = [];
 
 const kategoriMap = {
   ETK: "Elektronik",
@@ -410,44 +381,9 @@ function cariBarang(kode) {
         return;
       }
     }
-    alert("Data barang tidak ditemukan, silakan pindai ulang!");
+    alert("Data tidak ditemukan!");
   });
 }
-
-function handleKuantitasChange() {
-  const kuantitas = document.getElementById("kuantitas").value;
-  const dropdownGroup = document.getElementById("groupDropdownBarang");
-  const dropdown = document.getElementById("dropdownBarang");
-  const label = document.getElementById("labelDropdownBarang");
-  
-  dropdown.innerHTML = "";
-  dropdownGroup.style.display = "none";
-
-  if (kuantitas === "satuan") return;
-
-  const kodeAktif = document.getElementById("kodeBarangText").innerText;
-  const prefix = kodeAktif.split("-")[0]; // AKB001 dari AKB001-01-001
-  label.innerText = `Barang yang serupa (${prefix})`;
-
-  firebase.database().ref("inventaris_kode").once("value", snapshot => {
-    const data = snapshot.val();
-    
-    for (let key in data) {
-      const kode = data[key].kode;
-      if (kode.startsWith(prefix)) {
-        const option = document.createElement("option");
-        option.value = kode;
-        option.text = kode;
-        if (kuantitas === "keseluruhan") {
-          option.selected = true;
-        }
-        dropdown.appendChild(option);
-      }
-    }
-    dropdownGroup.style.display = "block";
-  });
-}
-
 
 document.getElementById("formPinjam").addEventListener("submit", function(e) {
   e.preventDefault();
@@ -457,76 +393,93 @@ document.getElementById("formPinjam").addEventListener("submit", function(e) {
   const hp = document.getElementById("nomorHP").value;
   const tanggal = document.getElementById("tanggalPinjam").value;
   const durasi = document.getElementById("batasPinjam").value;
-  const kuantitas = document.getElementById("kuantitas").value;
+  const pilihan = document.getElementById("kuantitas").value;
 
-  let kodeDipinjam = [];
-  if (kuantitas === "satuan") {
-    kodeDipinjam = [kode];
-  } else {
-    const selectedOptions = document.getElementById("dropdownBarang").selectedOptions;
-    kodeDipinjam = Array.from(selectedOptions).map(opt => opt.value);
-  }
+if (pilihan === "Sebagian") {
+  const select = document.getElementById("dropdownBarangSerupa");
+  barangTerpilih = Array.from(select.selectedOptions).map(opt => opt.value);
+}
 
   const dataPinjam = {
-    kodeBarang: kodeDipinjam,
+    kodeBarang: barangTerpilih.length ? barangTerpilih : [kode],
     namaPeminjam: nama,
     nomorHP: hp,
     tanggalPinjam: tanggal,
     batasPinjam: durasi,
-    kuantitas: kuantitas,
     status: "Menunggu Persetujuan"
   };
 
-  // Simpan ke Firebase
+  // Simpan ke Firebase di /peminjaman_barang
   firebase.database().ref("peminjaman_barang").push(dataPinjam);
-  document.getElementById("peminjamanSection").classList.remove("hidden");
 
-document.getElementById("statuspinjam").innerText = "Menunggu Persetujuan";
-document.getElementById("statuspinjam").style.color = "#2563eb"; // biru
-
-document.getElementById("dataPeminjam").innerText = nama;
-document.getElementById("dataHP").innerText = hp;
-document.getElementById("dataKembali").innerText = batasTanggal;
-
-
-  // Update status semua barang yang dipinjam
+  // Update status barang di /inventaris_kode
   firebase.database().ref("inventaris_kode").once("value", snapshot => {
-    const data = snapshot.val();
-    for (let key in data) {
-      const kodeData = data[key].kode;
-      if (kodeDipinjam.includes(kodeData)) {
-        firebase.database().ref("inventaris_kode/" + key).update({
-  statuspinjam: "Menunggu Persetujuan",
-  namaPeminjam: nama,
-  nomorHP: hp,
-  batasPinjam: durasi,
-  tanggalPinjam: tanggal
-});
-      }
+  const data = snapshot.val();
+  for (let key in data) {
+    if (data[key].kode === kode) {
+      const ref = firebase.database().ref("inventaris_kode/" + key);
+      ref.update({
+        statuspinjam: "Menunggu Persetujuan",
+        namaPeminjam: nama,
+        nomorHP: hp,
+        tanggalPinjam: tanggal,
+        batasPinjam: durasi
+      });
+      break;
     }
-  });
+  }
+});
+
+
+document.getElementById("kuantitas").addEventListener("change", function () {
+  const pilihan = this.value;
+  const groupDropdown = document.getElementById("groupBarangSerupa");
+  const select = document.getElementById("dropdownBarangSerupa");
+
+  if (pilihan === "Sebagian") {
+    groupDropdown.classList.remove("hidden");
+    select.innerHTML = "";
+
+    semuaBarangSerupa.forEach(barang => {
+      if (barang.statuspinjam !== "Dipinjam") {
+        const option = document.createElement("option");
+        option.value = barang.kode;
+        option.textContent = barang.kode;
+        select.appendChild(option);
+      }
+    });
+
+    barangTerpilih = []; // reset
+  } else if (pilihan === "Keseluruhan") {
+    groupDropdown.classList.add("hidden");
+    barangTerpilih = semuaBarangSerupa
+      .filter(b => b.statuspinjam !== "Dipinjam")
+      .map(b => b.kode);
+    alert("Semua barang tersedia otomatis dipilih.");
+  } else {
+    groupDropdown.classList.add("hidden");
+    barangTerpilih = [];
+  }
+});
 
   
   // Hitung tanggal batas pengembalian
-const tglPinjam = new Date(tanggal);  // gunakan dari form, bukan item.tanggal
+const tglPinjam = new Date(tanggal);
 tglPinjam.setDate(tglPinjam.getDate() + parseInt(durasi));
+
 const dd = String(tglPinjam.getDate()).padStart(2, '0');
 const mm = String(tglPinjam.getMonth() + 1).padStart(2, '0');
 const yyyy = tglPinjam.getFullYear();
 const batasTanggal = `${dd}-${mm}-${yyyy}`;
 
-// Tampilkan hasil ke UI
-document.getElementById("peminjamanSection").classList.remove("hidden");
-document.getElementById("statuspinjam").innerText = "Menunggu Persetujuan";
+// Tampilkan notifikasi
+alert(`Barang berhasil dipinjam. Mohon untuk mengembalikan barang sesuai dengan batas waktu yang telah disepakati yaitu pada ${batasTanggal}.`);
+
+  document.getElementById("statuspinjam").innerText = "Menunggu Persetujuan";
 document.getElementById("statuspinjam").style.color = "#2563eb";
-document.getElementById("dataPeminjam").innerText = nama;
-document.getElementById("dataHP").innerText = hp;
-document.getElementById("dataKembali").innerText = batasTanggal;
 
-// Tutup form
-tutupFormPinjam();
-
-  alert(`Barang berhasil dipinjam. Mohon dikembalikan sebelum ${batasTanggal}.`);
+  tutupFormPinjam();
+  muatUlangDetail();
 });
 
 
@@ -558,65 +511,79 @@ function tampilkanDetail(item) {
   linkSpan.innerText = linkValue;
   linkSpan.href = (linkValue.startsWith("http") ? linkValue : "#");
 
-  document.getElementById("kondisi").innerText = item.kondisi || "-";
-  // Update kondisi dan warnanya
-const kondisiElem = document.getElementById("kondisi");
-const kondisi = item.kondisi || "-";
-kondisiElem.innerText = kondisi;
+  const kondisiEl = document.getElementById("kondisi");
+const kondisi = (item.kondisi || "-").toLowerCase();
+kondisiEl.innerText = item.kondisi || "-";
 
-// Atur warna kondisi berdasarkan nilai
-switch (kondisi.toLowerCase()) {
+// Atur warna berdasarkan nilai kondisi
+switch (kondisi) {
   case "baik":
-    kondisiElem.style.color = "green";
+    kondisiEl.style.color = "green";
     break;
   case "cukup baik":
-    kondisiElem.style.color = "#eab308"; // kuning
+    kondisiEl.style.color = "goldenrod"; // kuning gelap agar terbaca
     break;
   case "rusak ringan":
-    kondisiElem.style.color = "#f97316"; // oranye
+    kondisiEl.style.color = "orange";
     break;
   case "rusak berat":
-    kondisiElem.style.color = "#dc2626"; // merah
+    kondisiEl.style.color = "red";
     break;
   default:
-    kondisiElem.style.color = "#1f2937"; // warna teks default
+    kondisiEl.style.color = "#374151"; // abu default
 }
+  
+  // Informasi Peminjaman
+const status = item.statuspinjam || "-";
+document.getElementById("statuspinjam").innerText = status;
 
-
-  const statusElem = document.getElementById("statuspinjam");
-const status = item.statuspinjam || "Tersedia";
-statusElem.innerText = status;
-
-// Warna status
-switch (status.toLowerCase()) {
-  case "menunggu persetujuan":
-    statusElem.style.color = "#2563eb"; break;
-  case "disetujui":
-    statusElem.style.color = "green"; break;
-  case "ditolak":
-    statusElem.style.color = "red"; break;
-  default:
-    statusElem.style.color = "green"; // tersedia
-}
-
-// Tampilkan atau sembunyikan informasi peminjaman
-if (status.toLowerCase() === "tersedia") {
-  document.getElementById("peminjamanSection").classList.add("hidden");
-} else {
-  document.getElementById("peminjamanSection").classList.remove("hidden");
+const blokPeminjaman = document.getElementById("peminjamanSection");
+if (["Dipinjam", "Menunggu Persetujuan", "Disetujui", "Ditolak"].includes(status)) {
+  blokPeminjaman.classList.remove("hidden");
 
   document.getElementById("dataPeminjam").innerText = item.namaPeminjam || "-";
   document.getElementById("dataHP").innerText = item.nomorHP || "-";
 
-  const tglPinjam = new Date(item.tanggal);
-  tglPinjam.setDate(tglPinjam.getDate() + parseInt(item.batasPinjam || 0));
-  const dd = String(tglPinjam.getDate()).padStart(2, '0');
-  const mm = String(tglPinjam.getMonth() + 1).padStart(2, '0');
-  const yyyy = tglPinjam.getFullYear();
-  const batasTanggal = `${dd}-${mm}-${yyyy}`;
+  const tgl = new Date(item.tanggalPinjam);
+  tgl.setDate(tgl.getDate() + parseInt(item.batasPinjam || 0));
 
-  document.getElementById("dataKembali").innerText = batasTanggal;
+  const dd = String(tgl.getDate()).padStart(2, '0');
+  const mm = String(tgl.getMonth() + 1).padStart(2, '0');
+  const yyyy = tgl.getFullYear();
+
+  document.getElementById("dataKembali").innerText = `${dd}-${mm}-${yyyy}`;
+} else {
+  blokPeminjaman.classList.add("hidden");
 }
+
+switch (status) {
+  case "Menunggu Persetujuan":
+    document.getElementById("statuspinjam").style.color = "#2563eb"; // biru
+    break;
+  case "Disetujui":
+    document.getElementById("statuspinjam").style.color = "green";
+    break;
+  case "Ditolak":
+    document.getElementById("statuspinjam").style.color = "red";
+    break;
+  default:
+    document.getElementById("statuspinjam").style.color = "#6b7280"; // abu
+    break;
+}
+
+firebase.database().ref("inventaris_kode").once("value", snapshot => {
+  const semua = snapshot.val();
+  semuaBarangSerupa = [];
+
+  const kodeAwal = item.kode.split("-")[0]; // Misalnya: AKB001
+
+  for (let id in semua) {
+    if (semua[id].kode.startsWith(kodeAwal)) {
+      semuaBarangSerupa.push(semua[id]);
+    }
+  }
+});
+
 
     window.statusPinjamSekarang = item.statuspinjam;
     window.namaPeminjamAktif = item.namaPeminjam || "-";
@@ -624,10 +591,10 @@ if (status.toLowerCase() === "tersedia") {
   }
 
      function bukaFormPinjam() {
-  if (window.statusPinjamSekarang === "Dipinjam") {
-    alert(`Mohon maaf, barang ini sedang dipinjam oleh ${window.namaPeminjamAktif}. Anda dapat meminjamnya setelah batas pinjam selesai.`);
-    return;
-  }
+  if (["Menunggu Persetujuan", "Disetujui"].includes(window.statusPinjamSekarang)) {
+  alert(`Mohon maaf, barang ini sedang dalam proses atau sudah dipinjam oleh ${window.namaPeminjamAktif}.`);
+  return;
+}
 
   document.getElementById("formPinjamModal").classList.remove("hidden");
   document.body.classList.add("modal-open");
