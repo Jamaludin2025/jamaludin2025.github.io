@@ -574,20 +574,30 @@ const blokPeminjaman = document.getElementById("peminjamanSection");
 if (["Dipinjam", "Menunggu Persetujuan", "Disetujui", "Ditolak"].includes(status)) {
   blokPeminjaman.classList.remove("hidden");
 
-  document.getElementById("dataPeminjam").innerText = item.namaPeminjam || "-";
-  document.getElementById("dataHP").innerText = item.nomorHP || "-";
+  const nama = item.namaPeminjam || "-";
+  const hp = item.nomorHP || "-";
+  const batas = item.batasPinjam || "-";
+  const tglPinjam = item.tanggalPinjam;
 
-  const tgl = new Date(item.tanggalPinjam);
-  tgl.setDate(tgl.getDate() + parseInt(item.batasPinjam || 0));
+  document.getElementById("dataPeminjam").innerText = nama;
+  document.getElementById("dataHP").innerText = hp;
 
-  const dd = String(tgl.getDate()).padStart(2, '0');
-  const mm = String(tgl.getMonth() + 1).padStart(2, '0');
-  const yyyy = tgl.getFullYear();
+  if (tglPinjam && batas) {
+    const tgl = new Date(tglPinjam);
+    tgl.setDate(tgl.getDate() + parseInt(batas));
 
-  document.getElementById("dataKembali").innerText = `${dd}-${mm}-${yyyy}`;
+    const dd = String(tgl.getDate()).padStart(2, '0');
+    const mm = String(tgl.getMonth() + 1).padStart(2, '0');
+    const yyyy = tgl.getFullYear();
+
+    document.getElementById("dataKembali").innerText = `${dd}-${mm}-${yyyy}`;
+  } else {
+    document.getElementById("dataKembali").innerText = "-";
+  }
 } else {
   blokPeminjaman.classList.add("hidden");
 }
+
 
 switch (status) {
   case "Menunggu Persetujuan":
