@@ -356,25 +356,32 @@ document.getElementById("kuantitas").addEventListener("change", function () {
   const select = document.getElementById("dropdownBarangSerupa");
 
   if (!semuaBarangSerupa || semuaBarangSerupa.length === 0) {
-    groupDropdown.classList.add("hidden");
-    alert("Data barang serupa belum siap. Silakan coba lagi.");
-    return;
-  }
+  groupDropdown.classList.add("hidden");
+  return;
+}
 
   if (pilihan === "Sebagian") {
-    groupDropdown.classList.remove("hidden");
-    select.innerHTML = "";
+  groupDropdown.classList.remove("hidden");
+  select.innerHTML = "";
 
-    semuaBarangSerupa.forEach(barang => {
-      if (barang.statuspinjam !== "Dipinjam") {
-        const option = document.createElement("option");
-        option.value = barang.kode;
-        option.textContent = barang.kode;
-        select.appendChild(option);
-      }
-    });
+  semuaBarangSerupa.forEach(barang => {
+    const option = document.createElement("option");
+    option.value = barang.kode;
 
-    barangTerpilih = [];
+    if (barang.statuspinjam === "Dipinjam") {
+      option.textContent = `${barang.kode} (Sedang dipinjam)`;
+      option.disabled = true;
+      option.style.color = "gray";
+    } else {
+      option.textContent = barang.kode;
+    }
+
+    select.appendChild(option);
+  });
+
+  barangTerpilih = [];
+
+
   } else if (pilihan === "Keseluruhan") {
     groupDropdown.classList.remove("hidden");
     select.innerHTML = "";
@@ -392,7 +399,7 @@ document.getElementById("kuantitas").addEventListener("change", function () {
       }
     });
 
-    alert("Semua barang tersedia otomatis dipilih.");
+    alert("Semua barang serupa yang tersedia berhasil dipilih.");
   } else {
     groupDropdown.classList.add("hidden");
     barangTerpilih = [];
@@ -431,7 +438,7 @@ function cariBarang(kode) {
         return;
       }
     }
-    alert("Data tidak ditemukan!");
+    alert("Kode barang tidak ditemukan, silakan pindai ulang.");
   });
 }
 
