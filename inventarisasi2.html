@@ -347,8 +347,58 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-let semuaBarangSerupa = [];  // <-- DEKLARASI GLOBAL
+let semuaBarangSerupa = [];
 let barangTerpilih = [];
+
+document.getElementById("kuantitas").addEventListener("change", function () {
+  const pilihan = this.value;
+  const groupDropdown = document.getElementById("groupBarangSerupa");
+  const select = document.getElementById("dropdownBarangSerupa");
+
+  if (!semuaBarangSerupa || semuaBarangSerupa.length === 0) {
+    groupDropdown.classList.add("hidden");
+    alert("Data barang serupa belum siap. Silakan coba lagi.");
+    return;
+  }
+
+  if (pilihan === "Sebagian") {
+    groupDropdown.classList.remove("hidden");
+    select.innerHTML = "";
+
+    semuaBarangSerupa.forEach(barang => {
+      if (barang.statuspinjam !== "Dipinjam") {
+        const option = document.createElement("option");
+        option.value = barang.kode;
+        option.textContent = barang.kode;
+        select.appendChild(option);
+      }
+    });
+
+    barangTerpilih = [];
+  } else if (pilihan === "Keseluruhan") {
+    groupDropdown.classList.remove("hidden");
+    select.innerHTML = "";
+
+    barangTerpilih = [];
+
+    semuaBarangSerupa.forEach(barang => {
+      if (barang.statuspinjam !== "Dipinjam") {
+        const option = document.createElement("option");
+        option.value = barang.kode;
+        option.textContent = barang.kode;
+        option.selected = true;
+        select.appendChild(option);
+        barangTerpilih.push(barang.kode);
+      }
+    });
+
+    alert("Semua barang tersedia otomatis dipilih.");
+  } else {
+    groupDropdown.classList.add("hidden");
+    barangTerpilih = [];
+  }
+});
+
 
 const kategoriMap = {
   ETK: "Elektronik",
@@ -431,57 +481,6 @@ if (pilihan === "Sebagian") {
 });
 
 
-document.getElementById("kuantitas").addEventListener("change", function () {
-  const pilihan = this.value;
-const groupDropdown = document.getElementById("groupBarangSerupa");
-const select = document.getElementById("dropdownBarangSerupa");
-
-// Jika data belum siap
-if (!semuaBarangSerupa || semuaBarangSerupa.length === 0) {
-  groupDropdown.classList.add("hidden");
-  alert("Data barang serupa belum siap. Silakan coba lagi.");
-  return;
-}
-
-if (pilihan === "Sebagian") {
-  groupDropdown.classList.remove("hidden");
-  select.innerHTML = "";
-
-  semuaBarangSerupa.forEach(barang => {
-    if (barang.statuspinjam !== "Dipinjam") {
-      const option = document.createElement("option");
-      option.value = barang.kode;
-      option.textContent = barang.kode;
-      select.appendChild(option);
-    }
-  });
-
-  barangTerpilih = [];
-} else if (pilihan === "Keseluruhan") {
-  groupDropdown.classList.remove("hidden");
-  select.innerHTML = "";
-
-  barangTerpilih = [];
-
-  semuaBarangSerupa.forEach(barang => {
-    if (barang.statuspinjam !== "Dipinjam") {
-      const option = document.createElement("option");
-      option.value = barang.kode;
-      option.textContent = barang.kode;
-      option.selected = true;
-      select.appendChild(option);
-      barangTerpilih.push(barang.kode);
-    }
-  });
-
-  alert("Semua barang tersedia otomatis dipilih.");
-} else {
-  groupDropdown.classList.add("hidden");
-  barangTerpilih = [];
-}
-
-
-  
   // Hitung tanggal batas pengembalian
 const tglPinjam = new Date(tanggal);
 tglPinjam.setDate(tglPinjam.getDate() + parseInt(durasi));
