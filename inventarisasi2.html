@@ -700,15 +700,41 @@ firebase.database().ref("inventaris_kode").once("value", snapshot => {
   }
 
      function bukaFormPinjam() {
-  if (["Menunggu Persetujuan", "Disetujui"].includes(window.statusPinjamSekarang)) {
-  alert(`Mohon maaf, barang ini sedang dalam proses atau sudah dipinjam oleh ${window.namaPeminjamAktif}.`);
-  return;
+  const status = window.statusPinjamSekarang;
+  const namaPeminjam = window.namaPeminjamAktif || "-";
+  const kodeBarangSekarang = window.kodeBarangAktif || "-";
+
+  if (["Menunggu Persetujuan", "Disetujui"].includes(status)) {
+    // Ambil data dari peminjaman_barang untuk menemukan formulir utamanya
+    firebase.database().ref("peminjaman_barang").once("value", snap => {
+      const data = snap.val();
+      for (let key in data) {
+        const entry = data[key];
+        if (entry.kodeBarang && entry.kodeBarang.includes(kodeBarangSekarang)) {
+          const nama = entry.namaPeminjam || "-";
+          const kodeFormulir = entry.kodeBarang[0] || "-";
+          alert(`Barang ini telah dipinjam oleh ${nama} di formulir ${kodeFormulir}`);
+          return;
+        }
+      }
+
+      // Jika tidak ditemukan, fallback ke alert lama
+      alert(`Barang ini sedang dalam proses atau sudah dipinjam oleh ${namaPeminjam}.`);
+    });
+
+    return;
+  }
+
+  // Jika status tersedia, buka form
+  if (!status || status === "Tersedia") {
+    document.getElementById("formPinjamModal").classList.remove("hidden");
+    document.body.classList.add("modal-open");
+    document.getElementById("reader").style.display = "none";
+  } else {
+    alert("Status barang tidak valid atau sedang diproses.");
+  }
 }
 
-  document.getElementById("formPinjamModal").classList.remove("hidden");
-  document.body.classList.add("modal-open");
-  document.getElementById("reader").style.display = "none";
-}
 
 function tutupFormPinjam() {
   document.getElementById("formPinjamModal").classList.add("hidden");
