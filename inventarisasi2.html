@@ -571,59 +571,58 @@ const status = item.statuspinjam || "-";
 document.getElementById("statuspinjam").innerText = status;
 
 const blokPeminjaman = document.getElementById("peminjamanSection");
+
 if (status && status !== "Tersedia") {
   blokPeminjaman.classList.remove("hidden");
 
-  const nama = item.namaPeminjam || "-";
-  const hp = item.nomorHP || "-";
-  const batas = item.batasPinjam || "-";
-  const tglPinjam = item.tanggalPinjam;
+  // Isi default dari item
+  let nama = item.namaPeminjam || "-";
+  let hp = item.nomorHP || "-";
+  let batas = item.batasPinjam || "-";
+  let tglPinjam = item.tanggalPinjam || null;
 
-  document.getElementById("dataPeminjam").innerText = nama;
-  document.getElementById("dataHP").innerText = hp;
-
-  if (tglPinjam && batas) {
-    const tgl = new Date(tglPinjam);
-    const durasi = parseInt(batas);
-    if (!isNaN(tgl.getTime()) && !isNaN(durasi)) {
-      tgl.setDate(tgl.getDate() + durasi);
-      const dd = String(tgl.getDate()).padStart(2, '0');
-      const mm = String(tgl.getMonth() + 1).padStart(2, '0');
-      const yyyy = tgl.getFullYear();
-      document.getElementById("dataKembali").innerText = `${dd}-${mm}-${yyyy}`;
-    } else {
-      document.getElementById("dataKembali").innerText = "-";
-    }
-  } else {
-    document.getElementById("dataKembali").innerText = "-";
-  }
-
-  // Jika data belum lengkap, cari dari peminjaman_barang
-  if (nama === "-" || hp === "-" || !tglPinjam || batas === "-") {
+  // Jika data dari item tidak lengkap, cari dari peminjaman_barang
+  if (nama === "-" || hp === "-" || batas === "-" || !tglPinjam) {
     firebase.database().ref("peminjaman_barang").once("value", snap => {
-      const dataPeminjaman = snap.val();
-      for (let key in dataPeminjaman) {
-        const entry = dataPeminjaman[key];
+      const semua = snap.val();
+      for (let id in semua) {
+        const entry = semua[id];
         if (entry.kodeBarang && entry.kodeBarang.includes(item.kode)) {
-          document.getElementById("dataPeminjam").innerText = entry.namaPeminjam || "-";
-          document.getElementById("dataHP").innerText = entry.nomorHP || "-";
-
-          if (entry.tanggalPinjam && entry.batasPinjam) {
-            const tgl = new Date(entry.tanggalPinjam);
-            tgl.setDate(tgl.getDate() + parseInt(entry.batasPinjam));
-            const dd = String(tgl.getDate()).padStart(2, '0');
-            const mm = String(tgl.getMonth() + 1).padStart(2, '0');
-            const yyyy = tgl.getFullYear();
-            document.getElementById("dataKembali").innerText = `${dd}-${mm}-${yyyy}`;
-          } else {
-            document.getElementById("dataKembali").innerText = "-";
-          }
+          nama = entry.namaPeminjam || "-";
+          hp = entry.nomorHP || "-";
+          batas = entry.batasPinjam || "-";
+          tglPinjam = entry.tanggalPinjam || null;
           break;
         }
       }
-    });
-  }
 
+      // Tampilkan setelah ambil fallback
+      document.getElementById("dataPeminjam").innerText = nama;
+      document.getElementById("dataHP").innerText = hp;
+
+      if (tglPinjam && batas) {
+        const tgl = new Date(tglPinjam);
+        tgl.setDate(tgl.getDate() + parseInt(batas));
+        const dd = String(tgl.getDate()).padStart(2, '0');
+        const mm = String(tgl.getMonth() + 1).padStart(2, '0');
+        const yyyy = tgl.getFullYear();
+        document.getElementById("dataKembali").innerText = `${dd}-${mm}-${yyyy}`;
+      } else {
+        document.getElementById("dataKembali").innerText = "-";
+      }
+    });
+  } else {
+    // Tampilkan langsung jika data sudah lengkap
+    document.getElementById("dataPeminjam").innerText = nama;
+    document.getElementById("dataHP").innerText = hp;
+
+    const tgl = new Date(tglPinjam);
+    tgl.setDate(tgl.getDate() + parseInt(batas));
+    const dd = String(tgl.getDate()).padStart(2, '0');
+    const mm = String(tgl.getMonth() + 1).padStart(2, '0');
+    const yyyy = tgl.getFullYear();
+    document.getElementById("dataKembali").innerText = `${dd}-${mm}-${yyyy}`;
+  }
 } else {
   blokPeminjaman.classList.add("hidden");
 }
