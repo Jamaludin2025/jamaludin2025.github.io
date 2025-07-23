@@ -573,8 +573,6 @@ document.getElementById("statuspinjam").innerText = status;
 const blokPeminjaman = document.getElementById("peminjamanSection");
 
 if (status && status !== "Tersedia") {
-  blokPeminjaman.classList.remove("hidden");
-
   // Isi default dari item
   let nama = item.namaPeminjam || "-";
   let hp = item.nomorHP || "-";
@@ -592,27 +590,36 @@ if (status && status !== "Tersedia") {
           hp = entry.nomorHP || "-";
           batas = entry.batasPinjam || "-";
           tglPinjam = entry.tanggalPinjam || null;
+
+          // ✅ Tampilkan blok setelah ambil fallback
+          blokPeminjaman.classList.remove("hidden");
+          window.statusPinjamSekarang = item.statuspinjam || entry.status || "Menunggu Persetujuan";
+          window.namaPeminjamAktif = nama;
+
+          document.getElementById("dataPeminjam").innerText = nama;
+          document.getElementById("dataHP").innerText = hp;
+
+          if (tglPinjam && batas) {
+            const tgl = new Date(tglPinjam);
+            tgl.setDate(tgl.getDate() + parseInt(batas));
+            const dd = String(tgl.getDate()).padStart(2, '0');
+            const mm = String(tgl.getMonth() + 1).padStart(2, '0');
+            const yyyy = tgl.getFullYear();
+            document.getElementById("dataKembali").innerText = `${dd}-${mm}-${yyyy}`;
+          } else {
+            document.getElementById("dataKembali").innerText = "-";
+          }
+
           break;
         }
       }
-
-      // Tampilkan setelah ambil fallback
-      document.getElementById("dataPeminjam").innerText = nama;
-      document.getElementById("dataHP").innerText = hp;
-
-      if (tglPinjam && batas) {
-        const tgl = new Date(tglPinjam);
-        tgl.setDate(tgl.getDate() + parseInt(batas));
-        const dd = String(tgl.getDate()).padStart(2, '0');
-        const mm = String(tgl.getMonth() + 1).padStart(2, '0');
-        const yyyy = tgl.getFullYear();
-        document.getElementById("dataKembali").innerText = `${dd}-${mm}-${yyyy}`;
-      } else {
-        document.getElementById("dataKembali").innerText = "-";
-      }
     });
   } else {
-    // Tampilkan langsung jika data sudah lengkap
+    // ✅ Tampilkan langsung jika data sudah lengkap
+    blokPeminjaman.classList.remove("hidden");
+    window.statusPinjamSekarang = item.statuspinjam;
+    window.namaPeminjamAktif = nama;
+
     document.getElementById("dataPeminjam").innerText = nama;
     document.getElementById("dataHP").innerText = hp;
 
