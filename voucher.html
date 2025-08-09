@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Pencarian Kode Voucher Undian</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet"/>
+
+    <!-- ========== CSS STYLES ========== -->
+    <style>
+        /* Font Import */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        
+        /* Base Styles */
+        body { 
+            font-family: 'Inter', sans-serif; 
+        }
+        
+        /* Utility Classes */
+        .highlight { 
+            background-color: #fef08a; 
+        }
+        
+        /* Animations */
+        .fade-in { 
+            animation: fadeIn 0.3s ease-in; 
+        }
+        
+        @keyframes fadeIn { 
+            from { 
+                opacity: 0; 
+                transform: translateY(10px); 
+            } 
+            to { 
+                opacity: 1; 
+                transform: translateY(0); 
+            } 
+        }
+        
+        /* Toggle Switch Styles */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .ri-alert-line {
+        	color: red;
+        	font-size:30;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider {
+            background-color: #3b82f6;
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+    </style>
+</head>
+<!-- ========== HTML STRUCTURE ========== -->
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
+        <!-- Header -->
+        <div class="bg-white rounded-xl shadow-lg p-2 mb-4">
+        <div class="text-center">
+            <h1 class="text-4xl font-bold text-gray-800 mb-2">Kode Voucher Undian</h1>
+        </div>
+        </div>
+
+        <!-- Search Result Display Area -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-4" id="searchResultArea">
+            <div id="searchResultContent" class="text-center py-8 text-gray-500 h-[120px] flex items-center justify-center">
+                Ketik kode voucher untuk mencari...
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="bg-white rounded-xl shadow-lg p-2 mb-4">
+            <div class="flex gap-2.5">
+                <button onclick="showAddVoucherModal()" 
+                        class="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
+                    Tambah Voucher
+                </button>
+                <button onclick="showVoucherList()" 
+                        class="flex-1 bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
+                    Daftar Voucher
+                </button>
+            </div>
+        </div>
+
+        <!-- Search Section -->
+        <div class="bg-white rounded-xl shadow-lg p-2">
+            <div class="flex gap-2.5">
+                <input type="text" id="searchInput" placeholder="Ketik kode voucher..." 
+                       class="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg"
+                       oninput="this.value = this.value.toUpperCase(); searchVoucher()">
+                <button onclick="resetSearch()" 
+                        class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-lg font-medium transition-colors whitespace-nowrap">
+                    Reset
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Voucher List Page -->
+    <div id="voucherListPage" class="fixed inset-0 bg-white z-40 hidden">
+        <div class="container mx-auto px-4 py-8 max-w-6xl">
+            <div class="flex items-center justify-between mb-8">
+                <h1 class="text-3xl font-bold text-gray-800">Daftar Voucher</h1>
+                <button onclick="closeVoucherList()" 
+                        class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-lg font-medium transition-colors">
+                    Kembali
+                </button>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+                <div class="bg-white rounded-lg shadow p-6 text-center">
+                    <div class="text-3xl font-bold text-blue-600" id="totalVouchersCount">0</div>
+                    <div class="text-gray-600">Total Voucher</div>
+                </div>
+                <div class="bg-white rounded-lg shadow p-6 text-center">
+                    <div class="text-3xl font-bold text-green-600" id="selectedVouchersCount">0</div>
+                    <div class="text-gray-600">Voucher Terpilih</div>
+                </div>
+                <div class="bg-white rounded-lg shadow p-6 text-center">
+                    <div class="text-3xl font-bold text-gray-600" id="remainingVouchersCount">0</div>
+                    <div class="text-gray-600">Sisa Voucher</div>
+                </div>
+            </div>
+
+            <!-- Character Filter Section -->
+            <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+                <div class="flex flex-wrap gap-2">
+                    <button onclick="filterByCharacterCount('all')" 
+                            class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm font-medium" 
+                            id="filter-all">
+                        Semua
+                    </button>
+                    <div id="characterFilters" class="flex flex-wrap gap-2">
+                        <!-- Character filter buttons will be generated here -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <div id="allVouchersList" class="space-y-2 max-h-96 overflow-y-auto">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Voucher Modal -->
+    <div id="addVoucherModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-xl p-8 max-w-md w-full mx-4">
+            <h3 class="text-xl font-bold text-gray-800 mb-3">Tambah Voucher Baru</h3>
+            
+            <div class="mb-6">
+                <input type="text" id="modalVoucherInput" placeholder="Masukkan kode voucher..." 
+                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                       oninput="this.value = this.value.toUpperCase(); updateCharacterCount()">
+                <div class="mt-2 text-sm text-gray-600">
+                    <span id="characterCount">0 Karakter</span>
+                </div>
+            </div>
+
+            <div class="flex gap-3">
+            	<button onclick="closeAddVoucherModal()" 
+                        class="flex-1 bg-gray-500 hover:bg-gray-600 text-white py-3 rounded-lg font-medium transition-colors">
+                    Batal
+                </button>
+                <button onclick="addVoucher()" 
+                        class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-medium transition-colors">
+                    Tambah Voucher
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== JAVASCRIPT CODE ========== -->
+    <script>
+        // Global Variables
+        let vouchers = [];
+        let markedVouchers = new Set();
+        let currentCharacterFilter = 'all';
+
+        // ========== DATA MANAGEMENT FUNCTIONS ==========
+        
+        // Load data from localStorage on page load
+        function loadData() {
+            const savedVouchers = localStorage.getItem('vouchers');
+            const savedMarkedVouchers = localStorage.getItem('markedVouchers');
+            
+            if (savedVouchers) {
+                vouchers = JSON.parse(savedVouchers);
+            }
+            
+            if (savedMarkedVouchers) {
+                markedVouchers = new Set(JSON.parse(savedMarkedVouchers));
+            }
+        }
+
+        // Save data to localStorage
+        function saveData() {
+            localStorage.setItem('vouchers', JSON.stringify(vouchers));
+            localStorage.setItem('markedVouchers', JSON.stringify([...markedVouchers]));
+        }
+
+        // ========== MODAL FUNCTIONS ==========
+        
+        function showAddVoucherModal() {
+            document.getElementById('addVoucherModal').classList.remove('hidden');
+            document.getElementById('addVoucherModal').classList.add('flex');
+            document.getElementById('modalVoucherInput').focus();
+        }
+
+        function closeAddVoucherModal() {
+            document.getElementById('addVoucherModal').classList.add('hidden');
+            document.getElementById('addVoucherModal').classList.remove('flex');
+            document.getElementById('modalVoucherInput').value = '';
+            document.getElementById('characterCount').textContent = '0 karakter';
+        }
+
+        function updateCharacterCount() {
+            const input = document.getElementById('modalVoucherInput');
+            const count = input.value.length;
+            document.getElementById('characterCount').textContent = `${count} karakter`;
+        }
+
+        function addVoucher() {
+            const input = document.getElementById('modalVoucherInput');
+            const code = input.value.trim().toUpperCase();
+            
+            if (!code) {
+                alert('Masukkan kode voucher!');
+                return;
+            }
+            
+            if (vouchers.find(v => v.code === code)) {
+                alert('Kode voucher sudah ada!');
+                return;
+            }
+            
+            vouchers.push({
+                code: code,
+                timestamp: new Date()
+            });
+            
+            saveData();
+            closeAddVoucherModal();
+            showNotification('Voucher berhasil ditambahkan!', 'success');
+        }
+
+        // ========== SEARCH FUNCTIONS ==========
+        
+        function searchVoucher() {
+            const query = document.getElementById('searchInput').value.trim().toUpperCase();
+            const searchResultContent = document.getElementById('searchResultContent');
+            
+            if (!query) {
+                searchResultContent.innerHTML = '<div class="flex items-center justify-center text-gray-500">Ketik kode voucher untuk mencari...</div>';
+                return;
+            }
+            
+            const foundVoucher = vouchers.find(v => v.code === query);
+            
+            if (foundVoucher) {
+                const isMarked = markedVouchers.has(foundVoucher.code);
+                
+                // Trigger vibration when voucher is found
+                if (navigator.vibrate) {
+                    navigator.vibrate([200, 100, 200]); // Vibrate for 200ms, pause 100ms, vibrate 200ms
+                }
+                
+                searchResultContent.innerHTML = `
+                    <div class="fade-in flex items-center justify-center">
+                        <div class="inline-flex flex-col items-center gap-3 p-4 border-2 border-blue-300 bg-blue-50 rounded-lg">
+                            <div class="flex items-center gap-4">
+                                <div class="text-center">
+                                    <div class="font-mono text-xl font-bold text-blue-800 ${isMarked ? 'line-through' : ''}">${foundVoucher.code}</div>
+                                    <div class="text-sm text-blue-600 font-medium mt-1">
+                                        ${foundVoucher.code.length} karakter
+                                    </div>
+                                </div>
+                                <button onclick="toggleMark('${foundVoucher.code}')" 
+                                        class="px-4 py-2 rounded-lg text-sm font-medium transition-colors ${isMarked ? 'bg-green-500 text-white hover:bg-green-600' : 'bg-blue-500 text-white hover:bg-blue-600'}">
+                                    ${isMarked ? 'Ditandai' : 'Tandai'}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                searchResultContent.innerHTML = `
+                    <div class="flex items-center justify-center">
+                        <div class="text-center">
+                            <div class="text-2xl mb-2"><div class="text-2xl mb-2"><i class="ri-alert-line"></i></div></div>
+                            <div class="text-sm text-red-600">Kode "${query}" tidak ditemukan</div>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function resetSearch() {
+            document.getElementById('searchInput').value = '';
+            searchVoucher();
+        }
+
+        function toggleMark(voucherCode) {
+            if (markedVouchers.has(voucherCode)) {
+                markedVouchers.delete(voucherCode);
+                showNotification('Tanda voucher dibatalkan', 'info');
+            } else {
+                markedVouchers.add(voucherCode);
+                showNotification('Voucher berhasil ditandai!', 'success');
+            }
+            
+            saveData();
+            
+            // Refresh search result if showing
+            const query = document.getElementById('searchInput').value.trim().toUpperCase();
+            if (query) {
+                searchVoucher();
+            }
+            
+            // Update voucher list if it's open
+            if (!document.getElementById('voucherListPage').classList.contains('hidden')) {
+                updateVoucherListDisplay();
+            }
+        }
+
+        // ========== VOUCHER LIST FUNCTIONS ==========
+        
+        function showVoucherList() {
+            document.getElementById('voucherListPage').classList.remove('hidden');
+            updateVoucherListDisplay();
+        }
+
+        function closeVoucherList() {
+            document.getElementById('voucherListPage').classList.add('hidden');
+        }
+
+        function updateVoucherListDisplay() {
+            const listDiv = document.getElementById('allVouchersList');
+            const totalCount = document.getElementById('totalVouchersCount');
+            const selectedCount = document.getElementById('selectedVouchersCount');
+            const remainingCount = document.getElementById('remainingVouchersCount');
+            
+            // Generate character filter buttons
+            generateCharacterFilters();
+            
+            // Filter vouchers based on current filter
+            let filteredVouchers = vouchers;
+            if (currentCharacterFilter !== 'all') {
+                filteredVouchers = vouchers.filter(v => v.code.length === parseInt(currentCharacterFilter));
+            }
+            
+            totalCount.textContent = vouchers.length;
+            selectedCount.textContent = markedVouchers.size;
+            remainingCount.textContent = vouchers.length - markedVouchers.size;
+            
+            if (filteredVouchers.length === 0) {
+                if (vouchers.length === 0) {
+                    listDiv.innerHTML = `
+                        <div class="text-center text-gray-500 py-8">
+                            Belum ada voucher yang ditambahkan.
+                        </div>
+                    `;
+                } else {
+                    listDiv.innerHTML = `
+                        <div class="text-center text-gray-500 py-8">
+                            Tidak ada voucher dengan ${currentCharacterFilter} karakter.
+                        </div>
+                    `;
+                }
+            } else {
+                listDiv.innerHTML = filteredVouchers.map(voucher => {
+                    const isMarked = markedVouchers.has(voucher.code);
+                    
+                    return `
+                        <div class="flex items-center justify-between p-4 border-2 border-gray-300 bg-gray-50 rounded-lg hover:shadow-md transition-all fade-in ${isMarked ? 'opacity-80' : ''}">
+                            <div class="flex items-center gap-4">
+                                <div>
+                                    <div class="font-mono text-xl font-bold text-gray-800 ${isMarked ? 'line-through' : ''}">${voucher.code}</div>
+                                    <div class="text-sm text-gray-600">${voucher.code.length} karakter</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                ${isMarked ? '<span class="bg-green-500 text-white px-3 py-2 rounded-lg text-sm font-medium">TERPILIH</span>' : '<span class=""></span>'}
+                                <button onclick="confirmRemoveVoucher('${voucher.code}')" 
+                                        class="px-3 py-2 bg-red-500 text-white hover:bg-red-600 rounded-lg text-sm font-medium transition-colors">
+                                    HAPUS
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+        }
+
+        function generateCharacterFilters() {
+            const characterCounts = [...new Set(vouchers.map(v => v.code.length))].sort((a, b) => a - b);
+            const filtersDiv = document.getElementById('characterFilters');
+            
+            filtersDiv.innerHTML = characterCounts.map(count => {
+                const voucherCount = vouchers.filter(v => v.code.length === count).length;
+                const isActive = currentCharacterFilter === count.toString();
+                
+                return `
+                    <button onclick="filterByCharacterCount('${count}')" 
+                            class="px-4 py-2 rounded-lg transition-colors text-sm font-medium ${isActive ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}" 
+                            id="filter-${count}">
+                        ${count} karakter (${voucherCount})
+                    </button>
+                `;
+            }).join('');
+        }
+
+        function filterByCharacterCount(filterValue) {
+            currentCharacterFilter = filterValue;
+            
+            // Update button states
+            document.querySelectorAll('[id^="filter-"]').forEach(btn => {
+                btn.classList.remove('bg-blue-500', 'bg-green-500', 'text-white');
+                btn.classList.add('bg-gray-200', 'text-gray-700', 'hover:bg-gray-300');
+            });
+            
+            const activeButton = document.getElementById(`filter-${filterValue}`);
+            if (activeButton) {
+                activeButton.classList.remove('bg-gray-200', 'text-gray-700', 'hover:bg-gray-300');
+                activeButton.classList.add('bg-green-500', 'text-white');
+            }
+            
+            updateVoucherListDisplay();
+        }
+
+        function confirmRemoveVoucher(voucherCode) {
+            if (confirm(`Apakah Anda yakin ingin menghapus voucher ${voucherCode}?`)) {
+                vouchers = vouchers.filter(v => v.code !== voucherCode);
+                markedVouchers.delete(voucherCode);
+                
+                saveData();
+                
+                // Update voucher list if it's open
+                if (!document.getElementById('voucherListPage').classList.contains('hidden')) {
+                    updateVoucherListDisplay();
+                }
+                
+                showNotification('Voucher berhasil dihapus', 'info');
+            }
+        }
+
+        // ========== UTILITY FUNCTIONS ==========
+        
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 px-6 py-3 rounded-lg text-white font-medium z-60 transition-all duration-300 ${
+                type === 'success' ? 'bg-green-500' : 
+                type === 'error' ? 'bg-red-500' : 'bg-blue-500'
+            }`;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // ========== EVENT LISTENERS ==========
+        
+        // Enter key to add voucher in modal
+        document.getElementById('modalVoucherInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                addVoucher();
+            }
+        });
+
+        // Close modal when clicking outside
+        document.getElementById('addVoucherModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeAddVoucherModal();
+            }
+        });
+
+        // ========== INITIALIZATION ==========
+        
+        // Load data when page loads
+        window.addEventListener('load', function() {
+            loadData();
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96c38fc2616bfdbc',t:'MTc1NDcwMzc5NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
