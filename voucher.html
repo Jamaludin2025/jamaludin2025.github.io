@@ -6,6 +6,8 @@
     <title>Sistem Pencarian Kode Voucher Undian</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
 
     <!-- ========== CSS STYLES ========== -->
     <style>
@@ -52,10 +54,15 @@
             height: 0;
         }
         
-        .ri-alert-line {
+        .ri-search-eye-line {
         	color: red;
         	font-size:30;
         }
+        
+        .ri-delete-bin-5-line {
+        	color: white;
+        	font-size:20;
+        	}
         
         .slider {
             position: absolute;
@@ -96,7 +103,7 @@
         <!-- Header -->
         <div class="bg-white rounded-xl shadow-lg p-2 mb-4">
         <div class="text-center">
-            <h1 class="text-3xl font-bold text-gray-800 mb-2">Voucher Undian</h1>
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">Kode Voucher Undian</h1>
         </div>
         </div>
 
@@ -125,7 +132,7 @@
         <div class="bg-white rounded-xl shadow-lg p-2">
             <div class="flex gap-2.5">
                 <input type="text" id="searchInput" placeholder="Ketik kode voucher..." 
-                       class="flex-1 px-2 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg"
+                       class="flex-1 px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg"
                        oninput="this.value = this.value.toUpperCase(); searchVoucher()">
                 <button onclick="resetSearch()" 
                         class="bg-gray-500 hover:bg-gray-600 text-white px-3 py-3 rounded-lg font-medium transition-colors whitespace-nowrap">
@@ -146,37 +153,35 @@
                 </button>
             </div>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-                <div class="bg-white rounded-lg shadow p-6 text-center">
+            <div class="flex gap-4 mb-2.5">
+                <button onclick="filterByStatus('all')" id="totalVouchersBtn" 
+                        class="flex-1 bg-white rounded-lg shadow p-6 text-center hover:shadow-lg transition-all cursor-pointer border-2 border-transparent hover:border-blue-300">
                     <div class="text-3xl font-bold text-blue-600" id="totalVouchersCount">0</div>
-                    <div class="text-gray-600">Total Voucher</div>
-                </div>
-                <div class="bg-white rounded-lg shadow p-6 text-center">
+                    <div class="text-gray-600">Total</div>
+                </button>
+                <button onclick="filterByStatus('marked')" id="selectedVouchersBtn" 
+                        class="flex-1 bg-white rounded-lg shadow p-6 text-center hover:shadow-lg transition-all cursor-pointer border-2 border-transparent hover:border-green-300">
                     <div class="text-3xl font-bold text-green-600" id="selectedVouchersCount">0</div>
-                    <div class="text-gray-600">Voucher Terpilih</div>
-                </div>
-                <div class="bg-white rounded-lg shadow p-6 text-center">
+                    <div class="text-gray-600">Terpilih</div>
+                </button>
+                <button onclick="filterByStatus('unmarked')" id="remainingVouchersBtn" 
+                        class="flex-1 bg-white rounded-lg shadow p-6 text-center hover:shadow-lg transition-all cursor-pointer border-2 border-transparent hover:border-gray-300">
                     <div class="text-3xl font-bold text-gray-600" id="remainingVouchersCount">0</div>
-                    <div class="text-gray-600">Sisa Voucher</div>
-                </div>
+                    <div class="text-gray-600">Sisa</div>
+                </button>
             </div>
 
             <!-- Character Filter Section -->
-            <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
-                <div class="flex flex-wrap gap-2">
-                    <button onclick="filterByCharacterCount('all')" 
-                            class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm font-medium" 
-                            id="filter-all">
-                        Semua
-                    </button>
-                    <div id="characterFilters" class="flex flex-wrap gap-2">
-                        <!-- Character filter buttons will be generated here -->
-                    </div>
+            <div class="bg-white rounded-xl shadow-lg p-6 mb-2.5">
+                <h3 class="text-lg font-semibold text-gray-800 mb-2">Filter Berdasarkan Jumlah Karakter</h3>
+                <div class="relative">
+                    <select id="characterFilterDropdown" onchange="filterByCharacterCount(this.value)" 
+                            class="w-full md:w-64 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-700 font-medium">
+                        <option value="all">Semua Voucher</option>
+                        <!-- Options will be generated here -->
+                    </select>
                 </div>
-            </div>
-
-            <div class="bg-white rounded-xl shadow-lg p-6">
-                <div id="allVouchersList" class="space-y-2 max-h-96 overflow-y-auto">
+                <div id="allVouchersList" class="space-y-3 h-[350px] overflow-y-auto border border-gray-200 rounded-lg mt-4 p-1">
                 </div>
             </div>
         </div>
@@ -215,6 +220,7 @@
         let vouchers = [];
         let markedVouchers = new Set();
         let currentCharacterFilter = 'all';
+        let currentStatusFilter = 'all';
 
         // ========== DATA MANAGEMENT FUNCTIONS ==========
         
@@ -256,7 +262,7 @@
         function updateCharacterCount() {
             const input = document.getElementById('modalVoucherInput');
             const count = input.value.length;
-            document.getElementById('characterCount').textContent = `${count} karakter`;
+            document.getElementById('characterCount').textContent = `${count} Karakter`;
         }
 
         function addVoucher() {
@@ -264,7 +270,7 @@
             const code = input.value.trim().toUpperCase();
             
             if (!code) {
-                alert('Masukkan kode voucher!');
+                alert('Masukkan dulu kode voucher!');
                 return;
             }
             
@@ -310,7 +316,7 @@
                             <div class="flex items-center gap-4">
                                 <div class="text-center">
                                     <div class="font-mono text-xl font-bold text-blue-800 ${isMarked ? 'line-through' : ''}">${foundVoucher.code}</div>
-                                    <div class="text-sm text-blue-600 font-medium">
+                                    <div class="text-sm text-blue-600 font-medium mt-1">
                                         ${foundVoucher.code.length} Karakter
                                     </div>
                                 </div>
@@ -326,8 +332,7 @@
                 searchResultContent.innerHTML = `
                     <div class="flex items-center justify-center">
                         <div class="text-center">
-                            <div class="text-2xl mb-2"><div class="text-2xl mb-2"><i class="ri-alert-line"></i></div></div>
-                            <div class="text-sm text-red-600">Kode "${query}" tidak ditemukan</div>
+                            <div class="text-red-600">Kode "${query}" tidak ditemukan.</div>
                         </div>
                     </div>
                 `;
@@ -382,10 +387,19 @@
             // Generate character filter buttons
             generateCharacterFilters();
             
-            // Filter vouchers based on current filter
+            // Filter vouchers based on current filters
             let filteredVouchers = vouchers;
+            
+            // Apply character filter
             if (currentCharacterFilter !== 'all') {
-                filteredVouchers = vouchers.filter(v => v.code.length === parseInt(currentCharacterFilter));
+                filteredVouchers = filteredVouchers.filter(v => v.code.length === parseInt(currentCharacterFilter));
+            }
+            
+            // Apply status filter
+            if (currentStatusFilter === 'marked') {
+                filteredVouchers = filteredVouchers.filter(v => markedVouchers.has(v.code));
+            } else if (currentStatusFilter === 'unmarked') {
+                filteredVouchers = filteredVouchers.filter(v => !markedVouchers.has(v.code));
             }
             
             totalCount.textContent = vouchers.length;
@@ -396,72 +410,111 @@
                 if (vouchers.length === 0) {
                     listDiv.innerHTML = `
                         <div class="text-center text-gray-500 py-8">
-                            Belum ada voucher yang ditambahkan.
+                            <span style="font-size:50;"<i class="material-symbols-outlined">confirmation_number</i></span><br> Belum ada voucher yang ditambahkan.
                         </div>
                     `;
                 } else {
+                    let message = '<span style="font-size:50;"<i class="material-symbols-outlined">confirmation_number</i></span><br>Tidak ada voucher';
+                    if (currentCharacterFilter !== 'all' && currentStatusFilter !== 'all') {
+                        const statusText = currentStatusFilter === 'marked' ? 'yang sudah terpilih' : 'yang belum terpilih';
+                        message = `<span style="font-size:50;"<i class="material-symbols-outlined">confirmation_number</i></span><br>Tidak ada voucher dengan <br> ${currentCharacterFilter} karakter ${statusText}.`;
+                    } else if (currentCharacterFilter !== 'all') {
+                        message = `<span style="font-size:50;"<i class="material-symbols-outlined">confirmation_number</i></span><br>Tidak ada voucher dengan ${currentCharacterFilter} karakter.`;
+                    } else if (currentStatusFilter === 'marked') {
+                        message = '<span style="font-size:50;"<i class="material-symbols-outlined">confirmation_number</i></span><br>Tidak ada voucher yang terpilih.';
+                    } else if (currentStatusFilter === 'unmarked') {
+                        message = '<span style="font-size:50;"<i class="material-symbols-outlined">confirmation_number</i></span><br>Tidak ada voucher yang tersisa.';
+                    }
+                    
                     listDiv.innerHTML = `
                         <div class="text-center text-gray-500 py-8">
-                            Tidak ada voucher dengan ${currentCharacterFilter} karakter.
+                            ${message}
                         </div>
                     `;
                 }
             } else {
-                listDiv.innerHTML = filteredVouchers.map(voucher => {
+                // Show all vouchers with proper spacing
+                const voucherHTML = filteredVouchers.map((voucher, index) => {
                     const isMarked = markedVouchers.has(voucher.code);
                     
                     return `
-                        <div class="flex items-center justify-between p-4 border-2 border-gray-300 bg-gray-50 rounded-lg hover:shadow-md transition-all fade-in ${isMarked ? 'opacity-80' : ''}">
+                        <div class="flex items-center justify-between p-4 border-2 border-gray-300 bg-gray-50 rounded-lg hover:shadow-md transition-all fade-in ${isMarked ? 'opacity-100' : ''}">
                             <div class="flex items-center gap-4">
                                 <div>
                                     <div class="font-mono text-xl font-bold text-gray-800 ${isMarked ? 'line-through' : ''}">${voucher.code}</div>
-                                    <div class="text-sm text-gray-600">${voucher.code.length} karakter</div>
+                                    <div class="text-sm text-gray-600">${voucher.code.length} Karakter</div>
                                 </div>
                             </div>
-                            <div class="flex items-center gap-3">
+                            <div class="flex items-center gap-1.5">
                                 ${isMarked ? '<span class="bg-green-500 text-white px-3 py-2 rounded-lg text-sm font-medium">TERPILIH</span>' : '<span class=""></span>'}
                                 <button onclick="confirmRemoveVoucher('${voucher.code}')" 
                                         class="px-3 py-2 bg-red-500 text-white hover:bg-red-600 rounded-lg text-sm font-medium transition-colors">
-                                    HAPUS
+                                    <i class="material-symbols-outlined">delete</i>
                                 </button>
                             </div>
                         </div>
                     `;
                 }).join('');
+                
+                // Add info about total vouchers shown
+                const infoText = filteredVouchers.length > 3 ? 
+                    `<div class="text-center py-3 text-gray-500 text-sm border-t border-gray-200 mt-3">
+                        Sudah menampilkan ${filteredVouchers.length} voucher.
+                    </div>` : '';
+                
+                listDiv.innerHTML = voucherHTML + infoText;
             }
         }
 
         function generateCharacterFilters() {
             const characterCounts = [...new Set(vouchers.map(v => v.code.length))].sort((a, b) => a - b);
-            const filtersDiv = document.getElementById('characterFilters');
+            const dropdown = document.getElementById('characterFilterDropdown');
             
-            filtersDiv.innerHTML = characterCounts.map(count => {
+            // Clear existing options except the first one
+            dropdown.innerHTML = '<option value="all">Semua Voucher</option>';
+            
+            // Add options for each character count
+            characterCounts.forEach(count => {
                 const voucherCount = vouchers.filter(v => v.code.length === count).length;
-                const isActive = currentCharacterFilter === count.toString();
-                
-                return `
-                    <button onclick="filterByCharacterCount('${count}')" 
-                            class="px-4 py-2 rounded-lg transition-colors text-sm font-medium ${isActive ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}" 
-                            id="filter-${count}">
-                        ${count} karakter (${voucherCount})
-                    </button>
-                `;
-            }).join('');
+                const option = document.createElement('option');
+                option.value = count;
+                option.textContent = `${count} Karakter (${voucherCount} Voucher)`;
+                dropdown.appendChild(option);
+            });
+            
+            // Set the current filter value
+            dropdown.value = currentCharacterFilter;
         }
 
         function filterByCharacterCount(filterValue) {
             currentCharacterFilter = filterValue;
+            updateVoucherListDisplay();
+        }
+
+        function filterByStatus(statusFilter) {
+            currentStatusFilter = statusFilter;
             
             // Update button states
-            document.querySelectorAll('[id^="filter-"]').forEach(btn => {
-                btn.classList.remove('bg-blue-500', 'bg-green-500', 'text-white');
-                btn.classList.add('bg-gray-200', 'text-gray-700', 'hover:bg-gray-300');
+            document.querySelectorAll('[id$="VouchersBtn"]').forEach(btn => {
+                btn.classList.remove('border-blue-500', 'border-green-500', 'border-gray-500', 'bg-blue-50', 'bg-green-50', 'bg-gray-50');
+                btn.classList.add('border-transparent');
             });
             
-            const activeButton = document.getElementById(`filter-${filterValue}`);
+            // Highlight active button
+            const activeButton = document.getElementById(
+                statusFilter === 'all' ? 'totalVouchersBtn' : 
+                statusFilter === 'marked' ? 'selectedVouchersBtn' : 'remainingVouchersBtn'
+            );
+            
             if (activeButton) {
-                activeButton.classList.remove('bg-gray-200', 'text-gray-700', 'hover:bg-gray-300');
-                activeButton.classList.add('bg-green-500', 'text-white');
+                activeButton.classList.remove('border-transparent');
+                if (statusFilter === 'all') {
+                    activeButton.classList.add('border-blue-500', 'bg-blue-50');
+                } else if (statusFilter === 'marked') {
+                    activeButton.classList.add('border-green-500', 'bg-green-50');
+                } else {
+                    activeButton.classList.add('border-gray-500', 'bg-gray-50');
+                }
             }
             
             updateVoucherListDisplay();
@@ -525,5 +578,5 @@
             loadData();
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96c38fc2616bfdbc',t:'MTc1NDcwMzc5NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
-</html
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96c4289ea346463d',t:'MTc1NDcxMDA1Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
