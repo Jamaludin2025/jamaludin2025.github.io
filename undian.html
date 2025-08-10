@@ -1,0 +1,879 @@
+<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Pencarian Kode Voucher Undian</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
+    <!-- ========== CSS STYLES ========== -->
+    <style>
+        /* Font Import */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        
+        /* Base Styles */
+        body { 
+            font-family: 'Inter', sans-serif; 
+        }
+        
+        /* Utility Classes */
+        .highlight { 
+            background-color: #fef08a; 
+        }
+        
+        /* Animations */
+        .fade-in { 
+            animation: fadeIn 0.3s ease-in; 
+        }
+        
+        @keyframes fadeIn { 
+            from { 
+                opacity: 0; 
+                transform: translateY(10px); 
+            } 
+            to { 
+                opacity: 1; 
+                transform: translateY(0); 
+            } 
+        }
+        
+        /* Toggle Switch Styles */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider {
+            background-color: #3b82f6;
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+    </style>
+</head>
+<!-- ========== HTML STRUCTURE ========== -->
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+    
+    <!-- Authentication Page -->
+    <div id="authPage" class="min-h-screen flex items-center justify-center px-4">
+        <div class="bg-white rounded-xl shadow-lg p-6 sm:p-8 w-full max-w-md">
+            <!-- Login Form -->
+            <div id="loginForm">
+                <div class="text-center mb-6">
+                    <h1 class="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">🎫 Masuk</h1>
+                    <p class="text-sm text-gray-600">Masuk ke sistem voucher undian</p>
+                </div>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Nomor Telepon</label>
+                        <input type="tel" id="loginPhone" placeholder="08xxxxxxxxxx" 
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                        <input type="password" id="loginPassword" placeholder="Masukkan password" 
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+                    
+                    <button onclick="loginUser()" 
+                            class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-medium transition-colors">
+                        Masuk
+                    </button>
+                    
+                    <div class="text-center">
+                        <button onclick="showRegisterForm()" class="text-blue-600 hover:text-blue-700 text-sm">
+                            Belum punya akun? Daftar di sini
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Register Form -->
+            <div id="registerForm" class="hidden">
+                <div class="text-center mb-6">
+                    <h1 class="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">📝 Daftar</h1>
+                    <p class="text-sm text-gray-600">Buat akun baru untuk sistem voucher</p>
+                </div>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Nama Lengkap</label>
+                        <input type="text" id="registerName" placeholder="Masukkan nama lengkap" 
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Nomor Telepon</label>
+                        <input type="tel" id="registerPhone" placeholder="08xxxxxxxxxx" 
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                        <input type="password" id="registerPassword" placeholder="Minimal 6 karakter" 
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Konfirmasi Password</label>
+                        <input type="password" id="confirmPassword" placeholder="Ulangi password" 
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+                    
+                    <button onclick="registerUser()" 
+                            class="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg font-medium transition-colors">
+                        Daftar
+                    </button>
+                    
+                    <div class="text-center">
+                        <button onclick="showLoginForm()" class="text-blue-600 hover:text-blue-700 text-sm">
+                            Sudah punya akun? Masuk di sini
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Application -->
+    <div id="mainApp" class="hidden">
+        <div class="container mx-auto px-3 sm:px-4 py-4 sm:py-8 max-w-4xl">
+            <!-- User Info Bar -->
+            <div class="bg-white rounded-lg shadow-lg p-4 mb-4 flex justify-between items-center">
+                <div>
+                    <span class="text-sm text-gray-600">Selamat datang, </span>
+                    <span id="currentUserName" class="font-semibold text-gray-800"></span>
+                </div>
+                <button onclick="logoutUser()" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm transition-colors">
+                    Keluar
+                </button>
+            </div>
+        <!-- Header -->
+        <div class="text-center mb-6 sm:mb-8">
+            <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-800 mb-2">🎫 Sistem Pencarian Kode Voucher Undian</h1>
+            <p class="text-sm sm:text-base text-gray-600">Cari dan kelola kode voucher undian dengan mudah</p>
+        </div>
+
+        <!-- Search Result Display Area -->
+        <div class="bg-white rounded-lg sm:rounded-xl shadow-lg p-4 sm:p-6 mb-4 sm:mb-6" id="searchResultArea">
+            <h3 class="text-base sm:text-lg font-semibold text-gray-800 mb-3 sm:mb-4">🔍 Hasil Pencarian</h3>
+            <div id="searchResultContent" class="text-center py-6 sm:py-8 text-gray-500 h-[100px] sm:h-[120px] flex items-center justify-center text-sm sm:text-base">
+                Ketik kode voucher untuk mencari...
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="bg-white rounded-lg sm:rounded-xl shadow-lg p-4 sm:p-6 mb-4 sm:mb-6">
+            <div class="flex gap-2 sm:gap-4">
+                <button onclick="showAddVoucherModal()" 
+                        class="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-3 sm:px-6 py-3 rounded-lg font-medium transition-colors text-xs sm:text-base">
+                    Tambah Voucher
+                </button>
+                <button onclick="showVoucherList()" 
+                        class="flex-1 bg-green-600 hover:bg-green-700 text-white px-3 sm:px-6 py-3 rounded-lg font-medium transition-colors text-xs sm:text-base">
+                    Daftar Voucher
+                </button>
+            </div>
+        </div>
+
+        <!-- Search Section -->
+        <div class="bg-white rounded-lg sm:rounded-xl shadow-lg p-4 sm:p-6">
+            <div class="flex gap-2 sm:gap-3">
+                <input type="text" id="searchInput" placeholder="Ketik kode voucher..." 
+                       class="flex-1 px-3 sm:px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-lg"
+                       oninput="this.value = this.value.toUpperCase(); searchVoucher()">
+                <button onclick="resetSearch()" 
+                        class="bg-gray-500 hover:bg-gray-600 text-white px-3 sm:px-6 py-3 rounded-lg font-medium transition-colors whitespace-nowrap text-xs sm:text-base">
+                    Reset
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Voucher List Page -->
+    <div id="voucherListPage" class="fixed inset-0 bg-white z-40 hidden overflow-y-auto">
+        <div class="container mx-auto px-3 sm:px-4 py-4 sm:py-8 max-w-6xl">
+            <div class="flex items-center justify-between mb-6 sm:mb-8 gap-4">
+                <h1 class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800">📋 Daftar Semua Voucher</h1>
+                <button onclick="closeVoucherList()" 
+                        class="bg-gray-500 hover:bg-gray-600 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-medium transition-colors text-sm sm:text-base whitespace-nowrap">
+                    Kembali
+                </button>
+            </div>
+            
+            <div class="flex gap-2 sm:gap-4 mb-4 sm:mb-6">
+                <button onclick="filterByStatus('all')" id="totalVouchersBtn" 
+                        class="bg-white rounded-lg shadow p-4 sm:p-6 text-center hover:shadow-lg transition-all cursor-pointer border-2 border-transparent hover:border-blue-300">
+                    <div class="text-2xl sm:text-3xl font-bold text-blue-600" id="totalVouchersCount">0</div>
+                    <div class="text-gray-600 text-sm sm:text-base">Total Voucher</div>
+                </button>
+                <button onclick="filterByStatus('marked')" id="selectedVouchersBtn" 
+                        class="bg-white rounded-lg shadow p-4 sm:p-6 text-center hover:shadow-lg transition-all cursor-pointer border-2 border-transparent hover:border-green-300">
+                    <div class="text-2xl sm:text-3xl font-bold text-green-600" id="selectedVouchersCount">0</div>
+                    <div class="text-gray-600 text-sm sm:text-base">Sudah Ditandai</div>
+                </button>
+                <button onclick="filterByStatus('unmarked')" id="remainingVouchersBtn" 
+                        class="bg-white rounded-lg shadow p-4 sm:p-6 text-center hover:shadow-lg transition-all cursor-pointer border-2 border-transparent hover:border-gray-300">
+                    <div class="text-2xl sm:text-3xl font-bold text-gray-600" id="remainingVouchersCount">0</div>
+                    <div class="text-gray-600 text-sm sm:text-base">Belum Ditandai</div>
+                </button>
+            </div>
+
+            <!-- Character Filter Section -->
+            <div class="bg-white rounded-lg sm:rounded-xl shadow-lg p-4 sm:p-6 mb-4 sm:mb-6">
+                <h3 class="text-base sm:text-lg font-semibold text-gray-800 mb-3 sm:mb-4">🔢 Filter Berdasarkan Jumlah Karakter</h3>
+                <div class="relative">
+                    <select id="characterFilterDropdown" onchange="filterByCharacterCount(this.value)" 
+                            class="w-full sm:w-64 px-3 sm:px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-700 font-medium text-sm sm:text-base">
+                        <option value="all">Semua Voucher</option>
+                        <!-- Options will be generated here -->
+                    </select>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg sm:rounded-xl shadow-lg p-4 sm:p-6 mb-6 sm:mb-8">
+                <div id="allVouchersList" class="space-y-2 sm:space-y-3 h-[300px] sm:h-[400px] overflow-y-auto border border-gray-200 rounded-lg p-3 sm:p-4">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Voucher Modal -->
+    <div id="addVoucherModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-lg sm:rounded-xl p-6 sm:p-8 max-w-md w-full">
+            <h3 class="text-lg sm:text-xl font-bold text-gray-800 mb-4 sm:mb-6">Tambah Voucher Baru</h3>
+            
+            <div class="mb-4 sm:mb-6">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Kode Voucher</label>
+                <input type="text" id="modalVoucherInput" placeholder="Masukkan kode voucher..." 
+                       class="w-full px-3 sm:px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
+                       oninput="this.value = this.value.toUpperCase(); updateCharacterCount()">
+                <div class="mt-2 text-sm text-gray-600">
+                    <span id="characterCount">0 karakter</span>
+                </div>
+            </div>
+
+            <div class="flex gap-3">
+                <button onclick="addVoucher()" 
+                        class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-medium transition-colors text-sm sm:text-base">
+                    Tambah Voucher
+                </button>
+                <button onclick="closeAddVoucherModal()" 
+                        class="flex-1 bg-gray-500 hover:bg-gray-600 text-white py-3 rounded-lg font-medium transition-colors text-sm sm:text-base">
+                    Batal
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== JAVASCRIPT CODE ========== -->
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyASXJiNqbekENXpk7C5U5XjE6gImfNUBwg",
+            authDomain: "pustakapribadi-25.firebaseapp.com",
+            databaseURL: "https://pustakapribadi-25-default-rtdb.firebaseio.com",
+            projectId: "pustakapribadi-25",
+            storageBucket: "pustakapribadi-25.firebasestorage.app",
+            messagingSenderId: "828550020946",
+            appId: "1:828550020946:web:65322f2092d1927c43c48b"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // Global Variables
+        let vouchers = [];
+        let markedVouchers = new Set();
+        let currentCharacterFilter = 'all';
+        let currentStatusFilter = 'all';
+        let currentUser = null;
+
+        // ========== AUTHENTICATION FUNCTIONS ==========
+        
+        function showLoginForm() {
+            document.getElementById('loginForm').classList.remove('hidden');
+            document.getElementById('registerForm').classList.add('hidden');
+        }
+
+        function showRegisterForm() {
+            document.getElementById('registerForm').classList.remove('hidden');
+            document.getElementById('loginForm').classList.add('hidden');
+        }
+
+        async function registerUser() {
+    const name = document.getElementById('registerName').value.trim();
+    const phone = document.getElementById('registerPhone').value.trim();
+    const password = document.getElementById('registerPassword').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+
+    console.log("📌 Mulai proses pendaftaran", { name, phone });
+
+    // Validation
+    if (!name || !phone || !password || !confirmPassword) {
+        alert('Semua field harus diisi!');
+        return;
+    }
+
+    if (password.length < 6) {
+        alert('Password minimal 6 karakter!');
+        return;
+    }
+
+    if (password !== confirmPassword) {
+        alert('Password dan konfirmasi password tidak sama!');
+        return;
+    }
+
+    if (!phone.startsWith('08') || phone.length < 10) {
+        alert('Format nomor telepon tidak valid! Gunakan format 08xxxxxxxxxx');
+        return;
+    }
+
+    try {
+        console.log("🔍 Mengecek apakah nomor sudah terdaftar...");
+        const snapshot = await database.ref('users').orderByChild('phone').equalTo(phone).once('value');
+        console.log("✅ Hasil cek nomor:", snapshot.exists());
+
+        if (snapshot.exists()) {
+            alert('Nomor telepon sudah terdaftar!');
+            return;
+        }
+
+        console.log("💾 Menyimpan data ke Realtime Database...");
+        const userData = {
+            name: name,
+            phone: phone,
+            password: btoa(password), // Simple encoding
+            registeredAt: new Date().toISOString(),
+            lastLogin: null
+        };
+
+        await database.ref('users').push(userData);
+        console.log("✅ Data berhasil disimpan:", userData);
+
+        showNotification('✅ Pendaftaran berhasil! Silakan masuk.', 'success');
+        showLoginForm();
+
+        // Clear form
+        document.getElementById('registerName').value = '';
+        document.getElementById('registerPhone').value = '';
+        document.getElementById('registerPassword').value = '';
+        document.getElementById('confirmPassword').value = '';
+
+    } catch (error) {
+        console.error('❌ Registration error:', error);
+        alert('Terjadi kesalahan saat mendaftar. Silakan coba lagi.');
+    }
+}
+
+
+        async function loginUser() {
+            const phone = document.getElementById('loginPhone').value.trim();
+            const password = document.getElementById('loginPassword').value;
+
+            if (!phone || !password) {
+                alert('Nomor telepon dan password harus diisi!');
+                return;
+            }
+
+            try {
+                // Find user by phone number
+                const snapshot = await database.ref('users').orderByChild('phone').equalTo(phone).once('value');
+                
+                if (!snapshot.exists()) {
+                    alert('Nomor telepon tidak terdaftar!');
+                    return;
+                }
+
+                const users = snapshot.val();
+                const userId = Object.keys(users)[0];
+                const userData = users[userId];
+
+                // Check password
+                if (atob(userData.password) !== password) {
+                    alert('Password salah!');
+                    return;
+                }
+
+                // Update last login
+                await database.ref(`users/${userId}`).update({
+                    lastLogin: new Date().toISOString()
+                });
+
+                // Set current user
+                currentUser = {
+                    id: userId,
+                    name: userData.name,
+                    phone: userData.phone
+                };
+
+                // Save to localStorage for session
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+
+                // Show main app
+                document.getElementById('authPage').classList.add('hidden');
+                document.getElementById('mainApp').classList.remove('hidden');
+                document.getElementById('currentUserName').textContent = userData.name;
+
+                // Load user data
+                loadData();
+                
+                showNotification(`🎉 Selamat datang, ${userData.name}!`, 'success');
+                
+                // Clear form
+                document.getElementById('loginPhone').value = '';
+                document.getElementById('loginPassword').value = '';
+                
+            } catch (error) {
+                console.error('Login error:', error);
+                alert('Terjadi kesalahan saat masuk. Silakan coba lagi.');
+            }
+        }
+
+        function logoutUser() {
+            if (confirm('Apakah Anda yakin ingin keluar?')) {
+                currentUser = null;
+                localStorage.removeItem('currentUser');
+                
+                document.getElementById('mainApp').classList.add('hidden');
+                document.getElementById('authPage').classList.remove('hidden');
+                
+                showNotification('👋 Anda telah keluar dari sistem.', 'info');
+            }
+        }
+
+        function checkAuthState() {
+            const savedUser = localStorage.getItem('currentUser');
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+                document.getElementById('authPage').classList.add('hidden');
+                document.getElementById('mainApp').classList.remove('hidden');
+                document.getElementById('currentUserName').textContent = currentUser.name;
+                loadData();
+            }
+        }
+
+        // ========== DATA MANAGEMENT FUNCTIONS ==========
+        
+        // Load data from localStorage on page load
+        function loadData() {
+            if (!currentUser) return;
+            
+            const userKey = `vouchers_${currentUser.phone}`;
+            const markedKey = `markedVouchers_${currentUser.phone}`;
+            
+            const savedVouchers = localStorage.getItem(userKey);
+            const savedMarkedVouchers = localStorage.getItem(markedKey);
+            
+            if (savedVouchers) {
+                vouchers = JSON.parse(savedVouchers);
+            }
+            
+            if (savedMarkedVouchers) {
+                markedVouchers = new Set(JSON.parse(savedMarkedVouchers));
+            }
+        }
+
+        // Save data to localStorage
+        function saveData() {
+            if (!currentUser) return;
+            
+            const userKey = `vouchers_${currentUser.phone}`;
+            const markedKey = `markedVouchers_${currentUser.phone}`;
+            
+            localStorage.setItem(userKey, JSON.stringify(vouchers));
+            localStorage.setItem(markedKey, JSON.stringify([...markedVouchers]));
+        }
+
+        // ========== MODAL FUNCTIONS ==========
+        
+        function showAddVoucherModal() {
+            document.getElementById('addVoucherModal').classList.remove('hidden');
+            document.getElementById('addVoucherModal').classList.add('flex');
+            document.getElementById('modalVoucherInput').focus();
+        }
+
+        function closeAddVoucherModal() {
+            document.getElementById('addVoucherModal').classList.add('hidden');
+            document.getElementById('addVoucherModal').classList.remove('flex');
+            document.getElementById('modalVoucherInput').value = '';
+            document.getElementById('characterCount').textContent = '0 karakter';
+        }
+
+        function updateCharacterCount() {
+            const input = document.getElementById('modalVoucherInput');
+            const count = input.value.length;
+            document.getElementById('characterCount').textContent = `${count} karakter`;
+        }
+
+        function addVoucher() {
+            const input = document.getElementById('modalVoucherInput');
+            const code = input.value.trim().toUpperCase();
+            
+            if (!code) {
+                alert('Masukkan kode voucher!');
+                return;
+            }
+            
+            if (vouchers.find(v => v.code === code)) {
+                alert('Kode voucher sudah ada!');
+                return;
+            }
+            
+            vouchers.push({
+                code: code,
+                timestamp: new Date()
+            });
+            
+            saveData();
+            closeAddVoucherModal();
+            showNotification('✅ Voucher berhasil ditambahkan!', 'success');
+        }
+
+        // ========== SEARCH FUNCTIONS ==========
+        
+        function searchVoucher() {
+            const query = document.getElementById('searchInput').value.trim().toUpperCase();
+            const searchResultContent = document.getElementById('searchResultContent');
+            
+            if (!query) {
+                searchResultContent.innerHTML = '<div class="flex items-center justify-center text-gray-500">Ketik kode voucher untuk mencari...</div>';
+                return;
+            }
+            
+            const foundVoucher = vouchers.find(v => v.code === query);
+            
+            if (foundVoucher) {
+                const isMarked = markedVouchers.has(foundVoucher.code);
+                
+                // Trigger vibration when voucher is found
+                if (navigator.vibrate) {
+                    navigator.vibrate([200, 100, 200]); // Vibrate for 200ms, pause 100ms, vibrate 200ms
+                }
+                
+                searchResultContent.innerHTML = `
+                    <div class="fade-in flex items-center justify-center px-2">
+                        <div class="inline-flex flex-col items-center gap-3 p-3 sm:p-4 border-2 border-blue-300 bg-blue-50 rounded-lg max-w-full">
+                            <div class="flex flex-col sm:flex-row items-center gap-3 sm:gap-4">
+                                <div class="text-center">
+                                    <div class="font-mono text-lg sm:text-xl font-bold text-blue-800 ${isMarked ? 'line-through' : ''} break-all">${foundVoucher.code}</div>
+                                    <div class="text-xs sm:text-sm text-blue-600 font-medium mt-1">
+                                        ${foundVoucher.code.length} karakter
+                                    </div>
+                                </div>
+                                <button onclick="toggleMark('${foundVoucher.code}')" 
+                                        class="px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors whitespace-nowrap ${isMarked ? 'bg-green-500 text-white hover:bg-green-600' : 'bg-blue-500 text-white hover:bg-blue-600'}">
+                                    ${isMarked ? '✓ Ditandai' : 'Tandai'}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                searchResultContent.innerHTML = `
+                    <div class="flex items-center justify-center">
+                        <div class="text-center">
+                            <div class="text-2xl mb-2">❌</div>
+                            <div class="text-sm text-red-600">Kode "${query}" tidak ditemukan</div>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function resetSearch() {
+            document.getElementById('searchInput').value = '';
+            searchVoucher();
+        }
+
+        function toggleMark(voucherCode) {
+            if (markedVouchers.has(voucherCode)) {
+                markedVouchers.delete(voucherCode);
+                showNotification('↩️ Tanda voucher dibatalkan', 'info');
+            } else {
+                markedVouchers.add(voucherCode);
+                showNotification('🎯 Voucher berhasil ditandai!', 'success');
+            }
+            
+            saveData();
+            
+            // Refresh search result if showing
+            const query = document.getElementById('searchInput').value.trim().toUpperCase();
+            if (query) {
+                searchVoucher();
+            }
+            
+            // Update voucher list if it's open
+            if (!document.getElementById('voucherListPage').classList.contains('hidden')) {
+                updateVoucherListDisplay();
+            }
+        }
+
+        // ========== VOUCHER LIST FUNCTIONS ==========
+        
+        function showVoucherList() {
+            document.getElementById('voucherListPage').classList.remove('hidden');
+            updateVoucherListDisplay();
+        }
+
+        function closeVoucherList() {
+            document.getElementById('voucherListPage').classList.add('hidden');
+        }
+
+        function updateVoucherListDisplay() {
+            const listDiv = document.getElementById('allVouchersList');
+            const totalCount = document.getElementById('totalVouchersCount');
+            const selectedCount = document.getElementById('selectedVouchersCount');
+            const remainingCount = document.getElementById('remainingVouchersCount');
+            
+            // Generate character filter buttons
+            generateCharacterFilters();
+            
+            // Filter vouchers based on current filters
+            let filteredVouchers = vouchers;
+            
+            // Apply character filter
+            if (currentCharacterFilter !== 'all') {
+                filteredVouchers = filteredVouchers.filter(v => v.code.length === parseInt(currentCharacterFilter));
+            }
+            
+            // Apply status filter
+            if (currentStatusFilter === 'marked') {
+                filteredVouchers = filteredVouchers.filter(v => markedVouchers.has(v.code));
+            } else if (currentStatusFilter === 'unmarked') {
+                filteredVouchers = filteredVouchers.filter(v => !markedVouchers.has(v.code));
+            }
+            
+            totalCount.textContent = vouchers.length;
+            selectedCount.textContent = markedVouchers.size;
+            remainingCount.textContent = vouchers.length - markedVouchers.size;
+            
+            if (filteredVouchers.length === 0) {
+                if (vouchers.length === 0) {
+                    listDiv.innerHTML = `
+                        <div class="text-center text-gray-500 py-8">
+                            Belum ada voucher yang ditambahkan.
+                        </div>
+                    `;
+                } else {
+                    let message = 'Tidak ada voucher';
+                    if (currentCharacterFilter !== 'all' && currentStatusFilter !== 'all') {
+                        const statusText = currentStatusFilter === 'marked' ? 'yang sudah ditandai' : 'yang belum ditandai';
+                        message = `Tidak ada voucher dengan ${currentCharacterFilter} karakter ${statusText}.`;
+                    } else if (currentCharacterFilter !== 'all') {
+                        message = `Tidak ada voucher dengan ${currentCharacterFilter} karakter.`;
+                    } else if (currentStatusFilter === 'marked') {
+                        message = 'Tidak ada voucher yang sudah ditandai.';
+                    } else if (currentStatusFilter === 'unmarked') {
+                        message = 'Tidak ada voucher yang belum ditandai.';
+                    }
+                    
+                    listDiv.innerHTML = `
+                        <div class="text-center text-gray-500 py-8">
+                            ${message}
+                        </div>
+                    `;
+                }
+            } else {
+                // Show all vouchers with proper spacing
+                const voucherHTML = filteredVouchers.map((voucher, index) => {
+                    const isMarked = markedVouchers.has(voucher.code);
+                    
+                    return `
+                        <div class="flex items-center justify-between p-3 sm:p-4 border-2 border-gray-300 bg-gray-50 rounded-lg hover:shadow-md transition-all fade-in ${isMarked ? 'opacity-80' : ''} gap-3">
+                            <div class="flex items-center gap-3 sm:gap-4 min-w-0 flex-1">
+                                <div class="min-w-0 flex-1">
+                                    <div class="font-mono text-lg sm:text-xl font-bold text-gray-800 ${isMarked ? 'line-through' : ''} break-all">${voucher.code}</div>
+                                    <div class="text-xs sm:text-sm text-gray-600">${voucher.code.length} karakter</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2 sm:gap-3">
+                                ${isMarked ? '<span class="bg-green-500 text-white px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap">✓ Sudah Ditandai</span>' : '<span class="bg-gray-200 text-gray-600 px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm whitespace-nowrap">Belum Ditandai</span>'}
+                                <button onclick="confirmRemoveVoucher('${voucher.code}')" 
+                                        class="px-2 sm:px-3 py-1 sm:py-2 bg-red-500 text-white hover:bg-red-600 rounded-lg text-xs sm:text-sm font-medium transition-colors">
+                                    🗑️
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+                
+                // Add info about total vouchers shown
+                const infoText = filteredVouchers.length > 3 ? 
+                    `<div class="text-center py-3 text-gray-500 text-sm border-t border-gray-200 mt-3">
+                        Menampilkan ${filteredVouchers.length} voucher
+                    </div>` : '';
+                
+                listDiv.innerHTML = voucherHTML + infoText;
+            }
+        }
+
+        function generateCharacterFilters() {
+            const characterCounts = [...new Set(vouchers.map(v => v.code.length))].sort((a, b) => a - b);
+            const dropdown = document.getElementById('characterFilterDropdown');
+            
+            // Clear existing options except the first one
+            dropdown.innerHTML = '<option value="all">Semua Voucher</option>';
+            
+            // Add options for each character count
+            characterCounts.forEach(count => {
+                const voucherCount = vouchers.filter(v => v.code.length === count).length;
+                const option = document.createElement('option');
+                option.value = count;
+                option.textContent = `${count} karakter (${voucherCount} voucher)`;
+                dropdown.appendChild(option);
+            });
+            
+            // Set the current filter value
+            dropdown.value = currentCharacterFilter;
+        }
+
+        function filterByCharacterCount(filterValue) {
+            currentCharacterFilter = filterValue;
+            updateVoucherListDisplay();
+        }
+
+        function filterByStatus(statusFilter) {
+            currentStatusFilter = statusFilter;
+            
+            // Update button states
+            document.querySelectorAll('[id$="VouchersBtn"]').forEach(btn => {
+                btn.classList.remove('border-blue-500', 'border-green-500', 'border-gray-500', 'bg-blue-50', 'bg-green-50', 'bg-gray-50');
+                btn.classList.add('border-transparent');
+            });
+            
+            // Highlight active button
+            const activeButton = document.getElementById(
+                statusFilter === 'all' ? 'totalVouchersBtn' : 
+                statusFilter === 'marked' ? 'selectedVouchersBtn' : 'remainingVouchersBtn'
+            );
+            
+            if (activeButton) {
+                activeButton.classList.remove('border-transparent');
+                if (statusFilter === 'all') {
+                    activeButton.classList.add('border-blue-500', 'bg-blue-50');
+                } else if (statusFilter === 'marked') {
+                    activeButton.classList.add('border-green-500', 'bg-green-50');
+                } else {
+                    activeButton.classList.add('border-gray-500', 'bg-gray-50');
+                }
+            }
+            
+            updateVoucherListDisplay();
+        }
+
+        function confirmRemoveVoucher(voucherCode) {
+            if (confirm(`Apakah Anda yakin ingin menghapus voucher ${voucherCode}?`)) {
+                vouchers = vouchers.filter(v => v.code !== voucherCode);
+                markedVouchers.delete(voucherCode);
+                
+                saveData();
+                
+                // Update voucher list if it's open
+                if (!document.getElementById('voucherListPage').classList.contains('hidden')) {
+                    updateVoucherListDisplay();
+                }
+                
+                showNotification('🗑️ Voucher berhasil dihapus', 'info');
+            }
+        }
+
+        // ========== UTILITY FUNCTIONS ==========
+        
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 px-4 sm:px-6 py-2 sm:py-3 rounded-lg text-white font-medium z-60 transition-all duration-300 text-sm sm:text-base max-w-xs sm:max-w-sm ${
+                type === 'success' ? 'bg-green-500' : 
+                type === 'error' ? 'bg-red-500' : 'bg-blue-500'
+            }`;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // ========== EVENT LISTENERS ==========
+        
+        // Enter key to add voucher in modal
+        document.getElementById('modalVoucherInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                addVoucher();
+            }
+        });
+
+        // Close modal when clicking outside
+        document.getElementById('addVoucherModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeAddVoucherModal();
+            }
+        });
+
+        // Enter key support for login form
+        document.getElementById('loginPassword').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                loginUser();
+            }
+        });
+
+        // Enter key support for register form
+        document.getElementById('confirmPassword').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                registerUser();
+            }
+        });
+
+        // ========== INITIALIZATION ==========
+        
+        // Load data when page loads
+        window.addEventListener('load', function() {
+            checkAuthState();
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96cf5331a5ecce19',t:'MTc1NDgyNzE0NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
