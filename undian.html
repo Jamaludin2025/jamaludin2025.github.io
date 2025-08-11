@@ -1,4 +1,4 @@
-<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
@@ -110,8 +110,14 @@
                     
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
-                        <input type="password" id="loginPassword" placeholder="Masukkan password" 
-                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <div class="relative">
+                            <input type="password" id="loginPassword" placeholder="Masukkan password" 
+                                   class="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <button type="button" onclick="togglePasswordVisibility('loginPassword', 'loginPasswordToggle')" 
+                                    class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700">
+                                <span id="loginPasswordToggle">👁️</span>
+                            </button>
+                        </div>
                     </div>
                     
                     <button onclick="loginUser()" 
@@ -138,7 +144,8 @@
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Nama Lengkap</label>
                         <input type="text" id="registerName" placeholder="Masukkan nama lengkap" 
-                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                               oninput="this.value = this.value.toUpperCase()">
                     </div>
                     
                     <div>
@@ -149,14 +156,26 @@
                     
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
-                        <input type="password" id="registerPassword" placeholder="Minimal 6 karakter" 
-                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <div class="relative">
+                            <input type="password" id="registerPassword" placeholder="Minimal 6 karakter" 
+                                   class="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <button type="button" onclick="togglePasswordVisibility('registerPassword', 'registerPasswordToggle')" 
+                                    class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700">
+                                <span id="registerPasswordToggle">👁️</span>
+                            </button>
+                        </div>
                     </div>
                     
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Konfirmasi Password</label>
-                        <input type="password" id="confirmPassword" placeholder="Ulangi password" 
-                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <div class="relative">
+                            <input type="password" id="confirmPassword" placeholder="Ulangi password" 
+                                   class="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <button type="button" onclick="togglePasswordVisibility('confirmPassword', 'confirmPasswordToggle')" 
+                                    class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700">
+                                <span id="confirmPasswordToggle">👁️</span>
+                            </button>
+                        </div>
                     </div>
                     
                     <button onclick="registerUser()" 
@@ -171,6 +190,148 @@
                     </div>
                 </div>
             </div>
+        
+        <!-- Contact & Support Box -->
+        <div class="p-4 sm:p-6 w-full max-w-md mt-4">
+            <div class="flex justify-between items-center text-center">
+                <button onclick="showContactModal()" class="flex-1 text-blue-600 hover:text-blue-700 text-sm font-medium transition-colors">
+                    📞 Contact
+                </button>
+                <div class="w-px h-6 bg-gray-300 mx-2"></div>
+                <button onclick="showSupportModal()" class="flex-1 text-green-600 hover:text-green-700 text-sm font-medium transition-colors">
+                    🛠️ Support
+                </button>
+                <div class="w-px h-6 bg-gray-300 mx-2"></div>
+                <button onclick="showHelpModal()" class="flex-1 text-orange-600 hover:text-orange-700 text-sm font-medium transition-colors">
+                    ❓ Help
+                </button>
+            </div>
+        </div>
+    </div>
+  </div>
+
+    <!-- Contact Modal -->
+    <div id="contactModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-lg sm:rounded-xl p-6 sm:p-8 max-w-md w-full">
+            <h3 class="text-lg sm:text-xl font-bold text-gray-800 mb-4 sm:mb-6">📞 Hubungi Kami</h3>
+            
+            <div class="space-y-4">
+                <div class="flex items-center gap-3 p-3 bg-green-50 rounded-lg">
+                    <div class="text-2xl">📱</div>
+                    <div>
+                        <div class="font-medium text-gray-800">WhatsApp</div>
+                        <a href="https://wa.me/6281234567890" target="_blank" class="text-green-600 hover:text-green-700 text-sm">
+                            +62 812-3456-7890
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="flex items-center gap-3 p-3 bg-blue-50 rounded-lg">
+                    <div class="text-2xl">📧</div>
+                    <div>
+                        <div class="font-medium text-gray-800">Email</div>
+                        <a href="mailto:support@vouchersystem.com" class="text-blue-600 hover:text-blue-700 text-sm">
+                            support@vouchersystem.com
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-6">
+                <button onclick="closeContactModal()" 
+                        class="w-full bg-gray-500 hover:bg-gray-600 text-white py-3 rounded-lg font-medium transition-colors text-sm sm:text-base">
+                    Tutup
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Support Modal -->
+    <div id="supportModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-lg sm:rounded-xl p-6 sm:p-8 max-w-md w-full">
+            <h3 class="text-lg sm:text-xl font-bold text-gray-800 mb-4 sm:mb-6">🛠️ Dukungan Teknis</h3>
+            
+            <div class="space-y-4">
+                <div class="p-4 bg-gray-50 rounded-lg">
+                    <div class="font-medium text-gray-800 mb-2">Panduan Penggunaan</div>
+                    <p class="text-sm text-gray-600 mb-3">Pelajari cara menggunakan sistem voucher dengan mudah</p>
+                    <a href="https://docs.google.com/document/d/example-guide" target="_blank" 
+                       class="inline-block bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm transition-colors">
+                        Buka Panduan
+                    </a>
+                </div>
+                
+                <div class="p-4 bg-gray-50 rounded-lg">
+                    <div class="font-medium text-gray-800 mb-2">Video Tutorial</div>
+                    <p class="text-sm text-gray-600 mb-3">Tonton video tutorial lengkap sistem</p>
+                    <a href="https://youtube.com/watch?v=example-tutorial" target="_blank" 
+                       class="inline-block bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm transition-colors">
+                        Tonton Video
+                    </a>
+                </div>
+            </div>
+
+            <div class="mt-6">
+                <button onclick="closeSupportModal()" 
+                        class="w-full bg-gray-500 hover:bg-gray-600 text-white py-3 rounded-lg font-medium transition-colors text-sm sm:text-base">
+                    Tutup
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Help Modal -->
+    <div id="helpModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-lg sm:rounded-xl p-6 sm:p-8 max-w-md w-full">
+            <h3 class="text-lg sm:text-xl font-bold text-gray-800 mb-4 sm:mb-6">❓ Lupa Password</h3>
+            
+            <div id="helpVerificationForm">
+                <p class="text-sm text-gray-600 mb-4">Masukkan nama dan nomor telepon untuk verifikasi identitas Anda</p>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Nama Lengkap</label>
+                        <input type="text" id="helpName" placeholder="Masukkan nama lengkap" 
+                               class="w-full px-3 sm:px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
+                               oninput="this.value = this.value.toUpperCase()">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Nomor Telepon</label>
+                        <input type="tel" id="helpPhone" placeholder="08xxxxxxxxxx" 
+                               class="w-full px-3 sm:px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base">
+                    </div>
+                </div>
+
+                <div class="flex gap-3 mt-6">
+                    <button onclick="verifyUserForPassword()" 
+                            class="flex-1 bg-orange-600 hover:bg-orange-700 text-white py-3 rounded-lg font-medium transition-colors text-sm sm:text-base">
+                        Verifikasi
+                    </button>
+                    <button onclick="closeHelpModal()" 
+                            class="flex-1 bg-gray-500 hover:bg-gray-600 text-white py-3 rounded-lg font-medium transition-colors text-sm sm:text-base">
+                        Batal
+                    </button>
+                </div>
+            </div>
+            
+            <div id="helpPasswordResult" class="hidden">
+                <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
+                    <div class="flex items-center gap-2 mb-2">
+                        <div class="text-green-600">✅</div>
+                        <div class="font-medium text-green-800">Verifikasi Berhasil</div>
+                    </div>
+                    <div class="text-sm text-gray-600 mb-3">Password Anda adalah:</div>
+                    <div class="bg-white border border-gray-300 rounded-lg p-3">
+                        <div class="font-mono text-lg font-bold text-gray-800" id="revealedPassword"></div>
+                    </div>
+                </div>
+                
+                <button onclick="closeHelpModal()" 
+                        class="w-full bg-gray-500 hover:bg-gray-600 text-white py-3 rounded-lg font-medium transition-colors text-sm sm:text-base">
+                    Tutup
+                </button>
+            </div>
         </div>
     </div>
 
@@ -180,12 +341,26 @@
             <!-- User Info Bar -->
             <div class="bg-white rounded-lg shadow-lg p-4 mb-4 flex justify-between items-center">
                 <div>
-                    <span class="text-sm text-gray-600">Selamat datang, </span>
-                    <span id="currentUserName" class="font-semibold text-gray-800"></span>
+                    <div class="text-sm text-gray-600" id="dynamicGreeting">Selamat datang</div>
+                    <div id="currentUserName" class="font-semibold text-gray-800 text-base"></div>
                 </div>
-                <button onclick="logoutUser()" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm transition-colors">
-                    Keluar
-                </button>
+                <div class="relative">
+                    <button onclick="toggleSettingsMenu()" id="settingsBtn" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg text-sm transition-colors flex items-center gap-2">
+                        ⚙️ Pengaturan
+                    </button>
+                    <!-- Settings Dropdown Menu -->
+                    <div id="settingsMenu" class="hidden absolute right-0 top-full mt-2 bg-white rounded-lg shadow-lg border border-gray-200 min-w-48 z-50">
+                        <div class="py-2">
+                            <button onclick="showChangePasswordModal()" class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2">
+                                🔑 Ubah Password
+                            </button>
+                            <hr class="my-1">
+                            <button onclick="logoutUser()" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2">
+                                🚪 Keluar
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
         <!-- Header -->
         <div class="text-center mb-6 sm:mb-8">
@@ -277,6 +452,62 @@
         </div>
     </div>
 
+    <!-- Change Password Modal -->
+    <div id="changePasswordModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-lg sm:rounded-xl p-6 sm:p-8 max-w-md w-full">
+            <h3 class="text-lg sm:text-xl font-bold text-gray-800 mb-4 sm:mb-6">🔑 Ubah Password</h3>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Password Lama</label>
+                    <div class="relative">
+                        <input type="password" id="oldPassword" placeholder="Masukkan password lama" 
+                               class="w-full px-3 sm:px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base">
+                        <button type="button" onclick="togglePasswordVisibility('oldPassword', 'oldPasswordToggle')" 
+                                class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700">
+                            <span id="oldPasswordToggle">👁️</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Password Baru</label>
+                    <div class="relative">
+                        <input type="password" id="newPassword" placeholder="Minimal 6 karakter" 
+                               class="w-full px-3 sm:px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base">
+                        <button type="button" onclick="togglePasswordVisibility('newPassword', 'newPasswordToggle')" 
+                                class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700">
+                            <span id="newPasswordToggle">👁️</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Konfirmasi Password Baru</label>
+                    <div class="relative">
+                        <input type="password" id="confirmNewPassword" placeholder="Ulangi password baru" 
+                               class="w-full px-3 sm:px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base">
+                        <button type="button" onclick="togglePasswordVisibility('confirmNewPassword', 'confirmNewPasswordToggle')" 
+                                class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700">
+                            <span id="confirmNewPasswordToggle">👁️</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex gap-3 mt-6">
+                <button onclick="changePassword()" 
+                        class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-medium transition-colors text-sm sm:text-base">
+                    Ubah Password
+                </button>
+                <button onclick="closeChangePasswordModal()" 
+                        class="flex-1 bg-gray-500 hover:bg-gray-600 text-white py-3 rounded-lg font-medium transition-colors text-sm sm:text-base">
+                    Batal
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Add Voucher Modal -->
     <div id="addVoucherModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">
         <div class="bg-white rounded-lg sm:rounded-xl p-6 sm:p-8 max-w-md w-full">
@@ -329,6 +560,193 @@
         let currentStatusFilter = 'all';
         let currentUser = null;
 
+        // ========== PASSWORD VISIBILITY FUNCTIONS ==========
+        
+        function togglePasswordVisibility(inputId, toggleId) {
+            const input = document.getElementById(inputId);
+            const toggle = document.getElementById(toggleId);
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                toggle.textContent = '🙈'; // Eye with slash (hidden)
+            } else {
+                input.type = 'password';
+                toggle.textContent = '👁️'; // Eye (visible)
+            }
+        }
+
+        // ========== GREETING FUNCTIONS ==========
+        
+        function updateDynamicGreeting() {
+            const now = new Date();
+            const hour = now.getHours();
+            let greeting;
+            
+            if (hour >= 5 && hour < 12) {
+                greeting = "Selamat pagi";
+            } else if (hour >= 12 && hour < 15) {
+                greeting = "Selamat siang";
+            } else if (hour >= 15 && hour < 18) {
+                greeting = "Selamat sore";
+            } else {
+                greeting = "Selamat malam";
+            }
+            
+            const greetingElement = document.getElementById('dynamicGreeting');
+            if (greetingElement) {
+                greetingElement.textContent = greeting;
+            }
+        }
+
+        // ========== CONTACT & SUPPORT FUNCTIONS ==========
+        
+        function showContactModal() {
+            document.getElementById('contactModal').classList.remove('hidden');
+            document.getElementById('contactModal').classList.add('flex');
+        }
+
+        function closeContactModal() {
+            document.getElementById('contactModal').classList.add('hidden');
+            document.getElementById('contactModal').classList.remove('flex');
+        }
+
+        function showSupportModal() {
+            document.getElementById('supportModal').classList.remove('hidden');
+            document.getElementById('supportModal').classList.add('flex');
+        }
+
+        function closeSupportModal() {
+            document.getElementById('supportModal').classList.add('hidden');
+            document.getElementById('supportModal').classList.remove('flex');
+        }
+
+        function showHelpModal() {
+            document.getElementById('helpModal').classList.remove('hidden');
+            document.getElementById('helpModal').classList.add('flex');
+            document.getElementById('helpVerificationForm').classList.remove('hidden');
+            document.getElementById('helpPasswordResult').classList.add('hidden');
+            document.getElementById('helpName').focus();
+        }
+
+        function closeHelpModal() {
+            document.getElementById('helpModal').classList.add('hidden');
+            document.getElementById('helpModal').classList.remove('flex');
+            // Clear form
+            document.getElementById('helpName').value = '';
+            document.getElementById('helpPhone').value = '';
+            document.getElementById('revealedPassword').textContent = '';
+        }
+
+        async function verifyUserForPassword() {
+            const name = document.getElementById('helpName').value.trim().toUpperCase();
+            const phone = document.getElementById('helpPhone').value.trim();
+
+            if (!name || !phone) {
+                alert('Nama dan nomor telepon harus diisi!');
+                return;
+            }
+
+            try {
+                // Find user by phone number
+                const snapshot = await database.ref('users').orderByChild('phone').equalTo(phone).once('value');
+                
+                if (!snapshot.exists()) {
+                    alert('Nomor telepon tidak terdaftar!');
+                    return;
+                }
+
+                const users = snapshot.val();
+                const userId = Object.keys(users)[0];
+                const userData = users[userId];
+
+                // Check if name matches (case insensitive)
+                if (userData.name.toUpperCase() !== name.toUpperCase()) {
+                    alert('Nama tidak sesuai dengan data yang terdaftar!');
+                    return;
+                }
+
+                // Show password
+                const password = atob(userData.password);
+                document.getElementById('revealedPassword').textContent = password;
+                document.getElementById('helpVerificationForm').classList.add('hidden');
+                document.getElementById('helpPasswordResult').classList.remove('hidden');
+
+            } catch (error) {
+                console.error('Verification error:', error);
+                alert('Terjadi kesalahan saat verifikasi. Silakan coba lagi.');
+            }
+        }
+
+        // ========== SETTINGS FUNCTIONS ==========
+        
+        function toggleSettingsMenu() {
+            const menu = document.getElementById('settingsMenu');
+            menu.classList.toggle('hidden');
+        }
+
+        function showChangePasswordModal() {
+            document.getElementById('changePasswordModal').classList.remove('hidden');
+            document.getElementById('changePasswordModal').classList.add('flex');
+            document.getElementById('settingsMenu').classList.add('hidden');
+            document.getElementById('oldPassword').focus();
+        }
+
+        function closeChangePasswordModal() {
+            document.getElementById('changePasswordModal').classList.add('hidden');
+            document.getElementById('changePasswordModal').classList.remove('flex');
+            // Clear form
+            document.getElementById('oldPassword').value = '';
+            document.getElementById('newPassword').value = '';
+            document.getElementById('confirmNewPassword').value = '';
+        }
+
+        async function changePassword() {
+            const oldPassword = document.getElementById('oldPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmNewPassword = document.getElementById('confirmNewPassword').value;
+
+            // Validation
+            if (!oldPassword || !newPassword || !confirmNewPassword) {
+                alert('Semua field harus diisi!');
+                return;
+            }
+
+            if (newPassword.length < 6) {
+                alert('Password baru minimal 6 karakter!');
+                return;
+            }
+
+            if (newPassword !== confirmNewPassword) {
+                alert('Password baru dan konfirmasi tidak sama!');
+                return;
+            }
+
+            try {
+                // Get current user data from Firebase
+                const snapshot = await database.ref(`users/${currentUser.id}`).once('value');
+                const userData = snapshot.val();
+
+                // Verify old password
+                if (atob(userData.password) !== oldPassword) {
+                    alert('Password lama salah!');
+                    return;
+                }
+
+                // Update password in Firebase
+                await database.ref(`users/${currentUser.id}`).update({
+                    password: btoa(newPassword),
+                    passwordChangedAt: new Date().toISOString()
+                });
+
+                closeChangePasswordModal();
+                showNotification('✅ Password berhasil diubah!', 'success');
+
+            } catch (error) {
+                console.error('Change password error:', error);
+                alert('Terjadi kesalahan saat mengubah password. Silakan coba lagi.');
+            }
+        }
+
         // ========== AUTHENTICATION FUNCTIONS ==========
         
         function showLoginForm() {
@@ -342,71 +760,68 @@
         }
 
         async function registerUser() {
-    const name = document.getElementById('registerName').value.trim();
-    const phone = document.getElementById('registerPhone').value.trim();
-    const password = document.getElementById('registerPassword').value;
-    const confirmPassword = document.getElementById('confirmPassword').value;
+            const name = document.getElementById('registerName').value.trim().toUpperCase();
+            const phone = document.getElementById('registerPhone').value.trim();
+            const password = document.getElementById('registerPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
 
-    console.log("📌 Mulai proses pendaftaran", { name, phone });
+            // Validation
+            if (!name || !phone || !password || !confirmPassword) {
+                alert('Semua field harus diisi!');
+                return;
+            }
 
-    // Validation
-    if (!name || !phone || !password || !confirmPassword) {
-        alert('Semua field harus diisi!');
-        return;
-    }
+            if (password.length < 6) {
+                alert('Password minimal 6 karakter!');
+                return;
+            }
 
-    if (password.length < 6) {
-        alert('Password minimal 6 karakter!');
-        return;
-    }
+            if (password !== confirmPassword) {
+                alert('Password dan konfirmasi password tidak sama!');
+                return;
+            }
 
-    if (password !== confirmPassword) {
-        alert('Password dan konfirmasi password tidak sama!');
-        return;
-    }
+            if (!phone.startsWith('08') || phone.length < 10) {
+                alert('Format nomor telepon tidak valid! Gunakan format 08xxxxxxxxxx');
+                return;
+            }
 
-    if (!phone.startsWith('08') || phone.length < 10) {
-        alert('Format nomor telepon tidak valid! Gunakan format 08xxxxxxxxxx');
-        return;
-    }
+            try {
+                // Check if phone number already exists
+                const snapshot = await database.ref('users').orderByChild('phone').equalTo(phone).once('value');
+                if (snapshot.exists()) {
+                    alert('Nomor telepon sudah terdaftar!');
+                    return;
+                }
 
-    try {
-        console.log("🔍 Mengecek apakah nomor sudah terdaftar...");
-        const snapshot = await database.ref('users').orderByChild('phone').equalTo(phone).once('value');
-        console.log("✅ Hasil cek nomor:", snapshot.exists());
+                // Create user data
+                const userData = {
+                    name: name,
+                    phone: phone,
+                    password: btoa(password), // Simple encoding (not secure for production)
+                    registeredAt: new Date().toISOString(),
+                    lastLogin: null,
+                    vouchers: {},
+                    markedVouchers: {}
+                };
 
-        if (snapshot.exists()) {
-            alert('Nomor telepon sudah terdaftar!');
-            return;
+                // Save to Firebase
+                const userRef = await database.ref('users').push(userData);
+                
+                showNotification('✅ Pendaftaran berhasil! Silakan masuk.', 'success');
+                showLoginForm();
+                
+                // Clear form
+                document.getElementById('registerName').value = '';
+                document.getElementById('registerPhone').value = '';
+                document.getElementById('registerPassword').value = '';
+                document.getElementById('confirmPassword').value = '';
+                
+            } catch (error) {
+                console.error('Registration error:', error);
+                alert('Terjadi kesalahan saat mendaftar. Silakan coba lagi.');
+            }
         }
-
-        console.log("💾 Menyimpan data ke Realtime Database...");
-        const userData = {
-            name: name,
-            phone: phone,
-            password: btoa(password), // Simple encoding
-            registeredAt: new Date().toISOString(),
-            lastLogin: null
-        };
-
-        await database.ref('users').push(userData);
-        console.log("✅ Data berhasil disimpan:", userData);
-
-        showNotification('✅ Pendaftaran berhasil! Silakan masuk.', 'success');
-        showLoginForm();
-
-        // Clear form
-        document.getElementById('registerName').value = '';
-        document.getElementById('registerPhone').value = '';
-        document.getElementById('registerPassword').value = '';
-        document.getElementById('confirmPassword').value = '';
-
-    } catch (error) {
-        console.error('❌ Registration error:', error);
-        alert('Terjadi kesalahan saat mendaftar. Silakan coba lagi.');
-    }
-}
-
 
         async function loginUser() {
             const phone = document.getElementById('loginPhone').value.trim();
@@ -455,9 +870,12 @@
                 document.getElementById('authPage').classList.add('hidden');
                 document.getElementById('mainApp').classList.remove('hidden');
                 document.getElementById('currentUserName').textContent = userData.name;
+                
+                // Update dynamic greeting
+                updateDynamicGreeting();
 
-                // Load user data
-                loadData();
+                // Load user data from Firebase
+                await loadDataFromFirebase();
                 
                 showNotification(`🎉 Selamat datang, ${userData.name}!`, 'success');
                 
@@ -483,21 +901,56 @@
             }
         }
 
-        function checkAuthState() {
+        async function checkAuthState() {
             const savedUser = localStorage.getItem('currentUser');
             if (savedUser) {
                 currentUser = JSON.parse(savedUser);
                 document.getElementById('authPage').classList.add('hidden');
                 document.getElementById('mainApp').classList.remove('hidden');
                 document.getElementById('currentUserName').textContent = currentUser.name;
-                loadData();
+                updateDynamicGreeting();
+                await loadDataFromFirebase();
             }
         }
 
         // ========== DATA MANAGEMENT FUNCTIONS ==========
         
-        // Load data from localStorage on page load
-        function loadData() {
+        // Load data from Firebase
+        async function loadDataFromFirebase() {
+            if (!currentUser) return;
+            
+            try {
+                const snapshot = await database.ref(`users/${currentUser.id}`).once('value');
+                const userData = snapshot.val();
+                
+                if (userData) {
+                    // Load vouchers from Firebase
+                    if (userData.vouchers) {
+                        vouchers = Object.values(userData.vouchers);
+                    } else {
+                        vouchers = [];
+                    }
+                    
+                    // Load marked vouchers from Firebase
+                    if (userData.markedVouchers) {
+                        markedVouchers = new Set(Object.keys(userData.markedVouchers));
+                    } else {
+                        markedVouchers = new Set();
+                    }
+                }
+                
+                // Also save to localStorage for offline access
+                saveDataToLocalStorage();
+                
+            } catch (error) {
+                console.error('Error loading data from Firebase:', error);
+                // Fallback to localStorage if Firebase fails
+                loadDataFromLocalStorage();
+            }
+        }
+
+        // Load data from localStorage (fallback)
+        function loadDataFromLocalStorage() {
             if (!currentUser) return;
             
             const userKey = `vouchers_${currentUser.phone}`;
@@ -516,7 +969,7 @@
         }
 
         // Save data to localStorage
-        function saveData() {
+        function saveDataToLocalStorage() {
             if (!currentUser) return;
             
             const userKey = `vouchers_${currentUser.phone}`;
@@ -524,6 +977,40 @@
             
             localStorage.setItem(userKey, JSON.stringify(vouchers));
             localStorage.setItem(markedKey, JSON.stringify([...markedVouchers]));
+        }
+
+        // Save data to Firebase
+        async function saveDataToFirebase() {
+            if (!currentUser) return;
+            
+            try {
+                // Convert vouchers array to object for Firebase
+                const vouchersObj = {};
+                vouchers.forEach((voucher, index) => {
+                    vouchersObj[`voucher_${index}_${Date.now()}`] = voucher;
+                });
+                
+                // Convert marked vouchers set to object for Firebase
+                const markedVouchersObj = {};
+                markedVouchers.forEach(code => {
+                    markedVouchersObj[code] = true;
+                });
+                
+                // Update user data in Firebase
+                await database.ref(`users/${currentUser.id}`).update({
+                    vouchers: vouchersObj,
+                    markedVouchers: markedVouchersObj,
+                    lastUpdated: new Date().toISOString()
+                });
+                
+                // Also save to localStorage
+                saveDataToLocalStorage();
+                
+            } catch (error) {
+                console.error('Error saving data to Firebase:', error);
+                // Still save to localStorage even if Firebase fails
+                saveDataToLocalStorage();
+            }
         }
 
         // ========== MODAL FUNCTIONS ==========
@@ -547,7 +1034,7 @@
             document.getElementById('characterCount').textContent = `${count} karakter`;
         }
 
-        function addVoucher() {
+        async function addVoucher() {
             const input = document.getElementById('modalVoucherInput');
             const code = input.value.trim().toUpperCase();
             
@@ -563,10 +1050,10 @@
             
             vouchers.push({
                 code: code,
-                timestamp: new Date()
+                timestamp: new Date().toISOString()
             });
             
-            saveData();
+            await saveDataToFirebase();
             closeAddVoucherModal();
             showNotification('✅ Voucher berhasil ditambahkan!', 'success');
         }
@@ -627,7 +1114,7 @@
             searchVoucher();
         }
 
-        function toggleMark(voucherCode) {
+        async function toggleMark(voucherCode) {
             if (markedVouchers.has(voucherCode)) {
                 markedVouchers.delete(voucherCode);
                 showNotification('↩️ Tanda voucher dibatalkan', 'info');
@@ -636,7 +1123,7 @@
                 showNotification('🎯 Voucher berhasil ditandai!', 'success');
             }
             
-            saveData();
+            await saveDataToFirebase();
             
             // Refresh search result if showing
             const query = document.getElementById('searchInput').value.trim().toUpperCase();
@@ -803,12 +1290,12 @@
             updateVoucherListDisplay();
         }
 
-        function confirmRemoveVoucher(voucherCode) {
+        async function confirmRemoveVoucher(voucherCode) {
             if (confirm(`Apakah Anda yakin ingin menghapus voucher ${voucherCode}?`)) {
                 vouchers = vouchers.filter(v => v.code !== voucherCode);
                 markedVouchers.delete(voucherCode);
                 
-                saveData();
+                await saveDataToFirebase();
                 
                 // Update voucher list if it's open
                 if (!document.getElementById('voucherListPage').classList.contains('hidden')) {
@@ -854,6 +1341,44 @@
             }
         });
 
+        // Close change password modal when clicking outside
+        document.getElementById('changePasswordModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeChangePasswordModal();
+            }
+        });
+
+        // Close contact modal when clicking outside
+        document.getElementById('contactModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeContactModal();
+            }
+        });
+
+        // Close support modal when clicking outside
+        document.getElementById('supportModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeSupportModal();
+            }
+        });
+
+        // Close help modal when clicking outside
+        document.getElementById('helpModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeHelpModal();
+            }
+        });
+
+        // Close settings menu when clicking outside
+        document.addEventListener('click', function(e) {
+            const settingsBtn = document.getElementById('settingsBtn');
+            const settingsMenu = document.getElementById('settingsMenu');
+            
+            if (settingsBtn && settingsMenu && !settingsBtn.contains(e.target) && !settingsMenu.contains(e.target)) {
+                settingsMenu.classList.add('hidden');
+            }
+        });
+
         // Enter key support for login form
         document.getElementById('loginPassword').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
@@ -868,12 +1393,29 @@
             }
         });
 
+        // Enter key support for change password form
+        document.getElementById('confirmNewPassword').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                changePassword();
+            }
+        });
+
+        // Enter key support for help verification form
+        document.getElementById('helpPhone').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                verifyUserForPassword();
+            }
+        });
+
         // ========== INITIALIZATION ==========
         
         // Load data when page loads
         window.addEventListener('load', function() {
             checkAuthState();
+            
+            // Update greeting every minute
+            setInterval(updateDynamicGreeting, 60000);
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96cf5331a5ecce19',t:'MTc1NDgyNzE0NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96d3de70c504f902',t:'MTc1NDg3NDc5MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
