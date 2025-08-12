@@ -1436,6 +1436,10 @@
                 document.getElementById('currentUserName').textContent = currentUser.name;
                 updateDynamicGreeting();
                 await loadDataFromFirebase();
+                
+                // Initialize notifications
+                loadNotificationsFromStorage();
+                initializeNotifications();
             }
         }
 
@@ -1880,6 +1884,13 @@
             }
         });
 
+        // Close delete account modal when clicking outside
+        document.getElementById('deleteAccountModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeDeleteAccountModal();
+            }
+        });
+
         // Close contact modal when clicking outside
         document.getElementById('contactModal').addEventListener('click', function(e) {
             if (e.target === this) {
@@ -1901,13 +1912,19 @@
             }
         });
 
-        // Close settings menu when clicking outside
+        // Close settings menu and notification panel when clicking outside
         document.addEventListener('click', function(e) {
             const settingsBtn = document.getElementById('settingsBtn');
             const settingsMenu = document.getElementById('settingsMenu');
+            const notificationBtn = document.getElementById('notificationBtn');
+            const notificationPanel = document.getElementById('notificationPanel');
             
             if (settingsBtn && settingsMenu && !settingsBtn.contains(e.target) && !settingsMenu.contains(e.target)) {
                 settingsMenu.classList.add('hidden');
+            }
+            
+            if (notificationBtn && notificationPanel && !notificationBtn.contains(e.target) && !notificationPanel.contains(e.target)) {
+                notificationPanel.classList.add('hidden');
             }
         });
 
@@ -1946,6 +1963,13 @@
             }
         });
 
+        // Enter key support for delete account form
+        document.getElementById('deleteAccountPassword').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                deleteAccount();
+            }
+        });
+
         // ========== INITIALIZATION ==========
         
         // Load data when page loads
@@ -1956,5 +1980,5 @@
             setInterval(updateDynamicGreeting, 60000);
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96d5cf86f402a12f',t:'MTc1NDg5NTE1MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96de3c0ca4348228',t:'MTc1NDk4MzQ4Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
