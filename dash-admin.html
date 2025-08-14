@@ -1,0 +1,1170 @@
+<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Admin - Voucher Management</title>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-messaging.js"></script>
+
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        color: #2d3748;
+    }
+
+    .header {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        padding: 20px 0;
+        text-align: center;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .header h1 {
+        color: #2d3748;
+        font-size: 28px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+    }
+
+    .header h1 i {
+        color: #4299e1;
+        font-size: 32px;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 30px 20px;
+    }
+
+    .tabs {
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+        margin-bottom: 30px;
+        flex-wrap: wrap;
+    }
+
+    .tab-btn {
+        background: rgba(255, 255, 255, 0.9);
+        border: 2px solid transparent;
+        color: #4a5568;
+        padding: 14px 24px;
+        border-radius: 12px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 15px;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-width: 160px;
+        justify-content: center;
+    }
+
+    .tab-btn:hover {
+        background: white;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .tab-btn.active {
+        background: #4299e1;
+        color: white;
+        border-color: #3182ce;
+        box-shadow: 0 6px 20px rgba(66, 153, 225, 0.4);
+    }
+
+    .tab-content {
+        display: none;
+    }
+
+    .tab-content.active {
+        display: block;
+    }
+
+    .panel {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 16px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        overflow: hidden;
+    }
+
+    .search-section {
+        padding: 24px;
+        border-bottom: 1px solid #e2e8f0;
+        background: rgba(248, 250, 252, 0.8);
+    }
+
+    .search-container {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        max-width: 500px;
+        margin: 0 auto;
+    }
+
+    .search-input-wrapper {
+        position: relative;
+        flex: 1;
+    }
+
+    .search-input-wrapper i {
+        position: absolute;
+        left: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #a0aec0;
+        font-size: 18px;
+        z-index: 2;
+    }
+
+    .search-input-wrapper input {
+        width: 100%;
+        padding: 14px 16px 14px 48px;
+        border-radius: 12px;
+        border: 2px solid #e2e8f0;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        color: #2d3748;
+        font-size: 15px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .search-input-wrapper input:focus {
+        outline: none;
+        border-color: #4299e1;
+        box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05);
+        background: white;
+    }
+
+    .search-input-wrapper input::placeholder {
+        color: #a0aec0;
+    }
+
+    .btn-reset {
+        background: rgba(255, 255, 255, 0.95);
+        border: 2px solid #e2e8f0;
+        color: #718096;
+        padding: 22px;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 25px;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        height: 48px;
+        width: 48px;
+    }
+
+    .btn-reset:hover {
+        background: white;
+        border-color: #cbd5e0;
+        color: #4a5568;
+        transform: translateY(-1px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .table-container {
+        overflow-x: auto;
+        max-height: 500px;
+        overflow-y: auto;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th {
+        background: #f7fafc;
+        color: #2d3748;
+        font-weight: 600;
+        padding: 16px;
+        text-align: left;
+        border-bottom: 2px solid #e2e8f0;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+    }
+
+    td {
+        padding: 16px;
+        border-bottom: 1px solid #e2e8f0;
+        vertical-align: middle;
+    }
+
+    tr:hover {
+        background: rgba(66, 153, 225, 0.05);
+    }
+
+    .btn-icon {
+        background: #4299e1;
+        color: white;
+        border: none;
+        padding: 8px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        margin-right: 8px;
+    }
+
+    .btn-icon:hover {
+        background: #3182ce;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(66, 153, 225, 0.4);
+    }
+
+    .btn-icon.btn-message {
+        background: #48bb78;
+    }
+
+    .btn-icon.btn-message:hover {
+        background: #38a169;
+        box-shadow: 0 4px 12px rgba(72, 187, 120, 0.4);
+    }
+
+    .controls-section {
+        padding: 24px;
+        border-bottom: 1px solid #e2e8f0;
+        background: rgba(248, 250, 252, 0.8);
+    }
+
+    .controls-grid {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .voucher-counter {
+        background: rgba(66, 153, 225, 0.1);
+        color: #2b6cb0;
+        padding: 12px 20px;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        border: 2px solid rgba(66, 153, 225, 0.2);
+        min-width: 120px;
+        justify-content: center;
+    }
+
+    .btn {
+        background: #4299e1;
+        color: white;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 10px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 14px;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-width: 140px;
+        justify-content: center;
+    }
+
+    .btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn-danger {
+        background: #e53e3e;
+    }
+
+    .btn-danger:hover {
+        background: #c53030;
+        box-shadow: 0 6px 20px rgba(229, 62, 62, 0.4);
+    }
+
+    .btn-success {
+        background: #48bb78;
+    }
+
+    .btn-success:hover {
+        background: #38a169;
+        box-shadow: 0 6px 20px rgba(72, 187, 120, 0.4);
+    }
+
+    .btn-warning {
+        background: #ed8936;
+    }
+
+    .btn-warning:hover {
+        background: #dd6b20;
+        box-shadow: 0 6px 20px rgba(237, 137, 54, 0.4);
+    }
+
+    .content-area {
+        padding: 24px;
+        max-height: 400px;
+        overflow-y: auto;
+    }
+
+    .voucher-card {
+        background: rgba(247, 250, 252, 0.8);
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 16px;
+        transition: all 0.3s ease;
+    }
+
+    .voucher-card:hover {
+        background: rgba(255, 255, 255, 0.9);
+        border-color: #cbd5e0;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .voucher-list {
+        margin-top: 12px;
+        padding: 12px;
+        background: white;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+        font-family: 'Courier New', monospace;
+        font-size: 13px;
+        line-height: 1.6;
+        max-height: 200px;
+        overflow-y: auto;
+    }
+
+    .empty-state {
+        text-align: center;
+        color: #a0aec0;
+        padding: 60px 20px;
+    }
+
+    .empty-state i {
+        font-size: 48px;
+        margin-bottom: 16px;
+        display: block;
+        opacity: 0.7;
+    }
+
+    .empty-state p {
+        font-size: 16px;
+        font-weight: 500;
+    }
+
+    .message-section {
+        padding: 24px;
+        border-bottom: 1px solid #e2e8f0;
+        background: rgba(248, 250, 252, 0.8);
+    }
+
+    .message-form {
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #2d3748;
+    }
+
+    .form-group textarea {
+        width: 100%;
+        padding: 12px 16px;
+        border-radius: 12px;
+        border: 2px solid #e2e8f0;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        color: #2d3748;
+        font-size: 15px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        resize: vertical;
+        min-height: 100px;
+        font-family: inherit;
+    }
+
+    .form-group textarea:focus {
+        outline: none;
+        border-color: #4299e1;
+        box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05);
+        background: white;
+    }
+
+    .message-buttons {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    @media (max-width: 1024px) {
+        .controls-grid {
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .voucher-counter {
+            flex: 0 0 100%;
+            margin-bottom: 12px;
+        }
+        
+        .btn {
+            flex: 0 0 calc(33.333% - 8px);
+        }
+    }
+
+    @media (max-width: 768px) {
+        .container {
+            padding: 20px 16px;
+        }
+        
+        .tabs {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            flex: 1;
+            min-width: 140px;
+            max-width: 180px;
+            padding: 12px 16px;
+            font-size: 14px;
+        }
+        
+        .controls-grid {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+        }
+        
+        .voucher-counter {
+            flex: 0 0 100%;
+            margin-bottom: 8px;
+            font-size: 12px;
+            padding: 10px 12px;
+            height: 44px;
+        }
+        
+        .btn {
+            flex: 0 0 calc(33.333% - 6px);
+            padding: 10px 12px;
+            font-size: 11px;
+            height: 44px;
+        }
+        
+        .search-container {
+            max-width: 100%;
+        }
+        
+        .btn-reset {
+            height: 44px;
+            width: 44px;
+        }
+        
+        th, td {
+            padding: 12px 8px;
+            font-size: 13px;
+        }
+        
+        .content-area {
+            padding: 16px;
+        }
+        
+        .voucher-card {
+            padding: 16px;
+        }
+        
+        .controls-section {
+            padding: 16px;
+        }
+
+        .message-buttons {
+            flex-direction: column;
+        }
+
+        .btn {
+            width: 100%;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .tabs {
+            gap: 6px;
+        }
+        
+        .tab-btn {
+            min-width: 120px;
+            padding: 10px 12px;
+            font-size: 13px;
+        }
+        
+        .controls-grid {
+            gap: 6px;
+        }
+        
+        .voucher-counter {
+            flex: 0 0 100%;
+            margin-bottom: 6px;
+            font-size: 13px;
+            height: 40px;
+        }
+        
+        .btn {
+            flex: 0 0 calc(33.333% - 4px);
+            font-size: 12px;
+            height: 40px;
+            padding: 8px 10px;
+        }
+        
+        .btn-reset {
+            height: 40px;
+            width: 40px;
+        }
+    }
+</style>
+</head>
+<body>
+
+<div class="header">
+    <h1><i class="ri-dashboard-3-line"></i> Dashboard Admin</h1>
+</div>
+
+<div class="container">
+    <div class="tabs">
+        <button class="tab-btn active" data-tab="users">
+            <i class="ri-user-line"></i> Pengguna
+        </button>
+        <button class="tab-btn" data-tab="vouchers">
+            <i class="ri-coupon-line"></i> Kode Voucher
+        </button>
+        <button class="tab-btn" data-tab="messages">
+            <i class="ri-message-2-line"></i> Kirim Pesan
+        </button>
+    </div>
+    
+    <div class="tab-content active" id="usersTab">
+        <div class="search-section">
+            <div class="search-container">
+                <div class="search-input-wrapper">
+                    <i class="ri-search-line"></i>
+                    <input type="text" id="userSearch" placeholder="Cari nama atau nomor telepon...">
+                </div>
+                <button class="btn-reset" id="userSearchReset" title="Reset pencarian">
+                    <i class="ri-close-line"></i>
+                </button>
+            </div>
+        </div>
+        <div class="panel">
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th><i class="ri-user-line"></i> Nama Pengguna</th>
+                            <th><i class="ri-phone-line"></i> Nomor HP</th>
+                            <th><i class="ri-settings-line"></i> Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="userTable">
+                        <!-- Data akan dimuat di sini -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div class="tab-content" id="vouchersTab">
+        <div class="search-section">
+            <div class="search-container">
+                <div class="search-input-wrapper">
+                    <i class="ri-search-line"></i>
+                    <input type="text" id="phoneSearch" placeholder="Cari nomor telepon...">
+                </div>
+                <button class="btn-reset" id="phoneSearchReset" title="Reset pencarian">
+                    <i class="ri-close-line"></i>
+                </button>
+            </div>
+        </div>
+        <div class="panel">
+            <div class="controls-section">
+                <div class="controls-grid">
+                    <div class="voucher-counter" id="voucherCount">
+                        <i class="ri-coupon-2-line"></i> 0 VOUCHER 
+                    </div>
+                    <button class="btn btn-danger" id="resetAllBtn">
+                        <i class="ri-delete-bin-line"></i> RESET SEMUA
+                    </button>
+                    <button class="btn btn-danger" id="resetUserBtn">
+                        <i class="ri-user-unfollow-line"></i> RESET PENGGUNA
+                    </button>
+                    <button class="btn btn-success" id="copyVouchersBtn">
+                        <i class="ri-file-copy-line"></i> SALIN VOUCHER 
+                    </button>
+                </div>
+            </div>
+            <div class="content-area">
+                <div id="voucherList">
+                    <div class="empty-state">
+                        <i class="ri-coupon-line"></i>
+                        <p>Pilih nomor telepon untuk melihat voucher</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="tab-content" id="messagesTab">
+        <div class="panel">
+            <div class="message-section">
+                <div class="message-form">
+                    <div class="form-group">
+                        <label for="messageText">
+                            <i class="ri-message-2-line"></i> Pesan untuk Pengguna
+                        </label>
+                        <textarea id="messageText" placeholder="Tulis pesan Anda di sini..."></textarea>
+                    </div>
+                    <div class="message-buttons">
+                        <button class="btn btn-success" id="sendToAllBtn">
+                            <i class="ri-group-line"></i> Kirim ke Semua Pengguna
+                        </button>
+                        <button class="btn btn-warning" id="sendToSpecificBtn">
+                            <i class="ri-user-line"></i> Kirim ke Pengguna Tertentu
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="content-area">
+                <div id="messageStatus">
+                    <div class="empty-state">
+                        <i class="ri-mail-send-line"></i>
+                        <p>Tulis pesan dan pilih penerima untuk mengirim notifikasi</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Konfigurasi Firebase
+    const firebaseConfig = {
+        apiKey: "AIzaSyASXJiNqbekENXpk7C5U5XjE6gImfNUBwg",
+        authDomain: "pustakapribadi-25.firebaseapp.com",
+        databaseURL: "https://pustakapribadi-25-default-rtdb.firebaseio.com",
+        projectId: "pustakapribadi-25",
+        storageBucket: "pustakapribadi-25.firebasestorage.app",
+        messagingSenderId: "828550020946",
+        appId: "1:828550020946:web:65322f2092d1927c43c48b"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const dbRef = firebase.database().ref("users");
+
+    // Initialize Firebase Messaging
+    let messaging;
+    try {
+        messaging = firebase.messaging();
+    } catch (error) {
+        console.log("Firebase Messaging not supported:", error);
+    }
+
+    const userTable = document.getElementById("userTable");
+    const userSearch = document.getElementById("userSearch");
+    const userSearchReset = document.getElementById("userSearchReset");
+    const phoneSearch = document.getElementById("phoneSearch");
+    const phoneSearchReset = document.getElementById("phoneSearchReset");
+    const voucherList = document.getElementById("voucherList");
+    const voucherCount = document.getElementById("voucherCount");
+    const resetUserBtn = document.getElementById("resetUserBtn");
+    const copyVouchersBtn = document.getElementById("copyVouchersBtn");
+    const messageText = document.getElementById("messageText");
+    const sendToAllBtn = document.getElementById("sendToAllBtn");
+    const sendToSpecificBtn = document.getElementById("sendToSpecificBtn");
+    const messageStatus = document.getElementById("messageStatus");
+    
+    let currentSelectedUserId = null;
+    let allUsers = [];
+    let allPhones = [];
+
+    // Ambil data pengguna
+    dbRef.on("value", snapshot => {
+        allUsers = [];
+        allPhones = [];
+        
+        if (!snapshot.exists()) {
+            userTable.innerHTML = `
+                <tr>
+                    <td colspan="3" style="text-align: center; color: #a0aec0; padding: 40px;">
+                        <i class="ri-user-line" style="font-size: 24px; margin-bottom: 8px; display: block;"></i>
+                        Belum ada data pengguna
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
+        snapshot.forEach(userSnap => {
+            const user = userSnap.val();
+            const userId = userSnap.key;
+            
+            allUsers.push({
+                id: userId,
+                name: user.name || '-',
+                phone: user.phone || '-',
+                fcmToken: user.fcmToken || null
+            });
+            
+            if (user.phone) {
+                allPhones.push({
+                    phone: user.phone,
+                    userId: userId,
+                    name: user.name || '-',
+                    fcmToken: user.fcmToken || null
+                });
+            }
+        });
+
+        renderUsers();
+        resetVoucherDisplay();
+    });
+
+    function renderUsers(searchTerm = '') {
+        userTable.innerHTML = "";
+        
+        const filteredUsers = allUsers.filter(user => {
+            if (!searchTerm) return true;
+            const search = searchTerm.toLowerCase();
+            return user.name.toLowerCase().includes(search) || 
+                   user.phone.toLowerCase().includes(search);
+        });
+        
+        if (filteredUsers.length === 0) {
+            userTable.innerHTML = `
+                <tr>
+                    <td colspan="3" style="text-align: center; color: #a0aec0; padding: 40px;">
+                        <i class="ri-search-line" style="font-size: 24px; margin-bottom: 8px; display: block;"></i>
+                        ${searchTerm ? 'Tidak ada hasil pencarian' : 'Belum ada data pengguna'}
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+        
+        filteredUsers.forEach(user => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+                <td><strong>${user.name}</strong></td>
+                <td>${user.phone}</td>
+                <td>
+                    <button class="btn-icon btn-message" onclick="sendNotificationToUser('${user.id}', '${user.name}')" title="Kirim Notifikasi">
+                        <i class="ri-notification-line"></i>
+                    </button>
+                    <button class="btn-icon" onclick="sendMessage('${user.phone}')" title="Kirim Pesan WhatsApp">
+                        <i class="ri-message-2-line"></i>
+                    </button>
+                </td>
+            `;
+            userTable.appendChild(tr);
+        });
+    }
+
+    function resetVoucherDisplay() {
+        voucherList.innerHTML = `
+            <div class="empty-state">
+                <i class="ri-coupon-line"></i>
+                <p>Cari nomor telepon untuk melihat voucher</p>
+            </div>
+        `;
+        voucherCount.innerHTML = '<i class="ri-coupon-2-line"></i> 0 VOUCHER';
+        currentSelectedUserId = null;
+    }
+
+    // Render daftar voucher berdasarkan pencarian
+    function renderVouchers(searchTerm = '') {
+        if (!searchTerm.trim()) {
+            resetVoucherDisplay();
+            return;
+        }
+
+        const matchedPhones = allPhones.filter(phoneData => 
+            phoneData.phone.includes(searchTerm) || 
+            phoneData.name.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+
+        if (matchedPhones.length === 0) {
+            voucherList.innerHTML = `
+                <div class="empty-state">
+                    <i class="ri-search-line"></i>
+                    <p>Nomor telepon tidak ditemukan</p>
+                </div>
+            `;
+            voucherCount.innerHTML = '<i class="ri-coupon-2-line"></i> 0 Voucher';
+            currentSelectedUserId = null;
+            return;
+        }
+
+        // Jika hanya satu hasil, langsung tampilkan voucher
+        if (matchedPhones.length === 1) {
+            const phoneData = matchedPhones[0];
+            showVouchersForUser(phoneData.userId, phoneData.phone, phoneData.name);
+        } else {
+            // Jika lebih dari satu, tampilkan daftar pilihan
+            voucherList.innerHTML = "";
+            voucherCount.innerHTML = '<i class="ri-coupon-2-line"></i> Pilih Nomor';
+
+            matchedPhones.forEach(phoneData => {
+                const div = document.createElement("div");
+                div.className = "voucher-card";
+                div.style.cursor = "pointer";
+                div.innerHTML = `
+                    <strong><i class="ri-user-line"></i> ${phoneData.name} (${phoneData.phone})</strong>
+                    <div style="color: #718096; font-size: 14px; margin-top: 8px;">
+                        <i class="ri-mouse-line"></i> Klik untuk melihat voucher
+                    </div>
+                `;
+                div.addEventListener('click', () => {
+                    phoneSearch.value = phoneData.phone;
+                    showVouchersForUser(phoneData.userId, phoneData.phone, phoneData.name);
+                });
+                voucherList.appendChild(div);
+            });
+        }
+    }
+
+    function showVouchersForUser(userId, phone, name) {
+        currentSelectedUserId = userId;
+        
+        dbRef.child(userId).once("value").then(snapshot => {
+            const user = snapshot.val();
+            if (!user) return;
+            
+            let voucherArr = [];
+            if (user.vouchers) {
+                Object.values(user.vouchers).forEach(v => {
+                    if (v.code) voucherArr.push(v.code);
+                });
+            }
+            if (user.markedVouchers) {
+                Object.values(user.markedVouchers).forEach(v => {
+                    if (v.code) voucherArr.push(v.code + " (marked)");
+                });
+            }
+
+            voucherCount.innerHTML = `<i class="ri-coupon-2-line"></i> ${voucherArr.length} VOUCHER`;
+
+            const div = document.createElement("div");
+            div.className = "voucher-card";
+            div.innerHTML = `
+                <strong><i class="ri-user-line"></i> ${name}</strong>
+                <div class="voucher-list">
+                    ${voucherArr.length > 0 ? voucherArr.join("<br>") : '<em style="color: #a0aec0;">Belum ada voucher</em>'}
+                </div>
+            `;
+            
+            voucherList.innerHTML = "";
+            voucherList.appendChild(div);
+        });
+    }
+
+    // Reset semua voucher
+    document.getElementById("resetAllBtn").addEventListener("click", async () => {
+        if (confirm("Yakin ingin menghapus semua voucher dan marked voucher dari semua pengguna?")) {
+            const snapshot = await dbRef.once("value");
+            const promises = [];
+            snapshot.forEach(userSnap => {
+                promises.push(dbRef.child(userSnap.key).child("vouchers").remove());
+                promises.push(dbRef.child(userSnap.key).child("markedVouchers").remove());
+            });
+            await Promise.all(promises);
+            alert("Semua voucher berhasil dihapus.");
+            renderVouchers();
+        }
+    });
+
+    // Reset voucher per user
+    resetUserBtn.addEventListener("click", async () => {
+        if (!currentSelectedUserId) {
+            alert("Pilih nomor telepon terlebih dahulu!");
+            return;
+        }
+        
+        if (confirm("Hapus semua voucher dan marked voucher pengguna ini?")) {
+            await Promise.all([
+                dbRef.child(currentSelectedUserId).child("vouchers").remove(),
+                dbRef.child(currentSelectedUserId).child("markedVouchers").remove()
+            ]);
+            alert("Voucher pengguna ini berhasil dihapus.");
+            renderVouchers();
+        }
+    });
+
+    // Fungsi untuk mengirim pesan WhatsApp
+    function sendMessage(phone) {
+        if (phone && phone !== '-') {
+            const message = `Halo, ini pesan untuk nomor ${phone}`;
+            const whatsappUrl = `https://wa.me/${phone.replace(/\D/g, '')}?text=${encodeURIComponent(message)}`;
+            window.open(whatsappUrl, '_blank');
+        } else {
+            alert("Nomor telepon tidak tersedia");
+        }
+    }
+
+    // Fungsi untuk mengirim notifikasi ke pengguna tertentu
+    async function sendNotificationToUser(userId, userName) {
+        const message = messageText.value.trim();
+        if (!message) {
+            alert("Tulis pesan terlebih dahulu!");
+            return;
+        }
+
+        try {
+            const userSnapshot = await dbRef.child(userId).once("value");
+            const user = userSnapshot.val();
+            
+            if (!user || !user.fcmToken) {
+                alert(`${userName} belum memiliki token notifikasi!`);
+                return;
+            }
+
+            // Simpan notifikasi ke database
+            const notificationData = {
+                title: "Pesan dari Admin",
+                body: message,
+                timestamp: Date.now(),
+                read: false
+            };
+
+            await dbRef.child(userId).child("notifications").push(notificationData);
+            
+            updateMessageStatus(`Notifikasi berhasil dikirim ke ${userName}!`, 'success');
+            messageText.value = '';
+        } catch (error) {
+            console.error("Error sending notification:", error);
+            updateMessageStatus(`Gagal mengirim notifikasi ke ${userName}`, 'error');
+        }
+    }
+
+    // Fungsi untuk mengirim notifikasi ke semua pengguna
+    async function sendNotificationToAll() {
+        const message = messageText.value.trim();
+        if (!message) {
+            alert("Tulis pesan terlebih dahulu!");
+            return;
+        }
+
+        if (!confirm("Yakin ingin mengirim pesan ke semua pengguna?")) {
+            return;
+        }
+
+        try {
+            const snapshot = await dbRef.once("value");
+            const promises = [];
+            let sentCount = 0;
+
+            snapshot.forEach(userSnap => {
+                const user = userSnap.val();
+                if (user && user.fcmToken) {
+                    const notificationData = {
+                        title: "Pesan dari Admin",
+                        body: message,
+                        timestamp: Date.now(),
+                        read: false
+                    };
+                    promises.push(dbRef.child(userSnap.key).child("notifications").push(notificationData));
+                    sentCount++;
+                }
+            });
+
+            await Promise.all(promises);
+            updateMessageStatus(`Notifikasi berhasil dikirim ke ${sentCount} pengguna!`, 'success');
+            messageText.value = '';
+        } catch (error) {
+            console.error("Error sending notifications:", error);
+            updateMessageStatus("Gagal mengirim notifikasi ke semua pengguna", 'error');
+        }
+    }
+
+    // Fungsi untuk mengirim notifikasi ke pengguna tertentu (dengan pilihan)
+    async function sendNotificationToSpecific() {
+        const message = messageText.value.trim();
+        if (!message) {
+            alert("Tulis pesan terlebih dahulu!");
+            return;
+        }
+
+        if (allUsers.length === 0) {
+            alert("Belum ada pengguna terdaftar!");
+            return;
+        }
+
+        // Buat daftar pengguna untuk dipilih
+        let userOptions = "Pilih pengguna:\n\n";
+        allUsers.forEach((user, index) => {
+            userOptions += `${index + 1}. ${user.name} (${user.phone})\n`;
+        });
+
+        const userChoice = prompt(userOptions + "\nMasukkan nomor pengguna:");
+        if (!userChoice) return;
+
+        const userIndex = parseInt(userChoice) - 1;
+        if (userIndex < 0 || userIndex >= allUsers.length) {
+            alert("Pilihan tidak valid!");
+            return;
+        }
+
+        const selectedUser = allUsers[userIndex];
+        await sendNotificationToUser(selectedUser.id, selectedUser.name);
+    }
+
+    // Fungsi untuk update status pesan
+    function updateMessageStatus(message, type) {
+        const iconClass = type === 'success' ? 'ri-check-line' : 'ri-error-warning-line';
+        const colorClass = type === 'success' ? '#48bb78' : '#e53e3e';
+        
+        messageStatus.innerHTML = `
+            <div class="empty-state" style="color: ${colorClass};">
+                <i class="${iconClass}"></i>
+                <p>${message}</p>
+            </div>
+        `;
+
+        // Reset status setelah 5 detik
+        setTimeout(() => {
+            messageStatus.innerHTML = `
+                <div class="empty-state">
+                    <i class="ri-mail-send-line"></i>
+                    <p>Tulis pesan dan pilih penerima untuk mengirim notifikasi</p>
+                </div>
+            `;
+        }, 5000);
+    }
+    
+    // Fungsi untuk menyalin voucher
+    copyVouchersBtn.addEventListener("click", async () => {
+        if (!currentSelectedUserId) {
+            alert("Pilih nomor telepon terlebih dahulu!");
+            return;
+        }
+        
+        const snapshot = await dbRef.child(currentSelectedUserId).once("value");
+        const user = snapshot.val();
+        
+        let voucherArr = [];
+        if (user.vouchers) {
+            Object.values(user.vouchers).forEach(v => {
+                if (v.code) voucherArr.push(v.code);
+            });
+        }
+        if (user.markedVouchers) {
+            Object.values(user.markedVouchers).forEach(v => {
+                if (v.code) voucherArr.push(v.code + " (marked)");
+            });
+        }
+        
+        if (voucherArr.length > 0) {
+            const voucherText = voucherArr.join('\n');
+            try {
+                await navigator.clipboard.writeText(voucherText);
+                alert("Kode voucher berhasil disalin ke clipboard!");
+            } catch (err) {
+                const textArea = document.createElement('textarea');
+                textArea.value = voucherText;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                alert("Kode voucher berhasil disalin ke clipboard!");
+            }
+        } else {
+            alert("Tidak ada kode voucher untuk disalin!");
+        }
+    });
+
+    // Tab control
+    document.querySelectorAll(".tab-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+            document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+            document.querySelectorAll(".tab-content").forEach(content => content.classList.remove("active"));
+            
+            const tabName = btn.dataset.tab;
+            if (tabName === "users") {
+                document.getElementById("usersTab").classList.add("active");
+            } else if (tabName === "vouchers") {
+                document.getElementById("vouchersTab").classList.add("active");
+            } else if (tabName === "messages") {
+                document.getElementById("messagesTab").classList.add("active");
+            }
+        });
+    });
+
+    // Event listeners untuk pencarian
+    userSearch.addEventListener('input', (e) => {
+        renderUsers(e.target.value);
+    });
+
+    phoneSearch.addEventListener('input', (e) => {
+        renderVouchers(e.target.value);
+    });
+
+    // Event listeners untuk tombol reset
+    userSearchReset.addEventListener('click', () => {
+        userSearch.value = '';
+        renderUsers();
+    });
+
+    phoneSearchReset.addEventListener('click', () => {
+        phoneSearch.value = '';
+        renderVouchers();
+    });
+
+    // Event listeners untuk tombol pesan
+    sendToAllBtn.addEventListener('click', sendNotificationToAll);
+    sendToSpecificBtn.addEventListener('click', sendNotificationToSpecific);
+</script>
+
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96ef69f6606a821f',t:'MTc1NTE2MzYyMS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
