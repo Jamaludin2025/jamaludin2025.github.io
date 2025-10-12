@@ -1,9 +1,10 @@
-<!DOCTYPE html>
+<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Ucapan Pernikahan</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
   <style>
@@ -161,7 +162,7 @@
       border: none;
       border-radius: 6px;
       cursor: pointer;
-      font-size: 15px;
+      font-size: 17px;
       transition: background-color 0.3s;
       margin-top: 10px;
     }
@@ -250,28 +251,27 @@
 </head>
 <body>
   <div class="login-container">
-    <h2 id="judul-form">Halaman Log In</h2>
+    <h2 id="judul-form">Beranda User</h2>
     <div id="tanggal-hari"></div>
     <div class="marquee-container">
       <div class="marquee-text">
-        Selamat datang di halaman log in AJ Project. Harap diingat kode akses Anda agar bisa log in kembali di halaman ini. Perlu diketahui bahwa projek ini masih dalam tahap pengembangan, semua informasi terbaru akan ditampilkan di sini. Jika ada kendala atau pertanyaan, silakan hubungi Customer Service di bawah.
+        Selamat datang di halaman beranda AJ Project. Harap diingat kode akses Anda agar dapat mengakses kembali halaman ini. Perlu diketahui bahwa projek ini masih dalam tahap pengembangan, semua informasi terbaru akan ditampilkan di sini. Jika ada kendala atau pertanyaan, silakan hubungi Customer Service di bawah.
       </div>
     </div>
     <div class="tab-container">
       <button
         class="tab-button active"
         id="tab-login"
-        onclick="switchTab('login')"
-      >
-        Beranda
+        onclick="switchTab('login')">
+        <i class="bi bi-people-fill"></i> USER
       </button>
       <button class="tab-button" id="tab-admin" onclick="switchTab('admin')">
-        Admin
+        <i class="bi bi-shield-lock-fill"></i> ADMIN
       </button>
     </div>
 
     <form id="form-login" onsubmit="return false;">
-      <label for="kodeAkses">Kode Akses</label>
+      <label for="kodeAkses">Kode Akses User</label>
       <input
         type="text"
         id="kodeAkses"
@@ -280,8 +280,8 @@
         onblur="sembunyikanInfo()"
         autocomplete="off"
       />
-      <small id="infoKode">Kode Akses Tertera di Amplop Undangan.</small>
-      <button type="button" onclick="prosesLogin()">Masuk</button>
+      <small id="infoKode"><i class="bi bi-info-circle"></i> Kode akses tertera di amplop undangan.</small>
+      <button type="button" onclick="prosesLogin()"><i class="bi bi-door-closed-fill"></i> Masuk</button>
     </form>
 
     <form id="form-admin" style="display: none" onsubmit="return false;">
@@ -294,8 +294,8 @@
         onblur="sembunyikanInfoAdmin()"
         autocomplete="off"
       />
-      <small id="infoKodeAdmin">Kode Akses Bersifat Rahasia.</small>
-      <button type="button" onclick="prosesAdmin()">Masuk</button>
+      <small id="infoKodeAdmin"><i class="bi bi-incognito"></i> Kode akses admin bersifat rahasia.</small>
+      <button type="button" onclick="prosesAdmin()"><i class="bi bi-door-closed-fill"></i> Masuk</button>
 
       <div id="admin-log" style="margin-top: 20px; max-height: 180px; overflow-y: auto"></div>
     </form>
@@ -305,15 +305,22 @@
 
     <div class="footer">
       <a href="https://qr.me-qr.com/xo95LDjX" target="_blank">Customer Service</a>
-      <span>| &copy; 2025 AJ Project</span>
+      <span>| &copy; 2025
+      <a href="https://jamaludin2025.github.io/latarbelakang.html" target="_blank">AJ Project</a></span>
     </div>
   </div>
+  
+  <audio id="suaraSukses" src="https://res.cloudinary.com/dz4w1sqiv/video/upload/v1760256309/Sukses-LogIn_y25cu8.wav"></audio>
+  <audio id="suaraGagal" src="https://res.cloudinary.com/dz4w1sqiv/video/upload/v1760256309/Gagal-LogIn_gl9yow.wav"></audio>
+  </body>
 
   <script>
     const aksesMap = {
-      ABC: "https://jamaludin2025.github.io/qr15.html?kode=ABC",
-      AJ5394: "https://jamaludin2025.github.io/AJ5394.html",
-      AJ0306: "https://jamaludin2025.github.io/AJ0306.html",
+      AJ5394 : "https://jamaludin2025.github.io/KONTEN.html?kode=AJ5394",
+      AJ2395 : "https://jamaludin2025.github.io/KONTEN.html?kode=AJ2395",
+      AJ0306 : "https://jamaludin2025.github.io/KONTEN.html?kode=AJ0306",
+      AJ8258 : "https://jamaludin2025.github.io/KONTEN.html?kode=AJ8258",
+
     };
     const adminKode = "Admin123";
 
@@ -339,7 +346,7 @@
       document.getElementById("tab-admin").classList.toggle("active", tab === "admin");
 
       document.getElementById("judul-form").textContent =
-        tab === "login" ? "Kartu Ucapan" : "Beranda Admin";
+        tab === "login" ? "Beranda User" : "Beranda Admin";
 
       // Reset semua input dan pesan saat pindah tab
       document.getElementById("kodeAkses").value = "";
@@ -368,43 +375,60 @@
   const kode = document.getElementById("kodeAkses").value.trim().toUpperCase();
   const pesanError = document.getElementById("error-message");
   const pesanSukses = document.getElementById("success-message");
+  const tombolMasuk = document.querySelector("#form-login button i"); // ambil ikon di tombol
 
   pesanError.textContent = "";
   pesanSukses.textContent = "";
 
+  // Cek kode akses
   if (!aksesMap[kode]) {
   pesanError.textContent = "Maaf, Kode Akses Ditolak.";
+  mainkanSuara("suaraGagal"); // 🔊 suara gagal
   return;
 }
-  pesanSukses.textContent = "Selamat, Kode Akses Diterima.";
 
-      // Buat log awal status "Proses"
-      const now = new Date();
-      const waktu = now.toLocaleString("id-ID", {
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-      });
-      const logData = {
-        kodeAkses: kode,
-        waktu: waktu,
-        status: "Proses",
-      };
+// Jika benar
+pesanSukses.textContent = "Selamat, Kode Akses Diterima.";
+mainkanSuara("suaraSukses"); // 🔊 suara berhasil
 
-      try {
-        // Simpan log Proses
-        await db.ref("logAktivitas").push(logData);
+  // 🔹 Ubah ikon menjadi pintu terbuka
+  tombolMasuk.classList.replace("bi-door-closed-fill", "bi-door-open-fill");
 
-        // Setelah log "Proses" berhasil, redirect ke halaman tujuan
-        window.location.href = aksesMap[kode];
-      } catch (error) {
-        pesanError.textContent = "Terjadi kesalahan saat mencatat aktivitas.";
-        console.error(error);
-      }
-    }
+  // Tambahkan animasi ringan agar terasa hidup
+  tombolMasuk.style.transition = "transform 0.3s ease";
+  tombolMasuk.style.transform = "rotateY(180deg)";
+  setTimeout(() => {
+    tombolMasuk.style.transform = "rotateY(0deg)";
+  }, 300);
+
+  // Log ke Firebase dan arahkan ke halaman tujuan
+  const now = new Date();
+  const waktu = now.toLocaleString("id-ID", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  });
+  const logData = {
+    kodeAkses: kode,
+    waktu: waktu,
+    status: "Proses",
+  };
+
+  try {
+    await db.ref("logAktivitas").push(logData);
+
+    // Delay 0.6 detik agar ikon sempat berubah dulu
+    setTimeout(() => {
+      window.location.href = aksesMap[kode];
+    }, 800);
+  } catch (error) {
+    pesanError.textContent = "Terjadi kesalahan saat mencatat aktivitas.";
+    console.error(error);
+  }
+}
 
     // Fungsi ini harus dipanggil di halaman tujuan dengan kode akses di URL
     // Contoh pemanggilan: updateLogStatus('ABC')
@@ -452,6 +476,14 @@
         pesanError.textContent = "Kode Admin Salah!";
       }
     }
+    
+    function mainkanSuara(id) {
+  const audio = document.getElementById(id);
+  if (audio) {
+    audio.currentTime = 0;
+    audio.play().catch(err => console.log("Audio gagal diputar:", err));
+  }
+}
 
     // Tampilkan log di halaman admin
     async function tampilkanLog() {
@@ -473,7 +505,7 @@
 
             logEl.innerHTML = `
               <span><strong style="color: #2563eb;">${log.kodeAkses}</strong> - ${log.waktu} - <span style="color: ${statusColor}; font-weight: 600;">${log.status}</span></span>
-              <button onclick="hapusLog('${key}')">Hapus</button>
+              <button onclick="hapusLog('${key}')"><i class="bi bi-trash"></i></button>
             `;
             logContainer.appendChild(logEl);
           });
