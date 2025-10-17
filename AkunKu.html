@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pengelola Akun & Password</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body {
+            box-sizing: border-box;
+        }
+        .account-card {
+            transition: all 0.3s ease;
+        }
+        .account-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        .add-button {
+            transition: all 0.3s ease;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .add-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+        .password-hidden {
+            filter: blur(4px);
+            user-select: none;
+        }
+        .modal-backdrop {
+            backdrop-filter: blur(8px);
+        }
+        
+        .bi-globe,
+        .bi-clipboard {
+        	font-size: 20px;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100 p-6">
+    <header class="text-center mb-8">
+        <h1 class="text-4xl font-bold text-gray-800 mb-0.5">Accounts Management</h1>
+        <p class="text-gray-600">Kelola semua akun dan password Anda dengan mudah</p>
+    </header>
+
+    <main class="max-w-6xl mx-auto">
+        <!-- Search Bar -->
+        <div class="max-w-md mx-auto mb-8">
+            <div class="relative">
+                <input type="text" id="search-input" placeholder="Cari akun..." class="w-full px-4 py-3 pl-12 pr-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white shadow-lg">
+                <div class="absolute left-4 top-1/2 transform -translate-y-1/2">
+                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                </div>
+                <button id="clear-search" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 hidden">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Container untuk 4 kotak kecil horizontal + tombol input -->
+        <div class="flex flex-wrap justify-center gap-10 mb-8">
+            <!-- 2 Kotak Akun Kecil -->
+            <div id="account-1" class="account-card bg-white rounded-xl p-3 shadow-lg border border-gray-100 w-24 h-24">
+                <div class="text-center h-full flex flex-col justify-center">
+                    <div class="w-12 h-12 mx-auto mb-1 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden">
+                        <i class="bi bi-image text-2xl text-gray-400"></i>
+                        <img id="img-1" class="w-full h-full object-cover rounded-lg hidden" alt="App Icon">
+                    </div>
+                    <div id="content-1" class="text-gray-400 text-xs">
+                        <p class="truncate">Kosong</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="account-2" class="account-card bg-white rounded-xl p-3 shadow-lg border border-gray-100 w-24 h-24">
+                <div class="text-center h-full flex flex-col justify-center">
+                    <div class="w-12 h-12 mx-auto mb-1 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden">
+                        <i class="bi bi-image text-2xl text-gray-400"></i>
+                        <img id="img-2" class="w-full h-full object-cover rounded-lg hidden" alt="App Icon">
+                    </div>
+                    <div id="content-2" class="text-gray-400 text-xs">
+                        <p class="truncate">Kosong</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tombol Input berbentuk kotak kecil -->
+            <button id="add-account-btn" class="add-button w-24 h-24 rounded-xl text-white font-semibold shadow-lg border-3 border-transparent hover:border-white/20">
+                <div class="flex flex-col items-center justify-center h-full">
+                    <div class="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center mb-1">
+                        <i class="bi bi-plus-square-dotted text-2xl"></i>
+                    </div>
+                    <span class="text-xs">Tambah</span>
+                </div>
+            </button>
+        </div>
+    </main>
+
+    <!-- Modal untuk input akun -->
+    <div id="modal" class="fixed inset-0 bg-black/50 modal-backdrop hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">Penambahan Akun Baru</h2>
+            
+            <!-- Switch untuk Website/Aplikasi -->
+            <div class="flex justify-center mb-6">
+                <div class="bg-gray-100 rounded-xl p-1 flex">
+                    <button type="button" id="website-switch" class="px-4 py-2 rounded-lg text-sm font-medium transition-colors text-gray-600 hover:text-gray-800">
+                        <i class="bi bi-globe"></i> Website
+                    </button>
+                    <button type="button" id="app-switch" class="px-4 py-2 rounded-lg text-sm font-medium transition-colors bg-purple-600 text-white">
+                        <i class="bi bi-phone"></i> Aplikasi
+                    </button>
+                </div>
+            </div>
+            
+            <form id="account-form" class="space-y-4">
+                <!-- Nama Aplikasi/Website -->
+                <div>
+                    <label for="app-name" id="name-label" class="block text-sm font-medium text-gray-700 mb-2">Nama Aplikasi</label>
+                    <input type="text" id="app-name" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="Contoh: Instagram, Gmail, dll" required>
+                </div>
+                
+                <!-- Link Website (hanya untuk website) -->
+                <div id="website-link-field" class="hidden">
+                    <label for="website-link" class="block text-sm font-medium text-gray-700 mb-2">Link Website</label>
+                    <input type="url" id="website-link" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="https://example.com">
+                </div>
+                
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <label id="form-username-label" class="text-sm font-medium text-gray-700">No. HP/Email</label>
+                        <button type="button" onclick="editLabel('form-username-label', 'username-label-input')" class="px-2 py-1 text-xs bg-gray-100 text-gray-600 rounded-lg hover:bg-purple-100 hover:text-purple-600 transition-colors">
+                            <i class="bi bi-pencil-square"></i> Edit
+                        </button>
+                    </div>
+                    <input type="hidden" id="username-label-input" value="No. HP/Email">
+                    <input type="text" id="username" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="Masukkan Data" required>
+                </div>
+                
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <label id="form-password-label" class="text-sm font-medium text-gray-700">Password/Kata Sandi</label>
+                        <button type="button" onclick="editLabel('form-password-label', 'password-label-input')" class="px-2 py-1 text-xs bg-gray-100 text-gray-600 rounded-lg hover:bg-purple-100 hover:text-purple-600 transition-colors">
+                            <i class="bi bi-pencil-square"></i> Edit
+                        </button>
+                    </div>
+                    <input type="hidden" id="password-label-input" value="Password">
+                    <input type="text" id="password" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="Masukkan Data" required>
+                </div>
+                
+                <!-- Dynamic fields container -->
+                <div id="dynamic-fields"></div>
+                
+                <!-- Add field button -->
+                <div class="text-center">
+                    <button type="button" id="add-field-btn" class="px-4 py-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors text-sm font-medium">
+                        <i class="bi bi-plus-square-fill"></i> Tambah Field Baru
+                    </button>
+                </div>
+                
+                <div>
+                    <label for="app-image" class="block text-sm font-medium text-gray-700 mb-2">Gambar Sampul </label>
+                    <input type="file" id="app-image" accept="image/*" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100">
+                    <p class="text-xs text-gray-500 mt-1">Opsional: Unggah gambar logo website atau logo aplikasi dari galeri</p>
+                </div>
+                
+                <div class="flex gap-3 pt-4">
+                    <button type="button" id="cancel-btn" class="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 font-medium">
+                        Batal
+                    </button>
+                    <button type="submit" class="flex-1 px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-xl hover:from-purple-700 hover:to-blue-700 font-medium">
+                        Simpan
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal untuk detail akun -->
+    <div id="detail-modal" class="fixed inset-0 bg-black/50 modal-backdrop hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl">
+            <div class="text-center mb-6">
+                <div class="w-24 h-24 mx-auto mb-4 bg-gray-100 rounded-2xl flex items-center justify-center overflow-hidden">
+                    <img id="detail-img" class="w-full h-full object-cover rounded-2xl hidden" alt="App Icon">
+                    <i id="detail-icon" class="bi bi-image text-2xl text-gray-400"></i>
+                </div>
+                <p id="detail-type" class="text-sm text-gray-500 mt-1"></p>
+                <h2 id="detail-title" class="text-2xl font-bold text-gray-800 mt-1"></h2>
+            </div>
+            
+            <div class="space-y-4">
+                <!-- Website Link (hanya untuk website) -->
+                <div id="detail-website-link" class="hidden">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Link Website</label>
+                    <div class="flex items-center gap-2">
+                        <input id="detail-link" type="text" readonly class="flex-1 px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-800">
+                        <button onclick="openWebsite()" class="px-4 py-4 bg-green-100 text-green-600 rounded-xl hover:bg-green-200" title="Buka Website">
+                            <i class="bi bi-globe"></i>
+                        </button>
+                        <button onclick="copyToClipboard('detail-link')" class="px-4 py-4 bg-blue-100 text-blue-600 rounded-xl hover:bg-blue-200">
+                            <i class="bi bi-clipboard"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div>
+                    <label id="detail-username-label" class="block text-sm font-medium text-gray-700 mb-2">Username/Email</label>
+                    <div class="flex items-center gap-2">
+                        <input id="detail-username" type="text" readonly class="flex-1 px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-800">
+                        <button onclick="copyToClipboard('detail-username')" class="px-4 py-4 bg-blue-100 text-blue-600 rounded-xl hover:bg-blue-200">
+                            <i class="bi bi-clipboard"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div>
+                    <label id="detail-password-label" class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                    <div class="flex items-center gap-2">
+                        <input id="detail-password" type="text" readonly class="flex-1 px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-800">
+                        <button onclick="copyToClipboard('detail-password')" class="px-4 py-4 bg-blue-100 text-blue-600 rounded-xl hover:bg-blue-200">
+                            <i class="bi bi-clipboard"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Dynamic fields display -->
+                <div id="detail-dynamic-fields"></div>
+            </div>
+            
+            <div class="flex gap-3 pt-6">
+                <button id="delete-btn" class="flex-1 px-4 py-2 bg-red-500 text-white rounded-xl hover:bg-red-600 font-medium">
+                    <i class="bi bi-trash"></i> Hapus
+                </button>
+                <button id="edit-btn" class="flex-1 px-4 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 font-medium">
+                    <i class="bi bi-pencil-square"></i> Edit
+                </button>
+                <button id="close-detail-btn" class="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 font-medium">
+                    <i class="bi bi-x-circle"></i> Tutup
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let accounts = JSON.parse(localStorage.getItem('accounts')) || {};
+        let currentSlot = null;
+        let fieldCounter = 0;
+        let currentMode = 'app'; // 'app' or 'website'
+        let nextSlotId = 3; // Start from 3 since we have 2 initial slots
+        let isEditMode = false; // Track if we're in edit mode
+
+        // Load existing accounts
+        function loadAccounts() {
+            // Load initial 2 slots
+            for (let i = 1; i <= 2; i++) {
+                if (accounts[i]) {
+                    displayAccount(i, accounts[i]);
+                }
+            }
+            
+            // Load any additional slots that were created
+            Object.keys(accounts).forEach(slotId => {
+                const id = parseInt(slotId);
+                if (id > 2 && accounts[id]) {
+                    createNewSlot(id);
+                    displayAccount(id, accounts[id]);
+                }
+                if (id >= nextSlotId) {
+                    nextSlotId = id + 1;
+                }
+            });
+        }
+
+        // Create new slot dynamically
+        function createNewSlot(slotId) {
+            const container = document.querySelector('.flex.flex-wrap.justify-center.gap-10.mb-8');
+            const addButton = document.getElementById('add-account-btn');
+            
+            const newSlot = document.createElement('div');
+            newSlot.id = `account-${slotId}`;
+            newSlot.className = 'account-card bg-white rounded-xl p-3 shadow-lg border border-gray-100 w-24 h-24';
+            newSlot.innerHTML = `
+                <div class="text-center h-full flex flex-col justify-center">
+                    <div class="w-12 h-12 mx-auto mb-1 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden">
+                        <i class="bi bi-image text-2xl text-gray-400"></i>
+                        <img id="img-${slotId}" class="w-full h-full object-cover rounded-lg hidden" alt="App Icon">
+                    </div>
+                    <div id="content-${slotId}" class="text-gray-400 text-xs">
+                        <p class="truncate">Kosong</p>
+                    </div>
+                </div>
+            `;
+            
+            // Insert before the add button
+            container.insertBefore(newSlot, addButton);
+        }
+
+        // Display account in slot
+        function displayAccount(slot, account) {
+            const img = document.getElementById(`img-${slot}`);
+            const content = document.getElementById(`content-${slot}`);
+            const card = document.getElementById(`account-${slot}`);
+            
+            if (account.image) {
+                img.src = account.image;
+                img.classList.remove('hidden');
+                img.previousElementSibling.style.display = 'none';
+                img.onerror = function() {
+                    this.classList.add('hidden');
+                    this.previousElementSibling.style.display = 'flex';
+                };
+            }
+            
+            content.innerHTML = `
+                <p class="font-semibold text-gray-800 text-xs truncate">${account.name}</p>
+            `;
+            
+            card.classList.add('cursor-pointer');
+            card.onclick = () => showAccountDetail(slot);
+        }
+
+        // Add dynamic field
+        function addDynamicField() {
+            fieldCounter++;
+            const container = document.getElementById('dynamic-fields');
+            
+            const fieldDiv = document.createElement('div');
+            fieldDiv.className = 'dynamic-field mb-4';
+            fieldDiv.innerHTML = `
+                <div class="flex items-center justify-between mb-2">
+                    <label id="dynamic-label-${fieldCounter}" class="text-sm font-medium text-gray-700">Field Tambahan ${fieldCounter}</label>
+                    <div class="flex gap-2">
+                        <button type="button" onclick="editLabel('dynamic-label-${fieldCounter}', 'dynamic-label-input-${fieldCounter}')" class="px-2 py-1 text-xs bg-gray-100 text-gray-600 rounded-lg hover:bg-purple-100 hover:text-purple-600 transition-colors">
+                            <i class="bi bi-pencil-square"></i> Edit
+                        </button>
+                        <button type="button" onclick="removeDynamicField(this)" class="px-2 py-1 text-xs bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors">
+                            <i class="bi bi-trash"></i> Hapus
+                        </button>
+                    </div>
+                </div>
+                <input type="hidden" id="dynamic-label-input-${fieldCounter}" value="Field ${fieldCounter}">
+                <input type="text" id="dynamic-value-${fieldCounter}" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="Masukkan Data">
+            `;
+            
+            container.appendChild(fieldDiv);
+        }
+        
+        // Remove dynamic field
+        function removeDynamicField(button) {
+            button.closest('.dynamic-field').remove();
+        }
+        
+        // Show account detail modal
+        function showAccountDetail(slot) {
+            if (!accounts[slot]) return;
+            
+            const account = accounts[slot];
+            currentSlot = slot;
+            
+            document.getElementById('detail-title').textContent = account.name;
+            document.getElementById('detail-username').value = account.username;
+            document.getElementById('detail-password').value = account.password;
+            
+            // Set account type text
+            const accountType = account.mode === 'website' ? 'Website' : 'Aplikasi';
+            document.getElementById('detail-type').textContent = accountType;
+            
+            // Set custom labels
+            document.getElementById('detail-username-label').textContent = account.usernameLabel || 'Username/Email';
+            document.getElementById('detail-password-label').textContent = account.passwordLabel || 'Password';
+            
+            // Show website link if it's a website
+            const websiteLinkDiv = document.getElementById('detail-website-link');
+            if (account.mode === 'website' && account.websiteLink) {
+                document.getElementById('detail-link').value = account.websiteLink;
+                websiteLinkDiv.classList.remove('hidden');
+            } else {
+                websiteLinkDiv.classList.add('hidden');
+            }
+            
+            // Display dynamic fields
+            const dynamicContainer = document.getElementById('detail-dynamic-fields');
+            dynamicContainer.innerHTML = '';
+            
+            if (account.dynamicFields) {
+                account.dynamicFields.forEach((field, index) => {
+                    const fieldDiv = document.createElement('div');
+                    fieldDiv.innerHTML = `
+                        <div class="mt-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">${field.label}</label>
+                            <div class="flex items-center gap-2">
+                                <input type="text" readonly value="${field.value}" class="flex-1 px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-800">
+                                <button onclick="copyToClipboard(this.previousElementSibling)" class="px-3 py-3 bg-blue-100 text-blue-600 rounded-xl hover:bg-blue-200">
+                                    <i class="bi bi-clipboard"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    dynamicContainer.appendChild(fieldDiv);
+                });
+            }
+            
+            const detailImg = document.getElementById('detail-img');
+            const detailIcon = document.getElementById('detail-icon');
+            
+            if (account.image) {
+                detailImg.src = account.image;
+                detailImg.classList.remove('hidden');
+                detailIcon.style.display = 'none';
+                detailImg.onerror = function() {
+                    this.classList.add('hidden');
+                    detailIcon.style.display = 'block';
+                };
+            } else {
+                detailImg.classList.add('hidden');
+                detailIcon.style.display = 'block';
+            }
+            
+            document.getElementById('detail-modal').classList.remove('hidden');
+            document.getElementById('detail-modal').classList.add('flex');
+        }
+
+        // Find empty slot
+        function findEmptySlot() {
+            // First check existing slots 1 and 2
+            for (let i = 1; i <= 2; i++) {
+                if (!accounts[i]) {
+                    return i;
+                }
+            }
+            
+            // Check any additional slots that were created (starting from 3)
+            for (let i = 3; i < nextSlotId; i++) {
+                if (!accounts[i]) {
+                    return i;
+                }
+            }
+            
+            // If all existing slots are filled, create a new one
+            const newSlotId = nextSlotId;
+            nextSlotId++;
+            
+            // Create the new slot immediately
+            createNewSlot(newSlotId);
+            
+            return newSlotId;
+        }
+
+        // Copy to clipboard
+        function copyToClipboard(element) {
+            // Handle both element ID string and element object
+            const targetElement = typeof element === 'string' ? document.getElementById(element) : element;
+            
+            targetElement.select();
+            document.execCommand('copy');
+            
+            // Show feedback
+            const button = event.target;
+            const originalText = button.textContent;
+            button.textContent = '✓';
+            button.style.backgroundColor = '#10B981';
+            button.style.color = 'white';
+            
+            setTimeout(() => {
+                button.textContent = originalText;
+                button.style.backgroundColor = '';
+                button.style.color = '';
+            }, 1000);
+        }
+
+        // Toggle password visibility
+        function togglePassword(elementId) {
+            const element = document.getElementById(elementId);
+            const button = event.target;
+            
+            if (element.type === 'password') {
+                element.type = 'text';
+                button.textContent = '🙈';
+            } else {
+                element.type = 'password';
+                button.textContent = '👁️';
+            }
+        }
+
+        // Switch between website and app mode
+        function switchToWebsite() {
+            currentMode = 'website';
+            document.getElementById('website-switch').className = 'px-4 py-2 rounded-lg text-sm font-medium transition-colors bg-purple-600 text-white';
+            document.getElementById('app-switch').className = 'px-4 py-2 rounded-lg text-sm font-medium transition-colors text-gray-600 hover:text-gray-800';
+            
+            // Update labels and placeholders
+            document.getElementById('name-label').textContent = 'Nama Website';
+            document.getElementById('app-name').placeholder = 'Contoh: Google, Facebook, dll';
+            document.getElementById('website-link-field').classList.remove('hidden');
+        }
+        
+        function switchToApp() {
+            currentMode = 'app';
+            document.getElementById('app-switch').className = 'px-4 py-2 rounded-lg text-sm font-medium transition-colors bg-purple-600 text-white';
+            document.getElementById('website-switch').className = 'px-4 py-2 rounded-lg text-sm font-medium transition-colors text-gray-600 hover:text-gray-800';
+            
+            // Update labels and placeholders
+            document.getElementById('name-label').textContent = 'Nama Aplikasi';
+            document.getElementById('app-name').placeholder = 'Contoh: Instagram, Gmail, dll';
+            document.getElementById('website-link-field').classList.add('hidden');
+        }
+
+        // Edit account function
+        function editAccount() {
+            if (!currentSlot || !accounts[currentSlot]) return;
+            
+            const account = accounts[currentSlot];
+            isEditMode = true;
+            
+            // Close detail modal
+            document.getElementById('detail-modal').classList.add('hidden');
+            document.getElementById('detail-modal').classList.remove('flex');
+            
+            // Set form mode
+            currentMode = account.mode || 'app';
+            if (currentMode === 'website') {
+                switchToWebsite();
+            } else {
+                switchToApp();
+            }
+            
+            // Fill form with existing data
+            document.getElementById('app-name').value = account.name;
+            document.getElementById('username').value = account.username;
+            document.getElementById('password').value = account.password;
+            
+            // Set custom labels
+            document.getElementById('form-username-label').textContent = account.usernameLabel || 'Username/Email';
+            document.getElementById('form-password-label').textContent = account.passwordLabel || 'Password';
+            document.getElementById('username-label-input').value = account.usernameLabel || 'Username/Email';
+            document.getElementById('password-label-input').value = account.passwordLabel || 'Password';
+            
+            // Fill website link if exists
+            if (account.websiteLink) {
+                document.getElementById('website-link').value = account.websiteLink;
+            }
+            
+            // Clear and rebuild dynamic fields
+            document.getElementById('dynamic-fields').innerHTML = '';
+            fieldCounter = 0;
+            
+            if (account.dynamicFields) {
+                account.dynamicFields.forEach(field => {
+                    fieldCounter++;
+                    const container = document.getElementById('dynamic-fields');
+                    
+                    const fieldDiv = document.createElement('div');
+                    fieldDiv.className = 'dynamic-field mb-4';
+                    fieldDiv.innerHTML = `
+                        <div class="flex items-center justify-between mb-2">
+                            <label id="dynamic-label-${fieldCounter}" class="text-sm font-medium text-gray-700">${field.label}</label>
+                            <div class="flex gap-2">
+                                <button type="button" onclick="editLabel('dynamic-label-${fieldCounter}', 'dynamic-label-input-${fieldCounter}')" class="px-2 py-1 text-xs bg-gray-100 text-gray-600 rounded-lg hover:bg-purple-100 hover:text-purple-600 transition-colors">
+                                    <i class="bi bi-pencil-square"></i> Edit
+                                </button>
+                                <button type="button" onclick="removeDynamicField(this)" class="px-2 py-1 text-xs bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors">
+                                    <i class="bi bi-trash"></i> Hapus
+                                </button>
+                            </div>
+                        </div>
+                        <input type="hidden" id="dynamic-label-input-${fieldCounter}" value="${field.label}">
+                        <input type="text" id="dynamic-value-${fieldCounter}" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="Masukkan nilai" value="${field.value}">
+                    `;
+                    
+                    container.appendChild(fieldDiv);
+                });
+            }
+            
+            // Change modal title
+            document.querySelector('#modal h2').textContent = 'Edit Data Akun Lama';
+            
+            // Show modal
+            document.getElementById('modal').classList.remove('hidden');
+            document.getElementById('modal').classList.add('flex');
+        }
+
+        // Edit label function
+        function editLabel(labelId, hiddenInputId) {
+            const label = document.getElementById(labelId);
+            const hiddenInput = document.getElementById(hiddenInputId);
+            const currentText = label.textContent;
+            
+            // Create input field
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.value = currentText;
+            input.className = 'w-full px-2 py-1 border border-purple-300 rounded text-sm font-medium text-gray-700 focus:outline-none focus:ring-1 focus:ring-purple-500';
+            
+            // Replace label with input
+            label.style.display = 'none';
+            label.parentNode.insertBefore(input, label.nextSibling);
+            input.focus();
+            input.select();
+            
+            // Handle save
+            function saveLabel() {
+                const newText = input.value.trim() || currentText;
+                label.textContent = newText;
+                hiddenInput.value = newText;
+                label.style.display = 'block';
+                input.remove();
+            }
+            
+            // Save on Enter or blur
+            input.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    saveLabel();
+                }
+            });
+            
+            input.addEventListener('blur', saveLabel);
+        }
+
+        // Event listeners
+        document.getElementById('add-account-btn').addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            // Prevent multiple clicks
+            if (this.disabled) return;
+            this.disabled = true;
+            
+            setTimeout(() => {
+                this.disabled = false;
+            }, 500);
+            
+            const emptySlot = findEmptySlot();
+            currentSlot = emptySlot;
+            fieldCounter = 0; // Reset counter
+            document.getElementById('dynamic-fields').innerHTML = ''; // Clear dynamic fields
+            
+            // Reset form to default state
+            document.getElementById('account-form').reset();
+            switchToApp(); // Reset to app mode
+            
+            // Reset edit mode and modal title
+            isEditMode = false;
+            document.querySelector('#modal h2').textContent = 'Penambahan Akun Baru';
+            
+            document.getElementById('modal').classList.remove('hidden');
+            document.getElementById('modal').classList.add('flex');
+        });
+        
+        document.getElementById('add-field-btn').onclick = addDynamicField;
+        
+        // Switch event listeners
+        document.getElementById('website-switch').onclick = switchToWebsite;
+        document.getElementById('app-switch').onclick = switchToApp;
+
+        document.getElementById('cancel-btn').onclick = () => {
+            document.getElementById('modal').classList.add('hidden');
+            document.getElementById('modal').classList.remove('flex');
+            document.getElementById('account-form').reset();
+            
+            // Reset edit mode
+            isEditMode = false;
+            document.querySelector('#modal h2').textContent = 'Penambahan Akun Baru';
+        };
+
+        document.getElementById('close-detail-btn').onclick = () => {
+            document.getElementById('detail-modal').classList.add('hidden');
+            document.getElementById('detail-modal').classList.remove('flex');
+        };
+
+        document.getElementById('edit-btn').onclick = editAccount;
+
+        document.getElementById('delete-btn').onclick = () => {
+            if (currentSlot && accounts[currentSlot]) {
+                delete accounts[currentSlot];
+                localStorage.setItem('accounts', JSON.stringify(accounts));
+                
+                const card = document.getElementById(`account-${currentSlot}`);
+                
+                // If it's slot 1 or 2 (initial slots), reset to empty state
+                if (currentSlot <= 2) {
+                    const img = document.getElementById(`img-${currentSlot}`);
+                    const content = document.getElementById(`content-${currentSlot}`);
+                    
+                    img.classList.add('hidden');
+                    img.previousElementSibling.style.display = 'flex';
+                    content.innerHTML = `
+                        <p class="truncate">Kosong</p>
+                    `;
+                    card.classList.remove('cursor-pointer');
+                    card.onclick = null;
+                } else {
+                    // For slots 3 and above, remove the card completely
+                    card.remove();
+                }
+                
+                document.getElementById('detail-modal').classList.add('hidden');
+                document.getElementById('detail-modal').classList.remove('flex');
+            }
+        };
+
+        document.getElementById('account-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Get submit button and show loading state
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            
+            // Prevent double submission
+            if (submitBtn.disabled) return;
+            
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Menyimpan...';
+            submitBtn.style.opacity = '0.7';
+            
+            // Validate required fields
+            const appName = document.getElementById('app-name').value.trim();
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+            
+            if (!appName || !username || !password) {
+                // Re-enable button if validation fails
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
+                submitBtn.style.opacity = '1';
+                return;
+            }
+            
+            // Collect dynamic fields
+            const dynamicFields = [];
+            const dynamicFieldElements = document.querySelectorAll('.dynamic-field');
+            
+            dynamicFieldElements.forEach((fieldElement) => {
+                const labelElement = fieldElement.querySelector('[id^="dynamic-label-"]');
+                const valueElement = fieldElement.querySelector('[id^="dynamic-value-"]');
+                
+                if (labelElement && valueElement && valueElement.value.trim()) {
+                    dynamicFields.push({
+                        label: labelElement.textContent,
+                        value: valueElement.value.trim()
+                    });
+                }
+            });
+            
+            // Create account object
+            const account = {
+                name: appName,
+                username: username,
+                password: password,
+                usernameLabel: document.getElementById('username-label-input').value || 'Username/Email',
+                passwordLabel: document.getElementById('password-label-input').value || 'Password',
+                dynamicFields: dynamicFields,
+                mode: currentMode,
+                websiteLink: currentMode === 'website' ? document.getElementById('website-link').value.trim() : null,
+                image: null
+            };
+            
+            // Function to complete the save process
+            function completeSave() {
+                try {
+                    // Save to accounts object
+                    accounts[currentSlot] = account;
+                    localStorage.setItem('accounts', JSON.stringify(accounts));
+                    
+                    // Display the account in the slot
+                    displayAccount(currentSlot, account);
+                    
+                    // Close modal and reset form
+                    document.getElementById('modal').classList.add('hidden');
+                    document.getElementById('modal').classList.remove('flex');
+                    document.getElementById('account-form').reset();
+                    
+                    // Reset label values to default
+                    document.getElementById('form-username-label').textContent = 'Username/Email';
+                    document.getElementById('form-password-label').textContent = 'Password';
+                    document.getElementById('username-label-input').value = 'Username/Email';
+                    document.getElementById('password-label-input').value = 'Password';
+                    
+                    // Clear dynamic fields
+                    document.getElementById('dynamic-fields').innerHTML = '';
+                    fieldCounter = 0;
+                    
+                    // Reset to app mode
+                    switchToApp();
+                    
+                    // Reset edit mode and modal title
+                    isEditMode = false;
+                    document.querySelector('#modal h2').textContent = 'Penambahan Akun Baru';
+                    
+                    // Re-enable submit button
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = originalText;
+                    submitBtn.style.opacity = '1';
+                    
+                    // Clear current slot
+                    currentSlot = null;
+                    
+                } catch (error) {
+                    console.error('Error saving account:', error);
+                    // Re-enable submit button on error
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = originalText;
+                    submitBtn.style.opacity = '1';
+                }
+            }
+            
+            // Handle image upload
+            const fileInput = document.getElementById('app-image');
+            const file = fileInput.files[0];
+            
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    account.image = e.target.result;
+                    completeSave();
+                };
+                reader.onerror = function() {
+                    // If image loading fails, save without image
+                    completeSave();
+                };
+                reader.readAsDataURL(file);
+            } else {
+                completeSave();
+            }
+        });
+
+        // Search functionality
+        function filterAccounts() {
+            const searchTerm = document.getElementById('search-input').value.toLowerCase();
+            const clearButton = document.getElementById('clear-search');
+            
+            // Show/hide clear button
+            if (searchTerm) {
+                clearButton.classList.remove('hidden');
+            } else {
+                clearButton.classList.add('hidden');
+            }
+            
+            // Filter accounts - check all existing slots
+            const allSlotIds = [];
+            
+            // Add initial 2 slots
+            for (let i = 1; i <= 2; i++) {
+                allSlotIds.push(i);
+            }
+            
+            // Add any additional slots
+            Object.keys(accounts).forEach(slotId => {
+                const id = parseInt(slotId);
+                if (id > 2 && !allSlotIds.includes(id)) {
+                    allSlotIds.push(id);
+                }
+            });
+            
+            allSlotIds.forEach(i => {
+                const card = document.getElementById(`account-${i}`);
+                if (!card) return; // Skip if card doesn't exist
+                
+                const account = accounts[i];
+                
+                if (!account) {
+                    // Empty slots are always visible
+                    card.style.display = 'block';
+                    return;
+                }
+                
+                // Check if search term matches account name, username, or any dynamic field
+                let matches = false;
+                
+                if (account.name.toLowerCase().includes(searchTerm) ||
+                    account.username.toLowerCase().includes(searchTerm)) {
+                    matches = true;
+                }
+                
+                // Check dynamic fields
+                if (account.dynamicFields) {
+                    account.dynamicFields.forEach(field => {
+                        if (field.label.toLowerCase().includes(searchTerm) ||
+                            field.value.toLowerCase().includes(searchTerm)) {
+                            matches = true;
+                        }
+                    });
+                }
+                
+                // Show/hide card based on match
+                if (searchTerm === '' || matches) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+        
+        // Clear search
+        function clearSearch() {
+            document.getElementById('search-input').value = '';
+            filterAccounts();
+        }
+        
+        // Open website in new tab
+        function openWebsite() {
+            const link = document.getElementById('detail-link').value;
+            if (link) {
+                window.open(link, '_blank', 'noopener,noreferrer');
+            }
+        }
+        
+        // Search event listeners
+        document.getElementById('search-input').addEventListener('input', filterAccounts);
+        document.getElementById('clear-search').addEventListener('click', clearSearch);
+
+        // Load accounts on page load
+        loadAccounts();
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98f7fdd0f1c3ce27',t:'MTc2MDYyMjI3Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
