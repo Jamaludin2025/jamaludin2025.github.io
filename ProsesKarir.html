@@ -452,8 +452,7 @@
       newEntry.catatanKerja = document.getElementById('catatanKerja').value.trim();
     }
 
-    const timestamp = Date.now(); // waktu unik dalam milidetik
-    const key = perusahaan + '|' + loker + '|' + timestamp;
+    const key = perusahaan + '|' + loker;
     let data = JSON.parse(localStorage.getItem('prosesData')) || {};
 
     if (!data[key]) {
