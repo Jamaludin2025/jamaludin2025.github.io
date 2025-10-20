@@ -1,0 +1,478 @@
+<meta name='viewport' content='width=device-width, initial-scale=1'/><meta name='viewport' content='width=device-width, initial-scale=1'/><meta name='viewport' content='width=device-width, initial-scale=1'/>
+<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Kartu Diskon</title>
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      text-align: center;
+      background: linear-gradient(to right, #e0f7fa, #ffffff);
+      padding: 20px;
+    }
+    .header {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+    }
+    h1 {
+      color: #00796b;
+      font-size: 16px;
+    }
+    h2 {
+      color: black;
+      font-size: 14px;
+      margin-top: -3px;
+    }
+    .bi-question-circle {
+      font-size: 15px;
+      color: #00796b;
+      cursor: pointer;      
+    }
+    .marquee-container {
+      overflow: hidden;
+      white-space: nowrap;
+      box-sizing: border-box;
+      width: 100%;
+      border-top: 1px solid #00796b;
+      border-bottom: 1px solid #00796b;
+      padding: 4px 0;
+      margin-bottom: 16px;
+      background-color: #fff3e0;
+    }
+
+    .marquee-text {
+      display: inline-block;
+      padding-left: 100%;
+      animation: marquee 55s linear infinite;
+      font-size: 12px;
+      color: #bf360c;
+    }
+
+    @keyframes marquee {
+      0% {
+        transform: translateX(0%);
+      }
+
+      100% {
+        transform: translateX(-100%);
+      }
+    }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, 100px);
+      grid-template-rows: repeat(2, 140px);
+      gap: 10px;
+      justify-content: center;
+      margin: 30px;
+    }
+    /* Gambar Kartu Tertutup (Depan) */
+    .card {
+      width: 100px;
+      height: 140px;
+      background: #009688;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+      cursor: pointer;
+      transition: transform 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      font-weight: bold;
+      font-size: 18px;
+      flex-direction: column;
+      position: relative;
+    }
+    
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      border: 1.5px #00796b solid;
+      border-radius: 10px;
+      z-index: 1;
+    }
+    
+    .card > * {
+      position: relative;
+      z-index: 2;
+    }
+    .card:hover {
+      transform: scale(1.05);
+    }
+    .revealed {
+      background: #ffffff; /* Base background, gambar diatur oleh JS */
+      color: #333;
+      border: 1.5px #00796b solid;
+      background-size: cover; /* Agar gambar dinamis menyesuaikan */
+      background-position: center; /* Agar gambar dinamis di tengah */
+      padding: 0; 
+      margin: 0;
+    }
+    
+    /* Menghapus pseudo-element atau overlay jika mengganggu gambar */
+    .revealed::before {
+      background: transparent; /* Hilangkan overlay putih */
+      border: none;
+    }
+    
+    /* Pastikan span dan div di dalam .revealed tidak terlihat */
+    .revealed span, .revealed div {
+        display: none !important;
+    }
+
+    /* [PENAMBAHAN] Animasi Getaran (Shake) */
+    @keyframes shake {
+      0% { transform: translate(1px, 1px) rotate(0deg); }
+      10% { transform: translate(-1px, -2px) rotate(-1deg); }
+      20% { transform: translate(-3px, 0px) rotate(1deg); }
+      30% { transform: translate(3px, 2px) rotate(0deg); }
+      40% { transform: translate(1px, -1px) rotate(1deg); }
+      50% { transform: translate(-1px, 2px) rotate(-1deg); }
+      60% { transform: translate(-3px, 1px) rotate(0deg); }
+      70% { transform: translate(3px, 1px) rotate(-1deg); }
+      80% { transform: translate(-1px, -1px) rotate(1deg); }
+      90% { transform: translate(1px, 2px) rotate(0deg); }
+      100% { transform: translate(1px, -2px) rotate(-1deg); }
+    }
+
+    .shake {
+      animation: shake 0.5s ease-in-out;
+      animation-iteration-count: 3; /* Ulangi 3 kali */
+    }
+
+
+    .result-box {
+      margin-top: 30px;
+      padding: 15px;
+      border-radius: 10px;
+      border: 1.5px #bf360c dashed;
+      font-size: 13px;
+      font-weight: bold;
+      background-color: #fff3e0;
+      display: inline-block;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    /* [MODIFIKASI] Tombol Unduh */
+    #downloadButton { 
+      margin-top: 10px;
+      padding: 8px 12px;
+      font-size: 18px;
+      font-weight: bold;
+      border: none;
+      background-color: #00796b;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    #downloadButton:hover { 
+      background-color: #004d40;
+    }
+    #downloadButton i {
+      font-size: 20px;
+    }
+
+    .kode-copy-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .kode-box {
+      padding: 8px 16px;
+      background-color: #ffe0b2;
+      color: #bf360c;
+      font-weight: bold;
+      border-radius: 5px;
+      font-size: 18px;
+      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .highlight-label {
+      color: #d32f2f;
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    /* Popup styling */
+    .popup {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+    }
+    .popup-content {
+      background: #fff;
+      padding: 20px;
+      max-width: 300px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+    .popup-content h3 {
+      color: #00796b;
+      margin-top: 1px;
+      margin-bottom: 10px;
+    }
+    .popup-content p {
+      font-size: 16px;
+      color: #333;
+      text-align: justify;
+      font-weight: bold;
+      line-height: 21px;
+    }
+    .highlight {
+      color: #00796b;
+      font-weight: bold;
+    }
+
+    .popup-content button {
+      margin-top: 17px;
+      padding: 8px 14px;
+      background-color: #00796b;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .popup-content button:hover {
+      background-color: #004d40;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <h1>Kartu Kejutan Ulang Tahun</h1>
+    <i class="bi bi-question-circle" onclick="openPopup()"></i>
+  </div>
+  <h2>Ada uang kejutan untukmu<span class="highlight-label"> Rp200.000</span><br> Yuk raih kejutan hadiah terbaikmu sekarang</h2>
+  <div class="marquee-container">
+      <div class="marquee-text">
+          Selamat ulang tahun! <strong>TIARA RIZLA DELIANA </strong> | Barokalloh fii umrik, wa ahallallohul wa thoo'atik. Doa terbaik untukmu adalah agar Alloh memberikanmu kekuatan dalam iman, kelapangan dalam rezeki, dan kebahagiaan yang abadi di surga-Nya nanti. Di tanggal 28 Oktober ini, usiamu bertambah. Semoga dikabulkan setiap doa yang kau panjatkan, semoga diberkahi nikmat pada setiap sujud syukurmu. Aamiin
+      </div>
+      </div>
+
+  <div id="cards" class="cards"></div>
+  <div id="result" class="result-box" style="display:none;">
+    <div id="resultText"></div>
+    <div class="kode-copy-container">
+      <div class="kode-box" id="kodeDiskonBox">---</div>
+      <button id="downloadButton"><i class="bi bi-download"></i></button>
+    </div>
+  </div>
+
+  <div id="infoPopup" class="popup">
+    <div class="popup-content">
+      <h3>Cara Bermain Kartu Kejutan</h3>
+      <p>
+      	Anda hanya memiliki satu kesempatan untuk memilih satu dari enam kartu berisi kejutan ulang tahun. Empat kartu diantaranya berisi hadiah uang sebesar Rp50.000, Rp100.000, Rp150.000, Rp200.000 dan dua kartu sisanya berisi <span class="highlight">ZONK</span>. Anda dapat mengambil hadiah yang sudah disiapkan pada kotak magic.
+      </p>
+      <button onclick="closePopup()">Oke, Saya Mengerti</button>
+    </div>
+  </div>
+
+  <script>
+    const cardsContainer = document.getElementById("cards");
+    const resultBox = document.getElementById("result");
+    const resultText = document.getElementById("resultText");
+    const downloadButton = document.getElementById("downloadButton"); 
+    const kodeBox = document.getElementById("kodeDiskonBox");
+    
+    const eventDate = "2025-05-10"; // UBAH TGL UNTUK RESET KESEMPATAN
+
+    let winningPrize = null; 
+
+    const diskonOptions = [
+      { label: "Gift A", kode: "Rp50.000", weight: 100, imageUrl: 'https://res.cloudinary.com/dz4w1sqiv/image/upload/v1760857328/28_Oktober_2025_20251018_132552_0000_kgtyo1.png' },
+      { label: "Gift B", kode: "Rp100.000", weight: 0, imageUrl: 'https://res.cloudinary.com/dz4w1sqiv/image/upload/v1760857375/28_Oktober_2025_20251018_132552_0001_ihg64s.png' },
+      { label: "Gift C", kode: "Rp150.000", weight: 0, imageUrl: 'https://res.cloudinary.com/dz4w1sqiv/image/upload/v1760857375/28_Oktober_2025_20251018_132552_0002_rw76ne.png' },
+      { label: "Gift D", kode: "Rp200.000", weight: 0, imageUrl: 'https://res.cloudinary.com/dz4w1sqiv/image/upload/v1760857376/28_Oktober_2025_20251018_132552_0003_iknykj.png' },
+      { label: "Gift E", kode: "ZONK", weight: 0, imageUrl: 'https://res.cloudinary.com/dz4w1sqiv/image/upload/v1760857376/28_Oktober_2025_20251018_132553_0005_hpra6h.png' },
+      { label: "Gift F", kode: "ZONK", weight: 0, imageUrl: 'https://res.cloudinary.com/dz4w1sqiv/image/upload/v1760857376/28_Oktober_2025_20251018_132553_0005_hpra6h.png' },
+    ];
+    
+    function pickWeighted(options) {
+        let totalWeight = options.reduce((sum, option) => sum + option.weight, 0);
+        let random = Math.random() * totalWeight;
+        
+        for (const option of options) {
+            if (random < option.weight) {
+                return option; 
+            }
+            random -= option.weight;
+        }
+        return options[options.length - 1];
+    }
+
+    function shuffle(array) {
+      return [...array].sort(() => 0.5 - Math.random());
+    }
+
+    function getStorageKey(date) {
+      return "diskonState_" + date;
+    }
+
+    function saveState(key, state) {
+      localStorage.setItem(key, JSON.stringify(state));
+    }
+
+    function loadState(key) {
+      const saved = localStorage.getItem(key);
+      return saved ? JSON.parse(saved) : null;
+    }
+    
+    function revealCard(index, card, reward, isMain = false) {
+      card.classList.add("revealed");
+      card.style.backgroundImage = `url('${reward.imageUrl}')`; 
+      card.innerHTML = ``; 
+      if (isMain) {
+        winningPrize = reward; 
+        showResult(reward.label, reward.kode);
+        // Hapus kelas shake setelah animasi selesai
+        card.addEventListener('animationend', () => {
+            card.classList.remove('shake');
+        }, { once: true });
+      }
+    }
+
+
+    function hideCard(card) {
+      card.classList.remove("revealed");
+      card.style.backgroundImage = ''; 
+      card.innerHTML = '<i class="bi bi-gift" style="font-size: 24px; margin-bottom: 5px;"></i><div>PILIH</div>';
+    }
+
+    function setupCards(date) {
+      cardsContainer.innerHTML = "";
+      const storageKey = getStorageKey(date);
+      let state = loadState(storageKey);
+
+      if (!state) {
+        const shuffled = shuffle([...diskonOptions]);
+        state = {
+          mainIndex: null,
+          revealed: Array(6).fill(false),
+          shuffled: shuffled
+        };
+        saveState(storageKey, state);
+      } else {
+         if (state.mainIndex !== null) {
+            winningPrize = state.shuffled[state.mainIndex];
+         }
+      }
+
+      for (let i = 0; i < 6; i++) {
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = '<i class="bi bi-gift" style="font-size: 24px; margin-bottom: 5px;"></i><div>PILIH</div>';
+        cardsContainer.appendChild(card);
+
+        if (state.revealed[i]) {
+          const reward = state.shuffled[i];
+          const isMain = i === state.mainIndex;
+          revealCard(i, card, reward, isMain);
+        }
+
+        card.addEventListener("click", () => {
+          if (!state.revealed[i]) {
+            if (state.mainIndex === null) {
+              
+              const prizeToWin = pickWeighted(diskonOptions);
+              
+              const prizeIndexInShuffled = state.shuffled.findIndex(p => p.label === prizeToWin.label);
+              
+              const tempPrize = state.shuffled[i];
+              state.shuffled[i] = prizeToWin; 
+              
+              if (i !== prizeIndexInShuffled) {
+                  state.shuffled[prizeIndexInShuffled] = tempPrize;
+              }
+              
+              state.mainIndex = i;
+
+              // [PENAMBAHAN PENTING] Panggil vibrator HP
+              if (navigator.vibrate) {
+                  navigator.vibrate([400, 250, 600]); // Getaran selama 500 milidetik (0.5 detik)
+              }
+
+              // [PENAMBAHAN] Tambahkan kelas shake sebelum revealCard
+              card.classList.add('shake');
+              
+              revealCard(i, card, prizeToWin, true);
+              
+              state.revealed[i] = true;
+              saveState(storageKey, state); 
+              
+            } else {
+              const rewardForOtherCard = state.shuffled[i];
+              revealCard(i, card, rewardForOtherCard, false);
+              state.revealed[i] = true;
+              saveState(storageKey, state);
+            }
+          } else if (i !== state.mainIndex) {
+            hideCard(card);
+            state.revealed[i] = false;
+            saveState(storageKey, state);
+          }
+        });
+      }
+
+      if (state.mainIndex !== null && resultBox.style.display === "none") {
+        const reward = state.shuffled[state.mainIndex];
+        showResult(reward.label, reward.kode);
+      }
+    }
+
+    function showResult(label, kode) {
+      resultText.innerHTML = `Tiara, kamu dapat uang sebesar <span class="highlight-label">${kode}</span><br>Hadiah uangnya ada di dalam kotak ya`;  
+      kodeBox.textContent = kode;
+      resultBox.style.display = "block";
+    }
+
+    downloadButton.addEventListener("click", () => {
+      if (winningPrize && winningPrize.imageUrl) {
+        const url = winningPrize.imageUrl;
+        const kode = winningPrize.kode; 
+        
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `Hadiah dari Apes - ${kode}.jpg`; 
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        alert(`Gambar hadiah ${winningPrize.kode} berhasil diunduh!`);
+      } else {
+        alert("Silakan pilih kartu terlebih dahulu untuk melihat dan mengunduh hadiah.");
+      }
+    });
+
+    function openPopup() {
+      document.getElementById("infoPopup").style.display = "flex";
+    }
+    function closePopup() {
+      document.getElementById("infoPopup").style.display = "none";
+    }
+
+    setupCards(eventDate);
+  </script>
+</html>
