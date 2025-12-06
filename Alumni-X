@@ -1,0 +1,1432 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Alumni SMKN 1 Purwasari</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Arial:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        /* Gaya Kustom */
+        body {
+            background-color: #f7f9fb;
+            font-family: 'Arial', sans-serif;
+        }
+        .container-panel {
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+        .header-main {
+            border-bottom: 2px solid #e5e7eb;
+        }
+        .radio-label {
+            transition: all 0.5s;
+            cursor: pointer;
+        }
+        .radio-input:checked + .radio-label {
+            background-color: #2563eb; /* bg-blue-500 */
+            color: white;
+            font-weight: bold;
+            border-color: #3b82f6;
+            box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.3);
+        }
+        /* Style untuk Detail Bar yang tersembunyi */
+        .alumni-detail {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-in-out;
+            padding: 0; /* Pastikan padding nol saat tersembunyi */
+        }
+        .alumni-detail.show {
+            max-height: 2000px; /* Nilai besar agar konten terlihat */
+        }
+        
+        /* PERBAIKAN PERATAAN JUDUL DAN IKON */
+        .detail-label-title {
+            font-weight: bold;
+            color: #1e40af; /* text-blue-800 */
+            border-bottom: 1px solid #bfdbfe; /* border-blue-200 */
+            padding-bottom: 4px;
+            margin-bottom: 8px;
+            display: flex; 
+            align-items: center; 
+            margin-bottom: 13px;
+            margin-left: 0; 
+            padding-left: 0; 
+        }
+        
+        .detail-label-item {
+            font-weight: 500;
+            color: #4b5563; /* text-gray-600 */
+            width: 130px; 
+            display: inline-block;
+            flex-shrink: 0;
+        }
+   
+        .bi-person,
+        .bi-people,
+        .bi-mortarboard,
+        .bi-house {
+        	padding: 2px 5px;
+            margin-right: 5px;
+        	border-radius: 7px;
+        	background: #1e40af;
+        	color: white;
+        }
+        
+        /* STYLE BARU UNTUK EDIT IN-PLACE */
+        .in-place-input {
+             /* Tambahkan gaya input yang minimal agar terlihat rapi */
+            border-color: #d1d5db;
+            padding: 4px 8px; 
+            font-size: 0.875rem; /* text-sm */
+            line-height: 1.25;
+            height: auto; /* Untuk textarea atau select */
+        }
+        
+        /* Menggunakan class dari Tailwind, tapi bisa dikustomisasi */
+        .edit-input-group {
+            display: flex;
+            align-items: center;
+        }
+        .edit-icon {
+            margin-left: 8px;
+            cursor: pointer;
+        }
+        /* Akhir Style Edit In-Place */
+        
+        /* Transisi untuk Langkah Form (Optional: untuk animasi fade saat pindah step) */
+        .form-step {
+            opacity: 1;
+            transition: opacity 0.3s ease-in-out;
+        }
+        .form-step.hidden-step {
+            opacity: 0;
+            height: 0;
+            overflow: hidden;
+            display: none;
+        }
+
+        /* Gaya untuk Range Slider */
+        .range-slider-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .range-slider-container input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 8px;
+            background: #d1d5db; 
+            border-radius: 5px;
+            outline: none;
+            opacity: 0.7;
+            -webkit-transition: .2s;
+            transition: opacity .2s;
+        }
+        .range-slider-container input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            background: #2563eb;
+            cursor: pointer;
+            border-radius: 50%;
+        }
+        .range-slider-container input[type="range"]::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            background: #2563eb;
+            cursor: pointer;
+            border-radius: 50%;
+        }
+        
+        /* ========================================================== */
+        /* PERBAIKAN HEADER UNTUK CENTERING LOGO+TEKS GROUP */
+        /* ========================================================== */
+
+        /* Gaya untuk Logo Header */
+        #header-photo-container {
+            border-radius: 0px; 
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-right: 5px; 
+        }
+        
+        .header-main .flex {
+            justify-content: center; 
+        }
+
+        /* Penyesuaian untuk tampilan mobile */
+        @media (max-width: 640px) {
+            .header-main .flex {
+                flex-direction: row; 
+                gap: 10px;
+                justify-content: center; 
+            }
+            #header-photo-container {
+                width: 55px; 
+                height: 50px;
+                margin-right: 0;
+            }
+        }
+    </style>
+</head>
+<body class="p-4 sm:p-8">
+
+    <div class="max-w-7xl mx-auto">
+        <header class="pb-4 mb-6 header-main">
+            <div class="flex items-center justify-center gap-4"> 
+                
+                <div id="header-photo-container" class="w-13 h-12 bg-gray-200 flex items-center justify-center overflow-hidden shrink-0">
+                    <img id="headerImage" src="#" class="w-full h-full object-cover" alt="Logo Header">
+                </div>
+                
+                <div class="text-center">
+                    <h1 class="text-2xl font-extrabold text-gray-900 flex items-center gap-3 justify-center">
+                        Data Alumni Angkatan X
+                    </h1>
+                    <p class="text-gray-500">SMK Negeri 1 Purwasari - Tahun 2023</p>
+                </div>
+            </div>
+        </header>
+
+        <div class="bg-white p-5 rounded-xl container-panel mb-4 shadow-sm">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                
+                <div class="flex flex-wrap justify-center md:justify-start items-center gap-2 w-full md:w-auto">
+                    <div class="grid grid-cols-5 gap-2 w-full">
+                        <input type="radio" id="semua" name="jurusan" value="Semua" class="hidden radio-input" checked>
+                        <label for="semua" class="radio-label border border-gray-300 rounded-lg px-2 py-1 text-[11px] text-gray-700 hover:bg-gray-100 text-center">SEMUA</label>
+                        
+                        <input type="radio" id="tbsm1" name="jurusan" value="TBSM 1" class="hidden radio-input">
+                        <label for="tbsm1" class="radio-label border border-gray-300 rounded-lg px-2 py-1 text-[11.5px] text-gray-700 hover:bg-gray-100 text-center">TBSM 1</label>
+                        <input type="radio" id="tbsm2" name="jurusan" value="TBSM 2" class="hidden radio-input">
+                        <label for="tbsm2" class="radio-label border border-gray-300 rounded-lg px-2 py-1 text-[11.5px] text-gray-700 hover:bg-gray-100 text-center">TBSM 2</label>
+                        <input type="radio" id="titl" name="jurusan" value="TITL" class="hidden radio-input">
+                        <label for="titl" class="radio-label border border-gray-300 rounded-lg px-2 py-1 text-[11.5px] text-gray-700 hover:bg-gray-100 text-center">TITL</label>
+                        <input type="radio" id="akl" name="jurusan" value="AKL" class="hidden radio-input">
+                        <label for="akl" class="radio-label border border-gray-300 rounded-lg px-2 py-1 text-[11.5px] text-gray-700 hover:bg-gray-100 text-center">AKL</label>
+                    </div>
+                </div>
+
+                <div class="flex gap-3 w-full md:w-auto justify-center min-w-[280px]">
+                    
+                    <div class="relative flex-1 bg-gray-100 border border-gray-300 rounded-lg py-0.5 px-2 text-xs flex items-center justify-between">
+                        <span class="font-semibold text-gray-600">Total Data:</span>
+                        <span id="dataCount" class="font-extrabold text-sm text-blue-600">0</span>
+                    </div>
+                    
+                    <button 
+                        onclick="toggleFilterModal(true)"
+                        class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-0.5 px-2 rounded-lg shadow-md transition duration-200 flex items-center justify-center gap-1 shrink-0 text-sm">
+                        <i class="bi bi-funnel text-base"></i> Filter
+                    </button>
+
+                    <button 
+                        onclick="toggleModal(true)"
+                        class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-0.5 px-2 rounded-lg shadow-md transition duration-200 flex items-center justify-center gap-1 shrink-0 text-sm">
+                        <i class="bi bi-plus-circle text-base"></i> Tambah
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="alumniListContainer" class="bg-white rounded-xl container-panel p-5 space-y-3 shadow-sm">
+            <h3 class="text-lg font-bold text-gray-800 text-left border-b pb-2 mb-3"><i class="bi bi-person-lines-fill text-blue-600 text-[18px] ml-2"></i> Daftar Alumni SMKN 1 Purwasari</h3>
+            <div id="alumniList" class="space-y-4">
+                </div>
+        </div>
+        
+    </div>
+    
+    <div id="alumniModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-overlay hidden">
+        <div class="bg-white rounded-xl w-full max-w-2xl shadow-2xl relative max-h-screen overflow-y-auto">
+            
+            <div class="sticky top-0 bg-white py-3 px-6 shadow-sm border-b border-gray-200 z-10">
+                <h3 class="text-xl font-bold text-center text-gray-900">Tambah Data Alumni Baru</h3>
+                <button onclick="toggleModal(false)" class="absolute top-4 right-4 text-gray-400 hover:text-gray-700">
+                    <i class="bi bi-x-lg text-lg"></i>
+                </button>
+                 <div id="progressIndicator" class="text-sm text-center font-medium text-blue-600 mt-2">Langkah 1 dari 5: Unggah Foto</div>
+            </div>
+            
+            <form id="alumniForm" class="px-6 py-4">
+                
+                <div data-step="1" class="form-step">
+                    <div class="space-y-6"> 
+                        <h4 class="text-base font-bold text-blue-600 mb-3 border-b pb-1">1. Unggah Foto</h4>
+                        <div class="flex flex-col items-center justify-center p-6 border-2 border-dashed border-gray-300 rounded-lg">
+                            <div class="w-32 h-32 bg-gray-200 border border-gray-400 rounded-full flex items-center justify-center overflow-hidden mb-3 relative">
+                                <i id="defaultIcon" class="bi bi-person-bounding-box text-6xl text-gray-500"></i>
+                                <img id="uploadedImage" src="#" class="w-full h-full object-cover absolute hidden" alt="Foto Alumni">
+                            </div>
+                            <label for="foto_link_form" class="block text-sm font-medium text-gray-700 mb-1">Masukkan Tautan URL Foto</label>
+                            <input type="url" id="foto_link_form" placeholder="https://url-foto-alumni-nespur.jpg" oninput="previewLink(this.value)" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 text-sm">
+                        </div>
+                    </div>
+                </div>
+                
+                <div data-step="2" class="form-step hidden-step">
+                    <div class="space-y-6"> 
+                        <h4 class="text-base font-bold text-blue-600 mb-3 border-b pb-1">2. Data Pribadi</h4>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                                 <label for="nik_form" class="block text-sm font-medium text-gray-700">NIK</label>
+                                 <input type="number" id="nik_form" placeholder="3215XXXXXXXXXXXX" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 text-sm">
+                            </div>
+                            <div>
+                                <label for="nama_form" class="block text-sm font-medium text-gray-700">Nama Lengkap</label>
+                                <input type="text" id="nama_form" placeholder="Asep Jamaludin" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 text-sm">
+                            </div>                            
+                            
+                            <div>
+                                <label for="jenis_kelamin_form" class="block text-sm font-medium text-gray-700">Jenis Kelamin</label>
+                                <select id="jenis_kelamin_form" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 text-sm">
+                                    <option value="">Pilih</option>
+                                    <option value="Laki-laki">Laki-laki</option>
+                                    <option value="Perempuan">Perempuan</option>
+                                </select>
+                            </div>
+                            
+                            <div>
+                                <label for="tempat_lahir" class="block text-sm font-medium text-gray-700">Tempat Lahir</label>
+                                <input type="text" id="tempat_lahir" placeholder="Karawang" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 text-sm">
+                            </div>
+                            <div>
+                                 <label for="tgl_lahir" class="block text-sm font-medium text-gray-700">Tanggal Lahir</label>
+                                <input type="date" id="tgl_lahir" onchange="hitungUsia(this.value)" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 text-sm">
+                            </div>
+
+                            <div>
+                                <label for="usia" class="block text-sm font-medium text-gray-700">Usia (Otomatis)</label>
+                                <input type="text" id="usia" readonly class="mt-1 block w-full border border-gray-200 rounded-md shadow-sm p-2 text-sm bg-gray-50 text-gray-500">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div data-step="3" class="form-step hidden-step">
+                    <div class="space-y-6">
+                        <h4 class="text-base font-bold text-blue-600 mb-3 border-b pb-1">3. Data Sekolah</h4>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label for="jurusan_form" class="block text-sm font-medium text-gray-700">Kelas/Jurusan</label>
+                                <select id="jurusan_form" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 text-sm">
+                                    <option value="">- Pilih -</option>
+                                    <option value="TBSM 1">TBSM 1</option>
+                                    <option value="TBSM 2">TBSM 2</option>
+                                    <option value="TITL">TITL</option>
+                                    <option value="AKL">AKL</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="asal_sekolah" class="block text-sm font-medium text-gray-700">Asal Sekolah</label>
+                                <input type="text" id="asal_sekolah" placeholder="MTs 12 Rabi'ul Awwal" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 text-sm">
+                            </div>
+                            </div>
+                    </div>
+                </div>
+                
+                <div data-step="4" class="form-step hidden-step">
+                    <div class="space-y-6">
+                        <h4 class="text-base font-bold text-blue-600 mb-3 border-b pb-1">4. Data Orang Tua</h4>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label for="nama_ayah" class="block text-sm font-medium text-gray-700">Nama Ayah</label>
+                                <input type="text" id="nama_ayah" placeholder="XXXXXXXXX"  class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 text-sm">
+                            </div>
+                            <div>
+                                <label for="pekerjaan_ayah" class="block text-sm font-medium text-gray-700">Pekerjaan</label>
+                                <input type="text" id="pekerjaan_ayah" placeholder="Buruh Harian"  class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 text-sm">
+                            </div>
+                            <div>
+                                <label for="nama_ibu" class="block text-sm font-medium text-gray-700">Nama Ibu</label>
+                                <input type="text" id="nama_ibu" placeholder="XXXXX XXXXXXX"  class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 text-sm">
+                            </div>
+                            <div>
+                                <label for="pekerjaan_ibu" class="block text-sm font-medium text-gray-700">Pekerjaan</label>
+                                <input type="text" id="pekerjaan_ibu" placeholder="Ibu Rumah Tangga"  class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 text-sm">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div data-step="5" class="form-step hidden-step">
+                    <div class="space-y-6">
+                        <h4 class="text-base font-bold text-blue-600 mb-3 border-b pb-1">5. Data Domisili</h4>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="sm:col-span-2">
+                                <label for="alamat" class="block text-sm font-medium text-gray-700">Alamat</label>
+                                <textarea id="alamat" rows="1" placeholder="Kp Pagadungan"  class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 text-sm"></textarea>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label for="rt" class="block text-sm font-medium text-gray-700">RT</label>
+                                    <input type="number" id="rt" placeholder="03"  class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 text-sm">
+                                </div>
+                                <div>
+                                    <label for="rw" class="block text-sm font-medium text-gray-700">RW</label>
+                                    <input type="number" id="rw" placeholder="05"  class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 text-sm">
+                                </div>
+                            </div>
+                            <div>
+                                <label for="desa" class="block text-sm font-medium text-gray-700">Desa/Kelurahan</label>
+                                <input type="text" id="desa" placeholder="Purwasari"  class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 text-sm">
+                            </div>
+                            <div>
+                                <label for="kecamatan" class="block text-sm font-medium text-gray-700">Kecamatan</label>
+                                <input type="text" id="kecamatan" placeholder="Purwasari"  class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 text-sm">
+                            </div>
+                            <div>
+                                <label for="kabupaten" class="block text-sm font-medium text-gray-700">Kabupaten/Kota</label>
+                                <input type="text" id="kabupaten" placeholder="Karawang"  class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 text-sm">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            
+            <div class="py-3 px-6 flex justify-between border-t border-gray-200 sticky bottom-0 bg-white">
+                
+                <button type="button" onclick="toggleModal(false)" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-1 px-3 rounded-lg transition duration-200 shrink-0">
+                    Batal
+                </button>
+
+                <div class="flex gap-3">
+                    <button type="button" id="prevBtn" onclick="prevStep()" class="bg-amber-500 hover:bg-gray-600 text-white font-medium py-1 px-3 rounded-lg transition duration-200 hidden">
+                        <i class="bi bi-arrow-bar-left"></i> Kembali
+                    </button>
+                    <button type="button" id="nextBtn" onclick="nextStep()" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-1 px-3 rounded-lg transition duration-200">
+                        Selanjutnya <i class="bi bi-arrow-bar-right"></i>
+                    </button>
+                    <button type="submit" form="alumniForm" id="submitBtn" class="bg-blue-600 hover:bg-green-700 text-white font-medium py-1 px-3 rounded-lg transition duration-200 hidden">
+                        Simpan Data
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="filterModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-overlay hidden">
+        <div class="bg-white rounded-xl w-full max-w-lg shadow-2xl relative max-h-screen overflow-y-auto">
+            <div class="sticky top-0 bg-white py-3 px-6 shadow-sm border-b border-gray-200 z-10">
+                <h3 class="text-xl font-bold text-gray-900 text-center">Filter Data Alumni</h3>
+                <button onclick="toggleFilterModal(false)" class="absolute top-4 right-4 text-gray-400 hover:text-gray-700">
+                    <i class="bi bi-x-lg text-lg"></i>
+                </button>
+            </div>
+            
+            <div class="p-6 space-y-5">
+                
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-2">Filter Usia (Tahun)</label>
+                    <div class="range-slider-container">
+                        <input type="range" id="ageRange" min="15" max="35" value="15" oninput="document.getElementById('ageDisplay').textContent=this.value; applyFilters(document.querySelector('input[name=\'jurusan\']:checked').value)">
+                        <div class="flex justify-between text-xs text-gray-500 font-semibold">
+                            <span>Minimal: 15</span>
+                            <span id="ageDisplay" class="font-bold text-base text-blue-600">15</span>
+                            <span>Maksimal: 35</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="sm:col-span-2">
+                        <label for="globalSearch" class="block text-sm font-bold text-gray-700 mb-2">Pencarian Cepat (Semua Kategori)</label>
+                        <input type="text" id="globalSearch" placeholder="Cari dengan kata kunci..." class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 text-sm" onkeyup="applyFilters(document.querySelector('input[name=\'jurusan\']:checked').value)">
+                    </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    
+                    <div>
+                        <label for="filterTempatLahir" class="block text-sm font-bold text-gray-700">Tempat Lahir</label>
+                        <select id="filterTempatLahir" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 text-sm" onchange="applyFilters(document.querySelector('input[name=\'jurusan\']:checked').value)">
+                             <option value="">-- Semua Tempat Lahir --</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label for="filterAsalSekolah" class="block text-sm font-bold text-gray-700">Asal Sekolah</label>
+                        <select id="filterAsalSekolah" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 text-sm" onchange="applyFilters(document.querySelector('input[name=\'jurusan\']:checked').value)">
+                             <option value="">-- Semua Asal Sekolah --</option>
+                        </select>
+                    </div>
+                    
+                     <div>
+                        <label for="filterDesa" class="block text-sm font-bold text-gray-700">Desa/Kelurahan</label>
+                        <select id="filterDesa" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 text-sm" onchange="applyFilters(document.querySelector('input[name=\'jurusan\']:checked').value)">
+                             <option value="">-- Semua Desa/Kelurahan --</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label for="filterKabupaten" class="block text-sm font-bold text-gray-700">Kabupaten/Kota</label>
+                        <select id="filterKabupaten" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 text-sm" onchange="applyFilters(document.querySelector('input[name=\'jurusan\']:checked').value)">
+                             <option value="">-- Semua Kabupaten/Kota --</option>
+                        </select>
+                    </div>                                      
+                    
+                </div>
+                
+            </div>
+            
+            <div class="py-3 px-6 flex justify-end border-t border-gray-200 sticky bottom-0 bg-white">
+                <button type="button" onclick="resetFilters()" class="bg-red-500 hover:bg-red-600 text-white font-medium py-1 px-3 rounded-lg transition duration-200 mr-3">
+                    Atur Ulang
+                </button>
+                <button type="button" onclick="toggleFilterModal(false)" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-1 px-3 rounded-lg transition duration-200">
+                    Terapkan
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        
+        // ==========================================================
+        // **KONFIGURASI FIREBASE (WAJIB DIUBAH)**
+        // GANTI DENGAN DETAIL PROJECT FIREBASE ANDA
+        // ==========================================================
+        const firebaseConfig = {
+          apiKey: "AIzaSyASXJiNqbekENXpk7C5U5XjE6gImfNUBwg",
+            authDomain: "pustakapribadi-25.firebaseapp.com",
+            databaseURL: "https://pustakapribadi-25-default-rtdb.firebaseio.com",
+            projectId: "pustakapribadi-25",
+            storageBucket: "pustakapribadi-25.firebasestorage.app",
+            messagingSenderId: "828550020946",
+            appId: "1:828550020946:web:65322f2092d1927c43c48b"
+        };
+    
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        const alumniRef = database.ref('alumni'); // Node utama di Realtime DB
+
+        // ==========================================================
+        // KONFIGURASI: TAUTAN FOTO HEADER/LOGO SEKOLAH
+        // ==========================================================
+        const HEADER_IMAGE_URL = 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiHjZoryOAhauufDbwn11dxOF_RvHXEtFFnl4j4HCzt9f1_inI5XRr7McGx7sDYF6VPl017lvLbN7LODa02edADn6YPPRBvP1THpoDSmnqG31BpkEMmM0v6eyf15bZkeFVKMdXBnXKQDLLvyFSjI48vpPvei_qbZgDJmmR0BCEhZZtJjr4kJ6YwCRCEqw/s1600/images__2_-removebg-preview.png';
+        
+        let alumniData = []; 
+        let nextId = 1; 
+        
+        let currentStep = 1;
+        const steps = document.querySelectorAll('.form-step');
+        const totalSteps = 5; 
+        const stepTitles = ['Tautan URL Foto', 'Data Pribadi', 'Data Sekolah', 'Data Orang Tua', 'Data Domisili'];
+        let editingId = null; 
+        
+        let currentPhotoUrl = null; // GANTI: Menyimpan URL foto baru
+        let photoEditTemp = {}; // NEW: Temporary storage for in-place photo edit URL
+        
+        // ==========================================================
+        // FUNGSI FIREBASE (MENGGANTIKAN LOCAL STORAGE)
+        // ==========================================================
+        
+        function loadDataFromFirebase() {
+            alumniRef.on('value', (snapshot) => {
+                const data = snapshot.val();
+                alumniData = [];
+                let maxId = 0;
+                
+                if (data) {
+                    // Konversi objek Firebase menjadi array
+                    Object.keys(data).forEach(key => {
+                        const alumni = data[key];
+                        // Simpan ID yang digunakan sebagai key di Firebase
+                        const id = parseInt(key);
+                        alumni.id = id; 
+                        
+                        if (id > maxId) maxId = id;
+                        alumniData.push(alumni);
+                    });
+                }
+                
+                nextId = maxId + 1;
+                alumniData.sort((a, b) => (a.nama || '').localeCompare(b.nama || ''));
+                populateDropdowns(); 
+                applyFilters('Semua'); 
+                console.log("Data berhasil dimuat dari Firebase. Total:", alumniData.length);
+            }, (error) => {
+                console.error("Gagal memuat data dari Firebase:", error);
+                document.getElementById('alumniList').innerHTML = '<p class="text-center text-red-500 py-4">Gagal memuat data dari Firebase. Cek konfigurasi Anda di console.</p>';
+            });
+        }
+        
+        // ==========================================================
+        // FUNGSI BARU: PREVIEW LINK FOTO
+        // ==========================================================
+        window.previewLink = function(url) {
+            const image = document.getElementById('uploadedImage');
+            const defaultIcon = document.getElementById('defaultIcon');
+            
+            // Periksa apakah input adalah URL yang valid
+            if (url && url.startsWith('http')) {
+                image.src = url;
+                image.classList.remove('hidden');
+                defaultIcon.classList.add('hidden');
+                currentPhotoUrl = url; 
+            } else {
+                image.src = '#';
+                image.classList.add('hidden');
+                defaultIcon.classList.remove('hidden');
+                currentPhotoUrl = null; 
+            }
+        }
+        
+        // ==========================================================
+        // FUNGSI BARU: PREVIEW FOTO IN-PLACE SEMENTARA
+        // ==========================================================
+        window.tempPreviewPhoto = function(url, id) {
+             const image = document.getElementById(`alumni-photo-${id}`);
+             const defaultIcon = document.getElementById(`alumni-photo-default-icon-${id}`);
+
+             if (url && url.startsWith('http')) {
+                 if (defaultIcon) defaultIcon.classList.add('hidden');
+                 
+                 let imgElement = image;
+                 if (!imgElement) {
+                     // Jika tag <img> belum ada, buat elemen baru
+                     const containerDiv = document.querySelector(`#photo-container-${id} > div`);
+                     imgElement = document.createElement('img');
+                     imgElement.id = `alumni-photo-${id}`;
+                     imgElement.className = 'w-full h-full object-cover';
+                     imgElement.alt = 'Foto Alumni Baru';
+                     containerDiv.appendChild(imgElement);
+                 }
+                 
+                 imgElement.src = url;
+                 imgElement.classList.remove('hidden');
+                 photoEditTemp[id] = url; // Simpan URL sementara
+             } else {
+                 photoEditTemp[id] = null;
+                 if (image) image.src = '#'; // Hapus tampilan foto
+             }
+        }
+        
+        // ==========================================================
+        // FUNGSI UTILITY LAIN
+        // ==========================================================
+
+        function formatDate(dateString) {
+            if (!dateString) return '-';
+            const parts = dateString.split('-');
+            if (parts.length === 3) {
+                return `${parts[2]}-${parts[1]}-${parts[0]}`;
+            }
+            return dateString; 
+        }
+
+        window.toggleDetail = function(id) {
+            const detailElement = document.getElementById(`detail-${id}`);
+            const iconElement = document.getElementById(`icon-${id}`);
+            const detailAction = document.getElementById(`detail-action-${id}`);
+
+            detailElement.classList.toggle('show');
+            
+            if (detailElement.classList.contains('show')) {
+                iconElement.classList.remove('bi-zoom-in');
+                iconElement.classList.add('bi-zoom-out');
+                detailAction.classList.remove('hidden'); 
+            } else {
+                iconElement.classList.remove('bi-zoom-out');
+                iconElement.classList.add('bi-zoom-in');
+                detailAction.classList.add('hidden'); 
+                
+                if (editingId === id) {
+                    toggleInPlaceEdit(id, 'display');
+                }
+            }
+        };
+
+        function updateStepIndicator() {
+            const indicator = document.getElementById('progressIndicator');
+            const modalTitle = document.querySelector('#alumniModal h3');
+            modalTitle.innerHTML = `Tambah Data Baru Alumni`;
+            const stepTitle = stepTitles[currentStep - 1] || 'Selesai'; 
+            indicator.textContent = `Langkah ${currentStep} dari ${totalSteps}: ${stepTitle}`;
+        }
+
+        function showStep(stepNumber) {
+            steps.forEach((step, index) => {
+                if (parseInt(step.getAttribute('data-step')) === stepNumber) {
+                    step.classList.remove('hidden-step'); 
+                    step.style.display = 'block'; 
+                    const modalContent = document.querySelector('#alumniModal > div');
+                    modalContent.scrollTop = 0;
+                } else {
+                    step.classList.add('hidden-step'); 
+                }
+            });
+            currentStep = stepNumber;
+            updateStepIndicator(); 
+            updateNavigationButtons();
+        }
+
+        function updateNavigationButtons() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const submitBtn = document.getElementById('submitBtn');
+            
+            if (currentStep > 1) {
+                prevBtn.classList.remove('hidden');
+            } else {
+                prevBtn.classList.add('hidden');
+            }
+            
+            if (currentStep < totalSteps) {
+                nextBtn.classList.remove('hidden');
+                submitBtn.classList.add('hidden');
+            } else {
+                nextBtn.classList.add('hidden'); // Sembunyikan 'Selanjutnya'
+                submitBtn.classList.remove('hidden'); // Tampilkan 'Simpan Data'
+                submitBtn.textContent = 'Simpan Data'; 
+            }
+        }
+        
+        function nextStep() {
+            const currentStepElement = document.querySelector(`[data-step="${currentStep}"]`);
+            
+            // Cek khusus untuk Langkah 1 (Foto)
+            if (currentStep === 1) {
+                 if (!currentPhotoUrl) {
+                     if (!confirm("Anda belum memasukkan URL foto. Lanjutkan tanpa foto?")) {
+                         return;
+                     }
+                 }
+            }
+            
+            if(currentStep > 1) {
+                const requiredInputs = currentStepElement.querySelectorAll('[required]');
+                let isValid = true;
+
+                requiredInputs.forEach(input => {
+                    input.classList.remove('border-red-500'); 
+                    
+                    if (!input.value) {
+                        input.classList.add('border-red-500'); 
+                        isValid = false;
+                    }
+                });
+
+                if (!isValid) {
+                    alert('Mohon lengkapi data yang wajib diisi (dengan highlight merah) pada langkah ini.');
+                    return;
+                }
+            }
+
+            if (currentStep < totalSteps) {
+                showStep(currentStep + 1);
+            }
+        }
+
+        function prevStep() {
+            if (currentStep > 1) {
+                showStep(currentStep - 1);
+            }
+        }
+        
+        function toggleModal(show) {
+            const modal = document.getElementById('alumniModal');
+            
+            if (show) {
+                document.getElementById('alumniForm').reset();
+                document.getElementById('usia').value = '';
+                document.querySelectorAll('.border-red-500').forEach(el => {
+                    el.classList.remove('border-red-500');
+                });
+                
+                // Reset input URL foto
+                document.getElementById('foto_link_form').value = '';
+                document.getElementById('uploadedImage').src = '#';
+                document.getElementById('uploadedImage').classList.add('hidden');
+                document.getElementById('defaultIcon').classList.remove('hidden');
+                currentPhotoUrl = null; 
+                
+                modal.classList.add('flex');
+                modal.classList.remove('hidden');
+                
+                showStep(1); 
+            } else {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+        }
+        
+        // FUNGSI FIREBASE: DELETE DATA
+        window.deleteData = function(id) {
+            if (confirm('Anda yakin ingin menghapus data alumni ini? Tindakan ini tidak dapat dibatalkan.')) {
+                 alumniRef.child(id).remove()
+                    .then(() => {
+                        alert('Data alumni berhasil dihapus.');
+                        // Listener on('value') akan otomatis memuat ulang data
+                    })
+                    .catch((error) => {
+                         alert("Gagal menghapus data: " + error.message);
+                    });
+            }
+        }
+        
+        function hitungUsia(tglLahir) {
+            if (!tglLahir) return 0; 
+            const today = new Date();
+            const birthDate = new Date(tglLahir);
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const monthDifference = today.getMonth() - birthDate.getMonth();
+            
+            if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+            }
+            const usiaInput = document.getElementById('usia');
+            if (usiaInput) usiaInput.value = age + ' Tahun';
+            
+            return age;
+        }
+
+        function getJurusanBadge(jurusan) {
+            let colorClass;
+            switch (jurusan) {
+                case 'TBSM 1':
+                case 'TBSM 2':
+                    colorClass = 'bg-red-100 text-red-800 border-red-400';
+                    break;
+                case 'TITL':
+                    colorClass = 'bg-yellow-100 text-yellow-800 border-yellow-400';
+                    break;
+                case 'AKL':
+                    colorClass = 'bg-green-100 text-green-800 border-green-400';
+                    break;
+                default:
+                    colorClass = 'bg-gray-100 text-gray-800 border-gray-400';
+            }
+            return `<span class="px-2 py-0.5 text-xs font-semibold rounded-full border ${colorClass}" title="${jurusan}">${jurusan}</span>`;
+        }
+        
+        function getJKBadge(jk) {
+            const label = jk === 'Laki-laki' ? 'L' : 'P';
+            const colorClass = jk === 'Laki-laki' ? 'bg-cyan-100 text-cyan-800 border-cyan-400' : 'bg-pink-100 text-pink-800 border-pink-400';
+            return `<span class="px-2 py-0.5 text-xs font-semibold rounded-full border ${colorClass}" title="${jk}">${label}</span>`;
+        }
+        
+        function renderDetailItem(label, displayValue, key, type = 'text', options = []) {
+            const safeDisplayValue = (displayValue || '').toString().replace(/'/g, '&#39;');
+            
+            let inputHtml;
+            let finalType = type;
+            let isSelect = false;
+
+            if (key === 'tglLahir') {
+                finalType = 'date';
+            } else if (key === 'nik' || key === 'rt' || key === 'rw') {
+                 finalType = 'text'; 
+            }
+            
+            if (key === 'jenisKelamin') {
+                isSelect = true;
+                options = ['Laki-laki', 'Perempuan'];
+            } else if (key === 'jurusan') {
+                isSelect = true;
+                options = ['TBSM 1', 'TBSM 2', 'TITL', 'AKL'];
+            }
+            
+            let displayFieldClass = ''; 
+            let editFieldClass = 'hidden'; 
+            let isCombinedField = key === 'tempat_tgl_lahir' || key === 'rt_rw';
+            
+            if (isCombinedField) {
+                 inputHtml = `<div class="p-2 text-sm bg-gray-100 text-gray-500 rounded-md">Field gabungan. Edit nilai individual di bawah.</div>`; 
+                 editFieldClass = 'hidden'; 
+                 displayFieldClass = ''; 
+            } else {
+                 if (isSelect) {
+                    let optionHtml = options.map(val => 
+                        `<option value="${val}" ${val === safeDisplayValue ? 'selected' : ''}>${val}</option>`
+                    ).join('');
+                    inputHtml = `<select class="in-place-input border border-gray-300 rounded-md shadow-sm w-full" data-key="${key}">${optionHtml}</select>`;
+                } else if (key === 'alamat') {
+                     inputHtml = `<textarea rows="1" class="in-place-input border border-gray-300 rounded-md shadow-sm w-full" data-key="${key}">${safeDisplayValue}</textarea>`;
+                } else {
+                    inputHtml = `<input type="${finalType}" value="${safeDisplayValue}" class="in-place-input border border-gray-300 rounded-md shadow-sm w-full" data-key="${key}">`;
+                }
+            }
+
+
+            return `
+                <div class="flex items-center justify-between detail-item-row" data-field-key="${key}">
+                    <span class="detail-label-item">${label}</span>: 
+                    <div class="flex-1 min-w-0 ml-2">
+                        <span class="display-value ${displayFieldClass}">${safeDisplayValue || '-'}</span>
+                        <div class="edit-input-group ${editFieldClass} w-full">
+                            <div class="flex-1 min-w-0">
+                                ${inputHtml}
+                            </div>
+                            <i class="bi bi-pencil-square text-blue-500 text-sm ml-2 flex-shrink-0" style="width: 20px;"></i>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function renderSeparateEditInput(label, value, key, type = 'text') {
+            const safeValue = (value || '').toString().replace(/'/g, '&#39;');
+            let inputHtml;
+             
+            if (key === 'rt' || key === 'rw') {
+                inputHtml = `<input type="number" value="${safeValue}" class="in-place-input border border-gray-300 rounded-md shadow-sm w-full" data-key="${key}">`;
+            } else if (key === 'tglLahir') {
+                 inputHtml = `<input type="date" value="${safeValue}" class="in-place-input border border-gray-300 rounded-md shadow-sm w-full" data-key="${key}" onchange="updateUsiaDisplay(this, ${editingId})">`;
+            } else {
+                 inputHtml = `<input type="${type}" value="${safeValue}" class="in-place-input border border-gray-300 rounded-md shadow-sm w-full" data-key="${key}">`;
+            }
+            
+             return `
+                <div class="flex items-center justify-between detail-item-row hidden-in-display hidden" data-field-key="${key}" data-separate="true">
+                    <span class="detail-label-item">${label}</span>: 
+                    <div class="flex-1 min-w-0 ml-2">
+                        <span class="display-value hidden">${safeValue || '-'}</span>
+                        <div class="edit-input-group w-full">
+                            <div class="flex-1 min-w-0">
+                                ${inputHtml}
+                            </div>
+                            <i class="bi bi-pencil-square text-blue-500 text-sm ml-2 flex-shrink-0" style="width: 20px;"></i>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        window.updateUsiaDisplay = function(inputElement, id) {
+            const tglLahir = inputElement.value;
+            const usia = hitungUsia(tglLahir);
+            
+            const cardElement = document.querySelector(`[data-alumni-card="${id}"]`);
+            if (cardElement) {
+                const usiaDisplay = cardElement.querySelector('[data-field-key="usia"] .display-value');
+                if (usiaDisplay) {
+                     usiaDisplay.textContent = `${usia} Tahun`;
+                }
+            }
+        }
+        
+        // FUNGSI BARU: MENAMPILKAN INPUT URL FOTO SAAT EDIT
+        window.editPhotoUrl = function(id) {
+            const photoContainer = document.getElementById(`photo-input-container-${id}`);
+            const alumni = alumniData.find(a => a.id === id);
+            
+            if (!photoContainer) return;
+            
+            // Periksa jika input URL sudah ada
+            let urlInput = document.getElementById(`photo-url-input-${id}`);
+            if (!urlInput) {
+                 urlInput = document.createElement('input');
+                 urlInput.type = 'url';
+                 urlInput.id = `photo-url-input-${id}`;
+                 urlInput.placeholder = 'Tempel URL foto baru di sini';
+                 urlInput.className = 'in-place-input border border-gray-300 rounded-md shadow-sm w-full text-xs mt-2';
+                 urlInput.setAttribute('oninput', `tempPreviewPhoto(this.value, ${id})`);
+                 photoContainer.appendChild(urlInput);
+            }
+            
+            // Atur nilai dan tampilkan
+            urlInput.value = alumni.fotoUrl || '';
+            urlInput.classList.remove('hidden');
+        }
+
+        window.toggleInPlaceEdit = function(id, mode) {
+            const cardElement = document.querySelector(`[data-alumni-card="${id}"]`);
+            if (!cardElement) return;
+
+            const combinedFields = cardElement.querySelectorAll('[data-field-key="tempat_tgl_lahir"], [data-field-key="rt_rw"]');
+            const separateFields = cardElement.querySelectorAll('[data-separate="true"]');
+
+            const displayActions = document.getElementById(`display-actions-${id}`);
+            const editActions = document.getElementById(`edit-actions-${id}`);
+            const photoInputContainer = document.getElementById(`photo-input-container-${id}`);
+            
+            editingId = id; 
+
+            if (mode === 'edit') {
+                combinedFields.forEach(el => el.classList.add('hidden')); 
+                separateFields.forEach(el => {
+                    el.classList.remove('hidden'); 
+                    el.querySelector('.edit-input-group').classList.remove('hidden'); 
+                }); 
+                
+                cardElement.querySelectorAll('.display-value').forEach(el => el.classList.add('hidden'));
+                cardElement.querySelectorAll('.edit-input-group:not([data-separate="true"] .edit-input-group)').forEach(el => el.classList.remove('hidden')); 
+
+                displayActions.classList.add('hidden');
+                editActions.classList.remove('hidden');
+                
+                // LOGIC FOTO EDIT: Tampilkan input URL
+                if (photoInputContainer) {
+                    editPhotoUrl(id);
+                }
+
+            } else if (mode === 'display') {
+                 cardElement.querySelectorAll('.in-place-input').forEach(input => {
+                     input.classList.remove('border-red-500'); 
+                 });
+                 
+                combinedFields.forEach(el => el.classList.remove('hidden'));
+                separateFields.forEach(el => el.classList.add('hidden')); 
+
+                cardElement.querySelectorAll('.display-value').forEach(el => el.classList.remove('hidden'));
+                cardElement.querySelectorAll('.edit-input-group').forEach(el => el.classList.add('hidden'));
+                
+                displayActions.classList.remove('hidden');
+                editActions.classList.add('hidden');
+                
+                // LOGIC FOTO DISPLAY: Sembunyikan input URL dan reset preview
+                if (photoInputContainer) {
+                    const urlInput = document.getElementById(`photo-url-input-${id}`);
+                    if (urlInput) urlInput.classList.add('hidden');
+                }
+                
+                // Revert preview image if cancelled
+                if (photoEditTemp[id]) {
+                     const alumni = alumniData.find(a => a.id === id);
+                     const photoElement = document.getElementById(`alumni-photo-${id}`);
+                     if (photoElement && alumni.fotoUrl) {
+                         photoElement.src = alumni.fotoUrl;
+                     }
+                     delete photoEditTemp[id];
+                }
+                
+                applyFilters(document.querySelector('input[name="jurusan"]:checked').value);
+                
+                editingId = null;
+            }
+        }
+        
+        // FUNGSI FIREBASE: UPDATE DATA
+        window.saveInPlaceEdit = function(id) {
+            const cardElement = document.querySelector(`[data-alumni-card="${id}"]`);
+            const alumni = alumniData.find(a => a.id === id);
+            if (!alumni || !cardElement) return;
+
+            const inputs = cardElement.querySelectorAll('.in-place-input:not(#photo-url-input-'+id+')'); // Kecuali input foto yang di-handle terpisah
+            const updatedData = { ...alumni };
+
+            let isValid = true;
+            inputs.forEach(input => {
+                const key = input.getAttribute('data-key');
+                
+                if ((key === 'nama' || key === 'jenisKelamin' || key === 'jurusan') && !input.value) {
+                     input.classList.add('border-red-500'); 
+                     isValid = false;
+                } else {
+                     input.classList.remove('border-red-500'); 
+                }
+
+                updatedData[key] = input.value;
+            });
+            
+            if (!isValid) {
+                 alert('Mohon lengkapi data yang wajib diisi.');
+                 return;
+            }
+
+            updatedData.usia = hitungUsia(updatedData.tglLahir);
+
+            // LOGIC FOTO BARU: Simpan URL dari photoEditTemp
+            if (photoEditTemp.hasOwnProperty(id)) {
+                updatedData.fotoUrl = photoEditTemp[id];
+                delete photoEditTemp[id]; 
+            } else if (document.getElementById(`photo-url-input-${id}`)) {
+                // Ambil nilai dari input jika tidak ada perubahan/preview
+                updatedData.fotoUrl = document.getElementById(`photo-url-input-${id}`).value;
+            }
+
+
+            // Lakukan update ke Firebase
+            alumniRef.child(id).update(updatedData)
+                 .then(() => {
+                    alert(`Perubahan data ${updatedData.nama} berhasil disimpan!`);
+                    // Listener on('value') akan otomatis memuat ulang data
+                    toggleInPlaceEdit(id, 'display');
+                 })
+                 .catch((error) => {
+                     alert("Gagal memperbarui data: " + error.message);
+                 });
+        }
+
+        window.toggleFilterModal = function(show) {
+            const modal = document.getElementById('filterModal');
+            if (show) {
+                populateDropdowns(); 
+                modal.classList.add('flex');
+                modal.classList.remove('hidden');
+            } else {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+        }
+        
+        window.togglePhotoVisibility = function(id) {
+            const photoElement = document.getElementById(`alumni-photo-${id}`);
+            const iconElement = document.getElementById(`photo-action-icon-${id}`);
+            const alumni = alumniData.find(a => a.id === id);
+
+            if (!alumni || !alumni.fotoUrl) {
+                alert("Foto profil belum diupload untuk alumni ini.");
+                return;
+            }
+            
+            // Toggle visibility
+            if (photoElement.classList.contains('hidden')) {
+                photoElement.classList.remove('hidden');
+                iconElement.classList.remove('bi-eye-slash', 'text-red-500');
+                iconElement.classList.add('bi-eye', 'text-blue-600');
+            } else {
+                photoElement.classList.add('hidden');
+                iconElement.classList.remove('bi-eye', 'text-blue-600');
+                iconElement.classList.add('bi-eye-slash', 'text-red-500'); 
+            }
+        };
+
+        function getUniqueValues(key) {
+            const values = alumniData.map(a => a[key]).filter(Boolean); 
+            return [...new Set(values)].sort(); 
+        }
+
+        function populateDropdowns() {
+            const fields = [
+                { id: 'filterTempatLahir', key: 'tempatLahir', defaultLabel: '-- Semua Tempat Lahir --' },
+                { id: 'filterAsalSekolah', key: 'asal_sekolah', defaultLabel: '-- Semua Asal Sekolah --' },
+                { id: 'filterDesa', key: 'desa', defaultLabel: '-- Semua Desa/Kelurahan --' },
+                { id: 'filterKabupaten', key: 'kabupaten', defaultLabel: '-- Semua Kabupaten/Kota --' }
+            ];
+
+            fields.forEach(field => {
+                const dropdown = document.getElementById(field.id);
+                if (dropdown) {
+                    const currentValue = dropdown.value;
+                    dropdown.innerHTML = `<option value="">${field.defaultLabel}</option>`;
+                    
+                    const uniqueValues = getUniqueValues(field.key);
+                    
+                    uniqueValues.forEach(value => {
+                        const option = document.createElement('option');
+                        option.value = value;
+                        option.textContent = value;
+                        dropdown.appendChild(option);
+                    });
+                    
+                    if (currentValue && uniqueValues.includes(currentValue)) {
+                         dropdown.value = currentValue;
+                    }
+                }
+            });
+        }
+        
+        window.resetFilters = function() {
+            document.getElementById('globalSearch').value = '';
+            
+            const ageRange = document.getElementById('ageRange');
+            ageRange.value = ageRange.min;
+            document.getElementById('ageDisplay').textContent = ageRange.min;
+            
+            document.getElementById('filterTempatLahir').value = '';
+            document.getElementById('filterAsalSekolah').value = '';
+            document.getElementById('filterDesa').value = '';
+            document.getElementById('filterKabupaten').value = '';
+            
+            applyFilters(document.querySelector('input[name="jurusan"]:checked').value);
+        }
+
+        window.applyFilters = function(activeJurusan) {
+            const searchText = (document.getElementById('globalSearch').value || '').toLowerCase();
+            const minAge = parseInt(document.getElementById('ageRange').value || 15);
+            
+            const tempatLahirFilter = (document.getElementById('filterTempatLahir').value || '').toLowerCase();
+            const asalSekolahFilter = (document.getElementById('filterAsalSekolah').value || '').toLowerCase();
+            const desaFilter = (document.getElementById('filterDesa').value || '').toLowerCase();
+            const kabupatenFilter = (document.getElementById('filterKabupaten').value || '').toLowerCase();
+            
+            let filteredData = alumniData;
+            
+            if (activeJurusan && activeJurusan !== 'Semua') {
+                filteredData = filteredData.filter(alumni => alumni.jurusan === activeJurusan);
+            }
+            
+            filteredData = filteredData.filter(alumni => {
+                const alumniAge = hitungUsia(alumni.tglLahir);
+                
+                if (alumniAge < minAge) return false;
+                
+                if (tempatLahirFilter && (alumni.tempatLahir || '').toLowerCase() !== tempatLahirFilter) return false;
+                
+                if (asalSekolahFilter && (alumni.asal_sekolah || '').toLowerCase() !== asalSekolahFilter) return false;
+                
+                if (desaFilter && (alumni.desa || '').toLowerCase() !== desaFilter) return false;
+                
+                if (kabupatenFilter && (alumni.kabupaten || '').toLowerCase() !== kabupatenFilter) return false;
+                
+                if (searchText) {
+                    const searchFields = ['nama', 'jenisKelamin', 'tempatLahir', 'asal_sekolah', 'namaAyah', 'namaIbu', 'alamat', 'desa', 'kecamatan', 'kabupaten', 'nik'];
+                    
+                    let isGlobalMatch = searchFields.some(key => {
+                        const value = alumni[key] ? alumni[key].toString().toLowerCase() : '';
+                        return value.includes(searchText);
+                    });
+                    
+                    if (!isGlobalMatch && alumni.pekerjaanAyah && alumni.pekerjaanAyah.toLowerCase().includes(searchText)) isGlobalMatch = true;
+                    if (!isGlobalMatch && alumni.pekerjaanIbu && alumni.pekerjaanIbu.toLowerCase().includes(searchText)) isGlobalMatch = true;
+
+                    if (!isGlobalMatch) return false;
+                }
+                
+                return true;
+            });
+            
+            filteredData.sort((a, b) => {
+                const namaA = (a.nama || '').toUpperCase();
+                const namaB = (b.nama || '').toUpperCase();
+                if (namaA < namaB) return -1;
+                if (namaA > namaB) return 1;
+                return 0;
+            });
+
+            renderAlumniList(filteredData);
+        }
+
+        function renderAlumniList(data) {
+            const listContainer = document.getElementById('alumniList');
+            listContainer.innerHTML = '';
+            
+            document.getElementById('dataCount').textContent = data.length;
+
+            if (data.length === 0) {
+                 listContainer.innerHTML = '<p class="text-center text-gray-500 py-4">Tidak ada data alumni yang cocok dengan filter saat ini. Silakan klik "Tambah" untuk memasukkan data baru.</p>';
+                 return;
+            }
+
+            data.forEach(alumni => {
+                const summaryHtml = `
+                    <div class="flex-1 flex items-center gap-4">
+                        <span class="font-bold text-gray-800">${alumni.nama}</span>
+                        ${getJKBadge(alumni.jenisKelamin)}
+                        ${getJurusanBadge(alumni.jurusan)}
+                    </div>
+                `;
+
+                const usia = hitungUsia(alumni.tglLahir);
+                
+                const tempatTglLahirDisplay = `${alumni.tempatLahir || '-'}, ${formatDate(alumni.tglLahir) || '-'}`;
+                const rtRwDisplay = `${alumni.rt || '-'}/${alumni.rw || '-'}`;
+                
+                const detailContentWrapperHtml = `
+                    <div class="bg-gray-100 p-4 border-t border-gray-200"> 
+                        
+                        <div class="flex flex-col items-center justify-center space-y-2 mb-4 p-4 border border-dashed border-gray-300 rounded-lg bg-white">
+                            
+                            <div class="relative w-28 h-20 flex flex-col items-center" id="photo-input-container-${alumni.id}">
+                                
+                                <div class="w-20 h-20 bg-gray-200 border border-gray-400 rounded-full flex items-center justify-center overflow-hidden">
+                                    ${alumni.fotoUrl ? 
+                                        `<img id="alumni-photo-${alumni.id}" src="${alumni.fotoUrl}" class="w-full h-full object-cover" alt="Foto ${alumni.nama}">` :
+                                        `<i id="alumni-photo-default-icon-${alumni.id}" class="bi bi-person-bounding-box text-4xl text-gray-500"></i>`
+                                    }
+                                </div>
+                                
+                                <button onclick="togglePhotoVisibility(${alumni.id})" 
+                                    class="absolute top-[50px] right-0 w-7 h-7 bg-white rounded-full border border-gray-300 flex items-center justify-center shadow-md ${alumni.fotoUrl ? '' : 'hidden'}"
+                                    id="photo-action-btn-${alumni.id}"
+                                    title="Tampilkan/Sembunyikan Foto">
+                                    <i id="photo-action-icon-${alumni.id}" class="bi ${alumni.fotoUrl ? 'bi-eye text-blue-600' : 'bi-eye-slash text-red-500' } text-sm"></i>
+                                </button>
+                                
+                                </div>
+                            <p class="text-sm font-semibold text-gray-700">${alumni.nama}</p>
+                        </div>
+                        <div id="detail-content-${alumni.id}" class="text-sm text-gray-700">
+                            
+                            <div class="mb-4">
+                                <span class="detail-label-title"><i class="bi bi-person"></i> Data Pribadi</span>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-y-1">
+                                    
+                                    ${renderDetailItem('NIK', alumni.nik, 'nik')}
+                                    
+                                    ${renderSeparateEditInput('Tempat Lahir', alumni.tempatLahir, 'tempatLahir')}
+
+                                    ${renderDetailItem('Nama Lengkap', alumni.nama, 'nama')}
+                                    
+                                    ${renderSeparateEditInput('Tanggal Lahir', alumni.tglLahir, 'tglLahir', 'date')}
+
+                                    ${renderDetailItem('Jenis Kelamin', alumni.jenisKelamin, 'jenisKelamin')}
+                                    
+                                    ${renderDetailItem('Tempat, Tgl Lahir', tempatTglLahirDisplay, 'tempat_tgl_lahir')}
+                                    
+                                    <div data-field-key="usia" class="flex items-center justify-between detail-item-row">
+                                        <span class="detail-label-item">Usia</span>: 
+                                        <div class="flex-1 min-w-0 ml-2">
+                                            <span class="display-value">${usia} Tahun</span>
+                                            <div class="edit-input-group hidden w-full">
+                                                <div class="flex-1 min-w-0">
+                                                     <input type="text" value="${usia} Tahun" readonly class="in-place-input border border-gray-200 rounded-md shadow-sm w-full bg-gray-50 text-gray-500">
+                                                </div>
+                                                <i class="bi bi-pencil-square text-gray-400 text-sm ml-2 flex-shrink-0" style="width: 20px;"></i>
+                                            </div>
+                                        </div>
+                                    </div>                                                                     
+                                    
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <span class="detail-label-title"><i class="bi bi-mortarboard"></i> Data Sekolah</span>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-y-1">
+                                    ${renderDetailItem('Kelas/Jurusan', alumni.jurusan, 'jurusan')}
+                                    ${renderDetailItem('Asal Sekolah', alumni.asal_sekolah, 'asal_sekolah')}
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <span class="detail-label-title"><i class="bi bi-people"></i> Data Orang Tua</span>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-y-1">
+                                    ${renderDetailItem('Nama Ayah', alumni.namaAyah, 'namaAyah')}
+                                    ${renderDetailItem('Pekerjaan Ayah', alumni.pekerjaanAyah, 'pekerjaanAyah')}
+                                    ${renderDetailItem('Nama Ibu', alumni.namaIbu, 'namaIbu')}
+                                    ${renderDetailItem('Pekerjaan Ibu', alumni.pekerjaanIbu, 'pekerjaanIbu')}
+                                </div>
+                            </div>
+
+                            <div class="mb-0">
+                                <span class="detail-label-title"><i class="bi bi-house"></i> Data Domisili</span>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-y-1">
+                                    <div class="sm:col-span-2">${renderDetailItem('Alamat', alumni.alamat, 'alamat', 'textarea')}</div>
+                                    
+                                    ${renderDetailItem('RT/RW', rtRwDisplay, 'rt_rw')}
+                                    ${renderSeparateEditInput('RT', alumni.rt, 'rt', 'number')}
+                                    ${renderSeparateEditInput('RW', alumni.rw, 'rw', 'number')}
+                                    
+                                    ${renderDetailItem('Desa', alumni.desa, 'desa')}
+                                    
+                                    ${renderDetailItem('Kecamatan', alumni.kecamatan, 'kecamatan')}
+                                    ${renderDetailItem('Kabupaten', alumni.kabupaten, 'kabupaten')}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                const actionFooterHtml = `
+                    <div id="detail-action-${alumni.id}" class="detail-action-footer hidden bg-gray-50 p-4 border-t border-gray-200">
+                        
+                        <div id="display-actions-${alumni.id}" class="flex flex-wrap justify-end gap-3">
+                            <button onclick="toggleInPlaceEdit(${alumni.id}, 'edit')" class="bg-amber-500 hover:bg-amber-600 text-white font-medium py-1 px-3 rounded-md flex items-center gap-1 transition duration-150">
+                                <i class="bi bi-pencil-square"></i> Edit
+                            </button>
+                            <button onclick="deleteData(${alumni.id})" class="bg-red-500 hover:bg-red-600 text-white font-medium py-1 px-3 rounded-md flex items-center gap-1 transition duration-150">
+                                <i class="bi bi-trash"></i> Hapus
+                            </button>
+                        </div>
+
+                        <div id="edit-actions-${alumni.id}" class="flex flex-wrap justify-end gap-3 hidden">                        
+                            <button onclick="toggleInPlaceEdit(${alumni.id}, 'display')" class="bg-gray-400 hover:bg-gray-500 text-white font-medium py-1 px-3 rounded-md flex items-center gap-1 transition duration-150">
+                                <i class="bi bi-x-circle"></i> Batalkan
+                            </button>
+                            <button onclick="saveInPlaceEdit(${alumni.id})" class="bg-blue-600 hover:bg-green-700 text-white font-medium py-1 px-3 rounded-md flex items-center gap-1 transition duration-150">
+                                <i class="bi bi-check-circle"></i> Simpan
+                            </button>
+                        </div>
+                    </div>
+                `;
+
+                listContainer.innerHTML += `
+                    <div class="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition duration-150" data-alumni-card="${alumni.id}">
+                        <div class="p-2.5 flex justify-between items-center">
+                            ${summaryHtml}
+                            
+                            <div class="flex items-center gap-3 shrink-0">
+                                <button onclick="toggleDetail(${alumni.id})" class="text-blue-600 hover:text-blue-800 p-1" title="Tampilkan Detail">
+                                    <i id="icon-${alumni.id}" class="bi bi-zoom-in text-lg"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div id="detail-${alumni.id}" class="alumni-detail">
+                            ${detailContentWrapperHtml}
+                            ${actionFooterHtml}
+                        </div>
+                    </div>
+                `;
+            });
+        }
+        
+        // FUNGSI FIREBASE: CREATE DATA
+        document.getElementById('alumniForm').addEventListener('submit', function(e) {
+            e.preventDefault(); 
+            
+            const form = e.target;
+            
+            const dataToSave = {
+                nik: form.querySelector('#nik_form').value,
+                nama: form.querySelector('#nama_form').value,
+                jenisKelamin: form.querySelector('#jenis_kelamin_form').value,
+                jurusan: form.querySelector('#jurusan_form').value,
+                tempatLahir: form.querySelector('#tempat_lahir').value,
+                tglLahir: form.querySelector('#tgl_lahir').value,
+                asal_sekolah: form.querySelector('#asal_sekolah').value,
+                namaAyah: form.querySelector('#nama_ayah').value,
+                pekerjaanAyah: form.querySelector('#pekerjaan_ayah').value,
+                namaIbu: form.querySelector('#nama_ibu').value,
+                pekerjaanIbu: form.querySelector('#pekerjaan_ibu').value,
+                alamat: form.querySelector('#alamat').value,
+                rt: form.querySelector('#rt').value,
+                rw: form.querySelector('#rw').value,
+                desa: form.querySelector('#desa').value,
+                kecamatan: form.querySelector('#kecamatan').value,
+                kabupaten: form.querySelector('#kabupaten').value,
+                fotoUrl: currentPhotoUrl 
+            };
+            
+            if (!dataToSave.nama || !dataToSave.jenisKelamin || !dataToSave.jurusan) {
+                 alert('Nama, Jenis Kelamin, dan Jurusan wajib diisi!');
+                 return;
+            }
+
+            // Simpan ke Firebase menggunakan nextId sebagai key
+            alumniRef.child(nextId).set(dataToSave)
+                .then(() => {
+                    alert(`Data ${dataToSave.nama} berhasil ditambahkan!`);
+                    
+                    const semuaRadio = document.getElementById('semua');
+                    if (semuaRadio) {
+                        semuaRadio.checked = true;
+                    }
+                    
+                    toggleModal(false);
+                    // loadDataFromFirebase() akan dipanggil otomatis oleh listener
+                })
+                .catch((error) => {
+                    alert("Gagal menyimpan data: " + error.message);
+                });
+        });
+
+        document.querySelectorAll('input[name="jurusan"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                applyFilters(this.value);
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+             loadDataFromFirebase(); // Panggil fungsi load Firebase
+             
+             // Load Header Image
+             const headerImage = document.getElementById('headerImage');
+             const headerContainer = document.getElementById('header-photo-container');
+
+             if (headerImage) {
+                 headerImage.src = HEADER_IMAGE_URL;
+                 headerContainer.style.display = 'flex';
+             } else {
+                 headerContainer.style.display = 'none';
+             }
+        });
+        
+    </script>
+</body>
+</html>
