@@ -462,9 +462,9 @@
                     </div>
                     
                     <div>
-                        <label for="filterKabupaten" class="block text-sm font-bold text-gray-700">Kabupaten/Kota</label>
-                        <select id="filterKabupaten" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 text-sm" onchange="applyFilters(document.querySelector('input[name=\'jurusan\']:checked').value)">
-                             <option value="">-- Semua Kabupaten/Kota --</option>
+                        <label for="filterKecamatan" class="block text-sm font-bold text-gray-700">Kecamatan</label>
+                        <select id="filterKecamatan" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 text-sm" onchange="applyFilters(document.querySelector('input[name=\'jurusan\']:checked').value)">
+                             <option value="">-- Semua Kecamatan --</option>
                         </select>
                     </div>                                      
                     
@@ -1097,7 +1097,7 @@
                 { id: 'filterTempatLahir', key: 'tempatLahir', defaultLabel: '-- Semua Tempat Lahir --' },
                 { id: 'filterAsalSekolah', key: 'asal_sekolah', defaultLabel: '-- Semua Asal Sekolah --' },
                 { id: 'filterDesa', key: 'desa', defaultLabel: '-- Semua Desa/Kelurahan --' },
-                { id: 'filterKabupaten', key: 'kabupaten', defaultLabel: '-- Semua Kabupaten/Kota --' }
+                { id: 'filterKecamatan', key: 'kecamatan', defaultLabel: '-- Semua Kecamatan --' }
             ];
 
             fields.forEach(field => {
@@ -1132,7 +1132,7 @@
             document.getElementById('filterTempatLahir').value = '';
             document.getElementById('filterAsalSekolah').value = '';
             document.getElementById('filterDesa').value = '';
-            document.getElementById('filterKabupaten').value = '';
+            document.getElementById('filterKecamatan').value = '';
             
             applyFilters(document.querySelector('input[name="jurusan"]:checked').value);
         }
@@ -1144,7 +1144,7 @@
             const tempatLahirFilter = (document.getElementById('filterTempatLahir').value || '').toLowerCase();
             const asalSekolahFilter = (document.getElementById('filterAsalSekolah').value || '').toLowerCase();
             const desaFilter = (document.getElementById('filterDesa').value || '').toLowerCase();
-            const kabupatenFilter = (document.getElementById('filterKabupaten').value || '').toLowerCase();
+            const kecamatanFilter = (document.getElementById('filterKecamatan').value || '').toLowerCase();
             
             let filteredData = alumniData;
             
@@ -1163,7 +1163,7 @@
                 
                 if (desaFilter && (alumni.desa || '').toLowerCase() !== desaFilter) return false;
                 
-                if (kabupatenFilter && (alumni.kabupaten || '').toLowerCase() !== kabupatenFilter) return false;
+                if (kecamatanFilter && (alumni.kecamatan || '').toLowerCase() !== kecamatanFilter) return false;
                 
                 if (searchText) {
                     const searchFields = ['nama', 'jenisKelamin', 'tempatLahir', 'asal_sekolah', 'namaAyah', 'namaIbu', 'alamat', 'desa', 'kecamatan', 'kabupaten', 'nik'];
