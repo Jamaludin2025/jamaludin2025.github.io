@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Kartu Kejutan - Database B</title>
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+  
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      text-align: center;
+      background: linear-gradient(135deg, #dbeafe, #eff6ff);
+      padding: 20px;
+      margin: 0;
+    }
+    .header {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      margin-top: -8px;
+    }
+    h1 { color: #1e40af; font-size: 18px; font-weight: 700; }
+    h2 { color: #334155; font-size: 14px; margin-top: -3px; line-height: 1.5; }
+    
+    .bi-question-circle-fill { font-size: 16px; color: #1e40af; cursor: pointer; }
+
+    .marquee-container {
+      overflow: hidden;
+      white-space: nowrap;
+      width: 100%;
+      border-top: 1px solid #bfdbfe;
+      border-bottom: 1px solid #bfdbfe;
+      padding: 8px 0;
+      margin: 10px 0;
+      background-color: #ffffff;
+    }
+
+    .marquee-text {
+      display: inline-block;
+      padding-left: 100%;
+      animation: marquee 23s linear infinite;
+      font-size: 14px;
+      color: #1e40af;
+      font-weight: 500;
+    }
+
+    @keyframes marquee {
+      0% { transform: translateX(0%); }
+      100% { transform: translateX(-100%); }
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, 100px);
+      grid-template-rows: repeat(2, 140px);
+      gap: 15px;
+      justify-content: center;
+      margin: 25px auto;
+    }
+
+    .card {
+      width: 100px;
+      height: 140px;
+      background: #f0f7ff url('https://res.cloudinary.com/dz4w1sqiv/image/upload/v1760769230/28_Oktober_2025_20251018_132553_0006_dhmajo.png') center/cover;
+      border-radius: 12px;
+      box-shadow: 0 8px 15px rgba(30, 64, 175, 0.2);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      border: 2px solid #3b82f6;
+    }
+    
+    .card:hover { transform: translateY(-5px); }
+
+    .revealed {
+      background-color: #ffffff !important;
+      border: 2px solid #3b82f6;
+    }
+    
+    .result-box {
+      margin-top: 8px;
+      padding: 15px;
+      border-radius: 15px;
+      background-color: #f0f7ff; 
+      border: 2px dashed #3b82f6;
+      box-shadow: 0 10px 25px rgba(30, 64, 175, 0.1);
+      display: inline-block;
+      width: 320px;
+      max-width: 90%;
+      animation: popIn 0.5s ease;
+      font-weight: 500;
+    }
+
+    .input-section label {
+      display: block;
+      font-weight: 500;
+      color: #1e40af;
+      margin-bottom: 8px;
+    }
+
+    .input-group {
+      display: flex;
+      gap: 5px;
+      margin-bottom: 5px;
+      align-items: stretch;
+    }
+
+    .input-section input {
+      flex: 1;
+      padding: 8px;
+      border: 2px solid #bfdbfe;
+      border-radius: 8px;
+      font-size: 14px;
+      box-sizing: border-box;
+      outline: none;
+      min-width: 0;
+    }
+
+    #verifyButton {
+      padding: 0 12px;
+      background-color: #1e40af;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    #verifyButton:disabled {
+      background-color: #94a3b8;
+    }
+
+    .input-section p {
+      font-size: 11px;
+      color: #64748b;
+      margin-top: 8px;
+      margin-bottom: 2px;
+      line-height: 1.4;
+      font-weight: 400;
+      text-align: justify;
+    }
+
+    .error-msg {
+      color: #dc2626;
+      font-size: 11px;
+      margin-top: 2px;
+      margin-bottom: 5px;
+      display: none;
+    }
+
+    #successMessagePopup {
+      color: #16a34a;
+      font-size: 14px;
+      font-weight: bold;
+      display: none;
+      animation: popIn 0.3s ease;
+    }
+
+    @keyframes popIn {
+      0% { transform: scale(0.9); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    #downloadButton { 
+      margin-top: 15px;
+      padding: 12px 25px;
+      font-size: 15px;
+      font-weight: 600;
+      border: none;
+      background-color: #1e40af;
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.3s;
+    }
+    
+    #downloadButton:hover { background-color: #3b82f6; }
+
+    .highlight-label { color: #dc2626; font-weight: bold; }
+
+    .popup {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(30, 64, 175, 0.4);
+      backdrop-filter: blur(4px);
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+    }
+    .popup-content {
+      background: #fff;
+      padding: 25px;
+      max-width: 300px;
+      border-radius: 15px;
+    }
+    .popup-content h3 { margin-top: 1px; margin-bottom: 10px; }
+    .popup-content p { text-align: justify; line-height: 22px; }
+    .popup-content button {
+      margin-top: 15px;
+      width: 100%;
+      padding: 12px;
+      background-color: #1e40af;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    
+    .rule-anim { animation: gift-float-shake 5s infinite ease-in-out; }
+    @keyframes gift-float-shake {
+      0%, 50%, 100% { transform: translateY(0) rotate(0deg); }
+      10%, 30% { transform: translateY(-8px) rotate(10deg); }
+      20%, 40% { transform: translateY(-8px) rotate(-10deg); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <h1><i class="bi bi-stars"></i> Kartu Wedding Prize</h1>
+    <i class="bi bi-question-circle-fill rule-anim" onclick="openPopup()"></i>
+  </div>
+  <h2>Dapatkan hadiah ebook gratis dan saldo dana sebesar <span class="highlight-label">Rp50.000</span> bagi kamu yang beruntung</h2>
+  
+  <div class="marquee-container">
+    <div class="marquee-text" id="wed-marquee">
+      KABAR BAIKK!!! Kini kamu dapat memiliki satu kali kesempatan memilih kartu untuk setiap tahunnya. Kunjungi selalu website ini untuk mendapatkan informasi menarik lainnya.
+    </div>
+  </div>
+
+  <div id="cards" class="cards"></div>
+
+  <div class="result-box">
+    <div id="successMessagePopup">
+      <i class="bi bi-check-circle-fill"></i> Verifikasi Berhasil!<br>
+      <span style="font-size: 12px; font-weight: normal; color: #475569;">Silakan klik salah satu kartu di atas.</span>
+    </div>
+
+    <div id="inputContainer">
+      <div id="inputSection" class="input-section">
+        <label for="accessCode"><b>Masukkan Kode Akses</b></label>
+        <div id="accessError" class="error-msg">Maaf, Kode akses tidak terdaftar</div>
+        
+        <div class="input-group">
+          <input type="text" id="accessCode" placeholder="Contoh: AJ1234">
+          <button id="verifyButton" onclick="verifyCode()">Verifikasi</button>
+        </div>
+
+        <p><i class="bi bi-info-circle"></i> Pastikan penulisan kode akses sudah benar dan sesuai.</p>
+      </div>
+    </div>
+
+    <div id="prizeSection" style="display:none;">
+      <div id="resultText" style="color: #334155; font-size: 15px; line-height: 1.6;"></div>
+      <button id="downloadButton">
+        <i class="fa-solid fa-gift"></i> AMBIL HADIAH <i class="fa-solid fa-gift"></i>
+      </button>
+    </div>
+  </div>
+
+  <div id="infoPopup" class="popup">
+    <div class="popup-content">
+      <h3>Peraturan Klaim Hadiah</h3>
+      <p style="color: #64748b; font-size: 14px;">Satu kode misalnya seperti <span class="highlight-label">AJ1234</span> hanya dapat memiliki kesempatan satu kali saja untuk memilih kartu. Jadi, pastikan satu pilihan kartu kamu itu sudah tepat untuk mendapatkan <span style="font-style: italic;">grand prize</span>-nya yaitu saldo dana sebesar <span class="highlight-label">Rp50.000</span>.</p>
+      <button onclick="closePopup()">Oke, mengerti.</button>
+    </div>
+  </div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBdt-2IQflUWNx3sdI1QHPMe1vAzsXAZcY",
+      authDomain: "ajproject-log.firebaseapp.com",
+      databaseURL: "https://ajproject-log-default-rtdb.firebaseio.com",
+      projectId: "ajproject-log",
+      storageBucket: "ajproject-log.appspot.com",
+      messagingSenderId: "113688767697",
+      appId: "1:113688767697:web:ca9ad012667acb7474a9f0"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    
+    const PATH_AKSES = "database_B/daftarAkses"; 
+    const PATH_LOG = "database_B/logAktivitas";
+    const PATH_INFO_WED = "database_B/infoRunningWed"; // PATH BARU UNTUK MARQUEE
+
+    const cardsContainer = document.getElementById("cards");
+    const inputContainer = document.getElementById("inputContainer");
+    const successMessagePopup = document.getElementById("successMessagePopup");
+    const prizeSection = document.getElementById("prizeSection");
+    const resultText = document.getElementById("resultText");
+    const downloadButton = document.getElementById("downloadButton"); 
+    const accessInput = document.getElementById("accessCode");
+    const accessError = document.getElementById("accessError");
+    const verifyButton = document.getElementById("verifyButton");
+    
+    const eventDate = "2025-01-08";
+    let winningPrize = null; 
+    let isVerified = false; 
+    let relativeName = ""; 
+
+    const diskonOptions = [
+      { label: "D20", kode: "Saldo Dana Rp20.000", weight: 0, imageUrl: 'https://res.cloudinary.com/dz4w1sqiv/image/upload/v1760857328/28_Oktober_2025_20251018_132552_0000_kgtyo1.png' },
+      { label: "D50", kode: "Saldo Dana Rp50.000", weight: 0, imageUrl: 'https://res.cloudinary.com/dz4w1sqiv/image/upload/v1760857375/28_Oktober_2025_20251018_132552_0001_ihg64s.png' },
+      { label: "RNG", kode: "E-Book 100 Resep Nasi Goreng", weight: 25, imageUrl: 'https://res.cloudinary.com/dz4w1sqiv/image/upload/v1760857375/28_Oktober_2025_20251018_132552_0002_rw76ne.png' },
+      { label: "KRS", kode: "E-Book Koleksi Resep Sambal & Saus", weight: 25, imageUrl: 'https://res.cloudinary.com/dz4w1sqiv/image/upload/v1760857376/28_Oktober_2025_20251018_132552_0003_iknykj.png' },
+      { label: "ARS", kode: "E-Book Aneka Resep Sambal Favorit", weight: 25, imageUrl: 'https://res.cloudinary.com/dz4w1sqiv/image/upload/v1760857376/28_Oktober_2025_20251018_132553_0005_hpra6h.png' },
+      { label: "JSR", kode: "E-Book Jurus Sehat Rasullullah", weight: 25, imageUrl: 'https://res.cloudinary.com/dz4w1sqiv/image/upload/v1760857376/28_Oktober_2025_20251018_132553_0005_hpra6h.png' },
+    ];
+
+    // FUNGSI LISTENER RUNNING TEXT
+    function listenMarqueeWed() {
+      db.ref(PATH_INFO_WED).on('value', (snap) => {
+        if(snap.exists()) {
+          const data = snap.val();
+          const marqueeElement = document.getElementById("wed-marquee");
+          if(marqueeElement) {
+            marqueeElement.innerText = data.teks || "KABAR BAIKK!!!";
+            const speed = data.kecepatan || 23;
+            marqueeElement.style.animationDuration = speed + "s";
+          }
+        }
+      });
+    }
+
+    async function verifyCode() {
+      const code = accessInput.value.trim();
+      if (code === "") return;
+
+      verifyButton.disabled = true;
+      verifyButton.innerText = "...";
+
+      try {
+        const snapshot = await db.ref(`${PATH_AKSES}/${code}`).once('value');
+        if (snapshot.exists()) {
+          const data = snapshot.val();
+          isVerified = true;
+          
+          if (typeof data === 'object') {
+            const kerabat = data.kerabat || "";
+            const pasangan = data.pasangan || "";
+            if (kerabat && pasangan) {
+              relativeName = `${kerabat} & ${pasangan}`;
+            } else {
+              relativeName = kerabat || pasangan || "Unknown";
+            }
+          } else {
+            relativeName = data;
+          }
+          
+          hideInputShowSuccess();
+        } else {
+          isVerified = false;
+          accessError.style.display = "block";
+          verifyButton.disabled = false;
+          verifyButton.innerText = "Verifikasi";
+        }
+      } catch (e) {
+        alert("Gagal terhubung ke database.");
+        verifyButton.disabled = false;
+        verifyButton.innerText = "Verifikasi";
+      }
+    }
+
+    function hideInputShowSuccess() {
+      inputContainer.style.display = "none";
+      successMessagePopup.style.display = "block";
+    }
+
+    function pickWeighted(options) {
+        let totalWeight = options.reduce((sum, option) => sum + option.weight, 0);
+        let random = Math.random() * totalWeight;
+        for (const option of options) {
+            if (random < option.weight) return option;
+            random -= option.weight;
+        }
+        return options[options.length - 1];
+    }
+
+    function shuffle(array) { return [...array].sort(() => 0.5 - Math.random()); }
+
+    function revealCard(index, card, reward, isMain = false) {
+      card.classList.add("revealed");
+      card.style.backgroundImage = `url('${reward.imageUrl}')`;
+      card.style.backgroundSize = "cover";
+      card.innerHTML = ``; 
+      if (isMain) {
+        winningPrize = reward; 
+        showResult(reward.label, reward.kode);
+        
+        const kodeAkses = accessInput.value.trim() || "AJ????";
+        const labelHadiah = reward.label;
+        
+        db.ref(PATH_LOG).push({ 
+          user: `${kodeAkses} - ${labelHadiah}`,
+          kodeAkses: accessInput.value || "Member", 
+          nama: relativeName,
+          hadiah: reward.kode,
+          waktu: new Date().toLocaleString("id-ID") 
+        });
+      }
+    }
+
+    function hideCard(card) {
+      card.classList.remove("revealed");
+      card.style.backgroundImage = "";
+      card.innerHTML = '<i class="bi bi-gift-fill" style="font-size: 28px; color:#1e40af;"></i>';
+    }
+
+    function setupCards(date) {
+      cardsContainer.innerHTML = "";
+      const storageKey = "diskonState_" + date;
+      let state = JSON.parse(localStorage.getItem(storageKey));
+
+      if (!state) {
+        state = { mainIndex: null, revealed: Array(6).fill(false), shuffled: shuffle([...diskonOptions]) };
+        localStorage.setItem(storageKey, JSON.stringify(state));
+      } else if (state.mainIndex !== null) {
+        winningPrize = state.shuffled[state.mainIndex];
+      }
+
+      for (let i = 0; i < 6; i++) {
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = '<i class="bi bi-gift-fill" style="font-size: 28px; color:#1e40af;"></i>';
+        cardsContainer.appendChild(card);
+
+        if (state.revealed[i]) revealCard(i, card, state.shuffled[i], i === state.mainIndex);
+
+        card.addEventListener("click", () => {
+          if (!isVerified && state.mainIndex === null) {
+            accessError.style.display = "block";
+            accessError.innerText = "Harap masukkan kode akses dan klik Verifikasi!";
+            accessInput.focus();
+            return;
+          }
+
+          if (state.revealed[i] && i !== state.mainIndex) {
+            state.revealed[i] = false;
+            hideCard(card);
+            localStorage.setItem(storageKey, JSON.stringify(state));
+            return;
+          }
+
+          if (!state.revealed[i]) {
+            if (state.mainIndex === null) {
+              const prizeToWin = pickWeighted(diskonOptions);
+              state.shuffled[i] = prizeToWin;
+              state.mainIndex = i;
+              revealCard(i, card, prizeToWin, true);
+            } else {
+              revealCard(i, card, state.shuffled[i], false);
+            }
+            state.revealed[i] = true;
+            localStorage.setItem(storageKey, JSON.stringify(state));
+          }
+        });
+      }
+      if (state.mainIndex !== null) showResult(winningPrize.label, winningPrize.kode);
+    }
+
+    function showResult(label, kode) {
+      inputContainer.style.display = "none";
+      successMessagePopup.style.display = "none";
+      prizeSection.style.display = "block";
+      resultText.innerHTML = `Selamat! Kamu mendapatkan hadiah <br><b style="font-size:15px; color:#1e40af;">${kode}</b>`;  
+    }
+
+    downloadButton.addEventListener("click", () => {
+      if (winningPrize) {
+        const kodeAkses = accessInput.value.trim();
+        const identitas = relativeName || "Tamu Undangan"; 
+        const labelHadiah = winningPrize.label; 
+        const kodeHadiah = winningPrize.kode;   
+        const nomorWA = "6285771183370"; 
+        const pesan = `*${kodeAkses}* - *${identitas}*, kami telah memenangkan hadiah berupa ${labelHadiah} _ *${kodeHadiah}* \n \n_Kirimkan pesan ini dan tunggu beberapa saat hingga admin membalasnya._`;
+        const urlWA = `https://wa.me/${nomorWA}?text=${encodeURIComponent(pesan)}`;
+        window.open(urlWA, '_blank');
+      }
+    });
+
+    function openPopup() { document.getElementById("infoPopup").style.display = "flex"; }
+    function closePopup() { document.getElementById("infoPopup").style.display = "none"; }
+
+    setupCards(eventDate);
+    listenMarqueeWed(); // AKTIFKAN LISTENER MARQUEE SAAT LOAD
+  </script>
+</body>
+</html>
