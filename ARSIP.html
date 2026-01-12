@@ -1,0 +1,645 @@
+<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Personal Archive - System Management</title>
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Roboto:wght@300;400;600&display=swap" rel="stylesheet">
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+
+  <style>
+    body { margin: 0; padding: 0; font-family: "Roboto", sans-serif; background: linear-gradient(135deg, #dbeafe, #eff6ff); height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+    
+    .login-container { background-color: #ffffff; padding: 20px; border-radius: 10px; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1); width: 100%; max-width: 320px; box-sizing: border-box; }
+    .login-container h2 { text-align: center; margin-bottom: 8px; color: #3b82f6; font-weight: 600; }
+    #tanggal-hari { text-align: center; font-size: 14px; color: #6b7280; margin-bottom: 8px; }
+    
+    .tab-container { display: flex; justify-content: center; gap: 24px; margin-bottom: 24px; border-bottom: 1px solid #e0e7ff; }
+    .tab-button { background: none; border: none; color: #6b7280; font-weight: 600; font-size: 13px; padding: 8px 0; cursor: pointer; border-bottom: 2px solid transparent; }
+    .tab-button.active { color: #3b82f6; border-bottom-color: #3b82f6; }
+
+    .marquee-container { overflow: hidden; white-space: nowrap; width: 100%; border-top: 1px solid #e0e7ff; border-bottom: 1px solid #e0e7ff; padding: 6px 0; margin-bottom: 16px; background-color: #f9fafb; }
+    .marquee-text { display: inline-block; padding-left: 100%; animation: marquee 12s linear infinite; font-size: 14px; color: #374151; }
+    @keyframes marquee { 0% { transform: translateX(0%); } 100% { transform: translateX(-100%); } }
+    
+    label { font-weight: 600; color: #374151; display: block; margin-bottom: 8px; text-align: left; font-size: 14px; }
+    input, select { width: 100%; box-sizing: border-box; padding: 10px 12px; border: 1.5px solid #cbd5e1; border-radius: 6px; margin-bottom: 10px; font-size: 14px; background: white; }
+    button { width: 100%; background-color: #3b82f6; color: white; font-weight: bold; padding: 12px; border: none; border-radius: 6px; cursor: pointer; font-size: 15px; margin-top: 10px; }
+
+    .full-page-screen { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f8fafc; z-index: 9999; flex-direction: column; overflow: hidden; }
+    .header-blue { background: #1d4ed8; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; width: 100%; box-sizing: border-box; }
+    
+    .content-area { flex: 1; padding: 5px 20px 20px 20px; overflow-y: auto; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; }
+    
+    .wedding-card { background: #ffffff; width: 90%; max-width: 340px; border-radius: 20px; box-shadow: 0 15px 35px rgba(29, 78, 216, 0.15); border: 1px solid #bfdbfe; border-top: 8px solid #2563eb; padding: 30px 20px; text-align: center; position: relative; margin-top: -10px; margin-bottom: -30px; }
+    .wedding-card::before { content: ''; position: absolute; top: 10px; left: 10px; right: 10px; bottom: 10px; border: 1px dashed #cbd5e1; border-radius: 15px; pointer-events: none; }
+    .wedding-title { font-family: 'Great Vibes', cursive; font-size: 2.3rem; color: #1e40af; margin: 0 0 15px 0; line-height: 1.2; text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
+    .wedding-names { font-size: 0.9rem; font-weight: 600; color: #334155; margin-bottom: 5px; line-height: 1.4; letter-spacing: 0.5px; }
+    .wedding-date { font-size: 0.7rem; color: #64748b; margin-bottom: 25px; background: #eff6ff; display: inline-block; padding: 2px 8px; border-radius: 10px; border: 1px solid #64748b; font-weight: 500; }
+    .wedding-message { font-size: 0.8rem; color: #475569; line-height: 1.6; margin-bottom: 30px; position: relative; z-index: 2; }
+    .wedding-signature { text-align: center; font-size: 0.8rem; color: #64748b; }
+    .wedding-signature strong { display: block; color: #1e40af; font-size: 0.9rem; }
+
+    .user-actions { display: flex; justify-content: center; gap: 20px; margin-top: 25px; }
+    .icon-circle { width: 45px; height: 45px; border: 2px solid #2563eb; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #2563eb; font-size: 20px; cursor: pointer; transition: all 0.3s ease; background: transparent; }
+    .icon-circle:hover { background: #2563eb; color: white; transform: translateY(-3px); box-shadow: 0 5px 15px rgba(37, 99, 235, 0.2); }
+
+    @keyframes gift-float-shake {
+      0%, 50%, 100% { transform: translateY(0) rotate(0deg); }
+      10%, 30% { transform: translateY(-8px) rotate(10deg); }
+      20%, 40% { transform: translateY(-8px) rotate(-10deg); }
+    }
+    .gift-anim { animation: gift-float-shake 3s infinite ease-in-out; }
+
+    .card-info-admin { background: white; border-radius: 15px; border: 1px solid #e2e8f0; padding: 20px; margin-top: 10px; width: 100%; max-width: 320px; box-sizing: border-box; }
+    .admin-nav { display: flex; background: white; border-bottom: 1px solid #e2e8f0; width: 100%; }
+    .nav-item { flex: 1; text-align: center; padding: 15px; font-size: 14px; font-weight: 600; color: #64748b; cursor: pointer; }
+    .nav-item.active { color: #1d4ed8; border-bottom: 3px solid #1d4ed8; background: #f0f7ff; }
+
+    .header-toggle { display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+    .chevron-icon { transition: transform 0.3s ease; color: #1d4ed8; font-size: 18px; }
+    .chevron-icon.rotate { transform: rotate(180deg); }
+    #form-input-container { display: none; margin-top: 15px; }
+
+    .row-flex { display: flex; gap: 10px; }
+    .row-flex div { flex: 1; }
+    .hidden { display: none; }
+
+    .data-row { background: #f8fafc; padding: 10px 12px; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #e2e8f0; font-size: 14px; }
+    .data-code { font-weight: 600; color: #3b82f6; }
+    .data-actions { display: flex; gap: 8px; }
+    .btn-icon { background: none; border: none; cursor: pointer; padding: 5px; font-size: 15px; margin: 0; width: auto; }
+    .btn-view { color: #3b82f6; }
+    .btn-delete { color: #ef4444; }
+    
+    #list-data-firebase { max-height: 165px; overflow-y: auto; padding-right: 5px; }
+    .grid-detail { display: grid; grid-template-columns: 75px 5px 1fr; gap: 5px; font-size: 13px; color: #334155; }
+    .grid-label { font-weight: 600; color: #64748b; }
+    .log-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #f1f5f9; font-size: 13px; width: 100%; }
+    .search-box-admin { position: relative; width: 100%; margin-bottom: 10px; }
+    .search-box-admin i { position: absolute; left: 12px; top: 12px; color: #94a3b8; }
+    .search-box-admin input { padding-left: 35px; margin-bottom: 0; background: #f8fafc; }
+
+    .detail-btn-group { display: flex; gap: 5px; margin-top: 15px; }
+    .detail-btn-group button { margin-top: 0; padding: 8px; font-size: 11px; flex: 1; }
+
+    #pdf-wrapper { width: 100%; display: flex; justify-content: center; padding: 40px 0; }
+    .border-pdf { border: 1px solid #64748b; padding: 10px; }
+    
+    #pdf-footer-info { display: none; margin-top: 20px; padding-top: 15px; border-top: 1px dashed #cbd5e1; text-align: left; }
+    .pdf-footer-container { display: flex; align-items: center; gap: 15px; }
+    
+    #qrcode-container { padding: 3px; background: white; border: 1px solid #e2e8f0; }
+    .footer-text { font-size: 11px; color: #475569; text-align: justify; }    
+    .footer-link { color: #1d4ed8; text-decoration: underline; font-weight: 600; }
+  </style>
+</head>
+<body>
+
+  <div id="login-screen" class="login-container">
+    <h2 id="judul-form">❇︎ ARSIP PRIBADI ❇︎</h2> 
+    <div id="tanggal-hari"></div>
+    <div class="marquee-container">
+      <div class="marquee-text" id="main-marquee">Selamat Datang di Database B. Gunakan kode akses Anda.</div>
+    </div>
+    
+    <div class="tab-container">
+      <button class="tab-button active" id="tab-login" onclick="switchTab('login')"><i class="fa-solid fa-user-group"></i> PENGUNJUNG</button>
+      <button class="tab-button" id="tab-admin" onclick="switchTab('admin')"><i class="fa-solid fa-user-lock"></i> PENGELOLA</button>
+    </div>
+
+    <form id="form-login" onsubmit="event.preventDefault(); prosesLoginUser();">
+      <label>Kode Akses User</label>
+      <input type="text" id="kodeAkses" placeholder="Masukkan Kode Akses" autocomplete="off" />
+      <button type="submit">MASUK</button>
+    </form>
+
+    <form id="form-admin" style="display: none" onsubmit="event.preventDefault(); prosesAdminLogin();">
+      <label>Kode Akses Admin</label>
+      <input type="text" id="kodeAdmin" placeholder="Masukkan Kode Akses" />
+      <button type="submit">VERIFIKASI</button>
+    </form>
+    <div id="error-message" style="text-align: center; color: #dc2626; margin-top: 15px; font-weight: bold; font-size: 13px;"></div>
+  </div>
+
+  <div id="user-full-page" class="full-page-screen">
+    <div class="header-blue">
+      <span style="font-weight: 700;"><i class="fa-solid fa-envelope-open-text"></i> KARTU UCAPAN</span>
+      <button onclick="location.reload()" style="width: auto; background: rgba(255,255,255,0.2); padding: 5px 12px; font-size: 12px; color: white;">Kembali <i class="fa fa-arrow-right-from-bracket"></i></button>
+    </div>
+    <div class="content-area">
+      <div id="pdf-wrapper">
+        <div id="capture-area" class="wedding-card">
+          <div class="wedding-title">Happy Wedding</div>
+          <div class="wedding-names" id="card-names">- & -</div>
+          <div class="wedding-date" id="card-date">-</div>
+          <div class="wedding-message">"Selamat ya atas pernikahannya. Dengan pernikahan ini, maka sempurnalah kehidupan kalian. Warnailah pernikahan dengan saling menghormati, 
+          menyayangi, dan saling menolong dalam ketaatan satu sama lain. Semoga Alloh selalu melimpahkan petunjuk, rahmat, dan berkah kehidupan, serta rezeki yang halal dan keturunan yang sholih dan sholihah. Aammiin."</div>
+          <div class="wedding-signature">Salam hangat, <strong>Asep Jamaludin</strong></div>
+          
+          <div id="pdf-footer-info">
+            <div class="pdf-footer-container">
+              <div id="qrcode-container"></div>
+              <div class="footer-text">
+                Silakan pindai kode QR di samping atau kunjungi tautan <b>tiny.cc/Arsip</b> dan masukkan kode akses Anda: <b><font color="#1d4ed8" id="display-kode-akses">AJ1234</font></b>.
+                Anda juga dapat mengeklik <a href="tiny.cc/Arsip" class="footer-link">DI SINI</a> untuk langsung menuju situs web kembali.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+          <div class="user-actions">
+          <div class="icon-circle gift-anim" title="Hadiah" onclick="window.location.href='https://jamaludin2025.github.io/WedPrize.html'"><i class="fa-solid fa-gift"></i></div>
+          <div class="icon-circle" title="WhatsApp Chat" onclick="hubungiWA()"><i class="fa-solid fa-reply"></i></div>
+          <div class="icon-circle" title="Unduh PDF" onclick="unduhPDF()"><i class="fa-solid fa-download"></i></div>
+          </div>
+        </div>
+      </div>        
+    </div>  
+ </div>
+
+  <div id="admin-full-page" class="full-page-screen">
+    <div class="header-blue">
+      <span style="font-weight: 700;"><i class="fa-solid fa-computer"></i> PANEL ADMIN</span>
+      <button onclick="location.reload()" style="width: auto; background: rgba(255,255,255,0.2); padding: 5px 12px; font-size: 12px; color: white;">Kembali <i class="fa fa-arrow-right-from-bracket"></i></button>
+    </div>
+    <div class="admin-nav">
+      <div class="nav-item active" id="nav-tambah" onclick="showAdminSection('tambah')">Kelola</div>
+      <div class="nav-item" id="nav-riwayat" onclick="showAdminSection('riwayat')">Riwayat</div>
+      <div class="nav-item" id="nav-info" onclick="showAdminSection('info')">Informasi</div>
+    </div>
+    <div class="content-area">
+      
+      <div id="section-tambah" style="width: 100%; display: flex; flex-direction: column; align-items: center; gap: 15px;">
+        
+        <div class="card-info-admin">
+          <div class="header-toggle" onclick="toggleFormInput()">
+            <h3 style="margin: 0; font-size: 16px; color: #1d4ed8;">Tambah Data Baru</h3>
+            <i class="fa-solid fa-sort-down chevron-icon" id="chevron-tambah"></i>
+          </div>
+
+          <div id="form-input-container">
+            <div class="row-flex">
+              <div><label>Kode Akses</label><input type="text" id="newKey" placeholder="AJ1234"></div>
+              <div><label>Tgl. Acara</label><input type="date" id="newDate"></div>
+            </div>
+            <label>Nama Kerabat</label>
+            <input type="text" id="newKerabat" placeholder="Nama Kerabat">
+            <label>Nama Pasangan</label>
+            <input type="text" id="newPasangan" placeholder="Nama Pasangan">
+            <label>Bapak Kerabat</label>
+            <input type="text" id="newBapak" placeholder="Nama Bapak">
+            <label>Ibu Kerabat</label>
+            <input type="text" id="newIbu" placeholder="Nama Ibu">
+            <label>Alamat</label>
+            <input type="text" id="newAlamat" placeholder="Nama Jalan/Kampung">
+            <div class="row-flex">
+              <div><label>RT</label><input type="text" id="newRT" placeholder="01"></div>
+              <div><label>RW</label><input type="text" id="newRW" placeholder="10"></div>
+            </div>
+            <label>Desa</label>
+            <input type="text" id="newDesa" placeholder="Nama Desa">
+            <label>Kecamatan</label>
+            <input type="text" id="newKecamatan" placeholder="Nama Kecamatan">
+            <label>Kabupaten</label>
+            <input type="text" id="newKabupaten" placeholder="Nama Kabupaten">
+
+            <label>Bingkisan</label>
+            <select id="newBingkisan" onchange="toggleBingkisanFields()">
+              <option value="">-- Pilih Bingkisan --</option>
+              <option value="Uang">Uang</option>
+              <option value="Kado">Kado</option>
+            </select>
+            <div id="field-nominal" class="hidden">
+              <label>Nominal (Rp)</label>
+              <input type="number" id="newNominal" placeholder="Contoh: 100000">
+            </div>
+            <div id="field-kado" class="hidden">
+              <label>Keterangan Bingkisan</label>
+              <input type="text" id="newKetKado" placeholder="Contoh: Selimut">
+              <label>Harga (Estimasi)</label>
+              <input type="number" id="newHargaKado" placeholder="Contoh: Rp50.000">
+            </div>
+            <button type="button" onclick="saveToFirebase()" style="background: #10b981;">SIMPAN DATA</button>
+          </div>
+        </div>
+
+        <div class="card-info-admin">
+          <h3 style="margin-top: 0; font-size: 16px; color: #1d4ed8; margin-bottom: 15px;">Daftar Data Akses | <span id="data-counter">0</span></h3>
+          <div class="search-box-admin">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="cariData" placeholder="Cari Kode Akses..." onkeyup="filterData()">
+          </div>
+          <div id="detail-container" style="display:none; margin-bottom: 15px; border-top: 1px dashed #cbd5e1; border-bottom: 1px dashed #cbd5e1; padding-top: 5px; padding-bottom: 15px;">
+             <div id="area-unduh-admin" style="background: white; padding: 10px;">
+               <h4 id="unduh-title-admin" style="margin-top:-5px; color:#3b82f6; text-align:center; border-bottom: 1px solid #64748b; margin-bottom: 10px; padding-bottom:5px;">INFORMASI ARSIP PERNIKAHAN</h4>
+               <div class="grid-detail">
+                  <div class="grid-label">Kode</div> <div>:</div> <div id="det-kode">-</div>
+                  <div class="grid-label">Tanggal</div> <div>:</div> <div id="det-tanggal">-</div>
+                  <div class="grid-label">Kerabat</div> <div>:</div> <div id="det-kerabat">-</div>
+                  <div class="grid-label">Pasangan</div> <div>:</div> <div id="det-pasangan">-</div>
+                  <div class="grid-label">Bapak</div> <div>:</div> <div id="det-bapak">-</div>
+                  <div class="grid-label">Ibu</div> <div>:</div> <div id="det-ibu">-</div>
+                  <div class="grid-label">Alamat</div> <div>:</div> <div id="det-alamat">-</div>
+                  <div class="grid-label">Bingkisan</div> <div>:</div> <div id="det-bingkisan">-</div>
+               </div>
+             </div>
+             
+             <div class="detail-btn-group">
+                <button onclick="editDataAdmin()" style="background: #f59e0b;"><i class="fa-solid fa-pen-to-square"></i> EDIT</button>
+                <button onclick="unduhDataDetailAdmin()" style="background: #10b981;"><i class="fa-solid fa-download"></i> UNDUH</button>
+                <button onclick="tutupDetail()" style="background: #64748b;"><i class="fa-solid fa-eye-slash"></i> TUTUP</button>
+             </div>
+          </div>
+          <div id="list-data-firebase"></div>
+        </div>
+      </div>
+
+      <div id="section-riwayat" style="display: none; width: 100%; flex-direction: column; align-items: center;">
+        <div class="card-info-admin" id="log-list">Memuat...</div>
+      </div>
+
+      <div id="section-info" style="display: none; width: 100%; flex-direction: column; align-items: center;">
+        <div class="card-info-admin" style="margin-top: 20px; border-top: 4px solid #1d4ed8;">
+          <h3 style="margin-top: 0; font-size: 16px; color: #1d4ed8; margin-bottom: 15px;">Pengaturan Teks Berjalan (Admin)</h3>
+          
+          <label>Teks Marquee Utama</label>
+          <textarea id="inputMarquee" style="width: 100%; height: 60px; padding: 10px; border-radius: 6px; border: 1.5px solid #cbd5e1; font-family: 'Poppins'; font-size: 13px; box-sizing: border-box; margin-bottom: 10px;"></textarea>
+          
+          <label>Kecepatan (Detik)</label>
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
+             <input type="number" id="inputSpeed" placeholder="12" style="margin-bottom: 0;">
+             <span style="font-size: 11px; color: #64748b; white-space: nowrap;">*Kecil = Cepat</span>
+          </div>
+          
+          <button type="button" onclick="updateMarquee()" style="background: #1d4ed8;">UPDATE INFO UTAMA</button>
+        </div>
+
+        <div class="card-info-admin" style="margin-top: 20px; border-top: 4px solid #f59e0b;">
+          <h3 style="margin-top: 0; font-size: 16px; color: #f59e0b; margin-bottom: 15px;">Pengaturan Teks Berjalan (WedPrize)</h3>
+          
+          <label>Teks Marquee WedPrize</label>
+          <textarea id="inputMarqueeWed" style="width: 100%; height: 60px; padding: 10px; border-radius: 6px; border: 1.5px solid #cbd5e1; font-family: 'Poppins'; font-size: 13px; box-sizing: border-box; margin-bottom: 10px;"></textarea>
+          
+          <label>Kecepatan (Detik)</label>
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
+             <input type="number" id="inputSpeedWed" placeholder="23" style="margin-bottom: 0;">
+             <span style="font-size: 11px; color: #64748b; white-space: nowrap;">*Kecil = Cepat</span>
+          </div>
+          
+          <button type="button" onclick="updateMarqueeWed()" style="background: #f59e0b;">UPDATE INFO WEDPRIZE</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <audio id="suaraSukses" src="https://res.cloudinary.com/dz4w1sqiv/video/upload/v1760256309/Sukses-LogIn_y25cu8.wav"></audio>
+  <audio id="suaraGagal" src="https://res.cloudinary.com/dz4w1sqiv/video/upload/v1760256309/Gagal-LogIn_gl9yow.wav"></audio>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBdt-2IQflUWNx3sdI1QHPMe1vAzsXAZcY",
+      authDomain: "ajproject-log.firebaseapp.com",
+      databaseURL: "https://ajproject-log-default-rtdb.firebaseio.com",
+      projectId: "ajproject-log",
+      storageBucket: "ajproject-log.appspot.com",
+      messagingSenderId: "113688767697",
+      appId: "1:113688767697:web:ca9ad012667acb7474a9f0"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    const PATH_DATA = "database_B/daftarAkses";
+    const PATH_LOG = "database_B/logAktivitas";
+    const PATH_INFO = "database_B/infoRunning";
+    const PATH_INFO_WED = "database_B/infoRunningWed"; // PATH BARU
+    
+    let allData = {};
+    let currentDetailKey = "";
+
+    function hubungiWA() {
+      const nama = document.getElementById("card-names").innerText;
+      const pesan = encodeURIComponent(`Halo, saya sudah melihat kartu ucapan pernikahan untuk ${nama}.`);
+      window.open(`https://wa.me/6285771183370?text=${pesan}`, '_blank');
+    }
+
+    function unduhPDF() {
+    const element = document.getElementById('pdf-wrapper');
+    const nama = document.getElementById("card-names").innerText;
+    
+    const kodeInput = document.getElementById("kodeAkses").value.toUpperCase();
+    document.getElementById("display-kode-akses").innerText = kodeInput;
+
+    const footer = document.getElementById('pdf-footer-info');
+    const qrContainer = document.getElementById('qrcode-container');
+    
+    qrContainer.innerHTML = ""; 
+    footer.style.display = "block"; 
+
+    new QRCode(qrContainer, {
+        text: "tiny.cc/Arsip",
+        width: 47,
+        height: 47
+    });
+
+    setTimeout(() => {
+        const opt = {
+            margin:       0.5,
+            filename:     `${kodeInput}_${nama.replace(/<br>/g, '_')}.pdf`,
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2, useCORS: true },
+            jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
+        };
+
+        html2pdf().set(opt).from(element).save().then(() => {
+            footer.style.display = "none"; 
+        });
+    }, 500);
+}
+
+    function unduhDataDetailAdmin() {
+      const element = document.getElementById('area-unduh-admin');
+      const kode = document.getElementById("det-kode").innerText;
+      const kerabat = document.getElementById("det-kerabat").innerText;
+      
+      element.classList.add('border-pdf');
+      
+      const opt = {
+        margin:       1,
+        filename:     `${kode} - ${kerabat}.pdf`,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 3, dpi: 300 },
+        jsPDF:        { unit: 'in', format: 'a5', orientation: 'portrait' }
+      };
+      html2pdf().set(opt).from(element).save().then(() => {
+        element.classList.remove('border-pdf');
+      });
+    }
+
+    function toggleFormInput() {
+      const container = document.getElementById("form-input-container");
+      const chevron = document.getElementById("chevron-tambah");
+      if (container.style.display === "none" || container.style.display === "") {
+        container.style.display = "block";
+        chevron.classList.add("rotate");
+      } else {
+        container.style.display = "none";
+        chevron.classList.remove("rotate");
+      }
+    }
+
+    function toggleBingkisanFields() {
+      const value = document.getElementById("newBingkisan").value;
+      document.getElementById("field-nominal").classList.toggle("hidden", value !== "Uang");
+      document.getElementById("field-kado").classList.toggle("hidden", value !== "Kado");
+    }
+
+    function switchTab(tab) {
+      document.getElementById("form-login").style.display = tab === "login" ? "block" : "none";
+      document.getElementById("form-admin").style.display = tab === "admin" ? "block" : "none";
+      document.getElementById("tab-login").classList.toggle("active", tab === "login");
+      document.getElementById("tab-admin").classList.toggle("active", tab === "admin");
+    }
+
+    async function prosesLoginUser() {
+      const kode = document.getElementById("kodeAkses").value.trim().toUpperCase();
+      if(!kode) return;
+      try {
+        const snap = await db.ref(`${PATH_DATA}/${kode}`).once("value");
+        if(snap.exists()) {
+          const data = snap.val();
+          document.getElementById("suaraSukses").play();
+          document.getElementById("card-names"). innerHTML = `${data.kerabat}<br>&<br>${data.pasangan}`;
+          let tgl = new Date(data.tanggal);
+          let formattedDate = `${tgl.getDate().toString().padStart(2, '0')}-${(tgl.getMonth()+1).toString().padStart(2, '0')}-${tgl.getFullYear()}`;
+          document.getElementById("card-date").textContent = formattedDate;
+          document.getElementById("login-screen").style.display = "none";
+          document.getElementById("user-full-page").style.display = "flex";
+          db.ref(PATH_LOG).push({ user: kode, waktu: new Date().toLocaleString("id-ID") });
+        } else {
+          document.getElementById("error-message").textContent = "KODE TIDAK DITEMUKAN!";
+          document.getElementById("suaraGagal").play();
+        }
+      } catch(e) { console.error(e); }
+    }
+
+    function prosesAdminLogin() {
+      if(document.getElementById("kodeAdmin").value === "123") {
+        document.getElementById("login-screen").style.display = "none";
+        document.getElementById("admin-full-page").style.display = "flex";
+        muatSemuaData();
+      } else { alert("PIN SALAH!"); }
+    }
+
+    function showAdminSection(sec) {
+      document.getElementById("section-tambah").style.display = sec === 'tambah' ? 'flex' : 'none';
+      document.getElementById("section-riwayat").style.display = sec === 'riwayat' ? 'flex' : 'none';
+      document.getElementById("section-info").style.display = sec === 'info' ? 'flex' : 'none';
+      
+      document.getElementById("nav-tambah").classList.toggle("active", sec === 'tambah');
+      document.getElementById("nav-riwayat").classList.toggle("active", sec === 'riwayat');
+      document.getElementById("nav-info").classList.toggle("active", sec === 'info');
+      
+      if(sec === 'riwayat') muatRiwayat();
+      if(sec === 'info') muatInfoMarquee();
+    }
+
+    function saveToFirebase() {
+      const key = document.getElementById("newKey").value.trim().toUpperCase();
+      const bgk = document.getElementById("newBingkisan").value;
+      if(!key) return alert("Kode Akses wajib diisi!");
+      let extraData = {};
+      if(bgk === "Uang") extraData = { nominal: document.getElementById("newNominal").value };
+      else if(bgk === "Kado") extraData = { keterangan: document.getElementById("newKetKado").value, harga: document.getElementById("newHargaKado").value };
+      const data = {
+        tanggal: document.getElementById("newDate").value,
+        kerabat: document.getElementById("newKerabat").value,
+        pasangan: document.getElementById("newPasangan").value,
+        bapak: document.getElementById("newBapak").value,
+        ibu: document.getElementById("newIbu").value,
+        alamat: document.getElementById("newAlamat").value,
+        rt: document.getElementById("newRT").value,
+        rw: document.getElementById("newRW").value,
+        desa: document.getElementById("newDesa").value,
+        kecamatan: document.getElementById("newKecamatan").value,
+        kabupaten: document.getElementById("newKabupaten").value,
+        bingkisan: bgk,
+        ...extraData
+      };
+      db.ref(`${PATH_DATA}/${key}`).set(data).then(() => {
+        alert("Berhasil disimpan!");
+        const inputs = document.querySelectorAll("#form-input-container input, #form-input-container select");
+        inputs.forEach(i => i.value = "");
+        toggleFormInput();
+        toggleBingkisanFields();
+      });
+    }
+
+    function muatSemuaData() {
+      db.ref(PATH_DATA).on('value', (snap) => {
+        allData = snap.val() || {};
+        renderDataList(allData);
+      });
+    }
+
+    function renderDataList(dataObj) {
+      const container = document.getElementById("list-data-firebase");
+      const entries = Object.entries(dataObj);
+      document.getElementById("data-counter").innerText = entries.length;
+      container.innerHTML = "";
+      entries.reverse().forEach(([key, val]) => {
+        container.innerHTML += `<div class="data-row"><div class="data-code">${key}</div><div class="data-actions"><button class="btn-icon btn-view" onclick="lihatDetail('${key}')"><i class="fa-solid fa-eye"></i></button><button class="btn-icon btn-delete" onclick="hapusData('${key}')"><i class="fa-solid fa-trash-can"></i></button></div></div>`;
+      });
+    }
+
+    function lihatDetail(key) {
+      const data = allData[key];
+      if (data) {
+        currentDetailKey = key;
+        document.getElementById("det-kode").innerText = key;
+        document.getElementById("det-kode").style.color = "#3b82f6";
+        let bulan = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+        let tgl = data.tanggal ? new Date(data.tanggal) : null;
+        let formattedDate = tgl ? `${tgl.getDate()} ${bulan[tgl.getMonth()]} ${tgl.getFullYear()}` : "-";
+        document.getElementById("det-tanggal").innerText = formattedDate;
+        document.getElementById("det-kerabat").innerText = data.kerabat || "-";
+        document.getElementById("det-kerabat").style.color = "#3b82f6";
+        document.getElementById("det-pasangan").innerText = data.pasangan || "-";
+        document.getElementById("det-bapak").innerText = data.bapak || "-";
+        document.getElementById("det-ibu").innerText = data.ibu || "-";
+        document.getElementById("det-alamat").innerText = `${data.alamat || '-'}, ${data.rt || '-'}/${data.rw || '-'}, ${data.desa || '-'}, ${data.kecamatan || '-'}, ${data.kabupaten || '-'}`;
+        let detB = '-';
+        if(data.bingkisan === 'Uang') detB = `<span style="color: #3b82f6">Rp${data.nominal || 0} </span>`;
+        else if(data.bingkisan === 'Kado') detB = ` ${data.keterangan || '-'} - <span style="color: #3b82f6">Rp${data.harga || 0}</span>`;
+        document.getElementById("det-bingkisan").innerHTML = detB || '-';
+        document.getElementById("detail-container").style.display = "block";
+      }
+    }
+
+    function editDataAdmin() {
+      const data = allData[currentDetailKey];
+      if(data) {
+        document.getElementById("newKey").value = currentDetailKey;
+        document.getElementById("newDate").value = data.tanggal || "";
+        document.getElementById("newKerabat").value = data.kerabat || "";
+        document.getElementById("newPasangan").value = data.pasangan || "";
+        document.getElementById("newBapak").value = data.bapak || "";
+        document.getElementById("newIbu").value = data.ibu || "";
+        document.getElementById("newAlamat").value = data.alamat || "";
+        document.getElementById("newRT").value = data.rt || "";
+        document.getElementById("newRW").value = data.rw || "";
+        document.getElementById("newDesa").value = data.desa || "";
+        document.getElementById("newKecamatan").value = data.kecamatan || "";
+        document.getElementById("newKabupaten").value = data.kabupaten || "";
+        document.getElementById("newBingkisan").value = data.bingkisan || "";
+        toggleBingkisanFields();
+        if(data.bingkisan === "Uang") document.getElementById("newNominal").value = data.nominal || "";
+        if(data.bingkisan === "Kado") {
+          document.getElementById("newKetKado").value = data.keterangan || "";
+          document.getElementById("newHargaKado").value = data.harga || "";
+        }
+        const container = document.getElementById("form-input-container");
+        if(container.style.display === "none" || container.style.display === "") toggleFormInput();
+        document.getElementById("admin-full-page").children[2].scrollTop = 0;
+      }
+    }
+
+    function tutupDetail() { document.getElementById("detail-container").style.display = "none"; currentDetailKey = ""; }
+    function filterData() {
+      const kw = document.getElementById("cariData").value.toLowerCase();
+      const filtered = {};
+      Object.entries(allData).forEach(([k, v]) => { if(k.toLowerCase().includes(kw)) filtered[k] = v; });
+      renderDataList(filtered);
+    }
+    function hapusData(key) { if(confirm("Hapus data " + key + "?")) { db.ref(`${PATH_DATA}/${key}`).remove(); tutupDetail(); } }
+    
+    async function muatRiwayat() {
+      const container = document.getElementById("log-list");
+      container.innerHTML = "Memuat...";
+      const snap = await db.ref(PATH_LOG).once("value");
+      container.innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+          <h3 style='margin:0; font-size:16px; color: #1d4ed8;'>Riwayat Akses</h3>
+          <button onclick="hapusSemuaLog()" style="width:auto; background:#ef4444; padding:5px 10px; font-size:11px; color:white; border:none; border-radius:5px; margin:0; cursor:pointer;">HAPUS SEMUA</button>
+        </div>`;
+      if(snap.exists()) {
+        Object.entries(snap.val()).reverse().forEach(([id, log]) => {
+          container.innerHTML += `<div class=\"log-row\"><div><b>${log.user}</b><br><small>${log.waktu}</small></div><button onclick=\"hapusLog('${id}')\" style=\"width:auto; background:none; padding:4px; font-size:14px; color:#ef4444; border:none; margin:0; cursor:pointer;\"><i class=\"fa-solid fa-trash-can\"></i></button></div>`;
+        });
+      } else { container.innerHTML += "<p>Belum ada riwayat yang tercatat.</p>"; }
+    }
+    function hapusLog(id) { if(confirm("Hapus log?")) db.ref(`${PATH_LOG}/${id}`).remove().then(() => muatRiwayat()); }
+    function hapusSemuaLog() { if(confirm("Apakah Anda yakin ingin menghapus semua riwayat akses?")) db.ref(PATH_LOG).remove().then(() => muatRiwayat()); }
+
+    // FUNGSI UPDATE MARQUEE (ADMIN)
+    function updateMarquee() {
+      const teks = document.getElementById("inputMarquee").value;
+      const speed = document.getElementById("inputSpeed").value || 12;
+      db.ref(PATH_INFO).set({ teks: teks, kecepatan: speed }).then(() => {
+        alert("Teks di halaman beranda berhasil diperbarui!");
+      });
+    }
+
+    // FUNGSI BARU: UPDATE MARQUEE (WEDPRIZE)
+    function updateMarqueeWed() {
+      const teks = document.getElementById("inputMarqueeWed").value;
+      const speed = document.getElementById("inputSpeedWed").value || 23;
+      db.ref(PATH_INFO_WED).set({ teks: teks, kecepatan: speed }).then(() => {
+        alert("Teks di halaman WedPrize berhasil diperbarui!");
+      });
+    }
+
+    function muatInfoMarquee() {
+      // Muat info Admin
+      db.ref(PATH_INFO).once('value', (snap) => {
+        if(snap.exists()) {
+          const data = snap.val();
+          document.getElementById("inputMarquee").value = data.teks || "";
+          document.getElementById("inputSpeed").value = data.kecepatan || 12;
+        }
+      });
+      // Muat info WedPrize
+      db.ref(PATH_INFO_WED).once('value', (snap) => {
+        if(snap.exists()) {
+          const data = snap.val();
+          document.getElementById("inputMarqueeWed").value = data.teks || "";
+          document.getElementById("inputSpeedWed").value = data.kecepatan || 23;
+        }
+      });
+    }
+
+    function listenMarquee() {
+      db.ref(PATH_INFO).on('value', (snap) => {
+        if(snap.exists()) {
+          const data = snap.val();
+          const marqueeElement = document.getElementById("main-marquee");
+          if(marqueeElement) {
+            marqueeElement.innerText = data.teks || "Selamat Datang";
+            const speed = data.kecepatan || 12;
+            marqueeElement.style.animationDuration = speed + "s";
+          }
+        }
+      });
+    }
+
+    listenMarquee();
+
+    setInterval(() => {
+        const tgl = document.getElementById("tanggal-hari");
+        if(tgl) {
+            const optionsDate = { weekday: 'long', day: 'numeric', month: 'short', year: 'numeric' };
+            const optionsTime = { hour: '2-digit', minute: '2-digit', second: '2-digit' };
+            tgl.textContent = `${new Date().toLocaleDateString('id-ID', optionsDate)} - ${new Date().toLocaleTimeString('id-ID', optionsTime)}`;
+        }
+     }, 1000);
+  </script>
+</body>
+</html>
