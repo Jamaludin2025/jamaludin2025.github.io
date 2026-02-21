@@ -415,6 +415,7 @@
                     <form id="editForm">
                         <div class="modal-body">
                             <input type="hidden" id="editItemId">
+                            <input type="hidden" id="editItemCode">
                             <div class="mb-3">
                                 <label class="form-label">Link Gambar Barang</label>
                                 <input type="url" class="form-control" id="editLinkGambar" required>
@@ -500,7 +501,6 @@
       appId: "1:113688767697:web:ca9ad012667acb7474a9f0"
     };
     firebase.initializeApp(firebaseConfig);
-    // Path sesuai permintaan Anda
     const db = firebase.database().ref("Arsip Barang");
 </script>
 
@@ -521,7 +521,6 @@
             const detailModal = document.getElementById('detailModal');
             const statusDropdownMenu = document.getElementById('statusDropdownMenu');
             const statusDropdownBtn = document.getElementById('statusDropdownBtn');
-            const resetOptionsModal = document.getElementById('resetOptionsModal');
             const resetFormFieldsBtn = document.getElementById('resetFormFieldsBtn');
             const resetCodeAndDataBtn = document.getElementById('resetCodeAndDataBtn');
             const customToast = document.getElementById('customToast');
@@ -532,6 +531,19 @@
             const editForm = document.getElementById('editForm');
             const bootstrapDetailModal = new bootstrap.Modal(detailModal);
             const bootstrapEditModal = new bootstrap.Modal(document.getElementById('editModal'));
+
+            // --- FIX: MENDENGARKAN DATA REALTIME DARI FIREBASE ---
+            db.on('value', (snapshot) => {
+                const data = snapshot.val();
+                const inventory = [];
+                if (data) {
+                    Object.keys(data).forEach(key => {
+                        inventory.push(data[key]);
+                    });
+                }
+                localStorage.setItem('inventoryData', JSON.stringify(inventory));
+                renderInventory(inventory);
+            });
 
             window.onscroll = function() {
                 const listTab = document.getElementById('list-pane');
@@ -602,17 +614,18 @@
                     statusDropdownBtn.classList.add(`btn-outline-${statusInfo.class}`);
                     statusDropdownBtn.innerHTML = `<i class="bi ${statusInfo.icon}"></i> ${statusInfo.text}`;
                     statusDropdownBtn.setAttribute('data-current-status', status);
-                    const statusDetailEl = document.getElementById('detailStatusValue');
-                    if (statusDetailEl) statusDetailEl.textContent = status;
                 }
             }
 
             function updateItemStatus(itemId, newStatus) {
                 let inventory = loadInventory();
-                const itemIndex = inventory.findIndex(item => item.id === itemId);
-                if (itemIndex !== -1 && inventory[itemIndex].status !== newStatus) {
-                    inventory[itemIndex].status = newStatus;
-                    saveInventory(inventory); 
+                const item = inventory.find(i => i.id === itemId);
+                if (item && item.status !== newStatus) {
+                    item.status = newStatus;
+                    // Update Local
+                    saveInventory(inventory);
+                    // Update Firebase - Menggunakan itemCode sebagai Key
+                    db.child(item.itemCode).update({ status: newStatus });
                     updateModalStatusDisplay(itemId, newStatus);
                 }
             }
@@ -622,11 +635,7 @@
             }
 
             function saveInventory(inventory) {
-                try {
-                    localStorage.setItem('inventoryData', JSON.stringify(inventory));
-                } catch (e) {
-                    console.error("Gagal menyimpan data ke LocalStorage:", e);
-                }
+                localStorage.setItem('inventoryData', JSON.stringify(inventory));
                 renderInventory(inventory);
             }
 
@@ -665,71 +674,56 @@
                 return cleanName.substring(0, 3).toUpperCase().padEnd(3, 'X');
             }
 
-            function getNextGlobalId() {
-                let globalCounter = parseInt(localStorage.getItem('globalCounterData')) || 1;
-                localStorage.setItem('globalCounterData', globalCounter + 1);
-                return globalCounter; 
+            function updateAndGenerateCode(category, namaBarang, merek, tipe) {
+                let itemTypeMap = JSON.parse(localStorage.getItem('itemTypeMapData')) || {}; 
+                let lastItemTypeCounter = JSON.parse(localStorage.getItem('lastItemTypeCounterData')) || {}; 
+                let unitCounterMap = JSON.parse(localStorage.getItem('unitCounterMapData')) || {}; 
+                let recycledUnits = JSON.parse(localStorage.getItem('reusableUnitIdsData')) || {};
+                let recycledGlobals = JSON.parse(localStorage.getItem('reusableGlobalIds')) || [];
+
+                const prefix = getCategoryPrefix(category);
+                const itemKey = `${prefix}_${namaBarang.toLowerCase()}_${merek.toLowerCase()}_${tipe.toLowerCase()}`.replace(/\s+/g, '');
+
+                if (!itemTypeMap[prefix]) itemTypeMap[prefix] = {};
+                if (!lastItemTypeCounter[prefix]) lastItemTypeCounter[prefix] = 1;
+                let itemTypeId;
+                if (itemTypeMap[prefix][itemKey]) {
+                    itemTypeId = itemTypeMap[prefix][itemKey];
+                } else {
+                    const nextId = lastItemTypeCounter[prefix];
+                    itemTypeId = nextId.toString().padStart(3, '0');
+                    itemTypeMap[prefix][itemKey] = itemTypeId;
+                    lastItemTypeCounter[prefix] = nextId + 1;
+                }
+
+                let unitId;
+                if (recycledUnits[itemKey] && recycledUnits[itemKey].length > 0) {
+                    recycledUnits[itemKey].sort((a, b) => a - b);
+                    unitId = recycledUnits[itemKey].shift().toString().padStart(2, '0');
+                    localStorage.setItem('reusableUnitIdsData', JSON.stringify(recycledUnits));
+                } else {
+                    let currentUnitCount = (unitCounterMap[itemKey] || 0) + 1;
+                    unitCounterMap[itemKey] = currentUnitCount;
+                    unitId = currentUnitCount.toString().padStart(2, '0');
+                }
+
+                let globalId;
+                if (recycledGlobals.length > 0) {
+                    recycledGlobals.sort((a, b) => a - b);
+                    globalId = recycledGlobals.shift().toString().padStart(4, '0');
+                    localStorage.setItem('reusableGlobalIds', JSON.stringify(recycledGlobals));
+                } else {
+                    let globalCounter = parseInt(localStorage.getItem('globalCounterData')) || 1;
+                    globalId = globalCounter.toString().padStart(4, '0');
+                    localStorage.setItem('globalCounterData', globalCounter + 1);
+                }
+
+                const itemCode = `${prefix}${itemTypeId}-${unitId}-${globalId}`;
+                localStorage.setItem('itemTypeMapData', JSON.stringify(itemTypeMap));
+                localStorage.setItem('lastItemTypeCounterData', JSON.stringify(lastItemTypeCounter));
+                localStorage.setItem('unitCounterMapData', JSON.stringify(unitCounterMap));
+                return itemCode;
             }
-
-function updateAndGenerateCode(category, namaBarang, merek, tipe) {
-    let itemTypeMap = JSON.parse(localStorage.getItem('itemTypeMapData')) || {}; 
-    let lastItemTypeCounter = JSON.parse(localStorage.getItem('lastItemTypeCounterData')) || {}; 
-    let unitCounterMap = JSON.parse(localStorage.getItem('unitCounterMapData')) || {}; 
-    
-    // --- LOGIKA RECYCLE START ---
-    let recycledUnits = JSON.parse(localStorage.getItem('reusableUnitIdsData')) || {};
-    let recycledGlobals = JSON.parse(localStorage.getItem('reusableGlobalIds')) || [];
-    // --- LOGIKA RECYCLE END ---
-
-    const prefix = getCategoryPrefix(category);
-    const itemKey = `${prefix}_${namaBarang.toLowerCase()}_${merek.toLowerCase()}_${tipe.toLowerCase()}`.replace(/\s+/g, '');
-
-    // 1. Tentukan ItemType ID (Bagian depan: ELK001)
-    if (!itemTypeMap[prefix]) itemTypeMap[prefix] = {};
-    if (!lastItemTypeCounter[prefix]) lastItemTypeCounter[prefix] = 1;
-    let itemTypeId;
-    if (itemTypeMap[prefix][itemKey]) {
-        itemTypeId = itemTypeMap[prefix][itemKey];
-    } else {
-        const nextId = lastItemTypeCounter[prefix];
-        itemTypeId = nextId.toString().padStart(3, '0');
-        itemTypeMap[prefix][itemKey] = itemTypeId;
-        lastItemTypeCounter[prefix] = nextId + 1;
-    }
-
-    // 2. Tentukan Unit ID (Bagian tengah: 01) - RECYCLE CHECK
-    let unitId;
-    if (recycledUnits[itemKey] && recycledUnits[itemKey].length > 0) {
-        recycledUnits[itemKey].sort((a, b) => a - b);
-        unitId = recycledUnits[itemKey].shift().toString().padStart(2, '0');
-        localStorage.setItem('reusableUnitIdsData', JSON.stringify(recycledUnits));
-    } else {
-        let currentUnitCount = (unitCounterMap[itemKey] || 0) + 1;
-        unitCounterMap[itemKey] = currentUnitCount;
-        unitId = currentUnitCount.toString().padStart(2, '0');
-    }
-
-    // 3. Tentukan Global ID (Bagian belakang: 0001) - RECYCLE CHECK
-    let globalId;
-    if (recycledGlobals.length > 0) {
-        recycledGlobals.sort((a, b) => a - b);
-        globalId = recycledGlobals.shift().toString().padStart(4, '0');
-        localStorage.setItem('reusableGlobalIds', JSON.stringify(recycledGlobals));
-    } else {
-        let globalCounter = parseInt(localStorage.getItem('globalCounterData')) || 1;
-        globalId = globalCounter.toString().padStart(4, '0');
-        localStorage.setItem('globalCounterData', globalCounter + 1);
-    }
-
-    const itemCode = `${prefix}${itemTypeId}-${unitId}-${globalId}`;
-    
-    // Simpan Map kembali
-    localStorage.setItem('itemTypeMapData', JSON.stringify(itemTypeMap));
-    localStorage.setItem('lastItemTypeCounterData', JSON.stringify(lastItemTypeCounter));
-    localStorage.setItem('unitCounterMapData', JSON.stringify(unitCounterMap));
-    
-    return itemCode;
-}
             
             function resetCodeCounters() {
                 localStorage.removeItem('globalCounterData');
@@ -779,16 +773,14 @@ function updateAndGenerateCode(category, namaBarang, merek, tipe) {
             function updateAlamatField() {
                  if (jenisToko.value === 'Online') {
                     labelAlamat.innerHTML = 'Link Pembelian <span class="text-danger">*</span>';
-                    inputAlamat.setAttribute('placeholder', 'Masukkan URL link pembelian (e.g., Tokopedia, Shopee)');
+                    inputAlamat.setAttribute('placeholder', 'Masukkan URL link pembelian');
                     inputAlamat.setAttribute('type', 'url'); 
                     inputAlamat.setAttribute('required', 'required'); 
-                    alamatTokoFeedback.textContent = 'Link pembelian wajib diisi dan merupakan URL yang valid.';
                 } else { 
                     labelAlamat.innerHTML = 'Alamat Toko <span class="text-danger">*</span>'; 
                     inputAlamat.setAttribute('placeholder', 'Masukkan alamat lengkap toko');
                     inputAlamat.setAttribute('type', 'text');
                     inputAlamat.setAttribute('required', 'required');
-                    alamatTokoFeedback.textContent = 'Alamat toko wajib diisi.';
                 }
             }
 
@@ -799,27 +791,21 @@ function updateAndGenerateCode(category, namaBarang, merek, tipe) {
                     updateAlamatField(); 
                     itemCodeBox.classList.remove('show');
                     itemCodeBox.classList.add('d-none');
-                    customToast.style.display = 'none';
                 }, 50);
             }
 
             form.addEventListener('submit', function(event) {
                 event.preventDefault();
                 const originalHarga = inputHarga.value; 
-                inputHarga.value = cleanRupiah(originalHarga); 
                 if (!form.checkValidity()) {
                     form.classList.add('was-validated');
-                    inputHarga.value = originalHarga; 
-                    itemCodeBox.classList.remove('show');
-                    itemCodeBox.classList.add('d-none');
                     return; 
                 }
                 const formData = getFormData();
                 const generatedCode = updateAndGenerateCode(formData.kategori, formData.namaBarang, formData.merek, formData.tipe);
                 formData.itemCode = generatedCode;
-                const inventory = loadInventory();
-                inventory.push(formData);
-                saveInventory(inventory); 
+                
+                // Simpan ke Firebase menggunakan itemCode sebagai KEY agar mudah dikelola
                 db.child(generatedCode).set(formData);
 
                 generatedCodeEl.textContent = generatedCode;
@@ -831,14 +817,10 @@ function updateAndGenerateCode(category, namaBarang, merek, tipe) {
                 customToast.classList.remove('animate-slide-right');
                 customToast.classList.add('animate-zoom');
 
-                customToast.scrollIntoView({ behavior: 'smooth', block: 'center' });
-
                 setTimeout(() => {
                     customToast.classList.remove('animate-zoom');
                     customToast.classList.add('animate-slide-right');
-                    setTimeout(() => {
-                        customToast.style.display = 'none';
-                    }, 500);
+                    setTimeout(() => { customToast.style.display = 'none'; }, 500);
                 }, 4000);
             });
 
@@ -846,11 +828,7 @@ function updateAndGenerateCode(category, namaBarang, merek, tipe) {
                 const code = generatedCodeEl.textContent;
                 navigator.clipboard.writeText(code).then(() => {
                     copyCodeBtn.innerHTML = '<i class="bi bi-clipboard-check"></i> Disalin!';
-                    setTimeout(() => {
-                        copyCodeBtn.innerHTML = '<i class="bi bi-clipboard"></i> Salin Kode';
-                    }, 2000);
-                }).catch(err => {
-                    alert('Gagal menyalin kode. Browser tidak mengizinkan.');
+                    setTimeout(() => { copyCodeBtn.innerHTML = '<i class="bi bi-clipboard"></i> Salin Kode'; }, 2000);
                 });
             });
 
@@ -863,7 +841,6 @@ function updateAndGenerateCode(category, namaBarang, merek, tipe) {
                 modalBody.classList.add('desktop-layout');
                 
                 if (item) {
-                    const currentStatus = item.status || 'Baik';                    
                     statusDropdownBtn.setAttribute('data-item-id', item.id); 
                     modalBody.innerHTML = `
                         <div class="image-container-desktop text-center mb-3 mb-md-0">
@@ -882,39 +859,30 @@ function updateAndGenerateCode(category, namaBarang, merek, tipe) {
                         </div>
                     `;
                     detailModal.querySelector('.modal-title').textContent = `${item.itemCode}`;                    
-                    updateModalStatusDisplay(item.id, currentStatus);
+                    updateModalStatusDisplay(item.id, item.status || 'Baik');
 
                     deleteSingleItemBtn.onclick = function() {
-    if (confirm(`Yakin ingin menghapus ${item.itemCode}?`)) {
-        let inv = loadInventory();
-        
-        // --- LOGIKA RECYCLE ID ---
-        const parts = item.itemCode.split('-');
-        const prefix = item.itemCode.substring(0, 3);
-        const unitPart = parseInt(parts[1]);
-        const globalPart = parseInt(parts[2]);
-        const itemKey = `${prefix}_${item.namaBarang.toLowerCase()}_${item.merek.toLowerCase()}_${item.tipe.toLowerCase()}`.replace(/\s+/g, '');
+                        if (confirm(`Yakin ingin menghapus ${item.itemCode}?`)) {
+                            // Hapus di Firebase
+                            db.child(item.itemCode).remove();
 
-        let recUnits = JSON.parse(localStorage.getItem('reusableUnitIdsData')) || {};
-        let recGlobals = JSON.parse(localStorage.getItem('reusableGlobalIds')) || [];
-        if(!recUnits[itemKey]) recUnits[itemKey] = [];
-        recUnits[itemKey].push(unitPart);
-        recGlobals.push(globalPart);
-        localStorage.setItem('reusableUnitIdsData', JSON.stringify(recUnits));
-        localStorage.setItem('reusableGlobalIds', JSON.stringify(recGlobals));
-        // --- END LOGIKA RECYCLE ---
+                            // Logika Recycle ID
+                            const parts = item.itemCode.split('-');
+                            const prefix = item.itemCode.substring(0, 3);
+                            const unitPart = parseInt(parts[1]);
+                            const globalPart = parseInt(parts[2]);
+                            const itemKey = `${prefix}_${item.namaBarang.toLowerCase()}_${item.merek.toLowerCase()}_${item.tipe.toLowerCase()}`.replace(/\s+/g, '');
+                            let recUnits = JSON.parse(localStorage.getItem('reusableUnitIdsData')) || {};
+                            let recGlobals = JSON.parse(localStorage.getItem('reusableGlobalIds')) || [];
+                            if(!recUnits[itemKey]) recUnits[itemKey] = [];
+                            recUnits[itemKey].push(unitPart);
+                            recGlobals.push(globalPart);
+                            localStorage.setItem('reusableUnitIdsData', JSON.stringify(recUnits));
+                            localStorage.setItem('reusableGlobalIds', JSON.stringify(recGlobals));
 
-        // Hapus di Lokal
-        const newInv = inv.filter(i => i.id !== item.id);
-        saveInventory(newInv);
-
-        // Hapus di Firebase (TAMBAHKAN BARIS INI)
-        db.child(item.id).remove(); 
-
-        bootstrapDetailModal.hide();
-        alert(`${item.itemCode} berhasil dihapus dari sistem dan awan.`);
-    }
-};
+                            bootstrapDetailModal.hide();
+                        }
+                    };
 
                     document.getElementById('editItemBtn').onclick = function() {
                         bootstrapDetailModal.hide();
@@ -925,6 +893,7 @@ function updateAndGenerateCode(category, namaBarang, merek, tipe) {
 
             function openEditModal(item) {
                 document.getElementById('editItemId').value = item.id;
+                document.getElementById('editItemCode').value = item.itemCode; // Simpan itemCode untuk update Firebase
                 document.getElementById('editLinkGambar').value = item.linkGambar;
                 document.getElementById('editNamaBarang').value = item.namaBarang;
                 document.getElementById('editMerek').value = item.merek;
@@ -934,7 +903,6 @@ function updateAndGenerateCode(category, namaBarang, merek, tipe) {
                 document.getElementById('editNamaToko').value = item.namaToko;
                 document.getElementById('editAlamatToko').value = item.alamatToko;
                 document.getElementById('editLabelAlamat').textContent = item.jenisToko === 'Online' ? 'Link Pembelian' : 'Alamat Toko';
-                
                 bootstrapEditModal.show();
             }
 
@@ -945,25 +913,27 @@ function updateAndGenerateCode(category, namaBarang, merek, tipe) {
             editForm.addEventListener('submit', function(e) {
                 e.preventDefault();
                 const id = parseInt(document.getElementById('editItemId').value);
-                const inventory = loadInventory();
-                const index = inventory.findIndex(item => item.id === id);
+                const itemCode = document.getElementById('editItemCode').value;
+                const priceRaw = cleanRupiah(document.getElementById('editHargaBeli').value);
 
-                if (index !== -1) {
-                    const priceRaw = cleanRupiah(document.getElementById('editHargaBeli').value);
-                    inventory[index].linkGambar = document.getElementById('editLinkGambar').value;
-                    inventory[index].namaBarang = document.getElementById('editNamaBarang').value;
-                    inventory[index].merek = document.getElementById('editMerek').value;
-                    inventory[index].tipe = document.getElementById('editTipe').value;
-                    inventory[index].tanggalBeli = document.getElementById('editTanggalBeli').value;
-                    inventory[index].hargaBeli = priceRaw;
-                    inventory[index].hargaBeliFormatted = formatRupiah(priceRaw);
-                    inventory[index].namaToko = document.getElementById('editNamaToko').value;
-                    inventory[index].alamatToko = document.getElementById('editAlamatToko').value;
+                const updatedData = {
+                    linkGambar: document.getElementById('editLinkGambar').value,
+                    namaBarang: document.getElementById('editNamaBarang').value,
+                    merek: document.getElementById('editMerek').value,
+                    tipe: document.getElementById('editTipe').value,
+                    tanggalBeli: document.getElementById('editTanggalBeli').value,
+                    hargaBeli: priceRaw,
+                    hargaBeliFormatted: formatRupiah(priceRaw),
+                    namaToko: document.getElementById('editNamaToko').value,
+                    alamatToko: document.getElementById('editAlamatToko').value
+                };
 
-                    saveInventory(inventory);
+                // Update ke Firebase (otomatis merender tampilan via listener db.on)
+                db.child(itemCode).update(updatedData)
+                .then(() => {
                     bootstrapEditModal.hide();
                     alert('Data berhasil diperbarui!');
-                }
+                });
             });
 
             detailModal.addEventListener('hide.bs.modal', function () {
@@ -979,54 +949,22 @@ function updateAndGenerateCode(category, namaBarang, merek, tipe) {
                 });
             });
             
-            if (resetFormFieldsBtn) {
-                resetFormFieldsBtn.addEventListener('click', function() {
-                    form.reset(); 
-                    cleanFormState(); 
-                });
-            }
+            resetFormFieldsBtn.addEventListener('click', function() {
+                form.reset(); 
+                cleanFormState(); 
+            });
 
-            if (resetCodeAndDataBtn) {
-    resetCodeAndDataBtn.addEventListener('click', function() {
-        if (confirm('PERINGATAN KERAS: Tindakan ini akan menghapus SEMUA data di web dan Firebase. Lanjutkan?')) {
-            // 1. Reset Counter Kode
-            resetCodeCounters(); 
-            
-            // 2. Hapus Data di LocalStorage
-            localStorage.removeItem('inventoryData'); 
+            resetCodeAndDataBtn.addEventListener('click', function() {
+                if (confirm('PERINGATAN: Tindakan ini akan menghapus SEMUA data. Lanjutkan?')) {
+                    resetCodeCounters(); 
+                    db.remove(); // Hapus total dari Firebase
+                    localStorage.clear();
+                    location.reload(); 
+                }
+            });
 
-            // 3. Hapus Data di Firebase (TAMBAHKAN BARIS INI)
-            db.remove(); 
-
-            alert('Semua data berhasil dibersihkan total.');
-            location.reload(); 
-        }
-    });
-}
-
-            renderInventory(loadInventory());
             jenisToko.addEventListener('change', updateAlamatField);
-            
-            inputHarga.addEventListener('input', function(e) { 
-                let value = this.value.replace(/[^0-9]/g, '');
-                this.value = formatRupiah(value);
-            });
-            
-            inputHarga.addEventListener('blur', function() { 
-                let value = this.value.replace(/[^0-9]/g, '');
-                this.value = formatRupiah(value);
-            });
-
-            const listTabBtn = document.getElementById('list-tab');
-            listTabBtn.addEventListener('shown.bs.tab', function (e) {
-                renderInventory(loadInventory());
-                window.dispatchEvent(new Event('scroll'));
-            });
-
-            const inputTabBtn = document.getElementById('input-tab');
-            inputTabBtn.addEventListener('shown.bs.tab', function (e) {
-                backToTopBtn.style.display = "none";
-            });
+            inputHarga.addEventListener('input', function() { this.value = formatRupiah(this.value); });
 
             searchInput.addEventListener('keyup', function() {
                 const query = searchInput.value.toLowerCase();
@@ -1040,44 +978,25 @@ function updateAndGenerateCode(category, namaBarang, merek, tipe) {
                 renderInventory(filteredInventory);
             });
             
+            // Ekspor ke Excel
+            const exportExcelBtn = document.getElementById('exportExcelBtn');
+            if (exportExcelBtn) {
+                exportExcelBtn.addEventListener('click', function() {
+                    const inventory = loadInventory();
+                    if (inventory.length === 0) { alert("Tidak ada data!"); return; }
+                    const dataUntukExcel = inventory.map((item, index) => ({
+                        "No": index + 1, "Kode Barang": item.itemCode, "Nama Barang": item.namaBarang,
+                        "Merek": item.merek, "Tipe": item.tipe, "Kategori": item.kategori,
+                        "Tanggal Beli": item.tanggalBeli, "Harga Beli": Number(item.hargaBeli),
+                        "Status": item.status, "Nama Toko": item.namaToko, "Alamat": item.alamatToko
+                    }));
+                    const worksheet = XLSX.utils.json_to_sheet(dataUntukExcel);
+                    const workbook = XLSX.utils.book_new();
+                    XLSX.utils.book_append_sheet(workbook, worksheet, "Data Barang");
+                    XLSX.writeFile(workbook, `ArsipBarang_${new Date().toLocaleDateString()}.xlsx`);
+                });
+            }
             updateAlamatField();
-            
-            // Fungsi Ekspor ke Excel
-const exportExcelBtn = document.getElementById('exportExcelBtn');
-if (exportExcelBtn) {
-    exportExcelBtn.addEventListener('click', function() {
-        const inventory = loadInventory(); // Mengambil data terbaru dari LocalStorage
-        
-        if (inventory.length === 0) {
-            alert("Tidak ada data untuk diekspor!");
-            return;
-        }
-
-        // 1. Format data agar rapi di Excel
-        const dataUntukExcel = inventory.map((item, index) => ({
-            "No": index + 1,
-            "Kode Barang": item.itemCode,
-            "Nama Barang": item.namaBarang,
-            "Merek": item.merek,
-            "Tipe": item.tipe,
-            "Kategori": item.kategori,
-            "Tanggal Beli": item.tanggalBeli,
-            "Harga Beli": Number(item.hargaBeli),
-            "Status": item.status,
-            "Nama Toko": item.namaToko,
-            "Alamat/Link Toko": item.alamatToko
-        }));
-
-        // 2. Proses pembuatan file Excel
-        const worksheet = XLSX.utils.json_to_sheet(dataUntukExcel);
-        const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, "Data Barang");
-
-        // 3. Download file
-        const fileName = `ArsipBarang_${new Date().toLocaleDateString()}.xlsx`;
-        XLSX.writeFile(workbook, fileName);
-    });
-}
         });
     </script>
 </body>
