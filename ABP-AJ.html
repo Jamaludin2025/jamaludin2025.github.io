@@ -1,0 +1,1084 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DATABASE - SISTEM INFORMASI BARANG</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        :root {
+            --primary-navy: #003366;
+            --secondary-gold: #B8860B;
+            --bg-light: #F4F7F9;
+            --text-dark: #1A1A1A;
+            --border-color: #D1D5DB;
+        }
+
+        .text-primary { color: var(--primary-navy) !important; }
+        .btn-primary { 
+            background-color: var(--primary-navy) !important; 
+            border-color: var(--primary-navy) !important; 
+        }
+        .btn-primary:hover {
+            background-color: #002244 !important;
+        }
+        .bg-primary { background-color: var(--primary-navy) !important; }
+        .btn-outline-primary {
+            color: var(--primary-navy) !important;
+            border-color: var(--primary-navy) !important;
+        }
+        .btn-outline-primary:hover {
+            background-color: var(--primary-navy) !important;
+            color: white !important;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--bg-light);
+            padding-top: 10px;
+            padding-bottom: 10px;
+            overflow-x: hidden;
+        }
+        .container-custom {
+            margin-top: 20px;
+            margin-bottom: 20px;
+            padding: 20px 20px 10px 20px; 
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border: 1px solid var(--border-color);
+            width: 95%; 
+        }
+
+        @media (min-width: 768px) {
+            .container-custom {
+                max-width: 1140px; 
+                margin-top: 40px;
+                margin-bottom: 40px;
+                padding: 25px 25px 15px 25px;
+            }
+        }
+
+        .tab-content { padding-top: 15px; }
+        .tab-pane { padding-bottom: 10px; }
+        #inventoryForm { margin-bottom: 0 !important; }
+        .button-row { margin-bottom: 5px !important; }
+
+        .nav-tabs .nav-link {
+            width: 100%;
+            text-align: center;
+            color: #94a3b8 !important;
+            font-weight: 500;            
+            padding: 8px;
+        }
+        .nav-tabs .nav-link.active {
+            color: var(--primary-navy) !important;
+            border-radius: 5px;
+            border-bottom: 3px solid #003366 !important;
+            background: none !important;
+            font-weight: 600;
+        }
+        
+        h1 { font-size: 1.5rem; }
+        @media (min-width: 768px) { h1 { font-size: 2rem; } }
+
+        @media (max-width: 767px) {
+            .nav-tabs { display: flex; justify-content: center; }
+            .nav-item { flex-grow: 1; width: 50%; text-align: center; }
+            .button-row .col-6 { padding-left: 5px; padding-right: 5px; }
+            .button-row { margin-left: -5px; margin-right: -5px; }
+        }
+
+        .item-card {
+            border: 1px solid var(--border-color);
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .item-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+        }
+        .image-wrapper { position: relative; height: 120px; overflow: hidden; }
+        .card-img-top { height: 100%; width: 100%; object-fit: cover; }
+        
+        .status-badge {
+            position: absolute;
+            top: 5px; right: 5px; z-index: 10; padding: 0.2rem 0.5rem;
+            font-size: 0.65rem; font-weight: bold; border-radius: 0.3rem; 
+            background-color: white !important;
+            border-width: 1px; border-style: solid;
+        }
+        .status-badge.baik { color: #2C7A7B; border-color: #81E6D9; }
+        .status-badge.rusakringan { color: var(--secondary-gold); border-color: var(--secondary-gold); }
+        .status-badge.rusakberat { color: #dc3545; border-color: #dc3545; }
+        .status-badge.hilang { color: #6c757d; border-color: #6c757d; }
+
+        legend {
+            color: var(--primary-navy) !important;
+            font-weight: 600;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-navy);
+            box-shadow: 0 0 0 0.25rem rgba(0, 51, 102, 0.1);
+        }
+
+        #detailModal .list-group-item {
+            display: grid;
+            grid-template-columns: 90px 3px 1fr;
+            gap: 10px; align-items: start;
+            padding: 0.25rem 0 !important;
+            line-height: 1.2;
+            border-bottom: none !important; 
+        }
+        #detailModal .list-group-item strong { color: #64748b; font-weight: 500; }
+        .data-content { color: var(--primary-navy); font-weight: 600; }
+
+        @media (min-width: 768px) {
+            #modal-body-content.desktop-layout {
+                display: grid;
+                grid-template-columns: 0.9fr 2fr; 
+                gap: 20px; padding: 2rem !important;
+            }
+        }
+
+        .custom-notification {
+            width: 100%;
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-left: 5px solid #198754;
+            border-radius: 8px;
+            padding: 12px 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            display: none;
+        }
+
+        @keyframes zoomInEffect {
+            from { opacity: 0; transform: scale(0.85); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes slideOutRightEffect {
+            from { opacity: 1; transform: translateX(0); }
+            to { opacity: 0; transform: translateX(100%); }
+        }
+
+        .animate-zoom {
+            animation: zoomInEffect 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+
+        .animate-slide-right {
+            animation: slideOutRightEffect 0.5s ease-in forwards;
+        }
+
+        #backToTopBtn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 99;
+            border: none;
+            outline: none;
+            background-color: var(--primary-navy);
+            color: white;
+            cursor: pointer;
+            padding: 15px;
+            border-radius: 50%;
+            font-size: 20px;
+            width: 55px;
+            height: 55px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            display: none;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+        #backToTopBtn:hover {
+            background-color: #002244;
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body>
+
+    <button id="backToTopBtn" title="Kembali ke Atas"><i class="bi bi-arrow-up"></i></button>
+
+    <div class="container container-custom">
+        <h1 class="text-center mb-3 text-primary">ARSIP BARANG PRIBADI</h1>
+
+        <ul class="nav nav-tabs justify-content-start" id="myTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="input-tab" data-bs-toggle="tab" data-bs-target="#input-pane" type="button" role="tab" aria-controls="input-pane" aria-selected="true">
+                    TAMBAH BARANG
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="list-tab" data-bs-toggle="tab" data-bs-target="#list-pane" type="button" role="tab" aria-controls="list-pane" aria-selected="false">
+                    DAFTAR BARANG
+                </button>
+            </li>
+        </ul>
+
+        <div class="tab-content pt-3" id="myTabContent">
+
+            <div class="tab-pane fade show active" id="input-pane" role="tabpanel" aria-labelledby="input-tab" tabindex="0">
+                
+                <form id="inventoryForm" novalidate>
+                    <div class="row">
+                        <div class="col-lg-6"> 
+                            <fieldset class="border p-3 mb-3 rounded bg-light">
+                                <legend class="float-none w-auto px-2 fs-6 text-primary"><i class="fas fa-tags"></i> Data Barang</legend>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3"> 
+                                        <label for="linkGambar" class="form-label form-label-sm">Link Gambar <span class="text-danger">*</span></label>
+                                        <input type="url" class="form-control form-control-sm" id="linkGambar" name="linkGambar" placeholder="URL Gambar Barang" required>
+                                        <div class="invalid-feedback">Link Gambar wajib diisi.</div>
+                                    </div>
+                                    <div class="col-md-6 mb-3"> 
+                                        <label for="namaBarang" class="form-label form-label-sm">Nama Barang <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control form-control-sm" id="namaBarang" name="namaBarang" required>
+                                        <div class="invalid-feedback">Nama barang wajib diisi.</div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4 mb-3">
+                                        <label for="merek" class="form-label form-label-sm">Merek</label>
+                                        <input type="text" class="form-control form-control-sm" id="merek" name="merek">
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label for="tipe" class="form-label form-label-sm">Tipe</label>
+                                        <input type="text" class="form-control form-control-sm" id="tipe" name="tipe">
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label for="kategori" class="form-label form-label-sm">Kategori <span class="text-danger">*</span></label>
+                                        <select class="form-select form-select-sm" id="kategori" name="kategori" required>
+                                            <option value="" selected>Pilih Kategori</option>
+                                            <option value="Elektronik">Elektronik</option>
+                                            <option value="Peralatan Kantor">Peralatan Kantor</option>
+                                            <option value="Furniture">Furniture</option>
+                                            <option value="Lainnya">Lainnya</option>
+                                        </select>
+                                        <div class="invalid-feedback">Kategori wajib diisi.</div>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+
+                        <div class="col-lg-6">
+                            <fieldset class="border p-3 mb-3 rounded bg-light">
+                                <legend class="float-none w-auto px-2 fs-6 text-primary"><i class="fas fa-store"></i> Data Pembelian</legend>
+                                <div class="row">
+                                    <div class="col-md-4 mb-3">
+                                        <label for="tanggalBeli" class="form-label form-label-sm">Tanggal Beli <span class="text-danger">*</span></label>
+                                        <input type="date" class="form-control form-control-sm" id="tanggalBeli" name="tanggalBeli" required>
+                                        <div class="invalid-feedback">Tanggal beli wajib diisi.</div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label for="hargaBeli" class="form-label form-label-sm">Harga Beli <span class="text-danger">*</span></label>
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-text">Rp</span>
+                                            <input type="text" class="form-control" id="hargaBeli" name="hargaBeli" required min="0" inputmode="numeric"> 
+                                            <div class="invalid-feedback">Harga beli wajib diisi.</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label for="jenisToko" class="form-label form-label-sm">Jenis Toko <span class="text-danger">*</span></label>
+                                        <select class="form-select form-select-sm" id="jenisToko" name="jenisToko" required>
+                                            <option value="Offline" selected>Offline</option>
+                                            <option value="Online">Online</option>
+                                        </select>
+                                        <div class="invalid-feedback">Jenis toko wajib dipilih.</div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="namaToko" class="form-label form-label-sm">Nama Toko <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control form-control-sm" id="namaToko" name="namaToko" required>
+                                        <div class="invalid-feedback">Nama toko wajib diisi.</div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="alamatToko" class="form-label form-label-sm" id="labelAlamatToko">Alamat Toko <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control form-control-sm" id="alamatToko" name="alamatToko" placeholder="Masukkan alamat lengkap toko" required>
+                                        <div class="invalid-feedback" id="alamatTokoFeedback">Alamat toko wajib diisi.</div>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                    </div>
+
+                    <div id="itemCodeBox" class="border p-3 mb-3 bg-light rounded d-none">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="flex-grow-1 me-3">
+                                <small class="text-muted d-block">Kode Barang Tersimpan:</small>
+                                <strong id="generatedCode" class="fs-5 text-primary"></strong>
+                            </div>
+                            <button type="button" class="btn btn-sm btn-outline-primary" id="copyCodeBtn" title="Salin Kode">
+                                <i class="bi bi-clipboard"></i> Salin Kode
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="customToast" class="custom-notification">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-check-circle-fill text-success fs-4 me-3"></i>
+                            <div>
+                                <div class="fw-bold text-primary">Data Berhasil Disimpan!</div>
+                                <small class="text-muted" id="toastMsgContent"></small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row button-row mt-1 mb-0">
+                        <div class="col-6 col-md-4"> 
+                            <button type="button" class="btn btn-secondary w-100" id="openResetModalBtn" data-bs-toggle="modal" data-bs-target="#resetOptionsModal" style="font-weight: bold;">Atur Ulang Data</button>
+                        </div>
+                        <div class="col-6 col-md-8"> 
+                            <button type="submit" class="btn btn-primary w-100" style="font-weight: bold;">Buat dan Simpan</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="tab-pane fade" id="list-pane" role="tabpanel" aria-labelledby="list-tab" tabindex="0">                
+                <div class="row mb-3 align-items-center">
+                    <div class="col-md-6 mb-2 mb-md-0">
+                        <div class="input-group input-group-sm"> 
+                            <span class="input-group-text"><i class="bi bi-search"></i></span>
+                            <input type="text" class="form-control" placeholder="Cari Nama Barang, Kode Barang, atau Kategori..." id="searchInput">                            
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <span class="text-muted small" id="totalItems">Total: 0 Barang</span>
+                            <div class="d-flex">
+                                <button id="exportExcelBtn" class="btn btn-outline-success btn-sm"><i class="bi bi-box-arrow-up"></i> Ekspor</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 text-center text-muted p-5" id="noDataMessage">
+                    <i class="bi bi-box-seam display-4"></i>
+                    <p class="mt-2">Belum ada data inventaris yang tersimpan.</p>
+                </div>
+                
+                <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-3" id="inventory-list">
+                    </div>
+            </div>
+
+        </div> </div> 
+        
+        <div class="modal fade" id="detailModal" tabindex="-1" aria-labelledby="detailModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-xxl">
+                <div class="modal-content">
+                    <div class="modal-header bg-primary text-white">
+                        <h5 class="modal-title" id="detailModalLabel"><i class="bi bi-box-seam"></i> Detail Barang</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body" id="modal-body-content">
+                    </div>
+                    <div class="modal-footer justify-content-between">
+                        <div class="dropdown">
+                            <button class="btn dropdown-toggle status-dropdown-button" type="button" id="statusDropdownBtn" data-bs-toggle="dropdown" aria-expanded="false" data-item-id="">
+                                </button>
+                            <ul class="dropdown-menu" aria-labelledby="statusDropdownBtn" id="statusDropdownMenu">
+                                <li><a class="dropdown-item status-option" data-status="Baik" href="#"><i class="bi bi-patch-check-fill text-success"></i> Baik</a></li>
+                                <li><a class="dropdown-item status-option" data-status="Rusak Ringan" href="#"><i class="bi bi-patch-exclamation-fill text-warning"></i> Rusak Ringan</a></li>
+                                <li><a class="dropdown-item status-option" data-status="Rusak Berat" href="#"><i class="bi bi-patch-exclamation-fill text-danger"></i> Rusak Berat</a></li>
+                                <li><a class="dropdown-item status-option" data-status="Hilang" href="#"><i class="bi bi-patch-question-fill text-secondary"></i> Hilang</a></li>
+                            </ul>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button type="button" class="btn btn-success btn-sm" id="printItemBtn" title="Print">
+                                <i class="fa-solid fa-print"></i>
+                            </button>
+                            <button type="button" class="btn btn-warning btn-sm" id="editItemBtn" title="Edit Data">
+                                <i class="fa-regular fa-pen-to-square"></i>
+                            </button>
+                            <button type="button" class="btn btn-danger btn-sm" id="deleteSingleItemBtn" title="Hapus Barang">
+                                <i class="fa-regular fa-trash-can"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header bg-warning text-dark">
+                        <h5 class="modal-title" id="editModalLabel"><i class="fa-regular fa-pen-to-square"></i> Edit Data Barang</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form id="editForm">
+                        <div class="modal-body">
+                            <input type="hidden" id="editItemId">
+                            <div class="mb-3">
+                                <label class="form-label">Link Gambar Barang</label>
+                                <input type="url" class="form-control" id="editLinkGambar" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Nama Barang</label>
+                                <input type="text" class="form-control" id="editNamaBarang" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Merek</label>
+                                <input type="text" class="form-control" id="editMerek" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Tipe</label>
+                                <input type="text" class="form-control" id="editTipe" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Tanggal Beli</label>
+                                <input type="date" class="form-control" id="editTanggalBeli" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Harga Beli</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">Rp</span>
+                                    <input type="text" class="form-control" id="editHargaBeli" required>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Nama Toko</label>
+                                <input type="text" class="form-control" id="editNamaToko" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label" id="editLabelAlamat">Alamat/Link Toko</label>
+                                <input type="text" class="form-control" id="editAlamatToko" required>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                            <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="modal fade" id="resetOptionsModal" tabindex="-1" aria-labelledby="resetOptionsModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-md"> <div class="modal-content">
+                    <div class="modal-header bg-primary text-white">
+                        <h5 class="modal-title" id="resetOptionsModalLabel">Opsi Atur Ulang</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p class="text-dark small">Pilih jenis aksi atur ulang yang diinginkan:</p>
+                        <div class="row">
+                            <div class="col-6">
+                                <button type="button" class="btn btn-danger w-100" id="resetCodeAndDataBtn" style="font-weight: bold;">
+                                    <i class="fas fa-recycle"></i> Atur Ulang Data
+                                </button>
+                            </div>
+                            <div class="col-6">
+                                <button type="button" class="btn btn-warning w-100" id="resetFormFieldsBtn" data-bs-dismiss="modal" style="font-weight: bold;">
+                                    <i class="fas fa-eraser"></i> Bersihkan Form
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+            </div>
+        </div>
+        
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyBdt-2IQflUWNx3sdI1QHPMe1vAzsXAZcY",
+      authDomain: "ajproject-log.firebaseapp.com",
+      databaseURL: "https://ajproject-log-default-rtdb.firebaseio.com",
+      projectId: "ajproject-log",
+      storageBucket: "ajproject-log.appspot.com",
+      messagingSenderId: "113688767697",
+      appId: "1:113688767697:web:ca9ad012667acb7474a9f0"
+    };
+    firebase.initializeApp(firebaseConfig);
+    // Path sesuai permintaan Anda
+    const db = firebase.database().ref("Arsip Barang");
+</script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('inventoryForm');
+            const inventoryListContainer = document.getElementById('inventory-list');
+            const totalItemsSpan = document.getElementById('totalItems');
+            const jenisToko = document.getElementById('jenisToko');
+            const labelAlamat = document.getElementById('labelAlamatToko');
+            const inputAlamat = document.getElementById('alamatToko');
+            const inputHarga = document.getElementById('hargaBeli');
+            const searchInput = document.getElementById('searchInput');
+            const alamatTokoFeedback = document.getElementById('alamatTokoFeedback');
+            const itemCodeBox = document.getElementById('itemCodeBox');
+            const generatedCodeEl = document.getElementById('generatedCode');
+            const copyCodeBtn = document.getElementById('copyCodeBtn');
+            const detailModal = document.getElementById('detailModal');
+            const statusDropdownMenu = document.getElementById('statusDropdownMenu');
+            const statusDropdownBtn = document.getElementById('statusDropdownBtn');
+            const resetOptionsModal = document.getElementById('resetOptionsModal');
+            const resetFormFieldsBtn = document.getElementById('resetFormFieldsBtn');
+            const resetCodeAndDataBtn = document.getElementById('resetCodeAndDataBtn');
+            const customToast = document.getElementById('customToast');
+            const toastMsgContent = document.getElementById('toastMsgContent');
+            const backToTopBtn = document.getElementById("backToTopBtn");
+            const deleteSingleItemBtn = document.getElementById("deleteSingleItemBtn");
+
+            const editForm = document.getElementById('editForm');
+            const bootstrapDetailModal = new bootstrap.Modal(detailModal);
+            const bootstrapEditModal = new bootstrap.Modal(document.getElementById('editModal'));
+
+            window.onscroll = function() {
+                const listTab = document.getElementById('list-pane');
+                if (listTab.classList.contains('active') && (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300)) {
+                    backToTopBtn.style.display = "block";
+                } else {
+                    backToTopBtn.style.display = "none";
+                }
+            };
+
+            backToTopBtn.onclick = function() {
+                window.scrollTo({top: 0, behavior: 'smooth'});
+            };
+
+            function formatRupiah(angka) {
+                if (!angka) return '';
+                let numberString = angka.toString().replace(/[^0-9]/g, ''); 
+                if (numberString === '') return '';
+                let sisa = numberString.length % 3;
+                let rupiah = numberString.substr(0, sisa);
+                let ribuan = numberString.substr(sisa).match(/\d{3}/gi);
+                if (ribuan) {
+                    let separator = sisa ? '.' : '';
+                    rupiah += separator + ribuan.join('.');
+                }
+                return rupiah;
+            }
+
+            function cleanRupiah(rupiah) {
+                return rupiah.replace(/[^0-9]/g, '');
+            }
+
+            function formatDateDisplay(dateString) {
+                if (!dateString) return '-';
+                const date = new Date(dateString);
+                const day = String(date.getDate()).padStart(2, '0');
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const year = date.getFullYear();
+                return `${day}-${month}-${year}`;
+            }
+
+            function toggleNoDataMessage(inventory) {
+                const noDataMessage = document.getElementById('noDataMessage');
+                if (inventory.length === 0) {
+                    noDataMessage.style.display = 'block';
+                } else {
+                    noDataMessage.style.display = 'none';
+                }
+            }
+
+            const STATUS_MAP = {
+                'Baik': { text: 'BAIK', class: 'Baik', icon: 'bi-patch-check-fill' },
+                'Rusak Ringan': { text: 'RUSAK RINGAN', class: 'Rusak-Ringan', icon: 'bi-patch-exclamation-fill' },
+                'Rusak Berat': { text: 'RUSAK BERAT', class: 'Rusak-Berat', icon: 'bi-patch-exclamation-fill' },
+                'Hilang': { text: 'HILANG', class: 'Hilang', icon: 'bi-patch-question-fill' },
+            };
+
+            function getStatusInfo(statusKey) {
+                return STATUS_MAP[statusKey] || STATUS_MAP['Baik'];
+            }
+
+            function updateModalStatusDisplay(itemId, status) {
+                const statusInfo = getStatusInfo(status);
+                if (statusDropdownBtn) {
+                    Object.values(STATUS_MAP).forEach(info => {
+                        statusDropdownBtn.classList.remove(`btn-outline-${info.class}`);
+                    });
+                    statusDropdownBtn.classList.add(`btn-outline-${statusInfo.class}`);
+                    statusDropdownBtn.innerHTML = `<i class="bi ${statusInfo.icon}"></i> ${statusInfo.text}`;
+                    statusDropdownBtn.setAttribute('data-current-status', status);
+                    const statusDetailEl = document.getElementById('detailStatusValue');
+                    if (statusDetailEl) statusDetailEl.textContent = status;
+                }
+            }
+
+            function updateItemStatus(itemId, newStatus) {
+                let inventory = loadInventory();
+                const itemIndex = inventory.findIndex(item => item.id === itemId);
+                if (itemIndex !== -1 && inventory[itemIndex].status !== newStatus) {
+                    inventory[itemIndex].status = newStatus;
+                    saveInventory(inventory); 
+                    updateModalStatusDisplay(itemId, newStatus);
+                }
+            }
+
+            function loadInventory() {
+                return JSON.parse(localStorage.getItem('inventoryData')) || [];
+            }
+
+            function saveInventory(inventory) {
+                try {
+                    localStorage.setItem('inventoryData', JSON.stringify(inventory));
+                } catch (e) {
+                    console.error("Gagal menyimpan data ke LocalStorage:", e);
+                }
+                renderInventory(inventory);
+            }
+
+            function getFormData() {
+                const cleanedPrice = cleanRupiah(inputHarga.value);
+                return {
+                    id: Date.now(),
+                    linkGambar: document.getElementById('linkGambar').value || 'https://via.placeholder.com/400x120?text=No+Image',
+                    namaBarang: document.getElementById('namaBarang').value.trim(),
+                    merek: document.getElementById('merek').value.trim(),
+                    tipe: document.getElementById('tipe').value.trim(),
+                    kategori: document.getElementById('kategori').value,
+                    tanggalBeli: document.getElementById('tanggalBeli').value,
+                    hargaBeli: cleanedPrice, 
+                    hargaBeliFormatted: formatRupiah(cleanedPrice), 
+                    jenisToko: jenisToko.value,
+                    namaToko: document.getElementById('namaToko').value,
+                    alamatToko: inputAlamat.value,
+                    itemCode: '', 
+                    status: 'Baik' 
+                };
+            }
+                      
+            function getCategoryPrefix(categoryName) {
+                if (!categoryName) return 'XXX';
+                const cleanName = categoryName.replace(/[^a-zA-Z\s]/g, '').toUpperCase();
+                const map = {
+                    'ELEKTRONIK': 'ELK',
+                    'PERALATAN KANTOR': 'PRK', 
+                    'FURNITURE': 'FTR',
+                    'LAINNYA': 'LNY',
+                };
+                for (const key in map) {
+                    if (cleanName.includes(key)) return map[key];
+                }
+                return cleanName.substring(0, 3).toUpperCase().padEnd(3, 'X');
+            }
+
+            function getNextGlobalId() {
+                let globalCounter = parseInt(localStorage.getItem('globalCounterData')) || 1;
+                localStorage.setItem('globalCounterData', globalCounter + 1);
+                return globalCounter; 
+            }
+
+function updateAndGenerateCode(category, namaBarang, merek, tipe) {
+    let itemTypeMap = JSON.parse(localStorage.getItem('itemTypeMapData')) || {}; 
+    let lastItemTypeCounter = JSON.parse(localStorage.getItem('lastItemTypeCounterData')) || {}; 
+    let unitCounterMap = JSON.parse(localStorage.getItem('unitCounterMapData')) || {}; 
+    
+    // --- LOGIKA RECYCLE START ---
+    let recycledUnits = JSON.parse(localStorage.getItem('reusableUnitIdsData')) || {};
+    let recycledGlobals = JSON.parse(localStorage.getItem('reusableGlobalIds')) || [];
+    // --- LOGIKA RECYCLE END ---
+
+    const prefix = getCategoryPrefix(category);
+    const itemKey = `${prefix}_${namaBarang.toLowerCase()}_${merek.toLowerCase()}_${tipe.toLowerCase()}`.replace(/\s+/g, '');
+
+    // 1. Tentukan ItemType ID (Bagian depan: ELK001)
+    if (!itemTypeMap[prefix]) itemTypeMap[prefix] = {};
+    if (!lastItemTypeCounter[prefix]) lastItemTypeCounter[prefix] = 1;
+    let itemTypeId;
+    if (itemTypeMap[prefix][itemKey]) {
+        itemTypeId = itemTypeMap[prefix][itemKey];
+    } else {
+        const nextId = lastItemTypeCounter[prefix];
+        itemTypeId = nextId.toString().padStart(3, '0');
+        itemTypeMap[prefix][itemKey] = itemTypeId;
+        lastItemTypeCounter[prefix] = nextId + 1;
+    }
+
+    // 2. Tentukan Unit ID (Bagian tengah: 01) - RECYCLE CHECK
+    let unitId;
+    if (recycledUnits[itemKey] && recycledUnits[itemKey].length > 0) {
+        recycledUnits[itemKey].sort((a, b) => a - b);
+        unitId = recycledUnits[itemKey].shift().toString().padStart(2, '0');
+        localStorage.setItem('reusableUnitIdsData', JSON.stringify(recycledUnits));
+    } else {
+        let currentUnitCount = (unitCounterMap[itemKey] || 0) + 1;
+        unitCounterMap[itemKey] = currentUnitCount;
+        unitId = currentUnitCount.toString().padStart(2, '0');
+    }
+
+    // 3. Tentukan Global ID (Bagian belakang: 0001) - RECYCLE CHECK
+    let globalId;
+    if (recycledGlobals.length > 0) {
+        recycledGlobals.sort((a, b) => a - b);
+        globalId = recycledGlobals.shift().toString().padStart(4, '0');
+        localStorage.setItem('reusableGlobalIds', JSON.stringify(recycledGlobals));
+    } else {
+        let globalCounter = parseInt(localStorage.getItem('globalCounterData')) || 1;
+        globalId = globalCounter.toString().padStart(4, '0');
+        localStorage.setItem('globalCounterData', globalCounter + 1);
+    }
+
+    const itemCode = `${prefix}${itemTypeId}-${unitId}-${globalId}`;
+    
+    // Simpan Map kembali
+    localStorage.setItem('itemTypeMapData', JSON.stringify(itemTypeMap));
+    localStorage.setItem('lastItemTypeCounterData', JSON.stringify(lastItemTypeCounter));
+    localStorage.setItem('unitCounterMapData', JSON.stringify(unitCounterMap));
+    
+    return itemCode;
+}
+            
+            function resetCodeCounters() {
+                localStorage.removeItem('globalCounterData');
+                localStorage.removeItem('itemTypeMapData');
+                localStorage.removeItem('lastItemTypeCounterData');
+                localStorage.removeItem('unitCounterMapData'); 
+                localStorage.removeItem('reusableGlobalIds');
+                localStorage.removeItem('reusableUnitIdsData'); 
+            }
+
+            function createInventoryCard(item) {
+                const statusInfo = getStatusInfo(item.status || 'Baik');                 
+                const badgeClass = statusInfo.class.toLowerCase().replace(/-/g, '');
+                const col = document.createElement('div');
+                col.className = 'col';
+                col.innerHTML = `
+                    <div class="card item-card h-100">
+                        <div class="image-wrapper"> 
+                            <span class="status-badge badge ${badgeClass}">${statusInfo.text}</span>
+                            <img src="${item.linkGambar}" class="card-img-top" alt="Gambar ${item.namaBarang}" onerror="this.onerror=null;this.src='https://via.placeholder.com/400x120?text=No+Image';">
+                        </div>
+                        <div class="card-body p-2">
+                            <h6 class="card-title text-primary small" style="margin-bottom: 1px;">${item.itemCode}</h6>
+                            <p class="card-text text-muted" style="font-size: 0.75rem; margin-bottom: 1px;">${item.namaBarang || '-'}</p>
+                            <p class="card-text text-success fw-bold" style="font-size: 0.8rem;">Rp${item.hargaBeliFormatted}</p>
+                        </div>
+                        <div class="card-footer bg-white border-0 p-2">
+                            <button class="btn btn-sm btn-primary text-white w-100" style="margin-top: -10px; font-size:13px;" data-bs-toggle="modal" data-bs-target="#detailModal" data-item-id="${item.id}">
+                                <i class="bi bi-info-circle"></i> Lihat Selengkapnya
+                            </button>
+                        </div>
+                    </div>
+                `;
+                return col;
+            }
+
+            function renderInventory(inventory) {
+                inventoryListContainer.innerHTML = '';
+                toggleNoDataMessage(inventory);
+                const sortedInventory = [...inventory].reverse();
+                sortedInventory.forEach(item => {
+                    inventoryListContainer.appendChild(createInventoryCard(item));
+                });
+                totalItemsSpan.textContent = `Total: ${inventory.length} Barang`;
+            }
+
+            function updateAlamatField() {
+                 if (jenisToko.value === 'Online') {
+                    labelAlamat.innerHTML = 'Link Pembelian <span class="text-danger">*</span>';
+                    inputAlamat.setAttribute('placeholder', 'Masukkan URL link pembelian (e.g., Tokopedia, Shopee)');
+                    inputAlamat.setAttribute('type', 'url'); 
+                    inputAlamat.setAttribute('required', 'required'); 
+                    alamatTokoFeedback.textContent = 'Link pembelian wajib diisi dan merupakan URL yang valid.';
+                } else { 
+                    labelAlamat.innerHTML = 'Alamat Toko <span class="text-danger">*</span>'; 
+                    inputAlamat.setAttribute('placeholder', 'Masukkan alamat lengkap toko');
+                    inputAlamat.setAttribute('type', 'text');
+                    inputAlamat.setAttribute('required', 'required');
+                    alamatTokoFeedback.textContent = 'Alamat toko wajib diisi.';
+                }
+            }
+
+            function cleanFormState() {
+                setTimeout(function() {
+                    form.classList.remove('was-validated');
+                    jenisToko.value = 'Offline'; 
+                    updateAlamatField(); 
+                    itemCodeBox.classList.remove('show');
+                    itemCodeBox.classList.add('d-none');
+                    customToast.style.display = 'none';
+                }, 50);
+            }
+
+            form.addEventListener('submit', function(event) {
+                event.preventDefault();
+                const originalHarga = inputHarga.value; 
+                inputHarga.value = cleanRupiah(originalHarga); 
+                if (!form.checkValidity()) {
+                    form.classList.add('was-validated');
+                    inputHarga.value = originalHarga; 
+                    itemCodeBox.classList.remove('show');
+                    itemCodeBox.classList.add('d-none');
+                    return; 
+                }
+                const formData = getFormData();
+                const generatedCode = updateAndGenerateCode(formData.kategori, formData.namaBarang, formData.merek, formData.tipe);
+                formData.itemCode = generatedCode;
+                const inventory = loadInventory();
+                inventory.push(formData);
+                saveInventory(inventory); 
+                db.child(generatedCode).set(formData);
+
+                generatedCodeEl.textContent = generatedCode;
+                itemCodeBox.classList.remove('d-none');
+                itemCodeBox.classList.add('show');
+
+                toastMsgContent.innerHTML = `Disimpan dengan kode <strong>${generatedCode}</strong>`;
+                customToast.style.display = 'block';
+                customToast.classList.remove('animate-slide-right');
+                customToast.classList.add('animate-zoom');
+
+                customToast.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+                setTimeout(() => {
+                    customToast.classList.remove('animate-zoom');
+                    customToast.classList.add('animate-slide-right');
+                    setTimeout(() => {
+                        customToast.style.display = 'none';
+                    }, 500);
+                }, 4000);
+            });
+
+            copyCodeBtn.addEventListener('click', function() {
+                const code = generatedCodeEl.textContent;
+                navigator.clipboard.writeText(code).then(() => {
+                    copyCodeBtn.innerHTML = '<i class="bi bi-clipboard-check"></i> Disalin!';
+                    setTimeout(() => {
+                        copyCodeBtn.innerHTML = '<i class="bi bi-clipboard"></i> Salin Kode';
+                    }, 2000);
+                }).catch(err => {
+                    alert('Gagal menyalin kode. Browser tidak mengizinkan.');
+                });
+            });
+
+            detailModal.addEventListener('show.bs.modal', function (event) {
+                const button = event.relatedTarget;
+                const itemId = parseInt(button.getAttribute('data-item-id'));
+                const inventory = loadInventory();
+                const item = inventory.find(i => i.id === itemId);
+                const modalBody = document.getElementById('modal-body-content');
+                modalBody.classList.add('desktop-layout');
+                
+                if (item) {
+                    const currentStatus = item.status || 'Baik';                    
+                    statusDropdownBtn.setAttribute('data-item-id', item.id); 
+                    modalBody.innerHTML = `
+                        <div class="image-container-desktop text-center mb-3 mb-md-0">
+                            <img src="${item.linkGambar}" class="img-fluid rounded" alt="${item.namaBarang}" onerror="this.onerror=null;this.src='https://via.placeholder.com/300x150?text=No+Image';">
+                        </div>
+                        <div> 
+                            <ul class="list-group list-group-flush small"> 
+                                <li class="list-group-item"><strong>Nama Barang</strong><span class="colon">:</span><span class="data-content">${item.namaBarang}</span></li>
+                                <li class="list-group-item"><strong>Merek, Tipe</strong><span class="colon">:</span><span class="data-content">${item.merek || '-'}, ${item.tipe || '-'}</span></li>
+                                <li class="list-group-item"><strong>Kategori</strong><span class="colon">:</span><span class="data-content">${item.kategori || '-'}</span></li>
+                                <li class="list-group-item"><strong>Tgl. Beli</strong><span class="colon">:</span><span class="data-content">${formatDateDisplay(item.tanggalBeli)}</span></li>
+                                <li class="list-group-item"><strong>Harga Beli</strong><span class="colon">:</span><span class="data-content">Rp${item.hargaBeliFormatted}</span></li>
+                                <li class="list-group-item"><strong>Toko ${item.jenisToko}</strong><span class="colon">:</span><span class="data-content">${item.namaToko}</span></li>
+                                <li class="list-group-item"><strong>${item.jenisToko === 'Online' ? 'Link Produk' : 'Alamat Toko'}</strong><span class="colon">:</span><span class="data-content">${item.alamatToko}</span></li>
+                            </ul>
+                        </div>
+                    `;
+                    detailModal.querySelector('.modal-title').textContent = `${item.itemCode}`;                    
+                    updateModalStatusDisplay(item.id, currentStatus);
+
+                    deleteSingleItemBtn.onclick = function() {
+    if (confirm(`Yakin ingin menghapus ${item.itemCode}?`)) {
+        let inv = loadInventory();
+        
+        // --- LOGIKA RECYCLE ID ---
+        const parts = item.itemCode.split('-');
+        const prefix = item.itemCode.substring(0, 3);
+        const unitPart = parseInt(parts[1]);
+        const globalPart = parseInt(parts[2]);
+        const itemKey = `${prefix}_${item.namaBarang.toLowerCase()}_${item.merek.toLowerCase()}_${item.tipe.toLowerCase()}`.replace(/\s+/g, '');
+
+        let recUnits = JSON.parse(localStorage.getItem('reusableUnitIdsData')) || {};
+        let recGlobals = JSON.parse(localStorage.getItem('reusableGlobalIds')) || [];
+        if(!recUnits[itemKey]) recUnits[itemKey] = [];
+        recUnits[itemKey].push(unitPart);
+        recGlobals.push(globalPart);
+        localStorage.setItem('reusableUnitIdsData', JSON.stringify(recUnits));
+        localStorage.setItem('reusableGlobalIds', JSON.stringify(recGlobals));
+        // --- END LOGIKA RECYCLE ---
+
+        // Hapus di Lokal
+        const newInv = inv.filter(i => i.id !== item.id);
+        saveInventory(newInv);
+
+        // Hapus di Firebase (TAMBAHKAN BARIS INI)
+        db.child(item.id).remove(); 
+
+        bootstrapDetailModal.hide();
+        alert(`${item.itemCode} berhasil dihapus dari sistem dan awan.`);
+    }
+};
+
+                    document.getElementById('editItemBtn').onclick = function() {
+                        bootstrapDetailModal.hide();
+                        openEditModal(item);
+                    };
+                }
+            });
+
+            function openEditModal(item) {
+                document.getElementById('editItemId').value = item.id;
+                document.getElementById('editLinkGambar').value = item.linkGambar;
+                document.getElementById('editNamaBarang').value = item.namaBarang;
+                document.getElementById('editMerek').value = item.merek;
+                document.getElementById('editTipe').value = item.tipe;
+                document.getElementById('editTanggalBeli').value = item.tanggalBeli;
+                document.getElementById('editHargaBeli').value = item.hargaBeliFormatted;
+                document.getElementById('editNamaToko').value = item.namaToko;
+                document.getElementById('editAlamatToko').value = item.alamatToko;
+                document.getElementById('editLabelAlamat').textContent = item.jenisToko === 'Online' ? 'Link Pembelian' : 'Alamat Toko';
+                
+                bootstrapEditModal.show();
+            }
+
+            document.getElementById('editHargaBeli').addEventListener('input', function() {
+                this.value = formatRupiah(this.value);
+            });
+
+            editForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const id = parseInt(document.getElementById('editItemId').value);
+                const inventory = loadInventory();
+                const index = inventory.findIndex(item => item.id === id);
+
+                if (index !== -1) {
+                    const priceRaw = cleanRupiah(document.getElementById('editHargaBeli').value);
+                    inventory[index].linkGambar = document.getElementById('editLinkGambar').value;
+                    inventory[index].namaBarang = document.getElementById('editNamaBarang').value;
+                    inventory[index].merek = document.getElementById('editMerek').value;
+                    inventory[index].tipe = document.getElementById('editTipe').value;
+                    inventory[index].tanggalBeli = document.getElementById('editTanggalBeli').value;
+                    inventory[index].hargaBeli = priceRaw;
+                    inventory[index].hargaBeliFormatted = formatRupiah(priceRaw);
+                    inventory[index].namaToko = document.getElementById('editNamaToko').value;
+                    inventory[index].alamatToko = document.getElementById('editAlamatToko').value;
+
+                    saveInventory(inventory);
+                    bootstrapEditModal.hide();
+                    alert('Data berhasil diperbarui!');
+                }
+            });
+
+            detailModal.addEventListener('hide.bs.modal', function () {
+                document.getElementById('modal-body-content').classList.remove('desktop-layout');
+            });
+
+            statusDropdownMenu.querySelectorAll('.status-option').forEach(option => {
+                option.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const newStatus = this.getAttribute('data-status');
+                    const itemIdFromButton = parseInt(statusDropdownBtn.getAttribute('data-item-id'));
+                    if (!isNaN(itemIdFromButton)) updateItemStatus(itemIdFromButton, newStatus);
+                });
+            });
+            
+            if (resetFormFieldsBtn) {
+                resetFormFieldsBtn.addEventListener('click', function() {
+                    form.reset(); 
+                    cleanFormState(); 
+                });
+            }
+
+            if (resetCodeAndDataBtn) {
+    resetCodeAndDataBtn.addEventListener('click', function() {
+        if (confirm('PERINGATAN KERAS: Tindakan ini akan menghapus SEMUA data di web dan Firebase. Lanjutkan?')) {
+            // 1. Reset Counter Kode
+            resetCodeCounters(); 
+            
+            // 2. Hapus Data di LocalStorage
+            localStorage.removeItem('inventoryData'); 
+
+            // 3. Hapus Data di Firebase (TAMBAHKAN BARIS INI)
+            db.remove(); 
+
+            alert('Semua data berhasil dibersihkan total.');
+            location.reload(); 
+        }
+    });
+}
+
+            renderInventory(loadInventory());
+            jenisToko.addEventListener('change', updateAlamatField);
+            
+            inputHarga.addEventListener('input', function(e) { 
+                let value = this.value.replace(/[^0-9]/g, '');
+                this.value = formatRupiah(value);
+            });
+            
+            inputHarga.addEventListener('blur', function() { 
+                let value = this.value.replace(/[^0-9]/g, '');
+                this.value = formatRupiah(value);
+            });
+
+            const listTabBtn = document.getElementById('list-tab');
+            listTabBtn.addEventListener('shown.bs.tab', function (e) {
+                renderInventory(loadInventory());
+                window.dispatchEvent(new Event('scroll'));
+            });
+
+            const inputTabBtn = document.getElementById('input-tab');
+            inputTabBtn.addEventListener('shown.bs.tab', function (e) {
+                backToTopBtn.style.display = "none";
+            });
+
+            searchInput.addEventListener('keyup', function() {
+                const query = searchInput.value.toLowerCase();
+                const inventory = loadInventory();
+                const filteredInventory = inventory.filter(item => 
+                    item.namaBarang.toLowerCase().includes(query) ||
+                    item.merek.toLowerCase().includes(query) ||
+                    item.kategori.toLowerCase().includes(query) ||
+                    (item.itemCode || '').toLowerCase().includes(query)
+                );
+                renderInventory(filteredInventory);
+            });
+            
+            updateAlamatField();
+            
+            // Fungsi Ekspor ke Excel
+const exportExcelBtn = document.getElementById('exportExcelBtn');
+if (exportExcelBtn) {
+    exportExcelBtn.addEventListener('click', function() {
+        const inventory = loadInventory(); // Mengambil data terbaru dari LocalStorage
+        
+        if (inventory.length === 0) {
+            alert("Tidak ada data untuk diekspor!");
+            return;
+        }
+
+        // 1. Format data agar rapi di Excel
+        const dataUntukExcel = inventory.map((item, index) => ({
+            "No": index + 1,
+            "Kode Barang": item.itemCode,
+            "Nama Barang": item.namaBarang,
+            "Merek": item.merek,
+            "Tipe": item.tipe,
+            "Kategori": item.kategori,
+            "Tanggal Beli": item.tanggalBeli,
+            "Harga Beli": Number(item.hargaBeli),
+            "Status": item.status,
+            "Nama Toko": item.namaToko,
+            "Alamat/Link Toko": item.alamatToko
+        }));
+
+        // 2. Proses pembuatan file Excel
+        const worksheet = XLSX.utils.json_to_sheet(dataUntukExcel);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Data Barang");
+
+        // 3. Download file
+        const fileName = `ArsipBarang_${new Date().toLocaleDateString()}.xlsx`;
+        XLSX.writeFile(workbook, fileName);
+    });
+}
+        });
+    </script>
+</body>
+</html>
