@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instruksi Pengiriman Paket</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-color: #f7f9fc;
+            --card-bg: #ffffff;
+            --text-main: #2d3748;
+            --text-muted: #718096;
+            --primary: #3182ce;
+            --whatsapp: #25D366;
+            --success: #38a169;
+            --success-light: #e6fffa;
+            --warning: #dd6b20;
+            --star: #ecc94b;
+            --border-light: #edf2f7;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh; 
+        }
+        
+        #intro-screen {
+            position: fixed;
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%;
+            background-color: #ffffff;
+            z-index: 99999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header { text-align: center; margin-bottom: 24px; }
+        header h1 { font-size: 18px; margin: 0 0 8px 0; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        header p { color: var(--text-muted); margin: 0; font-size: 15px; }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.03);
+            text-align: center;
+            position: relative;
+        }
+
+        .card h2 { font-size: 18px; margin-top: 0; margin-bottom: 16px; border-bottom: 1px solid var(--border-light); padding-bottom: 12px; }
+        .info-text { font-size: 16px; line-height: 1.5; margin-bottom: 12px; margin-top: 0; }
+        .info-alamat { font-size: 16px; line-height: 1.2; margin-bottom: 12px; margin-top: 0; }
+        .info-red { font-size: 15px; line-height: 1.2; background: #fee2e2; border-radius: 12px; border: 1.2px dashed #dc2626; margin-bottom: 12px; padding: 4px; }
+        .info-green { font-size: 15px; line-height: 1.2; background: #dcfce7; border-radius: 12px; border: 1.2px dashed #16a34a; margin-bottom: 12px; padding: 4px; }
+        .highlight { font-weight: 600; color: var(--primary); }
+
+        .photo-box { display: block; width: 100%; height: 200px; object-fit: cover; border-radius: 12px; background-color: var(--border-light); margin-bottom: 8px; }
+        .image-caption { font-size: 13px; color: var(--text-muted); margin-top: 0; margin-bottom: 8px; font-style: italic; }
+
+        .slider-wrapper {
+            position: relative;
+            width: 100%;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 12px;
+            background-color: var(--border-light);
+        }
+        .slider-container {
+            display: flex;
+            transition: transform 0.4s ease-in-out;
+            width: 100%;
+        }
+        .slide {
+            min-width: 100%;
+            height: 200px;
+            object-fit: cover;
+            display: block;
+        }
+        .slider-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(45, 55, 72, 0.6);
+            color: #ffffff;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 2;
+            transition: background-color 0.2s;
+        }
+        .slider-btn:active { background-color: rgba(45, 55, 72, 0.9); }
+        .slider-btn.prev { left: 8px; }
+        .slider-btn.next { right: 8px; }
+        .slider-dots {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            margin-bottom: 30px;
+        }
+        .dot {
+            width: 8px;
+            height: 8px;
+            background-color: #cbd5e0;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.2s;
+        }
+        .dot.active {
+            background-color: var(--primary);
+            transform: scale(1.2);
+        }
+
+        .btn {
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            width: 100%; padding: 14px; border-radius: 12px; text-decoration: none;
+            font-weight: 600; font-size: 16px; color: white; margin-bottom: 12px;
+            margin-top: 0; transition: opacity 0.2s; border: none; cursor: pointer;
+        }
+
+        .btn:active { opacity: 0.8; }
+        .btn-wa { background-color: var(--whatsapp); margin-bottom: 0; }
+        .btn-maps { background-color: var(--primary); margin-bottom: 0; }
+        .btn-scan { background-color: var(--text-main); margin-bottom: 0; }
+        .btn-upload { background-color: var(--success); margin-bottom: 0;}
+        .btn-submit { background-color: var(--primary); margin-bottom: 0;}
+        
+        .btn-secondary { background-color: var(--border-light); color: var(--text-main); margin-bottom: 0; }
+
+        input[type="file"] { display: none; }
+
+        .ribbon-wrapper {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 85px;
+            height: 85px;
+            overflow: hidden;
+            border-top-right-radius: 16px;
+            z-index: 10;
+        }
+
+        .ribbon {
+            position: absolute;
+            top: 16px;
+            right: -24px;
+            width: 100px;
+            text-align: center;
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #ffffff;
+            padding: 4px 0;
+            transform: rotate(45deg);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .tag-important {
+            background-color: #e53e3e;
+        }
+
+        .tag-optional {
+            background-color: #718096;
+        }
+
+        #halaman-modal {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: var(--bg-color);
+            z-index: 9999;
+            overflow-y: auto;
+            display: none;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .modal-container {
+            width: 100%;
+            max-width: 480px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container::after,
+        .modal-container::after {
+            content: "";
+            display: block;
+            height: 120px;
+            flex-shrink: 0;
+            width: 100%;
+        }
+
+        #area-konfirmasi-content { display: flex; flex-direction: column; gap: 16px; }
+
+        #reader {
+            position: relative;
+            width: 100%; height: 140px; border-radius: 12px; overflow: hidden;
+            display: none; background-color: #000;
+        }
+        #reader video { width: 100% !important; height: 100% !important; object-fit: cover !important; }
+
+        /* Siku Scanner */
+        .scanner-corner {
+            position: absolute;
+            width: 40px; height: 40px;
+            border: 4px solid #ffffff;
+            z-index: 10;
+            transition: border-color 0.3s;
+        }
+        .corner-tl { top: 10px; left: 10px; border-right: none; border-bottom: none; }
+        .corner-tr { top: 10px; right: 10px; border-left: none; border-bottom: none; }
+        .corner-bl { bottom: 10px; left: 10px; border-right: none; border-top: none; }
+        .corner-br { bottom: 10px; right: 10px; border-left: none; border-top: none; }
+
+        .scan-success .scanner-corner { border-color: var(--success); }
+
+        #post-scan-area { display: none; flex-direction: column; align-items: center; gap: 12px; }
+        .success-badge { display: inline-flex; align-items: center; gap: 6px; background-color: var(--success-light); color: #2f855a; padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: bold; }
+        .resi-box { width: 100%; background-color: var(--bg-color); border: 1px dashed #cbd5e0; border-radius: 12px; padding: 12px; font-family: monospace; font-size: 16px; font-weight: bold; color: var(--text-main); letter-spacing: 1px; text-align: center; max-height: 76px; overflow-y: auto; }
+
+        #foto-container { display: none; width: 100%; background-color: var(--bg-color); padding: 16px; border-radius: 16px; flex-direction: column; gap: 12px; align-items: center; box-sizing: border-box; }
+        .preview-title { font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); font-weight: bold; }
+        #canvas-preview { width: 100%; aspect-ratio: 1 / 1; border-radius: 10px; display: block; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid var(--border-light); }
+
+        #upload-status { font-size: 14px; font-weight: bold; padding: 12px; border-radius: 12px; width: 100%; text-align: center; }
+
+        .action-buttons {
+            display: flex; gap: 12px; width: 100%;
+        }
+
+        #rating-area { display: none; background-color: var(--bg-color); border-radius: 16px; padding: 24px 20px; flex-direction: column; align-items: center; gap: 8px; animation: fadeIn 0.5s; text-align: center; }
+        .icon-circle-success { width: 48px; height: 48px; background-color: var(--success-light); color: var(--success); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; margin-bottom: 4px; }
+        #rating-area h3 { margin: 0; font-size: 18px; color: var(--text-main); }
+        #rating-area p { margin: 0; font-size: 14px; color: var(--text-muted); margin-bottom: 8px; }
+        .stars { display: flex; justify-content: center; gap: 12px; font-size: 28px; color: var(--star); }
+        .stars i { cursor: pointer; transition: transform 0.2s; }
+        .stars i:active { transform: scale(0.8); }
+        #rating-text { margin-top: 8px !important; font-weight: bold; font-size: 14px !important; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+    <div id="intro-screen">
+        <script src="https://unpkg.com/@dotlottie/player-component@latest/dist/dotlottie-player.mjs" type="module"></script>
+        <dotlottie-player src="https://lottie.host/6995c31d-f064-43c6-a147-6db0cbb2d90f/dUU3Q23jeY.lottie" background="transparent" speed="1" style="width: 200px; height: 200px;" loop autoplay></dotlottie-player>
+    </div>
+
+    <div class="container" id="halaman-utama">
+        <header>
+            <h1>Halo, Bapak/Abang Kurir! <i class="fa-solid fa-hand-sparkles"></i></h1>
+            <p>Terima kasih sudah mengantarkan paket saya hari ini.</p>
+        </header>
+
+        <section class="card">
+            <h2>Penerima Paket</h2>
+            <p class="info-text" style="font-size: 16px;"><strong class="highlight"> Darwan</strong> atau <strong class="highlight">Anah Hasanah</strong></p> 
+            <a href="https://wa.me/6285771183370" class="btn btn-wa">
+                <i class="fa-brands fa-whatsapp fa-lg"></i> Hubungi Via WhatsApp
+            </a>
+        </section>
+
+        <section class="card">
+            <h2>Alamat Penerima</h2>
+            
+            <div class="slider-wrapper">
+                <button class="slider-btn prev" onclick="geserSlide(-1)"><i class="fa-solid fa-chevron-left"></i></button>
+                <div class="slider-container" id="slider-alamat">
+                    <img src="https://res.cloudinary.com/dz4w1sqiv/image/upload/v1780109121/Screenshot_2026-05-30-09-28-50-68_3d9111e2d3171bf4882369f490c087b4_mnegl0.jpg" alt="Gang Rumah" class="slide" data-caption="Foto gang menuju rumah.">
+                    <img src="https://res.cloudinary.com/dz4w1sqiv/image/upload/v1780109123/rumah_cds4ww.jpg" alt="Rumah" class="slide" data-caption="Foto rumah tampak depan.">
+                    <img src="https://via.placeholder.com/600x400?text=Foto+Pintu+Rumah" alt="No Image" class="slide" data-caption="Foto lainnya belum ditambahkan.">
+                </div>
+                <button class="slider-btn next" onclick="geserSlide(1)"><i class="fa-solid fa-chevron-right"></i></button>
+            </div>
+            
+            <div class="image-caption" id="slider-caption">Foto rumah tampak depan.</div>
+            
+            <div class="slider-dots" id="slider-dots">
+                <span class="dot active" onclick="lompatSlide(0)"></span>
+                <span class="dot" onclick="lompatSlide(1)"></span>
+                <span class="dot" onclick="lompatSlide(2)"></span>
+            </div>                        
+            
+            <p class="info-alamat">Dusun Krajan II, RT.005, RW.002, Desa Pasirtanjung, Kec.Lemahabang, Kab.Karawang, Jawa Barat, 41361</p>
+            <p class="info-text"><strong>Patokan:</strong> Rumah warna abu-abu <strong>No: </strong>23</p>
+            
+            <a href="https://goo.gl/maps/n1jkXq92ZHd2fYxS6" target="_blank" class="btn btn-maps">
+                <i class="fa-solid fa-map-location-dot"></i> Buka di Google Maps
+            </a>
+        </section>
+
+        <section class="card">
+            <div class="ribbon-wrapper">
+                <div class="ribbon tag-important">Penting</div>
+            </div>
+            <h2>Instruksi Penyimpanan</h2>            
+            <p class="info-red">Mohon untuk <strong style="color: red;">tidak menitipkan paket kepada siapapun</strong> jika penerima sedang tidak berada di rumah.</p>
+            <p class="info-green">Silakan simpan paket di atas <strong style="color: green;">palang pintu</strong> atau di atas <strong style="color: green;">rak sepatu.</strong></p>
+            
+            <img src="https://res.cloudinary.com/dz4w1sqiv/image/upload/v1780109124/IMG20230927104245_jtymlg.jpg" alt="Tempat Penyimpanan Paket" class="photo-box">
+            <div class="image-caption" style="margin-bottom: 0;">Foto atas palang pintu dan rak sepatu.</div>
+        </section>
+
+        <section class="card">
+            <div class="ribbon-wrapper">
+                <div class="ribbon tag-optional">Opsional</div>
+            </div>
+            <h2>Konfirmasi Kurir Paket</h2>
+            <p class="info-text">Buat laporan konfirmasi apabila paket telah disimpan sesuai instruksi.</p>
+            <button class="btn btn-scan" onclick="bukaHalamanScanner()">
+                <i class="fa-solid fa-expand"></i> Pindai Resi Paket
+            </button>
+        </section>
+    </div>
+
+    <div id="halaman-modal">
+        <div class="modal-container">
+            
+            <header style="margin-bottom: 16px;">
+                <h1 style="font-size: 20px;">Konfirmasi Penyimpanan Paket</h1>
+                <p>Ikuti langkah di bawah untuk menyelesaikan.</p>
+            </header>
+
+            <section class="card" style="margin-bottom: 0;">
+                <div id="area-konfirmasi-content">
+                    
+                    <div id="reader">
+                        <div class="scanner-corner corner-tl"></div>
+                        <div class="scanner-corner corner-tr"></div>
+                        <div class="scanner-corner corner-bl"></div>
+                        <div class="scanner-corner corner-br"></div>
+                    </div>
+                    
+                    <div id="instruksi-scanner-area">
+                        <p class="info-text" style="font-size: 14px; text-align: center;">Arahkan kotak scanner ke barcode resi.</p>
+                        <button class="btn btn-secondary" onclick="tutupHalamanScanner()">
+                            <i class="fa-solid fa-angles-left"></i> Batal & Kembali
+                        </button>
+                    </div>                    
+
+                    <div id="post-scan-area">
+                        <div class="success-badge" id="badge-resi"><i class="fa-solid fa-circle-check"></i> Resi Terpindai</div>
+                        <div class="resi-box" id="hasil-resi"></div>
+                        
+                        <button class="btn btn-secondary" id="btn-tambah-scan" onclick="tambahScan()" style="width: 100%; margin-top: -4px; margin-bottom: 12px; font-size: 14px; padding: 10px;">
+                            <i class="fa-solid fa-expand"></i> Pindai Resi Lainnya
+                        </button>
+                        
+                        <div id="foto-container">
+                            <span class="preview-title">Preview Foto Bukti</span>
+                            <canvas id="canvas-preview"></canvas>
+                        </div>
+
+                        <label class="btn btn-upload" id="btn-ambil-foto" style="width: 100%;">
+                            <i class="fa-solid fa-camera"></i> Ambil Foto Bukti
+                            <input type="file" accept="image/*" capture="environment" id="foto-bukti" onchange="previewDanWatermark(event)">
+                        </label>
+
+                        <div class="action-buttons" id="grup-tombol-kirim" style="display: none;">
+                            <label class="btn btn-secondary" style="flex: 1;">
+                                <i class="fa-solid fa-rotate"></i> Ulangi
+                                <input type="file" accept="image/*" capture="environment" onchange="previewDanWatermark(event)">
+                            </label>
+                            
+                            <button class="btn btn-submit" style="flex: 2;" onclick="kirimBukti()">
+                                <i class="fa-solid fa-paper-plane"></i> Kirim Laporan
+                            </button>
+                        </div>
+
+                        <div id="upload-status" style="display: none;"></div>
+                    </div>
+
+                    <div id="rating-area">
+                        <div class="icon-circle-success"><i class="fa-solid fa-check"></i></div>
+                        <h3>Terima Kasih Banyak! 🎉</h3>
+                        <p>Bantu kami dengan menilai pengalaman pengiriman ini.</p>
+                        
+                        <div class="stars">
+                            <i class="fa-regular fa-star" onclick="berikanRating(1)"></i>
+                            <i class="fa-regular fa-star" onclick="berikanRating(2)"></i>
+                            <i class="fa-regular fa-star" onclick="berikanRating(3)"></i>
+                            <i class="fa-regular fa-star" onclick="berikanRating(4)"></i>
+                            <i class="fa-regular fa-star" onclick="berikanRating(5)"></i>
+                        </div>
+                        <p id="rating-text"></p>
+
+                        <button class="btn btn-submit" id="btn-kirim-ulasan" onclick="kirimUlasan()" style="margin-top: 16px;">
+                            Kirim Bintang 
+                        </button>
+                        
+                        <button class="btn btn-secondary" id="btn-selesai" onclick="resetDanKembali()" style="margin-top: 16px; display: none;">
+                            Selesai & Kembali ke Awal
+                        </button>
+                    </div>
+
+                </div>
+            </section>
+            
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBdt-2IQflUWNx3sdI1QHPMe1vAzsXAZcY",
+            authDomain: "ajproject-log.firebaseapp.com",
+            databaseURL: "https://ajproject-log-default-rtdb.firebaseio.com",
+            projectId: "ajproject-log",
+            storageBucket: "ajproject-log.appspot.com",
+            messagingSenderId: "113688767697",
+            appId: "1:113688767697:web:ca9ad012667acb7474a9f0"
+        };
+        
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.database();
+
+        const CLOUDINARY_URL = "https://api.cloudinary.com/v1_1/dz4w1sqiv/image/upload";
+        const CLOUDINARY_UPLOAD_PRESET = "AJGallery";
+
+        let daftarResi = [];
+        let html5QrCode;
+        let finalImageDataUrl = ""; 
+        let currentPushRef = null;
+        let isRatingSubmitted = false;
+        let ratingPilihan = 0;
+        let indeksSlideSaatIni = 0;
+        let autoSlideInterval;
+        let isScanningPause = false;
+        
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                const intro = document.getElementById('intro-screen');
+                if(intro) {
+                    intro.style.opacity = '0';
+                    intro.style.visibility = 'hidden';
+                    setTimeout(() => {
+                        intro.style.display = 'none';
+                    }, 500);
+                }
+            }, 2500);
+        });
+
+        function mulaiAutoSlide() {
+            autoSlideInterval = setInterval(() => {
+                const slides = document.querySelectorAll('.slide');
+                indeksSlideSaatIni += 1;
+                if (indeksSlideSaatIni >= slides.length) indeksSlideSaatIni = 0;
+                updateSlider();
+            }, 3000);
+        }
+
+        function hentikanAutoSlide() {
+            clearInterval(autoSlideInterval);
+        }
+
+        function updateSlider() {
+            const slider = document.getElementById('slider-alamat');
+            const slides = document.querySelectorAll('.slide');
+            const dots = document.querySelectorAll('.dot');
+            const caption = document.getElementById('slider-caption');
+            
+            slider.style.transform = `translateX(-${indeksSlideSaatIni * 100}%)`;
+            
+            dots.forEach(dot => dot.classList.remove('active'));
+            if(dots[indeksSlideSaatIni]) dots[indeksSlideSaatIni].classList.add('active');
+            
+            if(slides[indeksSlideSaatIni]) caption.innerText = slides[indeksSlideSaatIni].getAttribute('data-caption');
+        }
+
+        function geserSlide(arah) {
+            hentikanAutoSlide();
+            const slides = document.querySelectorAll('.slide');
+            indeksSlideSaatIni += arah;
+            if (indeksSlideSaatIni >= slides.length) indeksSlideSaatIni = 0;
+            if (indeksSlideSaatIni < 0) indeksSlideSaatIni = slides.length - 1;
+            updateSlider();
+            mulaiAutoSlide();
+        }
+
+        function lompatSlide(indeks) {
+            hentikanAutoSlide();
+            indeksSlideSaatIni = indeks;
+            updateSlider();
+            mulaiAutoSlide();
+        }
+
+        mulaiAutoSlide();
+
+        function bunyikanSuaraScan() {
+            try {
+                const audio = new Audio('https://res.cloudinary.com/dz4w1sqiv/video/upload/v1753573659/Beep_Scanner_Sound_hiq7uh.mp3');
+                audio.play();
+            } catch (e) {}
+        }
+
+        function bukaHalamanScanner() {
+            document.getElementById('halaman-utama').style.display = 'none';
+            document.getElementById('halaman-modal').style.display = 'flex';
+            
+            document.getElementById('instruksi-scanner-area').style.display = 'block';
+            document.getElementById('reader').style.display = 'block';
+
+            html5QrCode = new Html5Qrcode("reader");
+            const config = { fps: 10, qrbox: { width: 250, height: 100 } };
+
+            html5QrCode.start({ facingMode: "environment" }, config, onScanSuccess)
+            .catch(err => {
+                alert("Gagal mengakses kamera. Pastikan izin kamera sudah diberikan.");
+                tutupHalamanScanner();
+            });
+            
+            document.getElementById('halaman-modal').scrollTo(0, 0);
+        }
+
+        function tutupHalamanScanner() {
+            isScanningPause = false;
+            document.getElementById('reader').classList.remove('scan-success');
+            
+            if (html5QrCode && html5QrCode.isScanning) {
+                html5QrCode.stop().then(() => {
+                    html5QrCode.clear();
+                    resetDanKembali();
+                }).catch(err => {
+                    resetDanKembali();
+                });
+            } else {
+                resetDanKembali();
+            }
+        }
+
+        function resetDanKembali() {
+            document.getElementById('halaman-modal').style.display = 'none';
+            document.getElementById('halaman-utama').style.display = 'flex';
+            
+            document.getElementById('post-scan-area').style.display = 'none';
+            document.getElementById('rating-area').style.display = 'none';
+            document.getElementById('reader').style.display = 'none';
+            document.getElementById('foto-container').style.display = 'none';
+            document.getElementById('grup-tombol-kirim').style.display = 'none';
+            document.getElementById('upload-status').style.display = 'none';
+            document.getElementById('btn-ambil-foto').style.display = 'flex';
+            
+            const btnTambah = document.getElementById('btn-tambah-scan');
+            if (btnTambah) btnTambah.style.display = 'flex';
+            
+            document.getElementById('badge-resi').innerHTML = '<i class="fa-solid fa-circle-check"></i> Resi Terpindai';
+            
+            daftarResi = [];
+            finalImageDataUrl = "";
+            currentPushRef = null;
+            isRatingSubmitted = false;
+            isScanningPause = false;
+            
+            document.getElementById('reader').classList.remove('scan-success');
+            
+            document.getElementById('rating-text').innerText = "";
+            document.querySelectorAll('.stars i').forEach(star => {
+                star.classList.replace('fa-solid', 'fa-regular');
+            });
+            
+            const btnKirimUlasan = document.getElementById('btn-kirim-ulasan');
+            if (btnKirimUlasan) {
+                btnKirimUlasan.style.display = 'flex';
+                btnKirimUlasan.innerHTML = 'Kirim Ulasan';
+                btnKirimUlasan.disabled = false;
+            }
+            
+            const btnSelesai = document.getElementById('btn-selesai');
+            if (btnSelesai) {
+                btnSelesai.style.display = 'none';
+            }
+            
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        }
+
+        function onScanSuccess(decodedText) {
+            if (isScanningPause) return;
+            isScanningPause = true;
+
+            bunyikanSuaraScan();
+            
+            document.getElementById('reader').classList.add('scan-success');
+
+            setTimeout(() => {
+                html5QrCode.stop().then(() => {
+                    document.getElementById('reader').classList.remove('scan-success');
+                    document.getElementById('reader').style.display = 'none';
+                    document.getElementById('instruksi-scanner-area').style.display = 'none';
+                    
+                    if (!daftarResi.includes(decodedText)) {
+                        daftarResi.push(decodedText);
+                    }
+                    
+                    document.getElementById('post-scan-area').style.display = 'flex';
+                    document.getElementById('hasil-resi').innerHTML = daftarResi.join('<br>');
+                    document.getElementById('badge-resi').innerHTML = `<i class="fa-solid fa-circle-check"></i> ${daftarResi.length} Resi Terpindai`;
+                    
+                    isScanningPause = false;
+                }).catch(err => {
+                    console.error("Gagal menghentikan scanner.", err);
+                    isScanningPause = false;
+                });
+            }, 800);
+        }
+
+        function tambahScan() {
+            document.getElementById('post-scan-area').style.display = 'none';
+            document.getElementById('instruksi-scanner-area').style.display = 'block';
+            document.getElementById('reader').style.display = 'block';
+
+            const config = { fps: 10, qrbox: { width: 250, height: 100 } };
+            html5QrCode.start({ facingMode: "environment" }, config, onScanSuccess)
+            .catch(err => {
+                alert("Gagal mengakses kamera. Pastikan izin kamera sudah diberikan.");
+                tutupHalamanScanner();
+            });
+        }
+
+        function previewDanWatermark(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const canvas = document.getElementById('canvas-preview');
+            const ctx = canvas.getContext('2d');
+            const img = new Image();
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                img.onload = function() {
+                    const squareSize = img.width;
+                    canvas.width = squareSize;
+                    canvas.height = squareSize;
+                    
+                    ctx.drawImage(img, 0, 0, squareSize, squareSize);
+                    
+                    const now = new Date();
+                    const options = { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+                    const timeStr = now.toLocaleDateString('id-ID', options).replace(/\./g, ':');
+                    
+                    const fontSize = Math.floor(canvas.height * 0.025);
+                    ctx.font = `bold ${fontSize}px Arial`;
+                    
+                    const padding = fontSize;
+                    const lineSpacing = fontSize * 1.4;
+                    
+                    let resiLines = [];
+                    let currentLine = "NO. RESI : ";
+                    
+                    for (let i = 0; i < daftarResi.length; i++) {
+                        let nextPart = (i === 0 ? "" : ", ") + daftarResi[i];
+                        let testLine = currentLine + nextPart;
+                        if (ctx.measureText(testLine).width > (canvas.width - padding * 2)) {
+                            if (currentLine === "NO. RESI : ") {
+                                currentLine = testLine;
+                            } else {
+                                resiLines.push(currentLine);
+                                currentLine = daftarResi[i];
+                            }
+                        } else {
+                            currentLine = testLine;
+                        }
+                    }
+                    resiLines.push(currentLine);
+                    
+                    let lines = [`WAKTU   : ${timeStr}`];
+                    resiLines.forEach(l => lines.push(l));
+                    
+                    const boxWidth = canvas.width;
+                    const boxHeight = (lines.length * lineSpacing) + padding;
+                    
+                    ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
+                    ctx.fillRect(
+                        0, 
+                        canvas.height - boxHeight, 
+                        boxWidth, 
+                        boxHeight
+                    );
+
+                    ctx.fillStyle = "#ffffff";
+                    ctx.textAlign = "left";
+                    ctx.textBaseline = "top";
+                    
+                    lines.forEach((line, index) => {
+                        ctx.fillText(
+                            line, 
+                            padding, 
+                            canvas.height - boxHeight + (padding / 2) + (index * lineSpacing)
+                        );
+                    });
+                    
+                    finalImageDataUrl = canvas.toDataURL("image/jpeg", 0.8);
+
+                    document.getElementById('foto-container').style.display = 'flex';
+                    document.getElementById('btn-ambil-foto').style.display = 'none';
+                    
+                    const btnTambah = document.getElementById('btn-tambah-scan');
+                    if (btnTambah) btnTambah.style.display = 'none';
+                    
+                    document.getElementById('grup-tombol-kirim').style.display = 'flex';
+
+                    document.getElementById('halaman-modal').scrollTo({ top: 1000, behavior: 'smooth' });
+                }
+                img.src = e.target.result;
+            }
+            reader.readAsDataURL(file);
+        }
+
+        async function kirimBukti() {
+            const uploadStatus = document.getElementById('upload-status');
+            const grupTombol = document.getElementById('grup-tombol-kirim');
+            
+            grupTombol.style.display = 'none';
+            uploadStatus.style.display = 'block';
+            uploadStatus.style.color = 'var(--warning)';
+            uploadStatus.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sedang mengirim...';
+
+            try {
+                const formData = new FormData();
+                formData.append("file", finalImageDataUrl);
+                formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
+
+                const clResponse = await fetch(CLOUDINARY_URL, {
+                    method: "POST",
+                    body: formData
+                });
+                
+                if (!clResponse.ok) throw new Error("Gagal mengunggah foto ke Cloudinary.");
+                
+                const clData = await clResponse.json();
+                const fotoCloudinaryUrl = clData.secure_url;
+
+                if (firebaseConfig.apiKey !== "YOUR_API_KEY") {
+                    currentPushRef = db.ref("konfirmasi_kurir").push();
+                    const rtdbPromise = currentPushRef.set({
+                        resi: daftarResi,
+                        fotoUrl: fotoCloudinaryUrl,
+                        waktuSubmit: firebase.database.ServerValue.TIMESTAMP
+                    });
+                    
+                    const timeoutPromise = new Promise((_, reject) => 
+                        setTimeout(() => reject(new Error("Timeout")), 8000)
+                    );
+                    
+                    await Promise.race([rtdbPromise, timeoutPromise]);
+                }
+
+                uploadStatus.style.display = 'none';
+                document.getElementById('post-scan-area').style.display = 'none';
+                document.getElementById('rating-area').style.display = 'flex';
+                document.getElementById('halaman-modal').scrollTo(0, 0);
+
+            } catch (error) {
+                uploadStatus.innerHTML = '<i class="fa-solid fa-circle-xmark"></i> Pengiriman gagal. Silakan coba lagi.';
+                uploadStatus.style.color = 'red';
+                grupTombol.style.display = 'flex';
+            }
+        }
+
+        function berikanRating(jumlahBintang) {
+            if (isRatingSubmitted) return;
+            
+            ratingPilihan = jumlahBintang;
+            const stars = document.querySelectorAll('.stars i');
+            const pesanRating = document.getElementById('rating-text');
+            
+            stars.forEach((star, index) => {
+                if (index < jumlahBintang) {
+                    star.classList.replace('fa-regular', 'fa-solid');
+                } else {
+                    star.classList.replace('fa-solid', 'fa-regular');
+                }
+            });
+
+            const teksUlasan = [
+                "Buruk sekali. 😔", 
+                "Kurang baik. 😕", 
+                "Cukup baik. 😐", 
+                "Sangat baik! 🙂", 
+                "Luar biasa! 🤩"
+            ];
+            
+            pesanRating.innerText = teksUlasan[jumlahBintang - 1];
+            pesanRating.style.color = "var(--success)";
+        }
+
+        async function kirimUlasan() {
+            if (ratingPilihan === 0) {
+                alert("Mohon pilih bintang ulasan terlebih dahulu.");
+                return;
+            }
+
+            const btnKirim = document.getElementById('btn-kirim-ulasan');
+            btnKirim.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sedang mengirim...';
+            btnKirim.disabled = true;
+
+            try {
+                if (firebaseConfig.apiKey !== "YOUR_API_KEY" && currentPushRef) {
+                    await currentPushRef.update({
+                        rating: ratingPilihan
+                    });
+                }
+                
+                isRatingSubmitted = true;
+                btnKirim.style.display = 'none';
+                document.getElementById('btn-selesai').style.display = 'flex';
+                
+            } catch (error) {
+                alert("Gagal mengirim ulasan. Silakan periksa koneksi Anda.");
+                btnKirim.innerHTML = 'Kirim Ulasan';
+                btnKirim.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>
