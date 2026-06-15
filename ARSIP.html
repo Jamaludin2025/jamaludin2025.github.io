@@ -6,36 +6,72 @@
   <title>Personal Archives - System Management</title>
   
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Roboto:wght@300;400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Roboto:wght@300;400;600;700&display=swap" rel="stylesheet">
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  
+  <script src="https://unpkg.com/@dotlottie/player-component@latest/dist/dotlottie-player.mjs" type="module"></script>
 
   <style>
     body { margin: 0; padding: 0; font-family: "Roboto", sans-serif; background: linear-gradient(135deg, #dbeafe, #eff6ff); height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+    .swal2-container { z-index: 99999 !important; }
+    .swal2-popup { width: 300px !important; padding: 20px !important; border-radius: 15px !important; }
+    .swal2-title { font-size: 18px !important; margin-bottom: 5px !important; }
+    .swal2-html-container { font-size: 13px !important; margin-top: 5px !important; }
+    .swal2-actions { display: flex !important; flex-direction: row !important; flex-wrap: nowrap !important; gap: 10px !important; width: 100% !important; margin-top: 20px !important; padding: 0 !important; justify-content: center !important; }
+    .swal2-actions button { margin: 0 !important; flex: 1 !important; font-size: 14px !important; padding: 10px !important; border-radius: 8px !important; }
     
-    .login-container { background-color: #ffffff; padding: 20px; border-radius: 10px; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1); width: 100%; max-width: 320px; box-sizing: border-box; }
-    .login-container h2 { text-align: center; margin-bottom: 8px; color: #3b82f6; font-weight: 600; }
-    #tanggal-hari { text-align: center; font-size: 14px; color: #6b7280; margin-bottom: 8px; }
+    .login-container { background-color: #ffffff; padding: 30px; border-radius: 15px; box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1); width: 90%; max-width: 340px; box-sizing: border-box; text-align: center; position: relative; z-index: 2; }
+    .login-container h2 { margin: 0 0 10px 0; color: #3b82f6; font-weight: 600; font-size: 20px; }
     
-    .tab-container { display: flex; justify-content: center; gap: 24px; margin-bottom: 24px; border-bottom: 1px solid #e0e7ff; }
-    .tab-button { background: none; border: none; color: #6b7280; font-weight: 600; font-size: 13px; padding: 8px 0; cursor: pointer; border-bottom: 2px solid transparent; }
-    .tab-button.active { color: #3b82f6; border-bottom-color: #3b82f6; }
-
-    .marquee-container { overflow: hidden; white-space: nowrap; width: 100%; border-top: 1px solid #e0e7ff; border-bottom: 1px solid #e0e7ff; padding: 6px 0; margin-bottom: 16px; background-color: #f9fafb; }
-    .marquee-text { display: inline-block; padding-left: 100%; animation: marquee 12s linear infinite; font-size: 14px; color: #374151; }
+    #tanggal-hari { display: flex; justify-content: space-between; font-size: 13px; color: #6b7280; margin-bottom: 12px; width: 100%; font-weight: 500; }
+    
+    .marquee-container { overflow: hidden; white-space: nowrap; width: 100%; border-top: 1px solid #e0e7ff; border-bottom: 1px solid #e0e7ff; padding: 8px 0; margin-bottom: 20px; background-color: #f9fafb; border-radius: 4px; }
+    .marquee-text { display: inline-block; padding-left: 100%; animation: marquee 12s linear infinite; font-size: 13px; color: #374151; }
     @keyframes marquee { 0% { transform: translateX(0%); } 100% { transform: translateX(-100%); } }
     
-    label { font-weight: 600; color: #374151; display: block; margin-bottom: 8px; text-align: left; font-size: 14px; }
-    input, select { width: 100%; box-sizing: border-box; padding: 10px 12px; border: 1.5px solid #cbd5e1; border-radius: 6px; margin-bottom: 10px; font-size: 14px; background: white; }
-    button { width: 100%; background-color: #3b82f6; color: white; font-weight: bold; padding: 12px; border: none; border-radius: 6px; cursor: pointer; font-size: 15px; margin-top: 10px; }
-
+    input[type="range"] { -webkit-appearance: none; width: 100%; height: 6px; background: #e2e8f0; border-radius: 5px; outline: none; padding: 0; border: none; margin: 0; }
+    input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 18px; height: 18px; border-radius: 50%; background: #3b82f6; cursor: pointer; transition: 0.2s; }
+    input[type="range"]::-webkit-slider-thumb:hover { background: #1d4ed8; transform: scale(1.1); }
+    
+    label { font-weight: 600; color: #374151; font-size: 14px; margin: 0 0 8px 0; display: block; text-align: left; }
+    
+    .label-wrapper { display: flex; justify-content: flex-start; align-items: center; gap: 8px; margin-bottom: 8px; }
+    .label-wrapper label { margin-bottom: 0; } 
+    .help-icon { color: #3b82f6; cursor: pointer; font-size: 15px; transition: 0.2s; margin-bottom: 0; }
+    .help-icon:hover { transform: scale(1.2); color: #1d4ed8; }
+    
+    input:not([type="range"]):not([type="checkbox"]), select { width: 100%; box-sizing: border-box; padding: 12px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 14px; transition: all 0.3s ease; }
+    input:not([type="range"]):not([type="checkbox"]):focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
+    
+    .input-hint { font-size: 11px; color: #94a3b8; text-align: left; margin-top: 5px; display: none; }
+    input:focus + .input-hint { display: block; }
+    
+    button { width: 100%; background-color: #3b82f6; color: white; font-weight: bold; padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-size: 15px; margin-top: 15px; transition: 0.3s; }
+    button:hover { opacity: 0.9; }
+    
+    .btn-group-admin { display: flex; gap: 10px; margin-top: 15px; }
+    .btn-group-admin button { margin-top: 0; flex: 1; }
+    .btn-batal { background-color: #94a3b8 !important; }
+    
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 100000; align-items: center; justify-content: center; }
+    .modal-content { background: white; padding: 25px; border-radius: 15px; width: 300px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.2); animation: pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+    @keyframes pop { from { transform: scale(0.7); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    .modal-header-custom { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 15px; }
+    .modal-content img { width: 100%; border-radius: 8px; border: 1px solid #ddd; margin-bottom: 15px; }
+    .btn-close-modal { background: #3b82f6; padding: 10px; margin-top: 0; width: 100%; }
+    
+    .footer-copyright { margin-top: 25px; padding-top: 15px; border-top: 1px dashed #e2e8f0; width: 100%; text-align: center; font-size: 11px; color: #94a3b8; }
+    .admin-trigger { cursor: pointer; font-weight: 600; color: #3b82f6; transition: 0.3s; }
+    
     .full-page-screen { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f8fafc; z-index: 9999; flex-direction: column; overflow: hidden; }
     .header-blue { background: #1d4ed8; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; width: 100%; box-sizing: border-box; }
-    
     .content-area { flex: 1; padding: 5px 20px 20px 20px; overflow-y: auto; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; }
     
     .wedding-card { background: #ffffff; width: 90%; max-width: 340px; border-radius: 20px; box-shadow: 0 15px 35px rgba(29, 78, 216, 0.15); border: 1px solid #bfdbfe; border-top: 8px solid #2563eb; padding: 30px 20px; text-align: center; position: relative; margin-top: -10px; margin-bottom: -30px; }
@@ -46,93 +82,295 @@
     .wedding-message { font-size: 0.8rem; color: #475569; line-height: 1.6; margin-bottom: 30px; position: relative; z-index: 2; }
     .wedding-signature { text-align: center; font-size: 0.8rem; color: #64748b; }
     .wedding-signature strong { display: block; color: #1e40af; font-size: 0.9rem; }
-
+    
     .user-actions { display: flex; justify-content: center; gap: 20px; margin-top: 25px; }
     .icon-circle { width: 45px; height: 45px; border: 2px solid #2563eb; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #2563eb; font-size: 20px; cursor: pointer; transition: all 0.3s ease; background: transparent; }
     .icon-circle:hover { background: #2563eb; color: white; transform: translateY(-3px); box-shadow: 0 5px 15px rgba(37, 99, 235, 0.2); }
-
-    @keyframes gift-float-shake {
-      0%, 50%, 100% { transform: translateY(0) rotate(0deg); }
-      10%, 30% { transform: translateY(-8px) rotate(10deg); }
-      20%, 40% { transform: translateY(-8px) rotate(-10deg); }
-    }
+    @keyframes gift-float-shake { 0%, 50%, 100% { transform: translateY(0) rotate(0deg); } 10%, 30% { transform: translateY(-8px) rotate(10deg); } 20%, 40% { transform: translateY(-8px) rotate(-10deg); } }
     .gift-anim { animation: gift-float-shake 3s infinite ease-in-out; }
-
+    
     .card-info-admin { background: white; border-radius: 15px; border: 1px solid #e2e8f0; padding: 20px; margin-top: 10px; width: 100%; max-width: 320px; box-sizing: border-box; }
     .admin-nav { display: flex; background: white; border-bottom: 1px solid #e2e8f0; width: 100%; }
     .nav-item { flex: 1; text-align: center; padding: 15px; font-size: 14px; font-weight: 600; color: #64748b; cursor: pointer; }
     .nav-item.active { color: #1d4ed8; border-bottom: 3px solid #1d4ed8; background: #f0f7ff; }
-
     .header-toggle { display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
     .chevron-icon { transition: transform 0.3s ease; color: #1d4ed8; font-size: 18px; }
     .chevron-icon.rotate { transform: rotate(180deg); }
+    
     #form-input-container { display: none; margin-top: 15px; }
-
+    #form-input-container input:not([type="range"]):not([type="checkbox"]), #form-input-container select { margin-bottom: 8px; } 
+    
     .row-flex { display: flex; gap: 10px; }
     .row-flex div { flex: 1; }
     .hidden { display: none; }
-
     .data-row { background: #f8fafc; padding: 10px 12px; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #e2e8f0; font-size: 14px; }
     .data-code { font-weight: 600; color: #3b82f6; }
     .data-actions { display: flex; gap: 8px; }
     .btn-icon { background: none; border: none; cursor: pointer; padding: 5px; font-size: 15px; margin: 0; width: auto; }
     .btn-view { color: #3b82f6; }
     .btn-delete { color: #ef4444; }
-    
     #list-data-firebase { max-height: 165px; overflow-y: auto; padding-right: 5px; }
     .grid-detail { display: grid; grid-template-columns: 75px 5px 1fr; gap: 5px; font-size: 13px; color: #334155; }
     .grid-label { font-weight: 600; color: #64748b; }
-    .log-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #f1f5f9; font-size: 13px; width: 100%; }
+    .log-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 10px; border-bottom: 1px solid #f1f5f9; font-size: 13px; width: 100%; box-sizing: border-box; }
+    
     .search-box-admin { position: relative; width: 100%; margin-bottom: 10px; }
-    .search-box-admin i { position: absolute; left: 12px; top: 12px; color: #94a3b8; }
-    .search-box-admin input { padding-left: 35px; margin-bottom: 0; background: #f8fafc; }
-
+    .search-box-admin i { position: absolute; left: 12px; top: 12px; color: #94a3b8; transition: 0.2s; }
+    .search-box-admin input { padding-left: 35px !important; margin-bottom: 0; background: #f8fafc; transition: padding 0.3s ease; }
+    
     .detail-btn-group { display: flex; gap: 5px; margin-top: 15px; }
     .detail-btn-group button { margin-top: 0; padding: 8px; font-size: 11px; flex: 1; }
-
     #pdf-wrapper { width: 100%; display: flex; justify-content: center; padding: 40px 0; }
     .border-pdf { border: 1px solid #64748b; padding: 10px; }
-    
     #pdf-footer-info { display: none; margin-top: 20px; padding-top: 15px; border-top: 1px dashed #cbd5e1; text-align: left; }
     .pdf-footer-container { display: flex; align-items: center; gap: 15px; }
-    
     #qrcode-container { padding: 3px; background: white; border: 1px solid #e2e8f0; }
     .footer-text { font-size: 11px; color: #475569; text-align: justify; }    
     .footer-link { color: #1d4ed8; text-decoration: underline; font-weight: 600; }
+
+    /* CSS Floating CS Button (Tanpa Background, Z-Index Tinggi) */
+    .floating-cs {
+      position: fixed;
+      bottom: -15px;
+      right: -5px;
+      width: 90px;
+      height: 90px;
+      background: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 99998; 
+      transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      text-decoration: none;
+    }
+    
+    .floating-cs:hover {
+      transform: translateY(-5px) scale(1.05);
+    }
+    
+    .floating-cs.hidden {
+      opacity: 0;
+      pointer-events: none;
+      transform: translateX(150%);
+    }
+    
+    /* CSS Melengkung (SVG Text) dengan Animasi Bounce */
+    .curved-text-svg {
+      position: absolute;
+      top: -15px;
+      left: -15px;
+      width: 120px;
+      height: 120px;
+      pointer-events: none;
+      z-index: 10;
+      overflow: visible;
+      animation: pulseText 1.5s infinite alternate ease-in-out;
+    }
+    
+    @keyframes pulseText {
+      0% { transform: scale(0.95); opacity: 0.9; }
+      100% { transform: scale(1.05); opacity: 1; }
+    }
+
+    /* CSS Tampilan Notifikasi & Chat Menu (Pengunjung) */
+    .menu-dropdown {
+      display: none; position: absolute; right: 20px; top: 55px; background: white; 
+      border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); z-index: 10000; 
+      min-width: 160px; overflow: hidden; animation: pop 0.2s ease-in-out;
+    }
+    .menu-item {
+      padding: 12px 15px; font-size: 13px; color: #374151; cursor: pointer; 
+      display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid #f1f5f9; transition: 0.2s;
+    }
+    .menu-item:hover { background: #f8fafc; }
+    .menu-item:last-child { border-bottom: none; color: #ef4444; }
+    .badge-notif {
+      background: #ef4444; color: white; font-size: 10px; font-weight: bold; 
+      padding: 2px 6px; border-radius: 10px; display: none;
+    }
+
+    /* CSS Khusus Fitur Chat Private 2 Arah */
+    .chat-box-area {
+      height: 300px; overflow-y: auto; padding: 15px; background: #f8fafc; 
+      display: flex; flex-direction: column; gap: 10px; scroll-behavior: smooth;
+    }
+    .chat-bubble {
+      max-width: 80%; padding: 10px 15px; text-align: justify; font-size: 13px; line-height: 1.4; position: relative; word-wrap: break-word;
+    }
+    .chat-sent {
+      background: #dbeafe; color: #1e40af; border-radius: 15px 15px 0 15px; align-self: flex-end; border: 1px solid #bfdbfe;
+    }
+    .chat-received {
+      background: #ffffff; color: #374151; border-radius: 15px 15px 15px 0; align-self: flex-start; border: 1px solid #e2e8f0;
+    }
+    .chat-time-text {
+      font-size: 9px; color: #94a3b8; margin-top: 5px; opacity: 0.8;
+    }
+    .chat-input-row {
+      display: flex; padding: 10px; background: white; border-top: 1px solid #e2e8f0; align-items: center;
+    }
+    .chat-input-row input {
+      flex: 1; border: 1px solid #cbd5e1; border-radius: 20px; padding: 10px 15px; outline: none; font-size: 13px; margin: 0;
+    }
+    .chat-input-row input:focus { border-color: #3b82f6; }
+    .chat-input-row button {
+      background: #3b82f6; color: white; border: none; border-radius: 50%; width: 40px; height: 40px; 
+      margin-left: 8px; cursor: pointer; margin-top: 0; padding: 0; display: flex; align-items: center; justify-content: center; transition: 0.2s;
+    }
+    .chat-input-row button:hover { transform: scale(1.05); }
+    .chat-input-row button.admin-btn { background: #10b981; }
+    
+    .profile-trap-container {
+  position: relative; width: 25px; height: 25px; border-radius: 50%; overflow: hidden; 
+  border: 1.5px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); flex-shrink: 0; margin-right: 10px;
+}
+.profile-bg-real {
+  position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+  background-size: cover; background-position: center; z-index: 1;
+}
+.profile-img-trap {
+  position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+  z-index: 2; opacity: 0.01; cursor: pointer;
+}
+
   </style>
 </head>
 <body>
 
-  <div id="login-screen" class="login-container">
+  <a href="https://wa.me/6285771183370?text=Halo%20SAPA." target="_blank" class="floating-cs" id="floating-cs">
+    <svg class="curved-text-svg" viewBox="0 0 120 120">
+      <path id="curve-top-1" d="M 16,70 A 44,44 0 0,1 104,70" fill="none" />
+      <path id="curve-top-2" d="M 26,70 A 34,34 0 0,1 94,70" fill="none" />
+    
+      <text>
+        <textPath href="#curve-top-1" startOffset="50%" text-anchor="middle" fill="#1e40af" font-size="7.5" font-weight="700" font-family="'Roboto', sans-serif">
+          Ada Kendala?
+        </textPath>
+      </text>
+      <text>
+        <textPath href="#curve-top-2" startOffset="50%" text-anchor="middle" fill="#1e40af" font-size="8" font-weight="700" font-family="'Roboto', sans-serif">
+          Chat SAPA aja
+        </textPath>
+      </text>
+    </svg>
+    <dotlottie-player src="https://lottie.host/ce1bc3e4-94d5-4715-9355-1e5e766ef2f6/vlbTvqRgJV.lottie" background="transparent" speed="1" style="width: 55px; height: 55px;" loop autoplay></dotlottie-player>
+  </a>
+
+  <div id="modal-alert" class="modal-overlay">
+    <div class="modal-content">
+      <div id="modal-header-container" style="display: block;">
+        <i id="modal-icon" class="fa-solid fa-triangle-exclamation"></i>
+        <p id="modal-message">Pesan Error</p>
+      </div>
+      <div id="modal-extra-content"></div>
+      <button class="btn-close-modal" onclick="closeModal()">OKE, SAYA MENGERTI</button>
+    </div>
+  </div>
+
+  <div id="notif-modal" class="modal-overlay">
+    <div class="modal-content" style="padding: 0; width: 320px; overflow: hidden;">
+      <div style="background: #10b981; color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; font-weight: bold;">
+        <span><i class="fa-solid fa-bullhorn"></i> Pesan Siaran</span>
+        <i class="fa-solid fa-xmark" style="cursor: pointer; font-size: 16px;" onclick="tutupModalNotif()"></i>
+      </div>
+      <div id="notif-list-container" style="max-height: 300px; overflow-y: auto; padding: 15px; background: #f8fafc; text-align: left;">
+        </div>
+    </div>
+  </div>
+
+  <div id="chat-visitor-modal" class="modal-overlay">
+    <div class="modal-content" style="padding: 0; width: 320px; overflow: hidden; display: flex; flex-direction: column;">
+      <div style="background: #3b82f6; color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; font-weight: bold;">
+        <div style="display: flex; align-items: center;">
+          <div class="profile-trap-container" id="visitor-chat-prof-container"></div>
+          <span>Asep Jamaludin <i class="fa-solid fa-circle-check" style="font-size: 10px; color: #a3e635;"></i></span>
+        </div>
+        <i class="fa-solid fa-xmark" style="cursor: pointer; font-size: 16px;" onclick="tutupModalChatVisitor()"></i>
+      </div>
+      <div id="visitor-chat-box" class="chat-box-area"></div>
+      <div class="chat-input-row">
+        <input type="text" id="visitor-chat-input" placeholder="Ketik pesan..." onkeypress="if(event.key === 'Enter') kirimPesanVisitor()">
+        <button type="button" onclick="kirimPesanVisitor()"><i class="fa-solid fa-paper-plane"></i></button>
+      </div>
+    </div>
+  </div>
+
+  <div id="chat-admin-modal" class="modal-overlay">
+    <div class="modal-content" style="padding: 0; width: 320px; overflow: hidden; display: flex; flex-direction: column;">
+      <div style="background: #10b981; color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; font-weight: bold;">
+        <span><i class="fa-solid fa-circle-user"></i> <span id="admin-chat-title">Tamu</span></span>
+        <i class="fa-solid fa-xmark" style="cursor: pointer; font-size: 16px;" onclick="tutupModalChatAdmin()"></i>
+      </div>
+      <div id="admin-chat-box" class="chat-box-area"></div>
+      <div class="chat-input-row">
+        <input type="text" id="admin-chat-input" placeholder="Balas pesan..." onkeypress="if(event.key === 'Enter') kirimPesanAdmin()">
+        <button type="button" class="admin-btn" onclick="kirimPesanAdmin()"><i class="fa-solid fa-paper-plane"></i></button>
+      </div>
+    </div>
+  </div>
+
+  <div id="login-screen" class="login-container" style="margin-top: -40px; border-top: 5px solid #3b82f6;">
     <h2 id="judul-form">❇︎ ARSIP PRIBADI ❇︎</h2> 
     <div id="tanggal-hari"></div>
     <div class="marquee-container">
       <div class="marquee-text" id="main-marquee">Selamat Datang di Database B. Gunakan kode akses Anda.</div>
     </div>
     
-    <div class="tab-container">
-      <button class="tab-button active" id="tab-login" onclick="switchTab('login')"><i class="fa-solid fa-user-group"></i> PENGUNJUNG</button>
-      <button class="tab-button" id="tab-admin" onclick="switchTab('admin')"><i class="fa-solid fa-user-lock"></i> PENGELOLA</button>
-    </div>
-
     <form id="form-login" onsubmit="event.preventDefault(); prosesLoginUser();">
-      <label>Kode Akses User</label>
-      <input type="text" id="kodeAkses" placeholder="Masukkan Kode Akses" autocomplete="off" />
-      <button type="submit">MASUK</button>
+      <div class="label-wrapper">
+        <label>Kode Akses Anda</label>
+        <i class="fa-solid fa-circle-question help-icon" onclick="showHelpInfo()"></i>
+      </div>
+      <input type="text" id="kodeAkses" placeholder="Masukkan Kode" autocomplete="off" oninput="this.value = this.value.toUpperCase()" />
+      <div class="input-hint">Kode akses tertera di bagian bawah amplop</div>
+      <button type="submit">MASUK KE SISTEM</button>
     </form>
 
     <form id="form-admin" style="display: none" onsubmit="event.preventDefault(); prosesAdminLogin();">
       <label>Kode Akses Admin</label>
-      <input type="text" id="kodeAdmin" placeholder="Masukkan Kode Akses" />
-      <button type="submit">VERIFIKASI</button>
+      <input type="password" id="kodeAdmin" placeholder="Masukkan PIN" />
+      <div class="input-hint">Mode Pengelola: Masukkan PIN Verifikasi</div>
+      <div class="btn-group-admin">
+        <button type="button" class="btn-batal" onclick="tutupFormAdmin()">BATAL</button>
+        <button type="submit" style="background-color: #1e40af;">VERIFIKASI</button>
+      </div>
     </form>
-    <div id="error-message" style="text-align: center; color: #dc2626; margin-top: 15px; font-weight: bold; font-size: 13px;"></div>
+
+    <div class="footer-copyright">
+      &copy; 2026 <span class="admin-trigger" onclick="bukaFormAdmin()">AJ Management</span>. All Rights Reserved.
+    </div>
   </div>
 
   <div id="user-full-page" class="full-page-screen">
     <div class="header-blue">
-      <span style="font-weight: 700;"><i class="fa-solid fa-envelope-open-text"></i> KARTU UCAPAN</span>
-      <button onclick="location.reload()" style="width: auto; background: rgba(255,255,255,0.2); padding: 5px 12px; font-size: 12px; color: white;">Kembali <i class="fa fa-arrow-right-from-bracket"></i></button>
+      <div id="user-greeting-header"></div>
+      
+      <div>
+        <button type="button" onclick="toggleUserMenu()" style="width: auto; background: rgba(255,255,255,0.2); padding: 5px 15px; font-size: 14px; color: white; margin:0; border-radius:5px; border:none; cursor:pointer;">
+          <i class="fa-solid fa-ellipsis-vertical"></i>
+        </button>
+        <div id="user-menu-dropdown" class="menu-dropdown">
+          <div class="menu-item" onclick="bukaModalNotif()">
+            <span><i class="fa-solid fa-bullhorn" style="color: #3b82f6; margin-right: 8px;"></i> Pesan Siaran</span>
+            <span id="badge-notif" class="badge-notif">0</span>
+          </div>
+          <div class="menu-item" onclick="bukaModalChatVisitor()">
+            <span><i class="fa-solid fa-comment-dots" style="color: #3b82f6; margin-right: 8px;"></i> Pesan Pribadi</span>
+          </div>
+          <div class="menu-item" onclick="gantiFotoProfil('user')">
+            <span><i class="fa-solid fa-circle-user" style="color: #3b82f6; margin-right: 8px;"></i> Ubah Foto Profil</span>
+          </div>
+          <div class="menu-item" onclick="hapusFotoProfil('user')">
+            <span style="color: #ef4444;"><i class="fa-solid fa-arrows-rotate" style="margin-right: 8px;"></i> Hapus Foto Profil</span>
+          </div>
+          <div class="menu-item" onclick="location.reload()">
+            <span><i class="fa-solid fa-arrow-right-from-bracket" style="margin-right: 8px;"></i> Keluar</span>
+          </div>
+        </div>
+      </div>
+
     </div>
     <div class="content-area">
       <div id="pdf-wrapper">
@@ -140,10 +378,8 @@
           <div class="wedding-title">Happy Wedding</div>
           <div class="wedding-names" id="card-names">- & -</div>
           <div class="wedding-date" id="card-date">-</div>
-          <div class="wedding-message">"Selamat ya atas pernikahannya. Dengan pernikahan ini, maka sempurnalah kehidupan kalian. Warnailah pernikahan dengan saling menghormati, 
-          menyayangi, dan saling menolong dalam ketaatan satu sama lain. Semoga Alloh selalu melimpahkan petunjuk, rahmat, dan berkah kehidupan, serta rezeki yang halal dan keturunan yang sholih dan sholihah. Aammiin."</div>
+          <div class="wedding-message">"Selamat ya atas pernikahannya. Dengan pernikahan ini, maka sempurnalah kehidupan kalian. Warnailah pernikahan dengan saling menghormati, menyayangi, dan saling menolong dalam ketaatan satu sama lain. Semoga Alloh selalu melimpahkan petunjuk, rahmat, dan berkah kehidupan, serta rezeki yang halal dan keturunan yang sholih dan sholihah. Aammiin."</div>
           <div class="wedding-signature">Salam hangat, <strong>Asep Jamaludin</strong></div>
-          
           <div id="pdf-footer-info">
             <div class="pdf-footer-container">
               <div id="qrcode-container"></div>
@@ -155,21 +391,18 @@
           </div>
         </div>
       </div>
-
-          <div class="user-actions">
-          <div class="icon-circle gift-anim" title="Hadiah" onclick="window.location.href='https://jamaludin2025.github.io/WEDPRIZE.html'"><i class="fa-solid fa-gift"></i></div>
-          <div class="icon-circle" title="WhatsApp Chat" onclick="hubungiWA()"><i class="fa-solid fa-reply"></i></div>
-          <div class="icon-circle" title="Unduh PDF" onclick="unduhPDF()"><i class="fa-solid fa-download"></i></div>
-          </div>
-        </div>
-      </div>        
-    </div>  
- </div>
+      <div class="user-actions">
+        <div class="icon-circle gift-anim" title="Hadiah" onclick="window.location.href='https://jamaludin2025.github.io/WedPrize.html'"><i class="fa-solid fa-gift"></i></div>
+        <div class="icon-circle" title="WhatsApp Chat" onclick="hubungiWA()"><i class="fa-solid fa-reply"></i></div>
+        <div class="icon-circle" title="Unduh PDF" onclick="unduhPDF()"><i class="fa-solid fa-download"></i></div>
+      </div>
+    </div>
+  </div>
 
   <div id="admin-full-page" class="full-page-screen">
     <div class="header-blue">
-      <span style="font-weight: 700;"><i class="fa-solid fa-computer"></i> PANEL ADMIN</span>
-      <button onclick="location.reload()" style="width: auto; background: rgba(255,255,255,0.2); padding: 5px 12px; font-size: 12px; color: white;">Kembali <i class="fa fa-arrow-right-from-bracket"></i></button>
+      <div id="admin-greeting-header"></div>
+      <button type="button" onclick="location.reload()" style="width: auto; background: rgba(255,255,255,0.2); padding: 5px 15px; font-size: 14px; color: white; margin:0; border-radius:5px; border:none; cursor:pointer;"><i class="fa-solid fa-arrow-right-from-bracket"></i></button>
     </div>
     <div class="admin-nav">
       <div class="nav-item active" id="nav-tambah" onclick="showAdminSection('tambah')">Kelola</div>
@@ -177,67 +410,67 @@
       <div class="nav-item" id="nav-info" onclick="showAdminSection('info')">Informasi</div>
     </div>
     <div class="content-area">
-      
-      <div id="section-tambah" style="width: 100%; display: flex; flex-direction: column; align-items: center; gap: 15px;">
-        
-        <div class="card-info-admin">
-          <div class="header-toggle" onclick="toggleFormInput()">
+      <div id="section-tambah" style="width: 100%; display: flex; flex-direction: column; align-items: center;">
+        <div class="card-info-admin" style="margin-top: 20px; border-top: 4px solid #1d4ed8;">
+          <div class="header-toggle" onclick="bukaFormTambahData()">
             <h3 style="margin: 0; font-size: 16px; color: #1d4ed8;">Tambah Data Baru</h3>
             <i class="fa-solid fa-sort-down chevron-icon" id="chevron-tambah"></i>
           </div>
-
           <div id="form-input-container">
             <div class="row-flex">
-              <div><label>Kode Akses</label><input type="text" id="newKey" placeholder="AJ1234"></div>
+              <div><label>Kode Akses</label><input type="text" id="newKey" placeholder="AJ1234" oninput="this.value = this.value.toUpperCase()" /></div>
               <div><label>Tgl. Acara</label><input type="date" id="newDate"></div>
             </div>
-            <label>Nama Kerabat</label>
-            <input type="text" id="newKerabat" placeholder="Nama Kerabat">
-            <label>Nama Pasangan</label>
-            <input type="text" id="newPasangan" placeholder="Nama Pasangan">
-            <label>Bapak Kerabat</label>
-            <input type="text" id="newBapak" placeholder="Nama Bapak">
-            <label>Ibu Kerabat</label>
-            <input type="text" id="newIbu" placeholder="Nama Ibu">
-            <label>Alamat</label>
-            <input type="text" id="newAlamat" placeholder="Nama Jalan/Kampung">
+            <label>Nama Kerabat</label><input type="text" id="newKerabat" placeholder="Nama Kerabat">
+            <label>Nama Pasangan</label><input type="text" id="newPasangan" placeholder="Nama Pasangan">
+            <label>Bapak Kerabat</label><input type="text" id="newBapak" placeholder="Nama Bapak">
+            <label>Ibu Kerabat</label><input type="text" id="newIbu" placeholder="Nama Ibu">
+            <label>Alamat</label><input type="text" id="newAlamat" placeholder="Nama Jalan/Kampung">
             <div class="row-flex">
               <div><label>RT</label><input type="text" id="newRT" placeholder="01"></div>
               <div><label>RW</label><input type="text" id="newRW" placeholder="10"></div>
             </div>
-            <label>Desa</label>
-            <input type="text" id="newDesa" placeholder="Nama Desa">
-            <label>Kecamatan</label>
-            <input type="text" id="newKecamatan" placeholder="Nama Kecamatan">
-            <label>Kabupaten</label>
-            <input type="text" id="newKabupaten" placeholder="Nama Kabupaten">
-
+            <label>Desa</label><input type="text" id="newDesa" placeholder="Nama Desa">
+            <label>Kecamatan</label><input type="text" id="newKecamatan" placeholder="Nama Kecamatan">
+            <label>Kabupaten</label><input type="text" id="newKabupaten" placeholder="Nama Kabupaten">
             <label>Bingkisan</label>
             <select id="newBingkisan" onchange="toggleBingkisanFields()">
               <option value="">-- Pilih Bingkisan --</option>
               <option value="Uang">Uang</option>
               <option value="Kado">Kado</option>
             </select>
-            <div id="field-nominal" class="hidden">
-              <label>Nominal (Rp)</label>
-              <input type="number" id="newNominal" placeholder="Contoh: 100000">
-            </div>
+            <div id="field-nominal" class="hidden"><label>Nominal (Rp)</label><input type="number" id="newNominal" placeholder="Contoh: 100000"></div>
             <div id="field-kado" class="hidden">
-              <label>Keterangan Bingkisan</label>
-              <input type="text" id="newKetKado" placeholder="Contoh: Selimut">
-              <label>Harga (Estimasi)</label>
-              <input type="number" id="newHargaKado" placeholder="Contoh: Rp50.000">
+              <label>Keterangan Bingkisan</label><input type="text" id="newKetKado" placeholder="Contoh: Selimut">
+              <label>Harga (Estimasi)</label><input type="number" id="newHargaKado" placeholder="Contoh: 50000">
             </div>
             <button type="button" onclick="saveToFirebase()" style="background: #10b981;">SIMPAN DATA</button>
           </div>
         </div>
+        <div class="card-info-admin" style="margin-top: 20px; border-top: 4px solid #1d4ed8;">
+    <h3 style="margin-top: 0; font-size: 16px; color: #1d4ed8; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;">
+        <span>Daftar Pengunjung</span>
+        
+        <span style="display: flex; align-items: center; gap: 2px; cursor: pointer;" onclick="toggleFilterPesan()" title="Klik untuk filter pesan baru">
+    <i class="fa-solid fa-user-group" id="global-user-icon"></i>
+    <span id="data-counter">0</span>
+</span>
+    </h3>
 
-        <div class="card-info-admin">
-          <h3 style="margin-top: 0; font-size: 16px; color: #1d4ed8; margin-bottom: 15px;">Daftar Data Akses | <span id="data-counter">0</span></h3>
-          <div class="search-box-admin">
-            <i class="fa-solid fa-magnifying-glass"></i>
-            <input type="text" id="cariData" placeholder="Cari Kode Akses..." onkeyup="filterData()">
-          </div>
+    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px; width: 100%; box-sizing: border-box;">
+    
+    <div style="position: relative; flex: 1; height: 42px;">
+        <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #94a3b8; z-index: 2;"></i>
+        
+        <input type="text" id="cariData" placeholder="Cari Kode Akses..." onkeyup="filterData();" oninput="this.value = this.value.toUpperCase()" style="width: 100%; height: 100%; box-sizing: border-box; padding: 0 12px 0 38px; margin: 0; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; background: #f8fafc; outline: none; transition: border-color 0.2s;" onfocus="this.style.borderColor='#3b82f6'" onblur="this.style.borderColor='#e2e8f0'" />
+    </div>
+    
+    <button onclick="bukaModalFilter()" title="Filter Data Lanjutan" style="width: 42px; height: 42px; flex-shrink: 0; margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; cursor: pointer; color: #1d4ed8; box-sizing: border-box; transition: border-color 0.2s, color 0.2s;" onmouseover="this.style.borderColor='#3b82f6'; this.style.color='#3b82f6'" onmouseout="this.style.borderColor='#e2e8f0'; this.style.color='#1d4ed8'">
+        <i class="fa-solid fa-sliders" style="font-size: 16px;"></i>
+    </button>
+
+</div>
+    
           <div id="detail-container" style="display:none; margin-bottom: 15px; border-top: 1px dashed #cbd5e1; border-bottom: 1px dashed #cbd5e1; padding-top: 5px; padding-bottom: 15px;">
              <div id="area-unduh-admin" style="background: white; padding: 10px;">
                <h4 id="unduh-title-admin" style="margin-top:-5px; color:#3b82f6; text-align:center; border-bottom: 1px solid #64748b; margin-bottom: 10px; padding-bottom:5px;">INFORMASI ARSIP PERNIKAHAN</h4>
@@ -252,55 +485,180 @@
                   <div class="grid-label">Bingkisan</div> <div>:</div> <div id="det-bingkisan">-</div>
                </div>
              </div>
-             
              <div class="detail-btn-group">
-                <button onclick="editDataAdmin()" style="background: #f59e0b;"><i class="fa-solid fa-pen-to-square"></i> EDIT</button>
-                <button onclick="unduhDataDetailAdmin()" style="background: #10b981;"><i class="fa-solid fa-download"></i> UNDUH</button>
-                <button onclick="tutupDetail()" style="background: #64748b;"><i class="fa-solid fa-eye-slash"></i> TUTUP</button>
+                <button type="button" onclick="editDataAdmin()" style="background: #f59e0b;"><i class="fa-solid fa-pen-to-square"></i> EDIT</button>
+                <button type="button" onclick="unduhDataDetailAdmin()" style="background: #10b981;"><i class="fa-solid fa-download"></i> UNDUH</button>
+                <button type="button" onclick="tutupDetail()" style="background: #64748b;"><i class="fa-solid fa-eye-slash"></i> TUTUP</button>
              </div>
           </div>
           <div id="list-data-firebase"></div>
         </div>
       </div>
-
+      
       <div id="section-riwayat" style="display: none; width: 100%; flex-direction: column; align-items: center;">
-        <div class="card-info-admin" id="log-list">Memuat...</div>
+        <div class="card-info-admin" id="log-list" style="margin-top: 20px; border-top: 4px solid #1d4ed8;">Memuat...</div>
+        
+        <div class="card-info-admin" style="margin-top: 20px; border-top: 4px solid #10b981;">
+  <h3 style="margin-top: 0; font-size: 16px; color: #10b981; margin-bottom: 5px; text-align: left;">Riwayat Pesan Siaran</h3>
+  <div style="max-height: 148px; overflow-y: auto; padding-right: 5px; width: 100%; border-top: 1px dashed #cbd5e1; padding-top: 12px; padding-bottom: -5px; margin-bottom: 0px;">
+    <div id="admin-notif-list" style="font-size: 12px;"></div>
+  </div>
+</div>
       </div>
-
+      
       <div id="section-info" style="display: none; width: 100%; flex-direction: column; align-items: center;">
         <div class="card-info-admin" style="margin-top: 20px; border-top: 4px solid #1d4ed8;">
-          <h3 style="margin-top: 0; font-size: 16px; color: #1d4ed8; margin-bottom: 15px;">Pengaturan Teks Berjalan (Admin)</h3>
-          
-          <label>Teks Marquee Utama</label>
-          <textarea id="inputMarquee" style="width: 100%; height: 60px; padding: 10px; border-radius: 6px; border: 1.5px solid #cbd5e1; font-family: 'Poppins'; font-size: 13px; box-sizing: border-box; margin-bottom: 10px;"></textarea>
-          
-          <label>Kecepatan (Detik)</label>
-          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
-             <input type="number" id="inputSpeed" placeholder="12" style="margin-bottom: 0;">
-             <span style="font-size: 11px; color: #64748b; white-space: nowrap;">*Kecil = Cepat</span>
+          <div class="header-toggle" onclick="toggleInfoCard('utama')">
+            <h3 style="margin: 0; font-size: 16px; color: #1d4ed8;">Pengaturan Teks Berjalan (Utama)</h3>
+            <i class="fa-solid fa-sort-down chevron-icon" id="chevron-utama"></i>
           </div>
           
-          <button type="button" onclick="updateMarquee()" style="background: #1d4ed8;">UPDATE INFO UTAMA</button>
+          <div id="info-utama-container" style="display: none; margin-top: 15px; width: 100%; text-align: left;">
+            <label style="font-size: 12px; color: #64748b;">Preview Layar Utama:</label>
+            <div class="marquee-container" style="margin-bottom: 15px;">
+              <div class="marquee-text" id="preview-marquee-utama">Pratinjau teks akan muncul di sini...</div>
+            </div>
+            <label>Teks Marquee Utama</label>
+            <textarea id="inputMarquee" oninput="updatePreviewUtama()" style="width: 100%; height: 60px; padding: 10px; border-radius: 8px; border: 1.5px solid #cbd5e1; font-family: 'Roboto', sans-serif; font-size: 13px; box-sizing: border-box; margin-bottom: 10px;"></textarea>
+            <label>Kecepatan: <span id="valSpeedUtama" style="color: #3b82f6;">12</span> Detik</label>
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+              <span style="font-size: 11px; color: #64748b; font-weight: bold;">Cepat</span>
+              <input type="range" id="inputSpeed" min="3" max="30" value="12" oninput="updatePreviewUtama()" style="flex: 1;">
+              <span style="font-size: 11px; color: #64748b; font-weight: bold;">Lambat</span>
+            </div>
+            <button type="button" onclick="updateMarquee()" style="background: #1d4ed8;">SIMPAN INFO UTAMA</button>
+          </div>
         </div>
 
         <div class="card-info-admin" style="margin-top: 20px; border-top: 4px solid #f59e0b;">
-          <h3 style="margin-top: 0; font-size: 16px; color: #f59e0b; margin-bottom: 15px;">Pengaturan Teks Berjalan (WedPrize)</h3>
-          
-          <label>Teks Marquee WedPrize</label>
-          <textarea id="inputMarqueeWed" style="width: 100%; height: 60px; padding: 10px; border-radius: 6px; border: 1.5px solid #cbd5e1; font-family: 'Poppins'; font-size: 13px; box-sizing: border-box; margin-bottom: 10px;"></textarea>
-          
-          <label>Kecepatan (Detik)</label>
-          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
-             <input type="number" id="inputSpeedWed" placeholder="23" style="margin-bottom: 0;">
-             <span style="font-size: 11px; color: #64748b; white-space: nowrap;">*Kecil = Cepat</span>
+          <div class="header-toggle" onclick="toggleInfoCard('wedprize')">
+            <h3 style="margin: 0; font-size: 16px; color: #f59e0b;">Pengaturan Teks Berjalan (WedPrize)</h3>
+            <i class="fa-solid fa-sort-down chevron-icon" id="chevron-wedprize"></i>
           </div>
           
-          <button type="button" onclick="updateMarqueeWed()" style="background: #f59e0b;">UPDATE INFO WEDPRIZE</button>
+          <div id="info-wedprize-container" style="display: none; margin-top: 15px; width: 100%; text-align: left;">
+            <label style="font-size: 12px; color: #64748b;">Preview Layar WedPrize:</label>
+            <div class="marquee-container" style="margin-bottom: 15px;">
+              <div class="marquee-text" id="preview-marquee-wedprize">Pratinjau teks akan muncul di sini...</div>
+            </div>
+            <label>Teks Marquee WedPrize</label>
+            <textarea id="inputMarqueeWed" oninput="updatePreviewWedprize()" style="width: 100%; height: 60px; padding: 10px; border-radius: 8px; border: 1.5px solid #cbd5e1; font-family: 'Roboto', sans-serif; font-size: 13px; box-sizing: border-box; margin-bottom: 10px;"></textarea>
+            <label>Kecepatan: <span id="valSpeedWedprize" style="color: #f59e0b;">23</span> Detik</label>
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+              <span style="font-size: 11px; color: #64748b; font-weight: bold;">Cepat</span>
+              <input type="range" id="inputSpeedWed" min="3" max="30" value="23" oninput="updatePreviewWedprize()" style="flex: 1;">
+              <span style="font-size: 11px; color: #64748b; font-weight: bold;">Lambat</span>
+            </div>
+            <button type="button" onclick="updateMarqueeWed()" style="background: #f59e0b;">SIMPAN INFO WEDPRIZE</button>
+          </div>
         </div>
-      </div>
 
+        <div class="card-info-admin" style="margin-top: 20px; border-top: 4px solid #10b981;">
+          <div class="header-toggle" onclick="toggleInfoCard('notifGlobal')">
+            <h3 style="margin: 0; font-size: 16px; color: #10b981;">Kirim Pesan Siaran</h3>
+            <i class="fa-solid fa-sort-down chevron-icon" id="chevron-notifGlobal"></i>
+          </div>
+          
+          <div id="info-notifGlobal-container" style="display: none; margin-top: 15px; width: 100%; text-align: left;">
+            <label>Judul Pesan</label>
+            <input type="text" id="inputJudulGlobal" placeholder="Contoh: INFO PENTING" style="width: 100%; padding: 10px; border-radius: 8px; border: 1.5px solid #cbd5e1; font-family: 'Roboto', sans-serif; font-size: 13px; box-sizing: border-box; margin-bottom: 10px;">
+            
+            <label>Isi Pesan</label>
+            <textarea id="inputPesanGlobal" placeholder="Ketik pengumuman atau pesan di sini..." style="width: 100%; height: 70px; padding: 10px; border-radius: 8px; border: 1.5px solid #cbd5e1; font-family: 'Roboto', sans-serif; font-size: 13px; box-sizing: border-box; margin-bottom: 10px;"></textarea>
+            
+            <button type="button" onclick="kirimNotifGlobal()" style="background: #10b981; margin-top: 0;">KIRIM PESAN</button>
+          </div>
+        </div>
+
+        <div class="card-info-admin" style="margin-top: 20px; border-top: 4px solid #ef4444; margin-bottom: 20px;">
+          <div class="header-toggle" onclick="toggleInfoCard('reset')">
+            <h3 style="margin: 0; font-size: 16px; color: #ef4444;">Pengaturan Reset WedPrize</h3>
+            <i class="fa-solid fa-sort-down chevron-icon" id="chevron-reset"></i>
+          </div>
+          
+          <div id="info-reset-container" style="display: none; margin-top: 15px; width: 100%; text-align: left;">
+            <label>Tanggal Reset</label>
+            <input type="date" id="inputResetDate" style="width: 100%; padding: 10px; border-radius: 8px; border: 1.5px solid #cbd5e1; font-family: 'Roboto', sans-serif; font-size: 13px; box-sizing: border-box; margin-bottom: 10px;">
+            
+            <div style="display: flex; align-items: center; justify-content: flex-start; gap: 8px; margin-bottom: 15px;">
+              <input type="checkbox" id="checkResetTahunan" style="width: auto; margin: 0; cursor: pointer;">
+              <label for="checkResetTahunan" style="margin: 0; font-size: 12px; font-weight: 500; color: #64748b; cursor: pointer;">Reset setiap tahunnya</label>
+            </div>
+            
+            <button type="button" onclick="updateResetInfo()" style="background: #ef4444;">SIMPAN INFO RESET</button>
+          </div>
+        </div>
+
+      </div>
     </div>
   </div>
+  
+  <div id="modal-filter-lanjutan" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.7); z-index: 9999; justify-content: center; align-items: center; backdrop-filter: blur(4px);">
+    <div class="card-modal-filter" style="background: #ffffff; width: 95%; max-width: 500px; border-radius: 16px; overflow: hidden; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);">
+        
+        <div style="background: #1d4ed8; padding: 20px; color: #ffffff; display: flex; justify-content: space-between; align-items: center;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <div style="background: rgba(255,255,255,0.2); width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                    <i class="fa-solid fa-sliders" style="font-size: 18px;"></i>
+                </div>
+                <div>
+                    <h3 style="margin: 0; font-size: 18px; font-weight: 700; letter-spacing: 0.5px;">Filter Data</h3>
+                    <p style="margin: 0; font-size: 12px; opacity: 0.8;">Saring parameter pengunjung</p>
+                </div>
+            </div>
+            <button onclick="tutupModalFilter()" style="background: rgba(255,255,255,0.2); border: none; color: white; width: 32px; height: 32px; border-radius: 8px; cursor: pointer; display: flex; justify-content: center; align-items: center;">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <div style="padding: 24px; background: #f8fafc;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+                <div>
+                    <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px;">NAMA KERABAT</label>
+                    <input type="text" id="f-nama" placeholder="Ketik nama..." style="width: 100%; box-sizing: border-box; padding: 10px; border: 1.5px solid #e2e8f0; border-radius: 8px; outline: none;">
+                </div>
+                <div>
+                    <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px;">TAHUN</label>
+                    <select id="f-tahun" style="width: 100%; box-sizing: border-box; padding: 10px; border: 1.5px solid #e2e8f0; border-radius: 8px; outline: none;"></select>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+                <div>
+                    <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px;">DESA</label>
+                    <select id="f-desa" style="width: 100%; box-sizing: border-box; padding: 10px; border: 1.5px solid #e2e8f0; border-radius: 8px; outline: none;"></select>
+                </div>
+                <div>
+                    <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px;">KECAMATAN</label>
+                    <select id="f-kecamatan" style="width: 100%; box-sizing: border-box; padding: 10px; border: 1.5px solid #e2e8f0; border-radius: 8px; outline: none;"></select>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px;">
+                <div>
+                    <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px;">BINGKISAN</label>
+                    <select id="f-bingkisan" style="width: 100%; box-sizing: border-box; padding: 10px; border: 1.5px solid #e2e8f0; border-radius: 8px; outline: none;">
+                        <option value="">Semua</option><option value="Uang">Uang</option><option value="Kado">Kado</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px;">NOMINAL (RP)</label>
+                    <input type="text" inputmode="numeric" id="f-nominal" placeholder="Cari angka..." oninput="formatRupiahFilter(this)" style="width: 100%; box-sizing: border-box; padding: 10px; border: 1.5px solid #e2e8f0; border-radius: 8px; outline: none;">
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 8px; margin-top: 10px;">
+    <button onclick="resetFilter()" style="flex: 1; padding: 12px 0; border: 1.5px solid #e2e8f0; background: #ffffff; color: #64748b; border-radius: 10px; cursor: pointer; font-weight: 700; font-size: 14px; transition: 0.2s;">Reset</button>
+    
+    <button onclick="cetakDataFilter()" style="flex: 1; padding: 12px 0; border: 1.5px solid #e2e8f0; background: #ffffff; color: #0284c7; border-radius: 10px; cursor: pointer; font-weight: 700; font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 6px; transition: 0.2s;" onmouseover="this.style.borderColor='#0284c7'" onmouseout="this.style.borderColor='#e2e8f0'">
+        <i class="fa-solid fa-print"></i> Cetak
+    </button>
+    
+    <button onclick="terapkanFilterLanjutan()" style="flex: 1.2; padding: 12px 0; border: none; background: #1d4ed8; color: #ffffff; border-radius: 10px; cursor: pointer; font-weight: 700; font-size: 14px; box-shadow: 0 4px 6px -1px rgba(29, 78, 216, 0.3); transition: 0.2s;">Terapkan</button>
+</div>
+        </div>
+    </div>
+</div>
 
   <audio id="suaraSukses" src="https://res.cloudinary.com/dz4w1sqiv/video/upload/v1760256309/Sukses-LogIn_y25cu8.wav"></audio>
   <audio id="suaraGagal" src="https://res.cloudinary.com/dz4w1sqiv/video/upload/v1760256309/Gagal-LogIn_gl9yow.wav"></audio>
@@ -317,13 +675,437 @@
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
+    
+    const URL_FOTO_STATIS = "https://res.cloudinary.com/dz4w1sqiv/image/upload/v1781341807/taeweoy48rgxay7ovvuk.jpg"; 
     const PATH_DATA = "database_B/daftarAkses";
     const PATH_LOG = "database_B/logAktivitas";
     const PATH_INFO = "database_B/infoRunning";
-    const PATH_INFO_WED = "database_B/infoRunningWed"; // PATH BARU
+    const PATH_INFO_WED = "database_B/infoRunningWed";
+    const PATH_INFO_RESET = "database_B/infoReset"; 
+    const PATH_NOTIF_GLOBAL = "database_B/notifGlobal"; 
+    
+    // Variabel Chat & User
+    const PATH_PRIVATE_CHAT = "database_B/privateChats";
+    const FOURTEEN_DAYS_MS = 14 * 24 * 60 * 60 * 1000;
+    let currentUserCode = ""; 
+    let activeAdminChatUser = "";
+    let activeAdminChatRef = null;
+    let activeVisitorChatRef = null;
     
     let allData = {};
     let currentDetailKey = "";
+    let csInterval;
+    let daftarNotifGlobal = []; 
+    let isMultiSelectMode = false;
+
+    function getSapaanWaktu() {
+      const hour = new Date().getHours();
+      if (hour >= 4 && hour < 11) return "Selamat Pagi";
+      if (hour >= 11 && hour < 15) return "Selamat Siang";
+      if (hour >= 15 && hour < 18) return "Selamat Sore";
+      return "Selamat Malam";
+    }
+
+    function getProfilePicHtml(tipe) {
+      const pic = localStorage.getItem('profilePic_' + tipe);
+      const cursorStyle = tipe === 'admin' ? 'cursor:pointer;' : '';
+      const onClickAttr = tipe === 'admin' ? `onclick="gantiFotoProfil('${tipe}')"` : '';
+      
+      if (pic) {
+        return `<img src="${pic}" ${onClickAttr} style="width:38px; height:38px; border-radius:50%; object-fit:cover; ${cursorStyle} border:2px solid white; box-shadow:0 2px 5px rgba(0,0,0,0.2);">`;
+      } else {
+        return `<i class="fa-solid fa-circle-user" ${onClickAttr} style="font-size:38px; ${cursorStyle} color:white; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));"></i>`;
+      }
+    }
+
+    async function gantiFotoProfil(tipe) {
+      document.getElementById("user-menu-dropdown").style.display = "none";
+      
+      const { value: file } = await Swal.fire({
+        title: 'Ubah Foto Profil',
+        input: 'file',
+        inputAttributes: { 'accept': 'image/*', 'aria-label': 'Pilih foto profil' },
+        showCancelButton: true,
+        confirmButtonText: 'Simpan',
+        cancelButtonText: 'Batal',
+        confirmButtonColor: '#3b82f6'
+      });
+
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const base64Image = e.target.result;
+          localStorage.setItem('profilePic_' + tipe, base64Image);
+          const wrapper = document.getElementById(tipe + '-pic-wrapper');
+          if (wrapper) wrapper.innerHTML = getProfilePicHtml(tipe);
+          Swal.fire({ icon: 'success', title: 'Berhasil', text: 'Foto profil diperbarui', timer: 1500, showConfirmButton: false });
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+    
+    function hapusFotoProfil(tipe) {
+      document.getElementById("user-menu-dropdown").style.display = "none";
+      Swal.fire({
+        title: 'Hapus Foto Profil?',
+        text: "Foto profil akan dikembalikan ke tampilan default.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#ef4444',
+        cancelButtonColor: '#94a3b8',
+        confirmButtonText: 'Ya, Hapus',
+        cancelButtonText: 'Batal'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          localStorage.removeItem('profilePic_' + tipe);
+          const wrapper = document.getElementById(tipe + '-pic-wrapper');
+          if (wrapper) wrapper.innerHTML = getProfilePicHtml(tipe);
+          Swal.fire({ icon: 'success', title: 'Terhapus!', text: 'Foto profil berhasil dihapus.', timer: 1500, showConfirmButton: false });
+        }
+      });
+    }
+    
+    function setupProfileTrap(containerId, imageUrl) {
+      const container = document.getElementById(containerId);
+      if(!container) return;
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const img = new Image();
+      img.crossOrigin = "Anonymous";
+      img.onload = function() {
+      canvas.width = 150; canvas.height = 150;
+      ctx.filter = 'blur(2px)'; 
+      ctx.drawImage(img, 0, 0, 150, 150);
+      ctx.filter = 'none';
+      ctx.fillStyle = "rgba(255,255,255,0.8)"; 
+      ctx.font = "bold 18px Arial";
+      ctx.textAlign = "center"; 
+      ctx.translate(75, 75);
+      ctx.rotate(-0.2618);
+      ctx.fillText("CENSORED", 0, 0);
+      const trapData = canvas.toDataURL('image/jpeg', 0.1);
+      container.innerHTML = `<div class="profile-bg-real" style="background-image:url('${imageUrl}')"></div><img src="${trapData}" class="profile-img-trap" title="Hayo Lo Mau Ngapain?">`;
+      };
+      img.src = imageUrl;
+     }
+
+    function showAlert(msg) {
+      document.getElementById("modal-header-container").className = "";
+      document.getElementById("modal-header-container").style.display = "block";
+      const icon = document.getElementById("modal-icon");
+      icon.className = "fa-solid fa-triangle-exclamation";
+      icon.style.color = "#ef4444";
+      icon.style.fontSize = "45px";
+      icon.style.marginBottom = "15px";
+      const message = document.getElementById("modal-message");
+      message.innerText = msg;
+      message.style.color = "#374151";
+      message.style.fontSize = "14px";
+      message.style.margin = "0 0 15px 0";
+      message.style.fontWeight = "600";
+      document.getElementById("modal-extra-content").innerHTML = "";
+      document.getElementById("modal-alert").style.display = "flex";
+      document.getElementById("suaraGagal").play();
+    }
+
+    function showHelpInfo() {
+      document.getElementById("modal-header-container").className = "modal-header-custom";
+      document.getElementById("modal-header-container").style.display = "flex";
+      const icon = document.getElementById("modal-icon");
+      icon.className = "fa-solid fa-circle-info";
+      icon.style.color = "#3b82f6";
+      icon.style.fontSize = "18px";
+      icon.style.marginBottom = "0";
+      const message = document.getElementById("modal-message");
+      message.innerText = "Informasi Kode Akses";
+      message.style.color = "#000";
+      message.style.fontSize = "18px";
+      message.style.margin = "0";
+      message.style.fontWeight = "600";
+      document.getElementById("modal-extra-content").innerHTML = `<p style="text-align:justify; margin-bottom:10px; font-size:13px; color:#374151; font-weight:normal; line-height:1.5;">
+      Kode akses tertera di pojok kanan bawah amplop undangan dan ditulis dengan tinta merah.</p><img src="https://res.cloudinary.com/dz4w1sqiv/image/upload/v1781353704/eowy2vg0doppgrio7jbi.png" alt="Contoh Posisi Kode">`;
+      document.getElementById("modal-alert").style.display = "flex";
+    }
+
+    function closeModal() { document.getElementById("modal-alert").style.display = "none"; }
+    
+    function bukaFormAdmin() {
+      document.getElementById("form-login").style.display = "none";
+      document.getElementById("form-admin").style.display = "block";
+      document.getElementById("judul-form").innerText = "❇︎ MODE PENGELOLA ❇︎";
+    }
+    
+    function tutupFormAdmin() {
+      document.getElementById("form-login").style.display = "block";
+      document.getElementById("form-admin").style.display = "none";
+      document.getElementById("judul-form").innerText = "❇︎ ARSIP PRIBADI ❇︎";
+      document.getElementById("kodeAdmin").value = "";
+    }
+
+    function toggleUserMenu() {
+      const menu = document.getElementById("user-menu-dropdown");
+      menu.style.display = (menu.style.display === "none" || menu.style.display === "") ? "block" : "none";
+    }
+    
+    function bukaModalNotif() {
+      document.getElementById("user-menu-dropdown").style.display = "none";
+      document.getElementById("notif-modal").style.display = "flex"; 
+      
+      localStorage.setItem("readNotifCount", daftarNotifGlobal.length);
+      updateBadgeNotif(); 
+    }
+    
+    function tutupModalNotif() {
+      document.getElementById("notif-modal").style.display = "none";
+    }
+
+    // ========== FITUR CHAT PRIBADI (VISITOR & ADMIN) ========== //
+    function formatWaktuChat(timestamp) {
+      const date = new Date(timestamp);
+      const optsDate = { day: 'numeric', month: 'short', year: 'numeric' };
+      const optsTime = { hour: '2-digit', minute: '2-digit' };
+      return `${date.toLocaleDateString('id-ID', optsDate)} ${date.toLocaleTimeString('id-ID', optsTime)}`;
+    }
+
+    // Sisi Pengunjung
+    function bukaModalChatVisitor() {
+      document.getElementById("user-menu-dropdown").style.display = "none";
+      document.getElementById("chat-visitor-modal").style.display = "flex";
+      
+      setupProfileTrap('visitor-chat-prof-container', URL_FOTO_STATIS);
+      
+      const box = document.getElementById("visitor-chat-box");
+      box.innerHTML = "<p style='text-align:center; font-size:12px; color:#94a3b8;'>Memuat obrolan...</p>";
+      
+      activeVisitorChatRef = db.ref(PATH_PRIVATE_CHAT + '/' + currentUserCode);
+      activeVisitorChatRef.on('value', (snap) => {
+        box.innerHTML = "";
+        const now = Date.now();
+        let hasMessages = false;
+        
+        if(snap.exists()) {
+          snap.forEach(child => {
+            const msg = child.val();
+            // Auto Delete 14 Hari
+            if(now - msg.timestamp > FOURTEEN_DAYS_MS) {
+              child.ref.remove(); 
+            } else {
+              hasMessages = true;
+              const isMe = (msg.sender === 'visitor');
+              const bubbleClass = isMe ? 'chat-sent' : 'chat-received';
+              const align = isMe ? 'text-align:right;' : 'text-align:left;';
+              
+              box.innerHTML += `
+                <div class="chat-bubble ${bubbleClass}">
+                  <div>${msg.text}</div>
+                  <div class="chat-time-text" style="${align}">${formatWaktuChat(msg.timestamp)}</div>
+                </div>
+              `;
+            }
+          });
+        }
+        
+        if(!hasMessages) {
+          box.innerHTML = "<p style='text-align:center; font-size:12px; color:#94a3b8; margin-top:30px;'>Kirim pesan untuk menghubungi Admin secara langsung.</p>";
+        }
+        
+        setTimeout(() => box.scrollTop = box.scrollHeight, 100);
+      });
+    }
+
+    function tutupModalChatVisitor() {
+      document.getElementById("chat-visitor-modal").style.display = "none";
+      if(activeVisitorChatRef) activeVisitorChatRef.off();
+    }
+
+    function kirimPesanVisitor() {
+      const input = document.getElementById("visitor-chat-input");
+      const text = input.value.trim();
+      if(!text) return;
+      
+      db.ref(PATH_PRIVATE_CHAT + '/' + currentUserCode).push({
+        sender: 'visitor',
+        text: text,
+        timestamp: firebase.database.ServerValue.TIMESTAMP
+      }).then(() => {
+        input.value = "";
+        
+        db.ref(PATH_DATA + '/' + currentUserCode).update({
+            pesan_baru: true
+        });
+      });
+    }
+
+    // Sisi Admin
+    function bukaModalChatAdmin(userCode, userName) {
+      activeAdminChatUser = userCode;
+      document.getElementById("admin-chat-title").innerText = `${userCode}`;
+      document.getElementById("chat-admin-modal").style.display = "flex";
+      db.ref(PATH_DATA + '/' + userCode).update({
+        pesan_baru: false
+      });
+      
+      const box = document.getElementById("admin-chat-box");
+      box.innerHTML = "<p style='text-align:center; font-size:12px; color:#94a3b8;'>Memuat obrolan...</p>";
+      
+      activeAdminChatRef = db.ref(PATH_PRIVATE_CHAT + '/' + activeAdminChatUser);
+      activeAdminChatRef.on('value', (snap) => {
+        box.innerHTML = "";
+        const now = Date.now();
+        let hasMessages = false;
+        
+        if(snap.exists()) {
+          snap.forEach(child => {
+            const msg = child.val();
+            if(now - msg.timestamp > FOURTEEN_DAYS_MS) {
+              child.ref.remove(); 
+            } else {
+              hasMessages = true;
+              const isMe = (msg.sender === 'admin');
+              const bubbleClass = isMe ? 'chat-sent' : 'chat-received';
+              const align = isMe ? 'text-align:right;' : 'text-align:left;';
+              
+              box.innerHTML += `
+                <div class="chat-bubble ${bubbleClass}">
+                  <div>${msg.text}</div>
+                  <div class="chat-time-text" style="${align}">${formatWaktuChat(msg.timestamp)}</div>
+                </div>
+              `;
+            }
+          });
+        }
+        
+        if(!hasMessages) {
+          box.innerHTML = "<p style='text-align:center; font-size:12px; color:#94a3b8; margin-top:30px;'>Belum ada riwayat pesan.</p>";
+        }
+        
+        setTimeout(() => box.scrollTop = box.scrollHeight, 100);
+      });
+    }
+
+    function tutupModalChatAdmin() {
+      document.getElementById("chat-admin-modal").style.display = "none";
+      if(activeAdminChatRef) activeAdminChatRef.off();
+      activeAdminChatUser = "";
+    }
+
+    function kirimPesanAdmin() {
+      const input = document.getElementById("admin-chat-input");
+      const text = input.value.trim();
+      if(!text || !activeAdminChatUser) return;
+      
+      db.ref(PATH_PRIVATE_CHAT + '/' + activeAdminChatUser).push({
+        sender: 'admin',
+        text: text,
+        timestamp: firebase.database.ServerValue.TIMESTAMP
+      }).then(() => {
+        input.value = "";
+      });
+    }
+    // ========================================================== //
+
+    async function prosesLoginUser() {
+      const kode = document.getElementById("kodeAkses").value.trim().toUpperCase();
+      if(!kode) return;
+
+      Swal.fire({ title: 'Mencari Data...', text: 'Mohon tunggu sebentar', allowOutsideClick: false, showConfirmButton: false, didOpen: () => { Swal.showLoading(); } });
+
+      try {
+        const snap = await db.ref(`${PATH_DATA}/${kode}`).once("value");
+        setTimeout(() => {
+          Swal.close(); 
+          if(snap.exists()) {
+            const data = snap.val();
+            document.getElementById("suaraSukses").play();
+            
+            // Simpan Kode Secara Global Untuk Keperluan Chat Pribadi
+            currentUserCode = kode;
+            
+            const sapaan = getSapaanWaktu();
+            const picHtml = getProfilePicHtml('user');
+            document.getElementById("user-greeting-header").innerHTML = `
+              <div style="display:flex; align-items:center; gap:12px;">
+                <div id="user-pic-wrapper">${picHtml}</div>
+                <div style="line-height:1.2; font-size:13px; text-align:left;">
+                  <span style="font-weight:400; opacity:0.9;">${sapaan},</span><br>
+                  <span style="font-weight:700; font-size:15px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">${data.kerabat}</span>
+                </div>
+              </div>`;
+
+            Swal.fire({
+              icon: 'success',
+              title: `Selamat datang, ${data.kerabat}`,
+              showConfirmButton: false,
+              timer: 2000
+            }).then(() => {
+              document.getElementById("card-names").innerHTML = `${data.kerabat}<br>&<br>${data.pasangan}`;
+              let tgl = new Date(data.tanggal);
+              let formattedDate = `${tgl.getDate().toString().padStart(2, '0')}-${(tgl.getMonth()+1).toString().padStart(2, '0')}-${tgl.getFullYear()}`;
+              document.getElementById("card-date").textContent = formattedDate;
+              document.getElementById("login-screen").style.display = "none";
+              document.getElementById("user-full-page").style.display = "flex";
+              checkAndPlayMusic();
+              
+              clearInterval(csInterval);
+              document.getElementById("floating-cs").classList.remove("hidden");
+              csInterval = setInterval(() => {
+                document.getElementById("floating-cs").classList.toggle("hidden");
+              }, 7000);
+
+              db.ref(PATH_LOG).push({ user: kode, waktu: new Date().toLocaleString("id-ID") });
+            });
+            
+          } else {
+            showAlert("UPS, KODE AKSES TIDAK TERDAFTAR!");
+          }
+        }, 2000); 
+      } catch(e) { 
+        console.error(e); 
+        Swal.close();
+        showAlert("TERJADI KESALAHAN PADA SISTEM!"); 
+      }
+    }
+
+    function prosesAdminLogin() {
+      const pin = document.getElementById("kodeAdmin").value;
+      if(!pin) return;
+
+      Swal.fire({ title: 'Memverifikasi...', text: 'Mohon tunggu sebentar', allowOutsideClick: false, showConfirmButton: false, didOpen: () => { Swal.showLoading(); } });
+
+      setTimeout(() => {
+        Swal.close();
+        if(pin === "123") {
+          
+          const sapaan = getSapaanWaktu();
+          const picHtml = getProfilePicHtml('admin');
+          document.getElementById("admin-greeting-header").innerHTML = `
+            <div style="display:flex; align-items:center; gap:9px;">
+              <div id="admin-pic-wrapper">${picHtml}</div>
+              <div style="line-height:1.2; font-size:13px; text-align:left;">
+                <span style="font-weight:400; opacity:0.9;">${sapaan},</span><br>
+                <span style="font-weight:700; font-size:15px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">Asep Jamaludin</span>
+              </div>
+            </div>`;
+
+          Swal.fire({
+            icon: 'success',
+            title: 'Selamat datang, Admin',
+            showConfirmButton: false,
+            timer: 2000
+          }).then(() => {
+            clearInterval(csInterval);
+            document.getElementById("floating-cs").classList.add("hidden");
+            
+            document.getElementById("login-screen").style.display = "none";
+            document.getElementById("admin-full-page").style.display = "flex";
+            muatSemuaData();
+          });
+          
+        } else { 
+          showAlert("PIN ADMIN SALAH!");
+        }
+      }, 2000);
+    }
 
     function hubungiWA() {
       const nama = document.getElementById("card-names").innerText;
@@ -332,61 +1114,41 @@
     }
 
     function unduhPDF() {
-    const element = document.getElementById('pdf-wrapper');
-    const nama = document.getElementById("card-names").innerText;
-    
-    const kodeInput = document.getElementById("kodeAkses").value.toUpperCase();
-    document.getElementById("display-kode-akses").innerText = kodeInput;
-
-    const footer = document.getElementById('pdf-footer-info');
-    const qrContainer = document.getElementById('qrcode-container');
-    
-    qrContainer.innerHTML = ""; 
-    footer.style.display = "block"; 
-
-    new QRCode(qrContainer, {
-        text: "tiny.cc/AJ-Arsip",
-        width: 47,
-        height: 47
-    });
-
-    setTimeout(() => {
-        const opt = {
-            margin:       0.5,
-            filename:     `${kodeInput}_${nama.replace(/<br>/g, '_')}.pdf`,
-            image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { scale: 2, useCORS: true },
-            jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
-        };
-
-        html2pdf().set(opt).from(element).save().then(() => {
-            footer.style.display = "none"; 
-        });
-    }, 500);
-}
+      const element = document.getElementById('pdf-wrapper');
+      const nama = document.getElementById("card-names").innerText;
+      const kodeInput = document.getElementById("kodeAkses").value.toUpperCase();
+      document.getElementById("display-kode-akses").innerText = kodeInput;
+      const footer = document.getElementById('pdf-footer-info');
+      const qrContainer = document.getElementById('qrcode-container');
+      qrContainer.innerHTML = ""; footer.style.display = "block";
+      new QRCode(qrContainer, { text: "tiny.cc/AJ-Arsip", width: 47, height: 47 });
+      setTimeout(() => {
+        const opt = { margin: 0.5, filename: `${kodeInput}_Card.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2, useCORS: true }, jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' } };
+        html2pdf().set(opt).from(element).save().then(() => { footer.style.display = "none"; });
+      }, 500);
+    }
 
     function unduhDataDetailAdmin() {
       const element = document.getElementById('area-unduh-admin');
       const kode = document.getElementById("det-kode").innerText;
-      const kerabat = document.getElementById("det-kerabat").innerText;
-      
       element.classList.add('border-pdf');
-      
-      const opt = {
-        margin:       1,
-        filename:     `${kode} - ${kerabat}.pdf`,
-        image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 3, dpi: 300 },
-        jsPDF:        { unit: 'in', format: 'a5', orientation: 'portrait' }
-      };
-      html2pdf().set(opt).from(element).save().then(() => {
-        element.classList.remove('border-pdf');
-      });
+      const opt = { margin: 1, filename: `${kode}_Data.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 3 }, jsPDF: { unit: 'in', format: 'a5' } };
+      html2pdf().set(opt).from(element).save().then(() => { element.classList.remove('border-pdf'); });
     }
 
     function toggleFormInput() {
       const container = document.getElementById("form-input-container");
       const chevron = document.getElementById("chevron-tambah");
+      if (container.style.display === "none" || container.style.display === "") {
+        container.style.display = "block"; chevron.classList.add("rotate");
+      } else {
+        container.style.display = "none"; chevron.classList.remove("rotate");
+      }
+    }
+    
+    function toggleInfoCard(id) {
+      const container = document.getElementById(`info-${id}-container`);
+      const chevron = document.getElementById(`chevron-${id}`);
       if (container.style.display === "none" || container.style.display === "") {
         container.style.display = "block";
         chevron.classList.add("rotate");
@@ -401,53 +1163,64 @@
       document.getElementById("field-nominal").classList.toggle("hidden", value !== "Uang");
       document.getElementById("field-kado").classList.toggle("hidden", value !== "Kado");
     }
+    
+    // --- FUNGSI BARU UNTUK TOMBOL TAMBAH DATA ---
+function bukaFormTambahData() {
+  const container = document.getElementById("form-input-container");
+  const chevron = document.getElementById("chevron-tambah");
+  
+  // Jika form sedang tertutup: bersihkan input, buat kode otomatis, lalu buka
+  if (container.style.display === "none" || container.style.display === "") {
+    
+    // 1. Bersihkan sisa ketikan di form
+    const inputs = document.querySelectorAll("#form-input-container input:not([type='range']):not([type='checkbox']), #form-input-container select");
+    inputs.forEach(i => i.value = "");
 
-    function switchTab(tab) {
-      document.getElementById("form-login").style.display = tab === "login" ? "block" : "none";
-      document.getElementById("form-admin").style.display = tab === "admin" ? "block" : "none";
-      document.getElementById("tab-login").classList.toggle("active", tab === "login");
-      document.getElementById("tab-admin").classList.toggle("active", tab === "admin");
-    }
+    // 2. Siapkan pengecekan kode
+    const daftarKodeTerpakai = Object.keys(allData || {});
+    let pendingKode = localStorage.getItem('pendingKodeAkses');
+    let kodeFinal = "";
 
-    async function prosesLoginUser() {
-      const kode = document.getElementById("kodeAkses").value.trim().toUpperCase();
-      if(!kode) return;
-      try {
-        const snap = await db.ref(`${PATH_DATA}/${kode}`).once("value");
-        if(snap.exists()) {
-          const data = snap.val();
-          document.getElementById("suaraSukses").play();
-          document.getElementById("card-names"). innerHTML = `${data.kerabat}<br>&<br>${data.pasangan}`;
-          let tgl = new Date(data.tanggal);
-          let formattedDate = `${tgl.getDate().toString().padStart(2, '0')}-${(tgl.getMonth()+1).toString().padStart(2, '0')}-${tgl.getFullYear()}`;
-          document.getElementById("card-date").textContent = formattedDate;
-          document.getElementById("login-screen").style.display = "none";
-          document.getElementById("user-full-page").style.display = "flex";
-          db.ref(PATH_LOG).push({ user: kode, waktu: new Date().toLocaleString("id-ID") });
-        } else {
-          document.getElementById("error-message").textContent = "KODE TIDAK DITEMUKAN!";
-          document.getElementById("suaraGagal").play();
+    // 3. Logika penentuan kode akses
+    if (pendingKode && !daftarKodeTerpakai.includes(pendingKode)) {
+      // Pakai kode yang tertunda di memori
+      kodeFinal = pendingKode;
+    } else {
+      
+      let sudahValid = false;
+      while (!sudahValid) {
+        let angkaAcak = Math.floor(1000 + Math.random() * 9000);
+        kodeFinal = "AJ" + angkaAcak; 
+        
+        if (!daftarKodeTerpakai.includes(kodeFinal)) {
+          sudahValid = true;
         }
-      } catch(e) { console.error(e); }
+      }
+      // Simpan ke memori browser
+      localStorage.setItem('pendingKodeAkses', kodeFinal);
     }
 
-    function prosesAdminLogin() {
-      if(document.getElementById("kodeAdmin").value === "123") {
-        document.getElementById("login-screen").style.display = "none";
-        document.getElementById("admin-full-page").style.display = "flex";
-        muatSemuaData();
-      } else { alert("PIN SALAH!"); }
-    }
+    // 4. Masukkan kode ke dalam input form
+    document.getElementById("newKey").value = kodeFinal;
+
+    // 5. Buka form (mengadaptasi efek animasi bawaan Anda)
+    container.style.display = "block"; 
+    if(chevron) chevron.classList.add("rotate");
+    
+  } else {
+    // Jika form sedang terbuka, cukup tutup form-nya
+    container.style.display = "none"; 
+    if(chevron) chevron.classList.remove("rotate");
+  }
+}
 
     function showAdminSection(sec) {
       document.getElementById("section-tambah").style.display = sec === 'tambah' ? 'flex' : 'none';
       document.getElementById("section-riwayat").style.display = sec === 'riwayat' ? 'flex' : 'none';
       document.getElementById("section-info").style.display = sec === 'info' ? 'flex' : 'none';
-      
       document.getElementById("nav-tambah").classList.toggle("active", sec === 'tambah');
       document.getElementById("nav-riwayat").classList.toggle("active", sec === 'riwayat');
       document.getElementById("nav-info").classList.toggle("active", sec === 'info');
-      
       if(sec === 'riwayat') muatRiwayat();
       if(sec === 'info') muatInfoMarquee();
     }
@@ -471,34 +1244,95 @@
         desa: document.getElementById("newDesa").value,
         kecamatan: document.getElementById("newKecamatan").value,
         kabupaten: document.getElementById("newKabupaten").value,
-        bingkisan: bgk,
-        ...extraData
+        bingkisan: bgk, ...extraData
       };
       db.ref(`${PATH_DATA}/${key}`).set(data).then(() => {
-        alert("Berhasil disimpan!");
-        const inputs = document.querySelectorAll("#form-input-container input, #form-input-container select");
-        inputs.forEach(i => i.value = "");
-        toggleFormInput();
-        toggleBingkisanFields();
+        Swal.fire({ icon: 'success', title: 'Berhasil', text: 'Data berhasil disimpan!', timer: 1500, showConfirmButton: false });
+        localStorage.removeItem('pendingKodeAkses');
+        const inputs = document.querySelectorAll("#form-input-container input:not([type='range']):not([type='checkbox']), #form-input-container select");
+        inputs.forEach(i => i.value = ""); toggleFormInput(); toggleBingkisanFields();
       });
     }
 
     function muatSemuaData() {
       db.ref(PATH_DATA).on('value', (snap) => {
-        allData = snap.val() || {};
-        renderDataList(allData);
+        allData = snap.val() || {}; renderDataList(allData);
       });
     }
 
     function renderDataList(dataObj) {
-      const container = document.getElementById("list-data-firebase");
-      const entries = Object.entries(dataObj);
-      document.getElementById("data-counter").innerText = entries.length;
-      container.innerHTML = "";
-      entries.reverse().forEach(([key, val]) => {
-        container.innerHTML += `<div class="data-row"><div class="data-code">${key}</div><div class="data-actions"><button class="btn-icon btn-view" onclick="lihatDetail('${key}')"><i class="fa-solid fa-eye"></i></button><button class="btn-icon btn-delete" onclick="hapusData('${key}')"><i class="fa-solid fa-trash-can"></i></button></div></div>`;
-      });
+    dataAktif = dataObj;
+    const container = document.getElementById("list-data-firebase");
+    let entries = Object.entries(dataObj);
+    document.getElementById("data-counter").innerText = entries.length;
+    container.innerHTML = "";
+    
+    let adaPesanBelumDibaca = false;
+
+    entries.sort((a, b) => {
+      const dateA = new Date(a[1].tanggal || 0);
+      const dateB = new Date(b[1].tanggal || 0);
+      return dateB - dateA;
+    });
+
+    entries.forEach(([key, val]) => {
+      let indikatorMerah = "";
+      if (val.pesan_baru === true) {
+          indikatorMerah = `<span style="position:absolute; top:-1px; right:0px; width:6px; height:6px; background-color:#ef4444; border-radius:50%; border:2px solid #ffffff;"></span>`;
+          adaPesanBelumDibaca = true; 
+      }
+
+      container.innerHTML += `
+        <div class="data-row">
+          <div class="data-code">${key}</div>
+          <div class="data-actions">
+            <button type="button" class="btn-icon" style="position: relative; color: #10b981;" onclick="bukaModalChatAdmin('${key}', '${val.kerabat}')" title="Chat dengan ${val.kerabat}">
+              <i class="fa-solid fa-comment-dots"></i>
+              ${indikatorMerah} 
+            </button>
+            <button type="button" class="btn-icon btn-view" onclick="lihatDetail('${key}')"><i class="fa-solid fa-eye"></i></button>
+            <button type="button" class="btn-icon btn-delete" onclick="hapusData('${key}')"><i class="fa-solid fa-trash-can"></i></button>
+          </div>
+        </div>
+      `;
+    });
+
+    const globalIcon = document.getElementById("global-user-icon");
+    if (globalIcon) {
+        if (adaPesanBelumDibaca) {
+            globalIcon.style.color = "#ef4444"; 
+            globalIcon.classList.add("fa-shake"); 
+        } else {
+            globalIcon.style.color = "inherit"; 
+            globalIcon.classList.remove("fa-shake"); 
+        }
     }
+}
+    
+    // Fungsi untuk menyalin kode akses tamu ke clipboard
+function salinKodePesan(kodeAkses) {
+    navigator.clipboard.writeText(kodeAkses).then(() => {
+        // Tampilkan pop-up kecil (Toast) agar tidak mengganggu layar
+        Swal.fire({
+            icon: 'success',
+            title: 'Tersalin!',
+            text: `Kode ${kodeAkses} berhasil disalin.`,
+            timer: 1500,
+            showConfirmButton: false,
+            toast: true,
+            position: 'top-end'
+        });
+        
+        // Opsional: Langsung fokuskan kursor ke kotak pencarian setelah menyalin
+        const kotakCari = document.getElementById("cariData");
+        if (kotakCari) {
+            kotakCari.focus();
+        }
+    }).catch(err => {
+        console.error("Gagal menyalin teks: ", err);
+        alert("Gagal menyalin kode. Browser Anda tidak mendukung fitur ini.");
+    });
+}
 
     function lihatDetail(key) {
       const data = allData[key];
@@ -552,94 +1386,622 @@
       }
     }
 
-    function tutupDetail() { document.getElementById("detail-container").style.display = "none"; currentDetailKey = ""; }
+    function tutupDetail() { document.getElementById("detail-container").style.display = "none"; }
+    
     function filterData() {
       const kw = document.getElementById("cariData").value.toLowerCase();
       const filtered = {};
       Object.entries(allData).forEach(([k, v]) => { if(k.toLowerCase().includes(kw)) filtered[k] = v; });
       renderDataList(filtered);
     }
-    function hapusData(key) { if(confirm("Hapus data " + key + "?")) { db.ref(`${PATH_DATA}/${key}`).remove(); tutupDetail(); } }
+    
+    function hapusData(key) {
+      Swal.fire({
+        title: 'Hapus Data Pengunjung?',
+        text: `Data dengan kode akses ${key} akan dihapus secara permanen.`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#ef4444',
+        cancelButtonColor: '#94a3b8',
+        confirmButtonText: 'Hapus',
+        cancelButtonText: 'Batal'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          db.ref(`${PATH_DATA}/${key}`).remove().then(() => {
+            tutupDetail();
+            Swal.fire({ title: 'Terhapus!', text: `Data pengunjung dengan kode akses ${key} berhasil dihapus.`, icon: 'success', timer: 1500, showConfirmButton: false });
+          });
+        }
+      });
+    }
     
     async function muatRiwayat() {
-      const container = document.getElementById("log-list");
-      container.innerHTML = "Memuat...";
-      const snap = await db.ref(PATH_LOG).once("value");
-      container.innerHTML = `
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-          <h3 style='margin:0; font-size:16px; color: #1d4ed8;'>Riwayat Akses</h3>
-          <button onclick="hapusSemuaLog()" style="width:auto; background:#ef4444; padding:5px 10px; font-size:11px; color:white; border:none; border-radius:5px; margin:0; cursor:pointer;">HAPUS SEMUA</button>
-        </div>`;
-      if(snap.exists()) {
-        Object.entries(snap.val()).reverse().forEach(([id, log]) => {
-          container.innerHTML += `<div class=\"log-row\"><div><b>${log.user}</b><br><small>${log.waktu}</small></div><button onclick=\"hapusLog('${id}')\" style=\"width:auto; background:none; padding:4px; font-size:14px; color:#ef4444; border:none; margin:0; cursor:pointer;\"><i class=\"fa-solid fa-trash-can\"></i></button></div>`;
-        });
-      } else { container.innerHTML += "<p>Belum ada riwayat yang tercatat.</p>"; }
-    }
-    function hapusLog(id) { if(confirm("Hapus log?")) db.ref(`${PATH_LOG}/${id}`).remove().then(() => muatRiwayat()); }
-    function hapusSemuaLog() { if(confirm("Apakah Anda yakin ingin menghapus semua riwayat akses?")) db.ref(PATH_LOG).remove().then(() => muatRiwayat()); }
+  const container = document.getElementById("log-list");
+  container.innerHTML = "<p style='text-align:center; font-size:13px; color:#64748b;'>Memuat riwayat...</p>";
+  
+  try {
+    const snap = await db.ref(PATH_LOG).once("value");
+    let count = 0;
+    let logsHtml = "";
 
-    // FUNGSI UPDATE MARQUEE (ADMIN)
-    function updateMarquee() {
-      const teks = document.getElementById("inputMarquee").value;
-      const speed = document.getElementById("inputSpeed").value || 12;
-      db.ref(PATH_INFO).set({ teks: teks, kecepatan: speed }).then(() => {
-        alert("Teks di halaman beranda berhasil diperbarui!");
+    if(snap.exists()) {
+      const data = Object.entries(snap.val()).reverse();
+      count = data.length;
+      data.forEach(([id, log]) => {
+        // Tentukan aksi di sebelah kanan (Trash can ATAU Checkbox)
+        let actionElement = "";
+        if (isMultiSelectMode) {
+          actionElement = `<input type="checkbox" class="log-checkbox" value="${id}" style="width: 18px; height: 18px; margin: 0; cursor: pointer; accent-color: #ef4444;">`;
+        } else {
+          actionElement = `<button type="button" onclick="konfirmasiHapusLog('${id}', '${log.user}')" style="width:auto; background:none; color:#ef4444; border:none; margin:0; cursor:pointer; font-size:16px; padding:5px;"><i class="fa-solid fa-trash-can"></i></button>`;
+        }
+
+        logsHtml += `<div class="log-row">
+                      <div><b style="color:#3b82f6;">${log.user}</b><br><small style="color:#64748b;">${log.waktu}</small></div>
+                      ${actionElement}
+                     </div>`;
+      });
+    } else {
+      logsHtml = "<p style='text-align:center; font-size:13px; color:#64748b; margin:20px 0;'>Belum ada riwayat yang tercatat.</p>";
+      isMultiSelectMode = false; // Reset jika kosong
+    }
+
+    // Tentukan Header dan Teks Toggle (Pilih / Batal)
+    const toggleText = isMultiSelectMode ? 'BATAL' : 'PILIH';
+    const toggleColor = isMultiSelectMode ? '#94a3b8' : '#3b82f6';
+    
+    // Tentukan Tombol Bawah
+    let bottomBtnHtml = "";
+    if (isMultiSelectMode) {
+      bottomBtnHtml = `<button type="button" onclick="konfirmasiHapusTerpilih()" style="width:100%; background:#ef4444; font-weight:bold; padding:12px; font-size:14px; color:white; border:none; border-radius:8px; cursor:pointer;">HAPUS YANG DIPILIH</button>`;
+    } else {
+      bottomBtnHtml = `<button type="button" onclick="konfirmasiHapusSemuaLog()" style="width:100%; background:#ef4444; font-weight:bold; padding:12px; font-size:14px; color:white; border:none; border-radius:8px; cursor:pointer;">HAPUS SEMUA RIWAYAT</button>`;
+    }
+
+    container.innerHTML = `
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+        <h3 style="margin: 0; font-size: 16px; color: #1d4ed8; text-align: left;">Riwayat Akses | <span>${count}</span></h3>
+        ${count > 0 ? `<span style="cursor: pointer; font-size: 13px; font-weight: bold; color: ${toggleColor};" onclick="toggleMultiSelectMode()">${toggleText}</span>` : ''}
+      </div>
+      <div style="max-height: 148px; overflow-y: auto; padding-right: 5px; width: 100%; border-top: 1px dashed #cbd5e1; border-bottom: 1px dashed #cbd5e1; padding-top: -5px; padding-bottom: 0px; margin-bottom: -5px;">
+        ${logsHtml}
+      </div>
+      ${count > 0 ? bottomBtnHtml : ''}
+    `;
+  } catch (e) {
+    console.error(e);
+    container.innerHTML = "<p style='color:#ef4444;'>Gagal memuat riwayat.</p>";
+  }
+}
+
+    function konfirmasiHapusLog(id, userCode) {
+      Swal.fire({
+        title: 'Hapus Log Ini?',
+        text: `Data riwayat dengan kode akses ${userCode} akan dihapus secara permanen.`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#ef4444',
+        cancelButtonColor: '#94a3b8',
+        confirmButtonText: 'Hapus',
+        cancelButtonText: 'Batal'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          db.ref(`${PATH_LOG}/${id}`).remove().then(() => {
+            muatRiwayat();
+            Swal.fire({ title: 'Terhapus!', text: `Data riwayat dengan kode akses ${userCode} berhasil dihapus.`, icon: 'success', timer: 1500, showConfirmButton: false });
+          });
+        }
       });
     }
 
-    // FUNGSI BARU: UPDATE MARQUEE (WEDPRIZE)
-    function updateMarqueeWed() {
-      const teks = document.getElementById("inputMarqueeWed").value;
-      const speed = document.getElementById("inputSpeedWed").value || 23;
-      db.ref(PATH_INFO_WED).set({ teks: teks, kecepatan: speed }).then(() => {
-        alert("Teks di halaman WedPrize berhasil diperbarui!");
+    function konfirmasiHapusSemuaLog() {
+      Swal.fire({
+        title: 'Kosongkan Semua Riwayat?',
+        text: 'Semua log riwayat akan dihapus secara permanen.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#ef4444',
+        cancelButtonColor: '#94a3b8',
+        confirmButtonText: 'Kosongkan',
+        cancelButtonText: 'Batal'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          db.ref(PATH_LOG).remove().then(() => {
+            muatRiwayat();
+            Swal.fire({ title: 'Dikosongkan!', text: 'Semua data riwayat berhasil dihapus.', icon: 'success', timer: 1500, showConfirmButton: false });
+          });
+        }
+      });
+    }
+    
+    // Fungsi untuk mengganti mode (Normal <-> Multi-Select)
+function toggleMultiSelectMode() {
+  isMultiSelectMode = !isMultiSelectMode;
+  muatRiwayat(); // Muat ulang tampilan
+}
+
+// Fungsi untuk menghapus riwayat yang dicentang
+function konfirmasiHapusTerpilih() {
+  const checkboxes = document.querySelectorAll('.log-checkbox:checked');
+  
+  if (checkboxes.length === 0) {
+    return Swal.fire({ icon: 'warning', title: 'Pilih Data', text: 'Tidak ada riwayat yang dicentang!' });
+  }
+
+  Swal.fire({
+    title: 'Hapus Riwayat Terpilih?',
+    text: `${checkboxes.length} data riwayat yang terpilih akan dihapus.`,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#ef4444',
+    cancelButtonColor: '#94a3b8',
+    confirmButtonText: 'Hapus',
+    cancelButtonText: 'Batal'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      Swal.fire({ title: 'Menghapus...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
+      
+      // Kumpulkan semua id yang akan dihapus untuk update Firebase sekaligus
+      let updates = {};
+      checkboxes.forEach(cb => {
+        updates[cb.value] = null;
+      });
+
+      db.ref(PATH_LOG).update(updates).then(() => {
+        isMultiSelectMode = false; // Kembalikan ke mode normal setelah sukses
+        muatRiwayat();
+        Swal.fire({ title: 'Terhapus!', text: 'Semua riwayat yang terpilih berhasil dihapus.', icon: 'success', timer: 1500, showConfirmButton: false });
+      }).catch(err => {
+        console.error(err);
+        Swal.fire({ icon: 'error', title: 'Gagal', text: 'Terjadi kesalahan sistem.' });
+      });
+    }
+  });
+}
+
+    // FUNGSI NOTIFIKASI GLOBAL
+    function kirimNotifGlobal() {
+      const judul = document.getElementById("inputJudulGlobal").value.trim();
+      const pesan = document.getElementById("inputPesanGlobal").value.trim();
+      
+      if(!judul || !pesan) return Swal.fire({ icon: 'warning', title: 'Kosong', text: 'Judul dan isi pesan tidak boleh kosong!' });
+      
+      const waktuSekarang = new Date();
+      const optionsDate = { day: 'numeric', month: 'short', year: 'numeric' };
+      const optionsTime = { hour: '2-digit', minute: '2-digit' };
+      const formatWaktu = `${waktuSekarang.toLocaleDateString('id-ID', optionsDate)} - ${waktuSekarang.toLocaleTimeString('id-ID', optionsTime)}`;
+      
+      db.ref(PATH_NOTIF_GLOBAL).push({
+        judul: judul,
+        pesan: pesan,
+        waktu: formatWaktu,
+        timestamp: firebase.database.ServerValue.TIMESTAMP
+      }).then(() => {
+        document.getElementById("inputJudulGlobal").value = "";
+        document.getElementById("inputPesanGlobal").value = "";
+        Swal.fire({ icon: 'success', title: 'Terkirim!', text: 'Pesan siaran berhasil dikirim ke semua pengunjung', timer: 1500, showConfirmButton: false });
+      });
+    }
+    
+    function hapusNotifAdmin(id) {
+      Swal.fire({
+        title: 'Tarik Pesan?', text: 'Pesan ini akan ditarik dari layar semua pengunjung.', icon: 'warning',
+        showCancelButton: true, confirmButtonColor: '#ef4444', confirmButtonText: 'Tarik Pesan', cancelButtonText: 'Batal'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          db.ref(`${PATH_NOTIF_GLOBAL}/${id}`).remove();
+        }
+      });
+    }
+
+    function renderNotifAdmin() {
+      const container = document.getElementById("admin-notif-list");
+      if(!container) return;
+      container.innerHTML = "";
+      
+      if(daftarNotifGlobal.length === 0) {
+        container.innerHTML = "<p style='color:#94a3b8; text-align:center;'>Belum ada pesan siaran yang dikirim.</p>";
+        return;
+      }
+      
+      daftarNotifGlobal.forEach(notif => {
+        container.innerHTML += `
+          <div style="border-bottom: 1px solid #e2e8f0; padding-bottom: 8px; margin-bottom: 8px;">
+            <div style="color: #000000; font-weight: bold; margin-bottom: 3px;">${notif.judul}</div>
+            <div style="color: #374151; margin-bottom: 5px; text-align: justify;">${notif.pesan}</div>
+            <div style="display: flex; justify-content: space-between; align-items: center; color: #94a3b8; font-size: 10px;">
+              <span>${notif.waktu}</span>
+              <span style="color: #ef4444; cursor: pointer; font-weight: bold; font-size:10px;" onclick="hapusNotifAdmin('${notif.id}')" title="Tarik Pesan">HAPUS</span>
+            </div>
+          </div>
+        `;
+      });
+    }
+    
+    function renderNotifPengunjung() {
+      const container = document.getElementById("notif-list-container");
+      if(!container) return;
+      container.innerHTML = "";
+      
+      if(daftarNotifGlobal.length === 0) {
+        container.innerHTML = `
+          <div style="text-align: center; color: #94a3b8; padding: 20px 0;">
+            <i class="fa-solid fa-tower-broadcast" style="font-size: 20px; margin-bottom: 10px;"></i>
+            <p style="margin: 0; font-size: 13px;">Belum ada pesan siaran.</p>
+          </div>
+        `;
+      } else {
+        daftarNotifGlobal.forEach(notif => {
+          container.innerHTML += `
+            <div style="background: white; padding: 12px; border-radius: 8px; margin-bottom: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-left: 4px solid #10b981;">
+              <div style="color: #1e40af; font-weight: bold; margin-bottom: 5px; font-size: 14px;">${notif.judul}</div>
+              <p style="margin: 0 0 5px 0; font-size: 13px; color: #374151; text-align: justify;">${notif.pesan}</p>
+              <div style="font-size: 10px; color: #94a3b8; text-align: right;">${notif.waktu}</div>
+            </div>
+          `;
+        });
+      }
+    }
+    
+    function updateBadgeNotif() {
+      const badge = document.getElementById("badge-notif");
+      if(!badge) return;
+      
+      const lastReadCount = parseInt(localStorage.getItem("readNotifCount") || "0");
+      const unreadCount = daftarNotifGlobal.length - lastReadCount;
+      
+      if(unreadCount > 0) {
+        badge.innerText = unreadCount;
+        badge.style.display = "inline-block";
+      } else {
+        badge.style.display = "none";
+      }
+    }
+
+    function listenNotifGlobal() {
+      db.ref(PATH_NOTIF_GLOBAL).on('value', (snap) => {
+        daftarNotifGlobal = [];
+        if(snap.exists()) {
+          snap.forEach(child => {
+            daftarNotifGlobal.push({ id: child.key, ...child.val() });
+          });
+          daftarNotifGlobal.reverse(); 
+        }
+        
+        renderNotifAdmin();
+        renderNotifPengunjung();
+        updateBadgeNotif();
+      });
+    }
+
+    function updatePreviewUtama() {
+      const teks = document.getElementById("inputMarquee").value || "Pratinjau teks akan muncul di sini...";
+      const speed = document.getElementById("inputSpeed").value;
+      document.getElementById("valSpeedUtama").innerText = speed;
+      const preview = document.getElementById("preview-marquee-utama");
+      preview.innerText = teks;
+      preview.style.animationDuration = speed + "s";
+    }
+
+    function updatePreviewWedprize() {
+      const teks = document.getElementById("inputMarqueeWed").value || "Pratinjau teks akan muncul di sini...";
+      const speed = document.getElementById("inputSpeedWed").value;
+      document.getElementById("valSpeedWedprize").innerText = speed;
+      const preview = document.getElementById("preview-marquee-wedprize");
+      preview.innerText = teks;
+      preview.style.animationDuration = speed + "s";
+    }
+
+    function updateMarquee() { db.ref(PATH_INFO).set({ teks: document.getElementById("inputMarquee").value, kecepatan: document.getElementById("inputSpeed").value || 12 }).then(()=> { Swal.fire({ icon: 'success', title: 'Terupdate!', text: 'Info layar utama berhasil diperbarui', timer: 1500, showConfirmButton: false }); }); }
+    function updateMarqueeWed() { db.ref(PATH_INFO_WED).set({ teks: document.getElementById("inputMarqueeWed").value, kecepatan: document.getElementById("inputSpeedWed").value || 23 }).then(()=> { Swal.fire({ icon: 'success', title: 'Terupdate!', text: 'Info layar WedPrize berhasil diperbarui', timer: 1500, showConfirmButton: false }); }); }
+
+    function updateResetInfo() {
+      const date = document.getElementById("inputResetDate").value;
+      const isTahunan = document.getElementById("checkResetTahunan").checked;
+      
+      if(!date) return Swal.fire({ icon: 'warning', title: 'Perhatian', text: 'Tanggal reset harus diisi!' });
+      
+      db.ref(PATH_INFO_RESET).set({ tanggal: date, tahunan: isTahunan }).then(() => {
+        Swal.fire({ icon: 'success', title: 'Terupdate!', text: 'Pengaturan reset berhasil diperbarui', timer: 1500, showConfirmButton: false });
+      }).catch((error) => {
+        console.error(error);
+        Swal.fire({ icon: 'error', title: 'Gagal', text: 'Terjadi kesalahan saat menyimpan pengaturan.' });
       });
     }
 
     function muatInfoMarquee() {
-      // Muat info Admin
-      db.ref(PATH_INFO).once('value', (snap) => {
-        if(snap.exists()) {
-          const data = snap.val();
-          document.getElementById("inputMarquee").value = data.teks || "";
-          document.getElementById("inputSpeed").value = data.kecepatan || 12;
-        }
+      db.ref(PATH_INFO).once('value', (s) => { 
+        if(s.exists()){ 
+          document.getElementById("inputMarquee").value = s.val().teks; 
+          document.getElementById("inputSpeed").value = s.val().kecepatan; 
+          updatePreviewUtama();
+        } 
       });
-      // Muat info WedPrize
-      db.ref(PATH_INFO_WED).once('value', (snap) => {
-        if(snap.exists()) {
-          const data = snap.val();
-          document.getElementById("inputMarqueeWed").value = data.teks || "";
-          document.getElementById("inputSpeedWed").value = data.kecepatan || 23;
-        }
+      db.ref(PATH_INFO_WED).once('value', (s) => { 
+        if(s.exists()){ 
+          document.getElementById("inputMarqueeWed").value = s.val().teks; 
+          document.getElementById("inputSpeedWed").value = s.val().kecepatan; 
+          updatePreviewWedprize();
+        } 
+      });
+      
+      db.ref(PATH_INFO_RESET).once('value', (s) => { 
+        if(s.exists()){ 
+          document.getElementById("inputResetDate").value = s.val().tanggal || ""; 
+          document.getElementById("checkResetTahunan").checked = s.val().tahunan || false; 
+        } 
       });
     }
+    
+    // --- 1. FUNGSI TAMPILAN MODAL ---
+let dataAktif = {};
+let isFilterPesanAktif = false;
+
+function toggleFilterPesan() {
+    isFilterPesanAktif = !isFilterPesanAktif;
+    if (isFilterPesanAktif) {
+        const dataTersaring = {};
+        Object.entries(allData).forEach(([key, val]) => {
+            if (val.pesan_baru === true) dataTersaring[key] = val;
+        });
+        if (Object.keys(dataTersaring).length > 0) {
+            renderDataList(dataTersaring);
+        } else {
+            isFilterPesanAktif = false; 
+            renderDataList(allData);
+            Swal.fire({ icon: 'info', title: 'Bersih', text: 'Tidak ada pesan belum dibaca.', timer: 1500, showConfirmButton: false });
+        }
+    } else {
+        renderDataList(allData);
+    }
+}
+
+// --- FUNGSI MODAL FILTER LANJUTAN ---
+function bukaModalFilter() {
+    document.getElementById("modal-filter-lanjutan").style.display = "flex";
+    populasiDataDropdown(); 
+}
+
+function tutupModalFilter() {
+    document.getElementById("modal-filter-lanjutan").style.display = "none";
+}
+
+function formatRupiahFilter(elemen) {
+    let angkaRaw = elemen.value.replace(/[^0-9]/g, '');
+    elemen.value = angkaRaw.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+}
+
+function populasiDataDropdown() {
+    const selectTahun = document.getElementById("f-tahun");
+    const selectDesa = document.getElementById("f-desa");
+    const selectKecamatan = document.getElementById("f-kecamatan");
+    
+    const setTahun = new Set();
+    const setDesa = new Set();
+    const setKecamatan = new Set();
+    
+    Object.values(allData).forEach(item => {
+        if(item.tanggal) setTahun.add(item.tanggal.split("-")[0]);
+        if(item.desa) setDesa.add(item.desa);
+        if(item.kecamatan) setKecamatan.add(item.kecamatan);
+    });
+
+    selectTahun.innerHTML = '<option value="">Semua Tahun</option>';
+    Array.from(setTahun).sort((a, b) => b - a).forEach(val => selectTahun.innerHTML += `<option value="${val}">${val}</option>`);
+
+    selectDesa.innerHTML = '<option value="">Semua Desa</option>';
+    Array.from(setDesa).sort().forEach(val => selectDesa.innerHTML += `<option value="${val}">${val}</option>`);
+
+    selectKecamatan.innerHTML = '<option value="">Semua Kecamatan</option>';
+    Array.from(setKecamatan).sort().forEach(val => selectKecamatan.innerHTML += `<option value="${val}">${val}</option>`);
+}
+
+function terapkanFilterLanjutan() {
+    const fNama = document.getElementById("f-nama").value.toLowerCase();
+    const fTahun = document.getElementById("f-tahun").value;
+    const fDesa = document.getElementById("f-desa").value; 
+    const fKecamatan = document.getElementById("f-kecamatan").value;
+    const fBingkisan = document.getElementById("f-bingkisan").value;
+    const fNominal = document.getElementById("f-nominal").value.replace(/\./g, ''); 
+
+    const dataFiltered = {};
+
+    Object.entries(allData).forEach(([key, val]) => {
+        let isMatch = true;
+        if (fNama && !(val.kerabat || "").toLowerCase().includes(fNama)) isMatch = false;
+        if (fTahun && !(val.tanggal || "").startsWith(fTahun)) isMatch = false;
+        if (fDesa && val.desa !== fDesa) isMatch = false;
+        if (fKecamatan && val.kecamatan !== fKecamatan) isMatch = false;
+        if (fBingkisan && val.bingkisan !== fBingkisan) isMatch = false;
+        if (fNominal) {
+            let nilaiTamu = String(val.nominal || val.harga || "");
+            if (!nilaiTamu.includes(fNominal)) isMatch = false;
+        }
+        if (isMatch) dataFiltered[key] = val;
+    });
+
+    renderDataList(dataFiltered);
+    tutupModalFilter();
+    
+    if(Object.keys(dataFiltered).length === 0) {
+        Swal.fire({ icon: 'info', title: 'Nihil', text: 'Sesuaikan kriteria filter.', timer: 2000, showConfirmButton: false });
+    }
+}
+
+function resetFilter() {
+    ["f-nama", "f-tahun", "f-desa", "f-kecamatan", "f-bingkisan", "f-nominal"].forEach(id => {
+        let elemen = document.getElementById(id);
+        if(elemen) elemen.value = "";
+    });
+    isFilterPesanAktif = false;
+    const kotakCari = document.getElementById("cariData");
+    if(kotakCari) kotakCari.value = ""; 
+    renderDataList(allData);
+}
+
+// --- SENSOR TAHAN LAMA KACA PEMBESAR ---
+document.addEventListener("DOMContentLoaded", function() {
+    const icon = document.getElementById("search-icon");
+    let timer;
+    if(icon) {
+        icon.addEventListener("contextmenu", function(e) { e.preventDefault(); });
+        icon.addEventListener("mousedown", () => timer = setTimeout(bukaModalFilter, 600));
+        icon.addEventListener("touchstart", () => timer = setTimeout(bukaModalFilter, 600), {passive: true});
+        icon.addEventListener("mouseup", () => clearTimeout(timer));
+        icon.addEventListener("touchend", () => clearTimeout(timer));
+        icon.addEventListener("touchmove", () => clearTimeout(timer));
+    }
+});
 
     function listenMarquee() {
       db.ref(PATH_INFO).on('value', (snap) => {
         if(snap.exists()) {
           const data = snap.val();
-          const marqueeElement = document.getElementById("main-marquee");
-          if(marqueeElement) {
-            marqueeElement.innerText = data.teks || "Selamat Datang";
-            const speed = data.kecepatan || 12;
-            marqueeElement.style.animationDuration = speed + "s";
-          }
+          document.getElementById("main-marquee").innerText = data.teks || "Selamat Datang";
+          document.getElementById("main-marquee").style.animationDuration = (data.kecepatan || 12) + "s";
         }
       });
     }
 
     listenMarquee();
-
+    listenNotifGlobal(); 
+    
     setInterval(() => {
-        const tgl = document.getElementById("tanggal-hari");
-        if(tgl) {
-            const optionsDate = { weekday: 'long', day: 'numeric', month: 'short', year: 'numeric' };
-            const optionsTime = { hour: '2-digit', minute: '2-digit', second: '2-digit' };
-            tgl.textContent = `${new Date().toLocaleDateString('id-ID', optionsDate)} - ${new Date().toLocaleTimeString('id-ID', optionsTime)}`;
+      const tgl = document.getElementById("tanggal-hari");
+      if(tgl) {
+        const now = new Date();
+        const optionsDate = { weekday: 'long', day: 'numeric', month: 'short', year: 'numeric' };
+        const optionsTime = { hour: '2-digit', minute: '2-digit', second: '2-digit' };
+        const dateStr = now.toLocaleDateString('id-ID', optionsDate);
+        const timeStr = now.toLocaleTimeString('id-ID', optionsTime);
+        tgl.innerHTML = `<span>${dateStr}</span><span>${timeStr}</span>`;
+      }
+    }, 1000);
+    
+    // --- FUNGSI DOWNLOAD PDF LANGSUNG (ANTI MENTAL & PRESISI A4) ---
+function cetakDataFilter() {
+    // 1. Validasi ketersediaan data aktif
+    if (typeof dataAktif === 'undefined' || !dataAktif) {
+        Swal.fire({ icon: 'error', title: 'Error', text: 'Data belum siap, silakan refresh halaman.', timer: 2000 });
+        return;
+    }
+
+    const entries = Object.entries(dataAktif);
+    if (entries.length === 0) {
+        Swal.fire({ icon: 'warning', title: 'Kosong', text: 'Tidak ada data pengunjung untuk diunduh.', timer: 2000, showConfirmButton: false });
+        return;
+    }
+
+    // 2. Tampilkan pop-up loading estetis khas aplikasi premium
+    Swal.fire({ 
+        title: 'Menciptakan PDF...', 
+        text: 'Menyusun data secara simetris', 
+        allowOutsideClick: false, 
+        showConfirmButton: false,
+        didOpen: () => { Swal.showLoading(); } 
+    });
+
+    // 3. Inisialisasi dokumen kertas A4 potrait murni dalam skala milimeter (mm)
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+
+    // 4. Gambar Elemen Header Laporan
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(15);
+    doc.setTextColor(29, 78, 216); // Menggunakan warna biru aksen utama (#1d4ed8)
+    doc.text("LAPORAN DATA ARSIP PENGUNJUNG", 14, 15);
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(9);
+    doc.setTextColor(71, 85, 105); // Warna abu-abu elegan untuk sub-teks
+    const waktuCetak = new Date().toLocaleString('id-ID');
+    doc.text(`Total Data: ${entries.length} Pengunjung | Diunduh pada: ${waktuCetak}`, 14, 21);
+
+    // Garis pembatas geometris simetris bawah header (garis biru tipis)
+    doc.setDrawColor(29, 78, 216);
+    doc.setLineWidth(0.4);
+    doc.line(14, 24, 196, 24); // Lebar presisi margin kiri 14mm ke margin kanan 196mm
+
+    // 5. Olah & Susun Baris Data untuk Tabel Detail Kompleks
+    const barisTabel = [];
+    entries.forEach(([key, val], index) => {
+        
+        // Format Data Keluarga (Tamu, Pasangan, Orang Tua)
+        let teksKeluarga = `Kerabat: ${val.kerabat || "-"}`;
+        if (val.pasangan) teksKeluarga += `\nPasangan: ${val.pasangan}`;
+        if (val.bapak || val.ibu) {
+            teksKeluarga += `\nOrang Tua: Bpk. ${val.bapak || "-"} & Ibu ${val.ibu || "-"}`;
         }
-     }, 1000);
+
+        // Format Alamat Gabungan (Gaya Baris Baru agar Rapi)
+        let urutanAlamat = [];
+        if (val.alamat) urutanAlamat.push(val.alamat);
+        if (val.desa) urutanAlamat.push(`Ds. ${val.desa}`);
+        if (val.kecamatan) urutanAlamat.push(`Kec. ${val.kecamatan}`);
+        let teksAlamat = urutanAlamat.length > 0 ? urutanAlamat.join(',\n') : "-";
+
+        // Format Bingkisan Nominal Uang / Estimasi Kado
+        let teksBingkisan = "-";
+        if (val.bingkisan === "Uang" && val.nominal) {
+            teksBingkisan = `Uang\nRp ${parseInt(val.nominal).toLocaleString('id-ID')}`;
+        } else if (val.bingkisan === "Kado") {
+            let estHarga = val.harga ? `\nEst: Rp ${parseInt(val.harga).toLocaleString('id-ID')}` : "";
+            teksBingkisan = `Kado / Barang${estHarga}`;
+        } else if (val.bingkisan) {
+            teksBingkisan = val.bingkisan;
+        }
+
+        // Masukkan ke array utama tabel
+        barisTabel.push([
+            index + 1,
+            `${key}\n${val.tanggal || "-"}`,
+            teksKeluarga,
+            teksAlamat,
+            teksBingkisan
+        ]);
+    });
+
+    // 6. Gambar Tabel Otomatis Menggunakan jspdf-autotable (Symmetrical Layout)
+    doc.autoTable({
+        startY: 28, // Mulai tepat di bawah garis batas header
+        head: [['No', 'Kode & Tgl', 'Data Komponen Keluarga', 'Alamat Lengkap', 'Data Bingkisan']],
+        body: barisTabel,
+        theme: 'striped', // Efek zebra abu-abu lembut agar mata nyaman membaca data
+        headStyles: { 
+            fillColor: [29, 78, 216], // Biru serasi dengan tema dashboard (#1d4ed8)
+            textColor: [255, 255, 255], 
+            fontStyle: 'bold', 
+            halign: 'center',
+            valign: 'middle'
+        },
+        columnStyles: {
+            0: { halign: 'center', cellWidth: 10 },  // Kolom nomor sempit simetris
+            1: { halign: 'center', cellWidth: 30 },  // Kode & tanggal rata tengah
+            2: { cellWidth: 62 },                    // Ruang terluas untuk detail nama keluarga
+            3: { cellWidth: 46 },                    // Detail alamat
+            4: { cellWidth: 34 }                     // Bingkisan & nilai nominal
+        },
+        styles: { 
+            font: 'helvetica', 
+            fontSize: 8.5, 
+            cellPadding: 3.5, 
+            overflow: 'linebreak', // Teks otomatis turun ke bawah jika terlalu panjang (tidak terpotong)
+            lineColor: [226, 232, 240], // Garis tepi dalam abu-abu tipis minimalist
+            lineWidth: 0.2
+        },
+        alternateRowStyles: {
+            fillColor: [248, 250, 252] // Zebra striping menggunakan warna minimalis modern (#f8fafc)
+        },
+        margin: { left: 14, right: 14 } // Kunci margin kanan-kiri kertas agar seimbang 100%
+    });
+
+    // 7. Tutup Loading Swal, lalu Unduh File secara Langsung ke Penyimpanan Lokal
+    Swal.close();
+    
+    // Memberikan nama file unik berdasarkan timestamp agar tidak tumpang tindih
+    const namaFile = `Laporan_Pengunjung_${Date.now()}.pdf`;
+    doc.save(namaFile);
+}
   </script>
 </body>
 </html>
