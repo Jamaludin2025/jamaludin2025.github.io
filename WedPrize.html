@@ -299,7 +299,8 @@
     
     const PATH_AKSES = "database_B/daftarAkses"; 
     const PATH_LOG = "database_B/logAktivitas";
-    const PATH_INFO_WED = "database_B/infoRunningWed"; // PATH BARU UNTUK MARQUEE
+    const PATH_INFO_WED = "database_B/infoRunningWed"; 
+    const PATH_INFO_RESET = "database_B/infoReset";
 
     const cardsContainer = document.getElementById("cards");
     const inputContainer = document.getElementById("inputContainer");
@@ -311,21 +312,60 @@
     const accessError = document.getElementById("accessError");
     const verifyButton = document.getElementById("verifyButton");
     
-    const eventDate = "2025-01-08";
     let winningPrize = null; 
     let isVerified = false; 
     let relativeName = ""; 
 
     const diskonOptions = [
-      { label: "D20", kode: "Saldo Dana Rp20.000", weight: 0, imageUrl: 'https://res.cloudinary.com/dz4w1sqiv/image/upload/v1760857328/28_Oktober_2025_20251018_132552_0000_kgtyo1.png' },
-      { label: "D50", kode: "Saldo Dana Rp50.000", weight: 0, imageUrl: 'https://res.cloudinary.com/dz4w1sqiv/image/upload/v1760857375/28_Oktober_2025_20251018_132552_0001_ihg64s.png' },
-      { label: "RNG", kode: "E-Book 100 Resep Nasi Goreng", weight: 25, imageUrl: 'https://res.cloudinary.com/dz4w1sqiv/image/upload/v1760857375/28_Oktober_2025_20251018_132552_0002_rw76ne.png' },
-      { label: "KRS", kode: "E-Book Koleksi Resep Sambal & Saus", weight: 25, imageUrl: 'https://res.cloudinary.com/dz4w1sqiv/image/upload/v1760857376/28_Oktober_2025_20251018_132552_0003_iknykj.png' },
-      { label: "ARS", kode: "E-Book Aneka Resep Sambal Favorit", weight: 25, imageUrl: 'https://res.cloudinary.com/dz4w1sqiv/image/upload/v1760857376/28_Oktober_2025_20251018_132553_0005_hpra6h.png' },
-      { label: "JSR", kode: "E-Book Jurus Sehat Rasullullah", weight: 25, imageUrl: 'https://res.cloudinary.com/dz4w1sqiv/image/upload/v1760857376/28_Oktober_2025_20251018_132553_0005_hpra6h.png' },
+      { label: "D20", kode: "Saldo Dana Rp20.000", weight: 0, imageUrl: 'https://res.cloudinary.com/dz4w1sqiv/image/upload/v1774699241/DN20_jo1ayn.jpg' },
+      { label: "D50", kode: "Saldo Dana Rp50.000", weight: 0, imageUrl: 'https://res.cloudinary.com/dz4w1sqiv/image/upload/v1774699241/DN50_gckjhq.jpg' },
+      { label: "RNG", kode: "E-Book 100 Resep Nasi Goreng", weight: 25, imageUrl: 'https://res.cloudinary.com/dz4w1sqiv/image/upload/v1774699092/RNG_f7ppvm.jpg' },
+      { label: "KRS", kode: "E-Book Koleksi Resep Sambal & Saus", weight: 25, imageUrl: 'https://res.cloudinary.com/dz4w1sqiv/image/upload/v1774699058/KRS_zb7xrp.jpg' },
+      { label: "ARS", kode: "E-Book Aneka Resep Sambal Favorit", weight: 25, imageUrl: 'https://res.cloudinary.com/dz4w1sqiv/image/upload/v1774699093/ARS_g7e7ij.jpg' },
+      { label: "JSR", kode: "E-Book Jurus Sehat Rasullullah", weight: 25, imageUrl: 'https://res.cloudinary.com/dz4w1sqiv/image/upload/v1774699092/JSR_fvhauc.jpg' },
     ];
 
-    // FUNGSI LISTENER RUNNING TEXT
+    function initWedPrize() {
+      db.ref(PATH_INFO_RESET).once('value', (snap) => {
+        let storageKey = "diskonState_default"; 
+        
+        if (snap.exists()) {
+          const config = snap.val();
+          const resetDateStr = config.tanggal; 
+          const isTahunan = config.tahunan;
+          
+          if (resetDateStr) {
+            const now = new Date();
+            const resetDateObj = new Date(resetDateStr);
+            
+            if (isTahunan) {
+              const month = resetDateObj.getMonth();
+              const day = resetDateObj.getDate();
+              const currentYear = now.getFullYear();
+              
+              const resetThisYear = new Date(currentYear, month, day);
+              
+              if (now >= resetThisYear) {
+                storageKey = `diskonState_${currentYear}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+              } else {
+                storageKey = `diskonState_${currentYear-1}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+              }
+            } else {
+              if (now >= resetDateObj) {
+                storageKey = `diskonState_${resetDateStr}_passed`;
+              } else {
+                storageKey = `diskonState_${resetDateStr}_before`;
+              }
+            }
+          }
+        }
+        setupCards(storageKey);
+      }).catch((error) => {
+        console.error("Gagal memuat pengaturan reset: ", error);
+        setupCards("diskonState_error_fallback"); 
+      });
+    }
+
     function listenMarqueeWed() {
       db.ref(PATH_INFO_WED).on('value', (snap) => {
         if(snap.exists()) {
@@ -424,9 +464,8 @@
       card.innerHTML = '<i class="bi bi-gift-fill" style="font-size: 28px; color:#1e40af;"></i>';
     }
 
-    function setupCards(date) {
+    function setupCards(storageKey) {
       cardsContainer.innerHTML = "";
-      const storageKey = "diskonState_" + date;
       let state = JSON.parse(localStorage.getItem(storageKey));
 
       if (!state) {
@@ -462,7 +501,13 @@
           if (!state.revealed[i]) {
             if (state.mainIndex === null) {
               const prizeToWin = pickWeighted(diskonOptions);
-              state.shuffled[i] = prizeToWin;
+              
+              // PERBAIKAN BUG KARTU DOUBLE: Lakukan SWAP
+              const prizeIndex = state.shuffled.findIndex(p => p.kode === prizeToWin.kode);
+              const temp = state.shuffled[i];
+              state.shuffled[i] = state.shuffled[prizeIndex];
+              state.shuffled[prizeIndex] = temp;
+              
               state.mainIndex = i;
               revealCard(i, card, prizeToWin, true);
             } else {
@@ -499,8 +544,8 @@
     function openPopup() { document.getElementById("infoPopup").style.display = "flex"; }
     function closePopup() { document.getElementById("infoPopup").style.display = "none"; }
 
-    setupCards(eventDate);
-    listenMarqueeWed(); // AKTIFKAN LISTENER MARQUEE SAAT LOAD
+    initWedPrize();
+    listenMarqueeWed(); 
   </script>
 </body>
 </html>
