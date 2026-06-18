@@ -10,8 +10,6 @@
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -439,11 +437,11 @@
               <option value="Uang">Uang</option>
               <option value="Kado">Kado</option>
             </select>
-            <div id="field-nominal" class="hidden"><label>Nominal (Rp)</label><input type="number" id="newNominal" placeholder="Contoh: 100000"></div>
-            <div id="field-kado" class="hidden">
-              <label>Keterangan Bingkisan</label><input type="text" id="newKetKado" placeholder="Contoh: Selimut">
-              <label>Harga (Estimasi)</label><input type="number" id="newHargaKado" placeholder="Contoh: 50000">
-            </div>
+            <div id="field-nominal" class="hidden"><label>Nominal (Rp)</label><input type="text" inputmode="numeric" id="newNominal" placeholder="Contoh: 100.000" oninput="formatRupiahFilter(this)"></div>
+<div id="field-kado" class="hidden">
+  <label>Keterangan Bingkisan</label><input type="text" id="newKetKado" placeholder="Contoh: Selimut">
+  <label>Harga (Estimasi)</label><input type="text" inputmode="numeric" id="newHargaKado" placeholder="Contoh: 50.000" oninput="formatRupiahFilter(this)">
+</div>
             <button type="button" onclick="saveToFirebase()" style="background: #10b981;">SIMPAN DATA</button>
           </div>
         </div>
@@ -456,7 +454,7 @@
     <span id="data-counter">0</span>
 </span>
     </h3>
-
+    
     <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px; width: 100%; box-sizing: border-box;">
     
     <div style="position: relative; flex: 1; height: 42px;">
@@ -468,7 +466,7 @@
     <button onclick="bukaModalFilter()" title="Filter Data Lanjutan" style="width: 42px; height: 42px; flex-shrink: 0; margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; cursor: pointer; color: #1d4ed8; box-sizing: border-box; transition: border-color 0.2s, color 0.2s;" onmouseover="this.style.borderColor='#3b82f6'; this.style.color='#3b82f6'" onmouseout="this.style.borderColor='#e2e8f0'; this.style.color='#1d4ed8'">
         <i class="fa-solid fa-sliders" style="font-size: 16px;"></i>
     </button>
-
+    
 </div>
     
           <div id="detail-container" style="display:none; margin-bottom: 15px; border-top: 1px dashed #cbd5e1; border-bottom: 1px dashed #cbd5e1; padding-top: 5px; padding-bottom: 15px;">
@@ -647,15 +645,10 @@
                 </div>
             </div>
 
-            <div style="display: flex; gap: 8px; margin-top: 10px;">
-    <button onclick="resetFilter()" style="flex: 1; padding: 12px 0; border: 1.5px solid #e2e8f0; background: #ffffff; color: #64748b; border-radius: 10px; cursor: pointer; font-weight: 700; font-size: 14px; transition: 0.2s;">Reset</button>
-    
-    <button onclick="cetakDataFilter()" style="flex: 1; padding: 12px 0; border: 1.5px solid #e2e8f0; background: #ffffff; color: #0284c7; border-radius: 10px; cursor: pointer; font-weight: 700; font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 6px; transition: 0.2s;" onmouseover="this.style.borderColor='#0284c7'" onmouseout="this.style.borderColor='#e2e8f0'">
-        <i class="fa-solid fa-print"></i> Cetak
-    </button>
-    
-    <button onclick="terapkanFilterLanjutan()" style="flex: 1.2; padding: 12px 0; border: none; background: #1d4ed8; color: #ffffff; border-radius: 10px; cursor: pointer; font-weight: 700; font-size: 14px; box-shadow: 0 4px 6px -1px rgba(29, 78, 216, 0.3); transition: 0.2s;">Terapkan</button>
-</div>
+            <div style="display: flex; gap: 12px;">
+                <button onclick="resetFilter()" style="flex: 1; padding: 12px; border: 1.5px solid #e2e8f0; background: #ffffff; color: #64748b; border-radius: 10px; cursor: pointer; font-weight: 700;">Reset</button>
+                <button onclick="terapkanFilterLanjutan()" style="flex: 2; padding: 12px; border: none; background: #1d4ed8; color: #ffffff; border-radius: 10px; cursor: pointer; font-weight: 700;">Terapkan Filter</button>
+            </div>
         </div>
     </div>
 </div>
@@ -823,7 +816,7 @@
       message.style.margin = "0";
       message.style.fontWeight = "600";
       document.getElementById("modal-extra-content").innerHTML = `<p style="text-align:justify; margin-bottom:10px; font-size:13px; color:#374151; font-weight:normal; line-height:1.5;">
-      Kode akses tertera di pojok kanan bawah amplop undangan. Ditulis dengan awalan AJ dan diikuti empat digit nomor setelahnya.</p><img src="https://res.cloudinary.com/dz4w1sqiv/image/upload/v1781353704/eowy2vg0doppgrio7jbi.png" alt="Contoh Posisi Kode">`;
+      Kode akses tertera di pojok kanan bawah amplop undangan dan ditulis dengan tinta merah.</p><img src="https://res.cloudinary.com/dz4w1sqiv/image/upload/v1781353704/eowy2vg0doppgrio7jbi.png" alt="Contoh Posisi Kode">`;
       document.getElementById("modal-alert").style.display = "flex";
     }
 
@@ -1044,7 +1037,6 @@
               document.getElementById("card-date").textContent = formattedDate;
               document.getElementById("login-screen").style.display = "none";
               document.getElementById("user-full-page").style.display = "flex";
-              checkAndPlayMusic();
               
               clearInterval(csInterval);
               document.getElementById("floating-cs").classList.remove("hidden");
@@ -1230,8 +1222,15 @@ function bukaFormTambahData() {
       const bgk = document.getElementById("newBingkisan").value;
       if(!key) return alert("Kode Akses wajib diisi!");
       let extraData = {};
-      if(bgk === "Uang") extraData = { nominal: document.getElementById("newNominal").value };
-      else if(bgk === "Kado") extraData = { keterangan: document.getElementById("newKetKado").value, harga: document.getElementById("newHargaKado").value };
+      if(bgk === "Uang") {
+          extraData = { nominal: document.getElementById("newNominal").value.replace(/\./g, '') };
+      }
+      else if(bgk === "Kado") {
+          extraData = { 
+              keterangan: document.getElementById("newKetKado").value, 
+              harga: document.getElementById("newHargaKado").value.replace(/\./g, '') 
+          };
+      }
       const data = {
         tanggal: document.getElementById("newDate").value,
         kerabat: document.getElementById("newKerabat").value,
@@ -1261,7 +1260,6 @@ function bukaFormTambahData() {
     }
 
     function renderDataList(dataObj) {
-    dataAktif = dataObj;
     const container = document.getElementById("list-data-firebase");
     let entries = Object.entries(dataObj);
     document.getElementById("data-counter").innerText = entries.length;
@@ -1375,10 +1373,16 @@ function salinKodePesan(kodeAkses) {
         document.getElementById("newKabupaten").value = data.kabupaten || "";
         document.getElementById("newBingkisan").value = data.bingkisan || "";
         toggleBingkisanFields();
-        if(data.bingkisan === "Uang") document.getElementById("newNominal").value = data.nominal || "";
+        if(data.bingkisan === "Uang") {
+            let inputNom = document.getElementById("newNominal");
+            inputNom.value = data.nominal || "";
+            formatRupiahFilter(inputNom);
+        }
         if(data.bingkisan === "Kado") {
-          document.getElementById("newKetKado").value = data.keterangan || "";
-          document.getElementById("newHargaKado").value = data.harga || "";
+            document.getElementById("newKetKado").value = data.keterangan || "";
+            let inputHarga = document.getElementById("newHargaKado");
+            inputHarga.value = data.harga || "";
+            formatRupiahFilter(inputHarga);
         }
         const container = document.getElementById("form-input-container");
         if(container.style.display === "none" || container.style.display === "") toggleFormInput();
@@ -1734,7 +1738,7 @@ function konfirmasiHapusTerpilih() {
     }
     
     // --- 1. FUNGSI TAMPILAN MODAL ---
-let dataAktif = {};
+// --- VARIABEL & FUNGSI KLIK IKON PESAN ---
 let isFilterPesanAktif = false;
 
 function toggleFilterPesan() {
@@ -1877,131 +1881,6 @@ document.addEventListener("DOMContentLoaded", function() {
         tgl.innerHTML = `<span>${dateStr}</span><span>${timeStr}</span>`;
       }
     }, 1000);
-    
-    // --- FUNGSI DOWNLOAD PDF LANGSUNG (ANTI MENTAL & PRESISI A4) ---
-function cetakDataFilter() {
-    // 1. Validasi ketersediaan data aktif
-    if (typeof dataAktif === 'undefined' || !dataAktif) {
-        Swal.fire({ icon: 'error', title: 'Error', text: 'Data belum siap, silakan refresh halaman.', timer: 2000 });
-        return;
-    }
-
-    const entries = Object.entries(dataAktif);
-    if (entries.length === 0) {
-        Swal.fire({ icon: 'warning', title: 'Kosong', text: 'Tidak ada data pengunjung untuk diunduh.', timer: 2000, showConfirmButton: false });
-        return;
-    }
-
-    // 2. Tampilkan pop-up loading estetis khas aplikasi premium
-    Swal.fire({ 
-        title: 'Menciptakan PDF...', 
-        text: 'Menyusun data secara simetris', 
-        allowOutsideClick: false, 
-        showConfirmButton: false,
-        didOpen: () => { Swal.showLoading(); } 
-    });
-
-    // 3. Inisialisasi dokumen kertas A4 potrait murni dalam skala milimeter (mm)
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-
-    // 4. Gambar Elemen Header Laporan
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(15);
-    doc.setTextColor(29, 78, 216); // Menggunakan warna biru aksen utama (#1d4ed8)
-    doc.text("LAPORAN DATA ARSIP PENGUNJUNG", 14, 15);
-
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(9);
-    doc.setTextColor(71, 85, 105); // Warna abu-abu elegan untuk sub-teks
-    const waktuCetak = new Date().toLocaleString('id-ID');
-    doc.text(`Total Data: ${entries.length} Pengunjung | Diunduh pada: ${waktuCetak}`, 14, 21);
-
-    // Garis pembatas geometris simetris bawah header (garis biru tipis)
-    doc.setDrawColor(29, 78, 216);
-    doc.setLineWidth(0.4);
-    doc.line(14, 24, 196, 24); // Lebar presisi margin kiri 14mm ke margin kanan 196mm
-
-    // 5. Olah & Susun Baris Data untuk Tabel Detail Kompleks
-    const barisTabel = [];
-    entries.forEach(([key, val], index) => {
-        
-        // Format Data Keluarga (Tamu, Pasangan, Orang Tua)
-        let teksKeluarga = `Kerabat: ${val.kerabat || "-"}`;
-        if (val.pasangan) teksKeluarga += `\nPasangan: ${val.pasangan}`;
-        if (val.bapak || val.ibu) {
-            teksKeluarga += `\nOrang Tua: Bpk. ${val.bapak || "-"} & Ibu ${val.ibu || "-"}`;
-        }
-
-        // Format Alamat Gabungan (Gaya Baris Baru agar Rapi)
-        let urutanAlamat = [];
-        if (val.alamat) urutanAlamat.push(val.alamat);
-        if (val.desa) urutanAlamat.push(`Ds. ${val.desa}`);
-        if (val.kecamatan) urutanAlamat.push(`Kec. ${val.kecamatan}`);
-        let teksAlamat = urutanAlamat.length > 0 ? urutanAlamat.join(',\n') : "-";
-
-        // Format Bingkisan Nominal Uang / Estimasi Kado
-        let teksBingkisan = "-";
-        if (val.bingkisan === "Uang" && val.nominal) {
-            teksBingkisan = `Uang\nRp ${parseInt(val.nominal).toLocaleString('id-ID')}`;
-        } else if (val.bingkisan === "Kado") {
-            let estHarga = val.harga ? `\nEst: Rp ${parseInt(val.harga).toLocaleString('id-ID')}` : "";
-            teksBingkisan = `Kado / Barang${estHarga}`;
-        } else if (val.bingkisan) {
-            teksBingkisan = val.bingkisan;
-        }
-
-        // Masukkan ke array utama tabel
-        barisTabel.push([
-            index + 1,
-            `${key}\n${val.tanggal || "-"}`,
-            teksKeluarga,
-            teksAlamat,
-            teksBingkisan
-        ]);
-    });
-
-    // 6. Gambar Tabel Otomatis Menggunakan jspdf-autotable (Symmetrical Layout)
-    doc.autoTable({
-        startY: 28, // Mulai tepat di bawah garis batas header
-        head: [['No', 'Kode & Tgl', 'Data Komponen Keluarga', 'Alamat Lengkap', 'Data Bingkisan']],
-        body: barisTabel,
-        theme: 'striped', // Efek zebra abu-abu lembut agar mata nyaman membaca data
-        headStyles: { 
-            fillColor: [29, 78, 216], // Biru serasi dengan tema dashboard (#1d4ed8)
-            textColor: [255, 255, 255], 
-            fontStyle: 'bold', 
-            halign: 'center',
-            valign: 'middle'
-        },
-        columnStyles: {
-            0: { halign: 'center', cellWidth: 10 },  // Kolom nomor sempit simetris
-            1: { halign: 'center', cellWidth: 30 },  // Kode & tanggal rata tengah
-            2: { cellWidth: 62 },                    // Ruang terluas untuk detail nama keluarga
-            3: { cellWidth: 46 },                    // Detail alamat
-            4: { cellWidth: 34 }                     // Bingkisan & nilai nominal
-        },
-        styles: { 
-            font: 'helvetica', 
-            fontSize: 8.5, 
-            cellPadding: 3.5, 
-            overflow: 'linebreak', // Teks otomatis turun ke bawah jika terlalu panjang (tidak terpotong)
-            lineColor: [226, 232, 240], // Garis tepi dalam abu-abu tipis minimalist
-            lineWidth: 0.2
-        },
-        alternateRowStyles: {
-            fillColor: [248, 250, 252] // Zebra striping menggunakan warna minimalis modern (#f8fafc)
-        },
-        margin: { left: 14, right: 14 } // Kunci margin kanan-kiri kertas agar seimbang 100%
-    });
-
-    // 7. Tutup Loading Swal, lalu Unduh File secara Langsung ke Penyimpanan Lokal
-    Swal.close();
-    
-    // Memberikan nama file unik berdasarkan timestamp agar tidak tumpang tindih
-    const namaFile = `Laporan_Pengunjung_${Date.now()}.pdf`;
-    doc.save(namaFile);
-}
   </script>
 </body>
 </html>
