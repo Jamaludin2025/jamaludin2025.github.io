@@ -847,11 +847,11 @@ document.getElementById("btnSaveAccount").addEventListener("click", async () => 
         const formData = new FormData();
         formData.append('file', selectedProfileImage);
         // PENTING: Ganti dengan UPLOAD_PRESET Cloudinary Anda
-        formData.append('upload_preset', 'YOUR_UPLOAD_PRESET'); 
+        formData.append('upload_preset', 'AJGallery'); 
 
         try {
             // PENTING: Ganti YOUR_CLOUD_NAME dengan cloud name Cloudinary Anda
-            const res = await fetch('https://api.cloudinary.com/v1_1/YOUR_CLOUD_NAME/image/upload', {
+            const res = await fetch('https://api.cloudinary.com/v1_1/dz4w1sqiv/image/upload', {
                 method: 'POST',
                 body: formData
             });
