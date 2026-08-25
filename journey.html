@@ -1,0 +1,1690 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>My Journey - Asep Jamaludin</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    },
+                    colors: {
+                        navy: { 50: '#f0f4f8', 100: '#d9e2ec', 800: '#102a43', 900: '#0a192f', 950: '#020c1b' },
+                        gold: { 400: '#fbbf24', 500: '#f59e0b' },
+                        teal: { 500: '#14b8a6' }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            -webkit-tap-highlight-color: transparent;
+            overflow-x: hidden;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 10px; }
+        .dark ::-webkit-scrollbar-thumb { background-color: #334155; }
+
+        .timeline-line {
+            position: absolute;
+            left: 16px;
+            width: 2px;
+            height: 100%;
+            background: linear-gradient(to bottom, #e2e8f0 0%, #e2e8f0 100%);
+            z-index: 0;
+            border-radius: 2px;
+        }
+        @media (min-width: 768px) { .timeline-line { left: 40px; } }
+        .dark .timeline-line { background: linear-gradient(to bottom, #334155 0%, #334155 100%); }
+        
+        .timeline-line-progress {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%;
+            height: 0%;
+            background: #14b8a6;
+            transition: height 0.5s ease-out;
+            border-radius: 2px;
+            box-shadow: 0 0 10px #14b8a6;
+        }
+        
+        .timeline-dot {
+            position: absolute;
+            left: 16px;
+            transform: translateX(-50%);
+            transition: all 0.4s ease;
+        }
+        @media (min-width: 768px) { .timeline-dot { left: 40px; } }
+        .timeline-dot.active {
+            background-color: #14b8a6;
+            box-shadow: 0 0 0 6px rgba(20, 184, 166, 0.2);
+            transform: translateX(-50%) scale(1.2);
+        }
+
+        .cert-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            grid-auto-flow: dense;
+        }
+        @media (min-width: 768px) {
+            .cert-grid { grid-template-columns: repeat(4, 1fr); gap: 16px; }
+        }
+        .cert-portrait { grid-column: span 1; aspect-ratio: 3 / 4; }
+        .cert-landscape { grid-column: span 2; aspect-ratio: 3 / 2; }
+
+        .polaroid {
+            background: white;
+            padding: 8px 8px 16px 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1), 0 1px 3px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid #e2e8f0;
+            display: inline-block;
+            width: 100%;
+            margin-bottom: 1rem;
+        }
+        .dark .polaroid {
+            background: #1e293b;
+            border-color: #334155;
+            color: #f8fafc;
+        }
+        .polaroid:hover {
+            transform: scale(1.05) rotate(0deg) !important;
+            z-index: 10;
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2);
+        }
+
+        .fade-up {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+        .fade-up.visible { opacity: 1; transform: translateY(0); }
+
+        #modal-img { transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+        .safe-pb { padding-bottom: calc(80px + env(safe-area-inset-bottom)); }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+        .dark .glass-panel {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .toggle-checkbox:checked { right: 0; border-color: #14b8a6; }
+        .toggle-checkbox:checked + .toggle-label { background-color: #14b8a6; }
+
+        .widget-hide {
+            opacity: 0 !important;
+            transform: translateY(20px) scale(0.9) !important;
+            pointer-events: none !important;
+        }
+
+        .timer-ring-container {
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            background: conic-gradient(var(--timer-color, #14b8a6) var(--timer-progress, 100%), transparent 0);
+            transition: opacity 0.3s ease;
+        }
+        
+        .timer-ring-inner {
+            position: absolute;
+            inset: 2px;
+            border-radius: 50%;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
+        }
+        
+        .protected-img {
+            user-select: none;
+            -webkit-user-drag: none;
+        }
+
+        .filter-btn.active {
+            background-color: #14b8a6;
+            color: white;
+            border-color: #14b8a6;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 dark:bg-navy-950 dark:text-slate-200 antialiased overflow-hidden">
+
+    <div id="security-gate" class="fixed inset-0 z-[100] bg-slate-100/90 dark:bg-navy-950/90 backdrop-blur-xl flex flex-col items-center justify-center p-4 transition-all duration-500">
+        
+        <div id="auth-step-1" class="bg-white dark:bg-navy-900 w-full max-w-sm rounded-3xl p-8 shadow-2xl border border-slate-200 dark:border-navy-700 flex flex-col items-center transform transition-all duration-500">
+            <div class="relative w-24 h-24 -mt-16 mb-4 group cursor-pointer" onclick="downloadBlurredImage(document.getElementById('auth-profile-img'), 'Foto_Profil_Akses')">
+                <img id="auth-profile-img" src="https://res.cloudinary.com/dz4w1sqiv/image/upload/v1787644555/bnqij66bubjvyxo3wvh3.png" crossorigin="anonymous" alt="Profile" class="w-full h-full object-cover rounded-full border-4 border-slate-50 dark:border-navy-800 shadow-lg protected-img" oncontextmenu="return false;" draggable="false">
+                <div class="absolute inset-0 bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white border-4 border-transparent">
+                    <i class="fas fa-download text-lg"></i>
+                </div>
+            </div>
+            <h2 class="text-2xl font-bold text-navy-900 dark:text-white mb-1">Akses Terkunci</h2>
+            <p class="text-sm text-slate-500 dark:text-slate-400 text-center mb-6">Silakan masukkan kode akses dari pemilik untuk melihat portofolio ini. <br><span class="text-[10px] text-teal-500">(Gunakan: 2026)</span></p>
+            
+            <form id="passcode-form" class="w-full">
+                <input type="password" id="passcode-input" placeholder="Masukkan Kode" class="w-full bg-slate-50 dark:bg-navy-950 border border-slate-300 dark:border-navy-700 rounded-xl px-4 py-3 text-center tracking-[0.5em] font-bold text-lg mb-4 focus:outline-none focus:border-teal-500 dark:focus:border-teal-500 transition-colors" required>
+                <p id="passcode-error" class="text-xs text-red-500 text-center mb-4 hidden">Kode akses salah. Silakan coba lagi.</p>
+                <button type="submit" class="w-full bg-navy-900 dark:bg-teal-500 text-white font-bold rounded-xl py-3 hover:bg-navy-800 dark:hover:bg-teal-400 transition-colors shadow-lg">Verifikasi</button>
+            </form>
+        </div>
+
+        <div id="auth-step-2" class="bg-white dark:bg-navy-900 w-full max-w-md rounded-3xl p-8 shadow-2xl border border-slate-200 dark:border-navy-700 hidden transform translate-y-10 opacity-0 transition-all duration-500">
+            <div class="flex items-center gap-3 mb-6 border-b border-slate-100 dark:border-navy-800 pb-4">
+                <i class="fas fa-shield-alt text-2xl text-teal-500"></i>
+                <h2 class="text-xl font-bold text-navy-900 dark:text-white">Pengaturan Privasi & Sesi</h2>
+            </div>
+            
+            <form id="privacy-form" class="w-full">
+                <div class="mb-6">
+                    <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-3">Durasi Akses Sesi</label>
+                    <div class="grid grid-cols-2 gap-3 mb-3">
+                        <label class="flex items-center gap-2 p-3 border border-slate-200 dark:border-navy-700 rounded-xl cursor-pointer hover:bg-slate-50 dark:hover:bg-navy-800 transition-colors">
+                            <input type="radio" name="duration" value="3" class="text-teal-500 focus:ring-teal-500">
+                            <span class="text-sm font-medium">3 Menit</span>
+                        </label>
+                        <label class="flex items-center gap-2 p-3 border border-slate-200 dark:border-navy-700 rounded-xl cursor-pointer hover:bg-slate-50 dark:hover:bg-navy-800 transition-colors">
+                            <input type="radio" name="duration" value="10" checked class="text-teal-500 focus:ring-teal-500">
+                            <span class="text-sm font-medium">10 Menit</span>
+                        </label>
+                        <label class="flex items-center gap-2 p-3 border border-slate-200 dark:border-navy-700 rounded-xl cursor-pointer hover:bg-slate-50 dark:hover:bg-navy-800 transition-colors">
+                            <input type="radio" name="duration" value="30" class="text-teal-500 focus:ring-teal-500">
+                            <span class="text-sm font-medium">30 Menit</span>
+                        </label>
+                        <label class="flex items-center gap-2 p-3 border border-slate-200 dark:border-navy-700 rounded-xl cursor-pointer hover:bg-slate-50 dark:hover:bg-navy-800 transition-colors">
+                            <input type="radio" name="duration" value="custom" id="duration-custom-radio" class="text-teal-500 focus:ring-teal-500">
+                            <span class="text-sm font-medium">Manual</span>
+                        </label>
+                    </div>
+                    <div id="custom-duration-container" class="hidden">
+                        <input type="number" id="custom-duration-input" placeholder="Masukkan waktu dalam menit" min="1" class="w-full bg-slate-50 dark:bg-navy-950 border border-slate-300 dark:border-navy-700 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-teal-500">
+                    </div>
+                </div>
+
+                <div class="mb-8 space-y-4">
+                    <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Visibilitas Data Sensitif</label>
+                    <div class="flex items-center justify-between p-3 bg-slate-50 dark:bg-navy-950 rounded-xl">
+                        <div>
+                            <p class="text-sm font-medium">Sembunyikan Dokumen Pendidikan</p>
+                            <p class="text-[10px] text-slate-500">Ijazah, sertifikat, dan piagam.</p>
+                        </div>
+                        <div class="relative inline-block w-10 align-middle select-none transition duration-200 ease-in">
+                            <input type="checkbox" id="hide-edu-docs" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer z-10 transition-transform duration-200 ease-in-out"/>
+                            <label for="hide-edu-docs" class="toggle-label block overflow-hidden h-5 rounded-full bg-slate-300 dark:bg-navy-700 cursor-pointer"></label>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-slate-50 dark:bg-navy-950 rounded-xl">
+                        <div>
+                            <p class="text-sm font-medium">Sembunyikan Foto Pekerjaan</p>
+                            <p class="text-[10px] text-slate-500">Dokumentasi & kenangan di tempat kerja.</p>
+                        </div>
+                        <div class="relative inline-block w-10 align-middle select-none transition duration-200 ease-in">
+                            <input type="checkbox" id="hide-work-photos" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer z-10 transition-transform duration-200 ease-in-out"/>
+                            <label for="hide-work-photos" class="toggle-label block overflow-hidden h-5 rounded-full bg-slate-300 dark:bg-navy-700 cursor-pointer"></label>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full bg-navy-900 dark:bg-teal-500 text-white font-bold rounded-xl py-3 hover:bg-navy-800 dark:hover:bg-teal-400 transition-colors shadow-lg flex justify-center items-center gap-2">
+                    <i class="fas fa-lock-open text-sm"></i> Buka Portofolio
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <nav class="hidden md:flex flex-col justify-between fixed top-0 left-0 h-screen w-24 lg:w-64 glass-panel border-r shadow-lg z-40 transition-all duration-300">
+        <div class="p-6">
+            <div class="text-center mb-8">
+                <div class="w-12 h-12 lg:w-16 lg:h-16 mx-auto bg-gradient-to-tr from-navy-800 to-teal-500 rounded-full flex items-center justify-center text-white font-bold text-xl lg:text-2xl shadow-lg mb-2">AJ</div>
+                <h1 class="hidden lg:block font-bold text-lg tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-navy-800 to-teal-600 dark:from-teal-400 dark:to-gold-400">MY JOURNEY</h1>
+            </div>
+            <ul class="space-y-4" id="desktop-nav-links"></ul>
+        </div>
+        <div class="p-6 border-t border-slate-200 dark:border-navy-800 flex justify-center gap-4">
+            <button id="theme-toggle-desktop" class="w-10 h-10 rounded-full bg-slate-200 dark:bg-navy-800 flex items-center justify-center hover:bg-slate-300 dark:hover:bg-navy-700 transition-colors" title="Ubah Tema">
+                <i class="fas fa-moon dark:hidden text-slate-700"></i>
+                <i class="fas fa-sun hidden dark:block text-gold-400"></i>
+            </button>
+            <button id="lock-session-btn" class="w-10 h-10 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors text-red-600 dark:text-red-400" title="Kunci Sesi">
+                <i class="fas fa-lock"></i>
+            </button>
+        </div>
+    </nav>
+
+    <nav class="md:hidden fixed bottom-0 left-0 w-full glass-panel border-t border-slate-200/50 dark:border-navy-800/50 z-40 pb-[env(safe-area-inset-bottom)] shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
+        <div class="flex justify-around items-center h-16 px-2" id="mobile-nav-links">
+            <button id="mobile-menu-btn" class="flex flex-col items-center justify-center w-1/4 text-slate-500 hover:text-navy-800 dark:hover:text-gold-400 transition-colors">
+                <i class="fas fa-bars text-lg mb-1"></i>
+                <span class="text-[10px] font-medium">Menu</span>
+            </button>
+        </div>
+    </nav>
+
+    <div id="mobile-sheet" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="absolute bottom-0 left-0 w-full bg-white dark:bg-navy-900 rounded-t-3xl transform translate-y-full transition-transform duration-300 shadow-2xl p-6" id="mobile-sheet-content">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="font-bold text-lg">Menu Ekstra</h3>
+                <button id="close-sheet-btn" class="w-8 h-8 bg-slate-100 dark:bg-navy-800 rounded-full flex items-center justify-center">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4 mb-6">
+                <button onclick="openAlbum()" class="flex flex-col items-center justify-center p-4 bg-slate-50 dark:bg-navy-800 border border-slate-200 dark:border-navy-700 rounded-xl hover:bg-slate-100 dark:hover:bg-navy-700 transition-colors shadow-sm">
+                    <i class="fas fa-images text-2xl text-teal-500 mb-2"></i>
+                    <span class="text-sm font-bold">Album</span>
+                </button>
+                <button onclick="openKarya()" class="flex flex-col items-center justify-center p-4 bg-slate-50 dark:bg-navy-800 border border-slate-200 dark:border-navy-700 rounded-xl hover:bg-slate-100 dark:hover:bg-navy-700 transition-colors shadow-sm">
+                    <i class="fas fa-code text-2xl text-gold-500 mb-2"></i>
+                    <span class="text-sm font-bold">Karya</span>
+                </button>
+            </div>
+
+            <div class="space-y-4 border-t border-slate-200 dark:border-navy-700 pt-6">
+                <div class="flex justify-between items-center p-4 bg-slate-50 dark:bg-navy-800 rounded-xl">
+                    <span class="text-sm font-medium">Ganti Tema</span>
+                    <button id="theme-toggle-mobile" class="w-12 h-6 bg-slate-300 dark:bg-navy-700 rounded-full relative transition-colors">
+                        <div class="w-5 h-5 bg-white rounded-full absolute top-0.5 left-0.5 dark:translate-x-6 transition-transform flex items-center justify-center shadow-sm">
+                            <i class="fas fa-moon text-[10px] text-slate-800 dark:hidden"></i>
+                            <i class="fas fa-sun text-[10px] text-gold-400 hidden dark:block"></i>
+                        </div>
+                    </button>
+                </div>
+                <button id="lock-session-mobile-btn" class="w-full flex justify-between items-center p-4 bg-red-50 dark:bg-red-900/20 rounded-xl text-red-600 dark:text-red-400 active:scale-95 transition-transform">
+                    <span class="text-sm font-medium">Kunci & Akhiri Sesi</span>
+                    <i class="fas fa-lock"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <main class="md:ml-24 lg:ml-64 min-h-screen safe-pb transition-all duration-300 blur-sm pointer-events-none" id="main-content">
+        <section id="home" class="min-h-screen flex flex-col justify-center relative p-6 lg:p-12 overflow-hidden section-observe">
+            <div class="absolute top-20 right-10 w-64 h-64 bg-teal-300/20 dark:bg-teal-500/10 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute bottom-20 left-10 w-72 h-72 bg-gold-400/20 dark:bg-gold-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+            <div class="max-w-6xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-12 items-center relative z-10">
+                <div class="order-2 lg:order-1 fade-up">
+                    <span class="inline-block py-1 px-3 rounded-full bg-navy-100 dark:bg-navy-800 text-navy-800 dark:text-teal-400 text-xs font-bold tracking-widest mb-4">PORTFOLIO & CV</span>
+                    <h1 class="text-5xl lg:text-7xl font-extrabold mb-2 leading-tight">
+                        MY <span class="text-transparent bg-clip-text bg-gradient-to-r from-navy-800 to-teal-500 dark:from-teal-400 dark:to-gold-400">JOURNEY</span>
+                    </h1>
+                    <h2 class="text-xl lg:text-3xl font-light text-slate-500 dark:text-slate-400 mb-6" id="hero-tagline">From Education to Career</h2>
+                    <p class="text-slate-600 dark:text-slate-300 mb-8 leading-relaxed text-lg max-w-lg" id="hero-desc"></p>
+                    <div class="flex flex-wrap gap-4">
+                        <a href="#education" class="px-6 py-3 bg-navy-900 dark:bg-teal-500 text-white rounded-xl font-medium hover:bg-navy-800 dark:hover:bg-teal-400 transition-colors shadow-lg shadow-navy-900/20 dark:shadow-teal-500/20 flex items-center gap-2">
+                            <span>Jelajahi Perjalanan</span>
+                            <i class="fas fa-arrow-right text-sm"></i>
+                        </a>
+                        <button onclick="downloadCV()" class="px-6 py-3 border-2 border-slate-300 dark:border-navy-700 rounded-xl font-medium hover:border-navy-900 dark:hover:border-teal-500 transition-colors flex items-center gap-2">
+                            <i class="fas fa-file-alt text-sm"></i>
+                            <span>Lihat CV</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="order-1 lg:order-2 flex justify-center lg:justify-end fade-up relative">
+                <i class="fas fa-graduation-cap absolute -top-4 -left-4 text-3xl text-gold-400 animate-[bounce_3s_infinite]"></i>
+                    <i class="fas fa-briefcase absolute -bottom-4 -right-4 text-3xl text-teal-500 animate-[bounce_4s_infinite]"></i>
+                    
+                    <div class="w-full max-w-sm glass-panel rounded-3xl p-6 shadow-2xl relative z-10">
+                        <div class="relative w-32 h-32 mx-auto mb-6 group cursor-pointer" onclick="downloadBlurredProfile()">
+                            <img id="profile-img" src="" crossorigin="anonymous" alt="Profile" class="w-full h-full object-cover rounded-full shadow-lg border-4 border-white dark:border-navy-800 protected-img" oncontextmenu="return false;" draggable="false">
+                            <div class="absolute inset-0 bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
+                                <i class="fas fa-download text-xl"></i>
+                            </div>
+                            <div class="absolute bottom-0 right-0 w-6 h-6 bg-green-500 border-2 border-white dark:border-navy-800 rounded-full" title="Available for work"></div>
+                        </div>
+                        <h3 class="text-2xl font-bold text-center mb-1 text-navy-900 dark:text-white" id="profile-name">Name</h3>
+                        <p class="text-center text-teal-600 dark:text-teal-400 font-medium text-sm mb-6" id="profile-role">Role</p>
+                        <div class="space-y-3 text-sm" id="profile-details"></div>
+                        <div class="mt-6 flex justify-center gap-4 border-t border-slate-200 dark:border-slate-700 pt-6" id="profile-socials"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="education" class="min-h-screen py-20 px-6 lg:px-12 bg-white dark:bg-navy-900 section-observe relative">
+            <div class="max-w-5xl mx-auto">
+                <div class="text-center mb-20 fade-up">
+                    <h2 class="text-sm font-bold text-teal-600 dark:text-teal-400 tracking-widest uppercase mb-2">Chapter 1</h2>
+                    <h3 class="text-3xl lg:text-4xl font-bold mb-4">MY EDUCATION JOURNEY</h3>
+                    <p class="text-slate-500 italic">"Every chapter has a beginning."</p>
+                </div>
+
+                <div class="relative w-full py-4">
+                    <div class="timeline-line">
+                        <div class="timeline-line-progress" id="edu-timeline-progress"></div>
+                    </div>
+                    <div id="education-timeline-container" class="space-y-24"></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="career" class="min-h-screen py-20 px-6 lg:px-12 bg-slate-50 dark:bg-navy-950 section-observe">
+            <div class="max-w-5xl mx-auto">
+                <div class="text-center mb-20 fade-up">
+                    <h2 class="text-sm font-bold text-gold-500 tracking-widest uppercase mb-2">Chapter 2</h2>
+                    <h3 class="text-3xl lg:text-4xl font-bold mb-4">MY CAREER JOURNEY</h3>
+                    <p class="text-slate-500 italic">"Stepping into the professional world."</p>
+                </div>
+                <div id="career-container" class="space-y-16"></div>
+            </div>
+        </section>
+
+        <section id="contact" class="py-12 px-6 lg:px-12 bg-navy-900 dark:bg-black text-white relative overflow-hidden section-observe flex flex-col items-center justify-center border-t border-white/5">
+            <div class="absolute inset-0 opacity-20 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-teal-500 via-navy-900 to-black"></div>
+            <div class="relative z-10 text-center max-w-2xl mx-auto fade-up">
+                <span class="text-gold-400 font-mono text-sm tracking-widest mb-2 block">WHERE I AM NOW</span>
+                <h2 class="text-2xl md:text-3xl font-bold mb-3">To be continued...</h2>
+                <p class="text-slate-400 text-sm md:text-base mb-6 font-light max-w-lg mx-auto">"Perjalanan masih terus berjalan. Saya siap untuk tantangan dan peluang baru di masa depan."</p>
+                <div class="flex flex-wrap justify-center gap-6 mb-6" id="contact-links"></div>
+                <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 flex items-center justify-center mx-auto transition-all hover:-translate-y-1">
+                    <i class="fas fa-arrow-up text-sm"></i>
+                </button>
+            </div>
+        </section>
+        
+    <footer class="bg-navy-950 dark:bg-black text-slate-500 py-8 text-center text-sm border-t border-white/5">
+            <p class="font-bold text-slate-300 tracking-wider mb-2" id="footer-name">ASEP JAMALUDIN</p>
+            <p class="italic mb-4">"My Journey, My Story."</p>
+            <p>&copy; <span id="current-year">2026</span> All Rights Reserved.</p>
+        </footer>
+    </main>
+    
+    <div id="album-page" class="fixed inset-0 z-50 bg-slate-50 dark:bg-navy-950 opacity-0 pointer-events-none transition-opacity duration-300 flex flex-col overflow-y-auto transform translate-y-4">
+        <div class="sticky top-0 z-10 bg-white/80 dark:bg-navy-900/80 backdrop-blur-md border-b border-slate-200 dark:border-navy-700 px-6 py-4 flex justify-between items-center">
+            <h2 class="text-xl font-bold flex items-center gap-2"><i class="fas fa-images text-teal-500"></i> Album Galeri</h2>
+            <button onclick="closeAlbum()" class="w-10 h-10 rounded-full bg-slate-100 dark:bg-navy-800 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-navy-700 transition-colors">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="p-6 max-w-6xl mx-auto w-full flex-1">
+            <div class="flex flex-wrap gap-3 mb-8" id="album-filters">
+                <button onclick="renderAlbum('all')" class="filter-btn active bg-teal-500 text-white border-teal-500 px-4 py-2 rounded-lg border border-slate-300 dark:border-navy-700 text-sm font-medium transition-colors">Semua Foto</button>
+                <button onclick="renderAlbum('cert')" class="filter-btn text-slate-600 dark:text-slate-300 px-4 py-2 rounded-lg border border-slate-300 dark:border-navy-700 text-sm font-medium transition-colors">Sertifikat & Dokumen</button>
+                <button onclick="renderAlbum('mem')" class="filter-btn text-slate-600 dark:text-slate-300 px-4 py-2 rounded-lg border border-slate-300 dark:border-navy-700 text-sm font-medium transition-colors">Foto Memori</button>
+            </div>
+            <div id="album-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"></div>
+            <div id="album-empty" class="hidden text-center py-20 text-slate-500">
+                <i class="fas fa-lock text-4xl mb-4 text-slate-300 dark:text-navy-700"></i>
+                <p>Tidak ada foto yang tersedia atau disembunyikan oleh pengaturan privasi.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="karya-page" class="fixed inset-0 z-50 bg-slate-50 dark:bg-navy-950 opacity-0 pointer-events-none transition-opacity duration-300 flex flex-col overflow-y-auto transform translate-y-4">
+        <div class="sticky top-0 z-10 bg-white/80 dark:bg-navy-900/80 backdrop-blur-md border-b border-slate-200 dark:border-navy-700 px-6 py-4 flex justify-between items-center">
+            <h2 class="text-xl font-bold flex items-center gap-2"><i class="fas fa-code text-gold-500"></i> Etalase Karya</h2>
+            <button onclick="closeKarya()" class="w-10 h-10 rounded-full bg-slate-100 dark:bg-navy-800 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-navy-700 transition-colors">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="p-6 max-w-6xl mx-auto w-full flex-1">
+            <div id="karya-grid" class="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6"></div>
+        </div>
+    </div>
+
+    <div id="timer-widget" class="fixed bottom-24 md:bottom-6 right-6 z-50 h-10 rounded-full flex items-center shadow-lg border border-slate-200 dark:border-navy-700 transition-all duration-500 overflow-hidden cursor-pointer w-10 bg-white/90 dark:bg-navy-900/90 hidden" onclick="expandTimer()">
+        <div class="relative w-10 h-10 shrink-0 flex items-center justify-center bg-transparent">
+            <div id="timer-ring" class="timer-ring-container opacity-100">
+                <div class="timer-ring-inner bg-slate-50 dark:bg-navy-900"></div>
+            </div>
+            <i class="fas fa-hourglass-half text-teal-500 text-sm relative z-10" id="timer-icon"></i>
+        </div>
+        <span id="time-left" class="font-mono font-bold text-sm text-navy-900 dark:text-white whitespace-nowrap opacity-0 transition-opacity duration-300 ml-1 pr-4 relative z-10">00:00</span>
+    </div>
+
+    <div id="chat-widget" class="fixed bottom-24 md:bottom-6 left-6 z-50 transition-all duration-300 flex flex-col items-start justify-end hidden">
+        <div id="chat-window" class="mb-4 w-[350px] max-w-[calc(100vw-3rem)] bg-white dark:bg-navy-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-navy-700 hidden flex-col overflow-hidden transition-all duration-300 opacity-0 transform translate-y-4 origin-bottom-left z-10">
+            <div class="p-4 bg-gradient-to-r from-navy-900 to-teal-600 flex justify-between items-center text-white">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
+                        <i class="fas fa-sparkles text-sm text-gold-400"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-sm leading-none mb-1">Asisten AI</h4>
+                        <p class="text-[10px] text-teal-100 leading-none">by AJ Developer</p>
+                    </div>
+                </div>
+                <button id="chat-close-btn" class="hover:bg-white/20 w-8 h-8 rounded-full transition-colors flex items-center justify-center">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div id="chat-messages" class="flex-1 p-4 h-80 overflow-y-auto flex flex-col gap-4 bg-slate-50 dark:bg-navy-950/50 scroll-smooth">
+                <div class="flex items-start gap-2">
+                    <div class="w-8 h-8 rounded-full bg-teal-500 text-white flex items-center justify-center shrink-0 shadow-md"><i class="fas fa-robot text-xs"></i></div>
+                    <div class="bg-white dark:bg-navy-800 p-3 rounded-2xl rounded-tl-sm shadow-sm border border-slate-100 dark:border-navy-700 text-slate-700 dark:text-slate-300 text-sm">
+                        Halo! 👋 Saya asisten AI. Ada yang ingin Anda ketahui tentang portofolio, riwayat pendidikan, atau pengalaman kerja saya?
+                    </div>
+                </div>
+                <div id="chat-typing" class="hidden items-start gap-2">
+                    <div class="w-8 h-8 rounded-full bg-teal-500 text-white flex items-center justify-center shrink-0"><i class="fas fa-robot text-xs"></i></div>
+                    <div class="bg-white dark:bg-navy-800 p-3 rounded-2xl rounded-tl-sm shadow-sm border border-slate-100 dark:border-navy-700 flex gap-1 items-center h-[42px]">
+                        <div class="w-1.5 h-1.5 bg-slate-400 dark:bg-slate-500 rounded-full animate-bounce" style="animation-delay: 0s"></div>
+                        <div class="w-1.5 h-1.5 bg-slate-400 dark:bg-slate-500 rounded-full animate-bounce" style="animation-delay: 0.15s"></div>
+                        <div class="w-1.5 h-1.5 bg-slate-400 dark:bg-slate-500 rounded-full animate-bounce" style="animation-delay: 0.3s"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="p-3 bg-white dark:bg-navy-900 border-t border-slate-100 dark:border-navy-800 flex gap-2">
+                <input type="text" id="chat-input" placeholder="Tanya sesuatu..." class="flex-1 bg-slate-100 dark:bg-navy-950 border border-slate-200 dark:border-navy-700 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-teal-500 transition-colors text-slate-800 dark:text-slate-200">
+                <button id="chat-send-btn" class="w-10 h-10 rounded-xl bg-teal-500 text-white flex items-center justify-center hover:bg-teal-600 transition-transform active:scale-95 shrink-0 shadow-md">
+                    <i class="fas fa-paper-plane text-xs"></i>
+                </button>
+            </div>
+        </div>
+
+        <button id="chat-toggle-btn" class="w-14 h-14 rounded-full bg-navy-900 dark:bg-teal-500 text-white shadow-xl shadow-teal-500/20 flex items-center justify-center hover:scale-110 transition-transform border-2 border-white dark:border-navy-900 group opacity-0 transition-opacity duration-300">
+            <i class="fas fa-comment-dots text-2xl group-hover:hidden"></i>
+            <i class="fas fa-robot text-2xl hidden group-hover:block animate-pulse"></i>
+        </button>
+    </div>
+
+    <div id="warning-modal" class="fixed inset-0 z-[110] bg-black/60 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300 flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-navy-900 w-full max-w-sm rounded-3xl p-6 shadow-2xl text-center transform scale-95 transition-transform duration-300 border border-red-500/30" id="warning-modal-content">
+            <div class="w-16 h-16 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-exclamation-triangle text-3xl text-red-500"></i>
+            </div>
+            <h3 class="text-xl font-bold mb-2">Waktu Sesi Hampir Habis!</h3>
+            <p class="text-slate-500 dark:text-slate-400 text-sm mb-6">Waktu akses Anda tersisa kurang dari 30 detik. Halaman akan otomatis terkunci kembali.</p>
+            <button onclick="closeWarningModal()" class="w-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold rounded-xl py-3 hover:bg-slate-800 dark:hover:bg-slate-200 transition-colors">Mengerti</button>
+        </div>
+    </div>
+
+    <div id="viewer-modal" class="fixed inset-0 z-[120] bg-black/90 backdrop-blur-md opacity-0 pointer-events-none transition-opacity duration-300 flex flex-col">
+        <div class="h-16 flex items-center justify-between px-4 lg:px-8 text-white border-b border-white/10">
+            <div class="font-medium text-sm truncate max-w-[50%]" id="modal-title">Document View</div>
+            <div class="flex items-center gap-2 md:gap-4">
+                <button id="modal-download-blur" class="px-3 py-1.5 md:px-4 md:py-2 bg-teal-600 hover:bg-teal-500 text-white rounded-lg text-xs font-medium transition-colors flex items-center gap-2">
+                    <i class="fas fa-download"></i> <span class="hidden md:inline">Unduh (Aman)</span>
+                </button>
+                <div class="w-px h-6 bg-white/20 mx-1 md:mx-2"></div>
+                <button id="modal-zoom-out" class="w-10 h-10 hover:bg-white/10 rounded-full transition-colors"><i class="fas fa-search-minus"></i></button>
+                <span id="modal-zoom-level" class="text-xs font-mono w-10 text-center">100%</span>
+                <button id="modal-zoom-in" class="w-10 h-10 hover:bg-white/10 rounded-full transition-colors"><i class="fas fa-search-plus"></i></button>
+                <div class="w-px h-6 bg-white/20 mx-1 md:mx-2"></div>
+                <button id="modal-close" class="w-10 h-10 hover:bg-red-500/20 text-red-400 rounded-full transition-colors"><i class="fas fa-times text-xl"></i></button>
+            </div>
+        </div>
+        <div class="flex-1 overflow-auto flex items-center justify-center p-4 relative cursor-move" id="modal-body">
+            <img id="modal-img" src="" crossorigin="anonymous" alt="View" class="max-w-full max-h-full object-contain shadow-2xl protected-img" oncontextmenu="return false;" draggable="false">
+            <div id="modal-pdf-container" class="hidden w-full h-full max-w-4xl bg-white flex-col items-center justify-center rounded-xl text-black p-8">
+                <i class="fas fa-file-pdf text-6xl text-red-500 mb-4"></i>
+                <h3 class="text-xl font-bold mb-2">Dokumen PDF</h3>
+                <p class="text-slate-500 mb-6 text-center">Pratinjau langsung tidak tersedia. Silakan unduh dokumen.</p>
+                <a href="#" id="modal-pdf-download" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition" download>Unduh PDF</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const PASSCODE = "2026";
+        let sessionTimerInterval;
+        let timerCollapseTimeout;
+        let isWarningShown = false;
+        let widgetScrollTimeout;
+        
+        let currentPrefs = { hideEduDocs: false, hideWorkPhotos: false };
+        let chatHistory = [];
+
+        const PORTFOLIO_DATA = {
+            profile: {
+                name: "Asep Jamaludin",
+                role: "Frontend Developer & UI/UX Enthusiast",
+                description: "Perjalanan saya dari bangku sekolah, berbagai pencapaian, hingga pengalaman membangun karier dan terus berkembang di dunia teknologi digital. Ini bukan sekadar CV, ini adalah cerita saya.",
+                photo: "https://res.cloudinary.com/dz4w1sqiv/image/upload/v1787644799/ugiju22d4cc4pfzjz0io.jpg",
+                details: [
+                    { icon: "fas fa-map-marker-alt", label: "Lokasi", value: "Karawang, Jawa Barat" },
+                    { icon: "fas fa-envelope", label: "Email", value: "jamaludinrealaccount@gmail.com" },
+                    { icon: "fas fa-phone", label: "Telepon", value: "+62 896-7748-4948" },
+                    { icon: "fas fa-graduation-cap", label: "Pendidikan", value: "SMK (Teknik dan Bisnis Sepeda Motor)" },
+                    { icon: "fas fa-circle-check", label: "Status", value: "Open for Opportunities" }
+                ],
+                socials: [
+                    { icon: "fab fa-linkedin", url: "#", color: "text-blue-600 dark:text-blue-400" },
+                    { icon: "fab fa-github", url: "#", color: "text-slate-800 dark:text-white" },
+                    { icon: "fab fa-instagram", url: "#", color: "text-pink-600 dark:text-pink-400" },
+                    { icon: "fab fa-whatsapp", url: "#", color: "text-green-500" }
+                ]
+            },
+            documents: { cv: "#cv-link" },
+            education: [
+                {
+                    id: "sd", level: "ELEMENTARY SCHOOL", name: "SDN Purwasari III",
+                    period: "2013 — 2017", major: null, location: "Karawang, Jawa Barat",
+                    desc: "Masa awal pembelajaran dasar, membentuk karakter dan kedisiplinan sejak dini.",
+                    photo: "https://placehold.co/800x400/cbd5e1/475569?text=Gedung+SD",
+                    achievements: [
+                        { title: "Ijazah SD", year: "2014", img: "https://placehold.co/1131x800/e2e8f0/1e293b?text=Ijazah+SD", orientation: "landscape" },
+                        { title: "Juara 1 Lomba", year: "2012", img: "https://placehold.co/800x1131/fef08a/854d0e?text=Sertifikat+Lomba", orientation: "portrait" }
+                    ]
+                },
+                {
+                    id: "smp", level: "JUNIOR HIGH SCHOOL", name: "MTs 12 Rabi'ul Awwal",
+                    period: "2017 — 2020", major: null, location: "Karawang, Jawa Barat",
+                    desc: "Mulai aktif dalam organisasi kepengurusan OSIS dan menemukan minat awal pada sains.",
+                    photo: "https://placehold.co/800x400/cbd5e1/475569?text=Gedung+SMP",
+                    achievements: [
+                        { title: "Ijazah SMP", year: "2017", img: "https://placehold.co/1131x800/e2e8f0/1e293b?text=Ijazah+SMP", orientation: "landscape" },
+                        { title: "SK OSIS", year: "2016", img: "https://placehold.co/800x1131/bbf7d0/14532d?text=SK+OSIS", orientation: "portrait" },
+                        { title: "Piagam", year: "2016", img: "https://placehold.co/1131x800/fef08a/854d0e?text=Piagam+Lomba", orientation: "landscape" }
+                    ]
+                },
+                {
+                    id: "smk", level: "VOCATIONAL HIGH SCHOOL", name: "SMKN 1 Purwasari",
+                    period: "2020 — 2023", major: "Teknik dan Bisnis Sepeda Motor", location: "Karawang, Jawa Barat",
+                    desc: "Fokus mendalami ilmu komputer, perakitan jaringan, dan dasar pemrograman web.",
+                    pkl: { location: "Bengkel An-Nur Motor", duration: "2 Bulan (Sep - Nov 2021)", cert: "https://placehold.co/1131x800/e2e8f0/1e293b?text=Sertifikat+PKL" },
+                    ukk: { material: "Melakukan Pemeriksaan Mesin, Sasis, Kelistrikan, Sistem FI dan CVT", cert: "https://placehold.co/800x1131/bfdbfe/1e3a8a?text=Sertifikat+UKK" },
+                    photo: "https://placehold.co/800x400/cbd5e1/475569?text=Gedung+SMK",
+                    achievements: [
+                        { title: "Ijazah SMK", year: "2020", img: "https://placehold.co/1131x800/e2e8f0/1e293b?text=Ijazah+SMK", orientation: "landscape" },
+                        { title: "Cisco CCNA", year: "2020", img: "https://placehold.co/1131x800/bfdbfe/1e3a8a?text=Sertifikat+Cisco", orientation: "landscape" },
+                        { title: "Juara Web", year: "2019", img: "https://placehold.co/800x1131/fef08a/854d0e?text=Sertifikat+Web", orientation: "portrait" }
+                    ]
+                }
+            ],
+            career: [
+                {
+                    id: "job1", company: "PT Toyota Motor Manufacturing Indonesia", role: "Magang Operator Produksi",
+                    period: "Jan — Jul 2024", location: "Kawasan Industri KIIC",
+                    desc: "Memulai karier profesional pertama. Bertanggung jawab memelihara website klien dan melakukan slicing UI.",
+                    process: [
+                        { name: "Submission", date: "15 Des 2020", loc: "Email", desc: "Mengirimkan CV dan portofolio ke email rekrutmen perusahaan.", doc: "https://placehold.co/800x1131/fff/333?text=Lamaran" },
+                        { name: "Tech Test", date: "22 Des 2020", loc: "Remote", desc: "Menyelesaikan tantangan coding algoritma dan slicing UI.", doc: null },
+                        { name: "Hired", date: "05 Jan 2021", loc: "HQ Jakarta", desc: "Penandatanganan kontrak dan orientasi hari pertama.", doc: "https://placehold.co/800x1131/fff/333?text=Kontrak" }
+                    ],
+                    memories: [
+                        { caption: "First Day", date: "Jan 2021", img: "https://placehold.co/500x500/e2e8f0/475569?text=First+Day", rotate: -3 },
+                        { caption: "Outing", date: "Jul 2021", img: "https://placehold.co/600x400/e2e8f0/475569?text=Team+Outing", rotate: 2 }
+                    ]
+                },
+                {
+                    id: "job2", company: "PT Musashi Auto Parts Indonesia", role: "Magang Operator Produksi",
+                    period: "Jan 2026 — Sekarang", location: "Kawasan Industri Suryacipta",
+                    desc: "Mengembangkan aplikasi web modern menggunakan framework JavaScript. Berkolaborasi secara intensif dengan tim UI/UX.",
+                    process: [
+                        { name: "Interview", date: "18 Jan 2023", loc: "Google Meet", desc: "Wawancara dengan tim HR dan User terkait pengalaman teknis.", doc: null },
+                        { name: "Offering", date: "25 Jan 2023", loc: "Remote", desc: "Menerima tawaran pekerjaan dengan kesepakatan gaji dan benefit.", doc: "https://placehold.co/800x1131/fff/333?text=Offering" }
+                    ],
+                    memories: [
+                        { caption: "WFH Setup", date: "Feb 2023", img: "https://placehold.co/500x400/e2e8f0/475569?text=Desk+Setup", rotate: 3 },
+                        { caption: "Project Launch", date: "Dec 2023", img: "https://placehold.co/600x500/e2e8f0/475569?text=Launch", rotate: 1 }
+                    ]
+                }
+            ],
+            projects: [
+                { title: "E-Commerce Frontend", img: "https://placehold.co/600x400/0f172a/38bdf8?text=Shop+UI", demo: "#", code: "#" },
+                { title: "Dashboard Analytics", img: "https://placehold.co/600x400/0f172a/a78bfa?text=Dashboard", demo: "#", code: "#" },
+                { title: "Landing Page Startup", img: "https://placehold.co/600x400/0f172a/f472b6?text=Landing", demo: "#", code: "#" }
+            ]
+        };
+
+        const NAV_ITEMS = [
+            { id: "home", icon: "fas fa-home", label: "Beranda" },
+            { id: "education", icon: "fas fa-graduation-cap", label: "Pendidikan" },
+            { id: "career", icon: "fas fa-briefcase", label: "Pekerjaan" }
+        ];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            setupInteractivity();
+            setupAuthFlow();
+            initChatbot();
+        });
+
+        function setupAuthFlow() {
+            const passForm = document.getElementById('passcode-form');
+            const privForm = document.getElementById('privacy-form');
+            const durRadios = document.getElementsByName('duration');
+            const customDurCont = document.getElementById('custom-duration-container');
+            const customDurInput = document.getElementById('custom-duration-input');
+
+            durRadios.forEach(r => r.addEventListener('change', (e) => {
+                if(e.target.value === 'custom') {
+                    customDurCont.classList.remove('hidden');
+                    customDurInput.required = true;
+                } else {
+                    customDurCont.classList.add('hidden');
+                    customDurInput.required = false;
+                }
+            }));
+
+            passForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const code = document.getElementById('passcode-input').value;
+                if(code === PASSCODE) {
+                    document.getElementById('passcode-error').classList.add('hidden');
+                    document.getElementById('auth-step-1').classList.add('hidden', 'opacity-0');
+                    const step2 = document.getElementById('auth-step-2');
+                    step2.classList.remove('hidden');
+                    setTimeout(() => { step2.classList.remove('translate-y-10', 'opacity-0'); }, 50);
+                } else {
+                    document.getElementById('passcode-error').classList.remove('hidden');
+                    document.getElementById('passcode-input').value = '';
+                }
+            });
+
+            privForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                let mins = 10;
+                const durVal = document.querySelector('input[name="duration"]:checked').value;
+                if(durVal === 'custom') mins = parseInt(customDurInput.value) || 10;
+                else mins = parseInt(durVal);
+
+                const prefs = {
+                    hideEduDocs: document.getElementById('hide-edu-docs').checked,
+                    hideWorkPhotos: document.getElementById('hide-work-photos').checked
+                };
+
+                const totalDuration = mins * 60 * 1000;
+                const expiresAt = Date.now() + totalDuration;
+                localStorage.setItem('portfolio_session', JSON.stringify({ expiresAt, totalDuration, prefs }));
+                
+                startSession(expiresAt, totalDuration, prefs);
+            });
+
+            document.getElementById('lock-session-btn').addEventListener('click', endSession);
+            document.getElementById('lock-session-mobile-btn').addEventListener('click', endSession);
+
+            checkSessionOnLoad();
+        }
+
+        function checkSessionOnLoad() {
+            const sessionData = localStorage.getItem('portfolio_session');
+            if(sessionData) {
+                const session = JSON.parse(sessionData);
+                if(session.expiresAt > Date.now()) {
+                    startSession(session.expiresAt, session.totalDuration, session.prefs, false);
+                    return;
+                }
+            }
+            document.body.classList.add('overflow-hidden');
+        }
+
+        function startSession(expiresAt, totalDuration, prefs, animate = true) {
+            currentPrefs = prefs;
+            isWarningShown = false;
+            
+            renderAllSections();
+            
+            const gate = document.getElementById('security-gate');
+            gate.classList.add('opacity-0', 'pointer-events-none');
+            
+            const main = document.getElementById('main-content');
+            main.classList.remove('blur-sm', 'pointer-events-none');
+            document.body.classList.remove('overflow-hidden');
+
+            const widget = document.getElementById('timer-widget');
+            widget.classList.remove('hidden');
+            
+            const chatWidget = document.getElementById('chat-widget');
+            chatWidget.classList.remove('hidden');
+            
+            const chatBtn = document.getElementById('chat-toggle-btn');
+            chatBtn.classList.remove('hidden');
+            setTimeout(() => chatBtn.classList.remove('opacity-0'), 100);
+            
+            updateTimerDisplay(expiresAt, totalDuration);
+            expandTimer(); 
+            
+            if(sessionTimerInterval) clearInterval(sessionTimerInterval);
+            sessionTimerInterval = setInterval(() => {
+                updateTimerDisplay(expiresAt, totalDuration);
+            }, 1000);
+        }
+
+        function updateTimerDisplay(expiresAt, totalDuration) {
+            const now = Date.now();
+            const diff = expiresAt - now;
+
+            if(diff <= 0) {
+                endSession();
+                return;
+            }
+
+            const progressPct = Math.max(0, (diff / totalDuration) * 100);
+            const ring = document.getElementById('timer-ring');
+            if (ring) ring.style.setProperty('--timer-progress', `${progressPct}%`);
+
+            if(diff <= 30000 && !isWarningShown) {
+                showWarningModal();
+                isWarningShown = true;
+                document.getElementById('timer-widget').classList.add('border-red-500');
+                document.getElementById('timer-icon').classList.replace('text-teal-500', 'text-red-500');
+                if (ring) ring.style.setProperty('--timer-color', '#ef4444');
+                expandTimer(); 
+            }
+
+            const totalSecs = Math.floor(diff / 1000);
+            const hours = Math.floor(totalSecs / 3600);
+            const mins = Math.floor((totalSecs % 3600) / 60);
+            const secs = totalSecs % 60;
+
+            let timeString = '';
+            if (hours > 0) {
+                timeString = `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            } else {
+                timeString = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            }
+            
+            document.getElementById('time-left').textContent = timeString;
+        }
+
+        function expandTimer() {
+            const widget = document.getElementById('timer-widget');
+            const text = document.getElementById('time-left');
+            const ring = document.getElementById('timer-ring');
+            
+            if (ring) ring.classList.add('opacity-0');
+            
+            const hasHours = text.textContent.length > 5;
+            const expandedWidth = hasHours ? '110px' : '90px';
+            
+            widget.classList.remove('w-10');
+            widget.style.width = expandedWidth;
+
+            setTimeout(() => {
+                text.classList.remove('opacity-0');
+            }, 200);
+
+            clearTimeout(timerCollapseTimeout);
+            timerCollapseTimeout = setTimeout(collapseTimer, 5000);
+        }
+
+        function collapseTimer() {
+            const widget = document.getElementById('timer-widget');
+            const text = document.getElementById('time-left');
+            const ring = document.getElementById('timer-ring');
+            
+            text.classList.add('opacity-0');
+            setTimeout(() => {
+                widget.style.width = '';
+                widget.classList.add('w-10');
+                if (ring) ring.classList.remove('opacity-0');
+            }, 300);
+        }
+
+        function endSession() {
+            clearInterval(sessionTimerInterval);
+            clearTimeout(timerCollapseTimeout);
+            localStorage.removeItem('portfolio_session');
+            
+            const widget = document.getElementById('timer-widget');
+            widget.classList.add('hidden');
+            widget.classList.remove('border-red-500', 'widget-hide');
+            document.getElementById('timer-icon').classList.replace('text-red-500', 'text-teal-500');
+            
+            const ring = document.getElementById('timer-ring');
+            if (ring) {
+                ring.style.setProperty('--timer-color', '#14b8a6');
+                ring.style.setProperty('--timer-progress', '100%');
+            }
+            
+            const chatBtn = document.getElementById('chat-toggle-btn');
+            chatBtn.classList.add('opacity-0');
+            setTimeout(() => chatBtn.classList.add('hidden'), 300);
+            
+            const chatWindow = document.getElementById('chat-window');
+            chatWindow.classList.add('opacity-0', 'translate-y-4', 'pointer-events-none');
+            setTimeout(() => {
+                chatWindow.classList.add('hidden');
+                chatWindow.classList.remove('flex');
+            }, 300);
+            
+            const chatWidget = document.getElementById('chat-widget');
+            if(chatWidget) chatWidget.classList.add('hidden');
+            
+            closeWarningModal();
+            closeModal();
+            closeAlbum();
+            closeKarya();
+            
+            document.getElementById('main-content').classList.add('blur-sm', 'pointer-events-none');
+            document.body.classList.add('overflow-hidden');
+            
+            document.getElementById('passcode-input').value = '';
+            document.getElementById('auth-step-2').classList.add('hidden', 'opacity-0', 'translate-y-10');
+            document.getElementById('auth-step-1').classList.remove('hidden', 'opacity-0');
+            
+            document.getElementById('security-gate').classList.remove('opacity-0', 'pointer-events-none');
+            window.scrollTo({top: 0});
+        }
+
+        function showWarningModal() {
+            const modal = document.getElementById('warning-modal');
+            const content = document.getElementById('warning-modal-content');
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            setTimeout(() => content.classList.remove('scale-95'), 10);
+        }
+
+        function closeWarningModal() {
+            const modal = document.getElementById('warning-modal');
+            const content = document.getElementById('warning-modal-content');
+            content.classList.add('scale-95');
+            setTimeout(() => modal.classList.add('opacity-0', 'pointer-events-none'), 300);
+        }
+
+        function renderAllSections() {
+            renderNavigation();
+            renderHero();
+            renderEducation();
+            renderCareer();
+            
+            setupScrollAnimations();
+            setupTimelineScroll();
+        }
+
+        function initTheme() {
+            const isDark = localStorage.getItem('theme') === 'dark' || 
+                           (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches);
+            
+            if (isDark) document.documentElement.classList.add('dark');
+            else document.documentElement.classList.remove('dark');
+
+            const toggleTheme = () => {
+                document.documentElement.classList.toggle('dark');
+                const isNowDark = document.documentElement.classList.contains('dark');
+                localStorage.setItem('theme', isNowDark ? 'dark' : 'light');
+            };
+
+            document.getElementById('theme-toggle-desktop').addEventListener('click', toggleTheme);
+            document.getElementById('theme-toggle-mobile').addEventListener('click', toggleTheme);
+        }
+
+        function renderNavigation() {
+            const desktopNav = document.getElementById('desktop-nav-links');
+            const mobileNav = document.getElementById('mobile-nav-links');
+            desktopNav.innerHTML = ''; 
+            
+            NAV_ITEMS.forEach(item => {
+                desktopNav.innerHTML += `
+                    <li>
+                        <a href="#${item.id}" class="nav-link flex flex-col lg:flex-row items-center lg:justify-start justify-center p-3 rounded-xl hover:bg-slate-100 dark:hover:bg-navy-800 transition-colors group text-slate-500 dark:text-slate-400">
+                            <i class="${item.icon} text-xl lg:text-lg lg:mr-3 group-hover:scale-110 transition-transform"></i>
+                            <span class="text-[10px] lg:text-sm font-medium mt-1 lg:mt-0">${item.label}</span>
+                        </a>
+                    </li>
+                `;
+            });
+            
+            const menuBtnHTML = `
+                <button id="mobile-menu-btn" class="flex flex-col items-center justify-center w-1/4 text-slate-500 hover:text-navy-800 dark:hover:text-gold-400 transition-colors">
+                    <i class="fas fa-bars text-lg mb-1"></i>
+                    <span class="text-[10px] font-medium">Menu</span>
+                </button>
+            `;
+            let newMobileLinks = '';
+            NAV_ITEMS.forEach(item => {
+                newMobileLinks += `
+                    <a href="#${item.id}" class="nav-link flex flex-col items-center justify-center w-1/4 text-slate-500 hover:text-navy-800 dark:hover:text-gold-400 transition-colors">
+                        <i class="${item.icon} text-lg mb-1"></i>
+                        <span class="text-[10px] font-medium">${item.label}</span>
+                    </a>
+                `;
+            });
+            mobileNav.innerHTML = newMobileLinks + menuBtnHTML;
+            
+            document.getElementById('mobile-menu-btn').addEventListener('click', () => {
+                const sheet = document.getElementById('mobile-sheet');
+                const content = document.getElementById('mobile-sheet-content');
+                sheet.classList.remove('opacity-0', 'pointer-events-none');
+                setTimeout(() => content.classList.remove('translate-y-full'), 10);
+                
+                document.getElementById('timer-widget').classList.add('widget-hide');
+                document.getElementById('chat-widget').classList.add('widget-hide');
+            });
+        }
+
+        function renderHero() {
+            document.getElementById('hero-desc').textContent = PORTFOLIO_DATA.profile.description;
+            document.getElementById('profile-name').textContent = PORTFOLIO_DATA.profile.name;
+            document.getElementById('profile-role').textContent = PORTFOLIO_DATA.profile.role;
+            document.getElementById('profile-img').src = PORTFOLIO_DATA.profile.photo;
+
+            const detailsHTML = PORTFOLIO_DATA.profile.details.map(d => `
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full bg-slate-100 dark:bg-navy-800 flex items-center justify-center text-teal-600 dark:text-teal-400">
+                        <i class="${d.icon}"></i>
+                    </div>
+                    <div>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">${d.label}</p>
+                        <p class="font-medium text-navy-900 dark:text-slate-200">${d.value}</p>
+                    </div>
+                </div>
+            `).join('');
+            document.getElementById('profile-details').innerHTML = detailsHTML;
+
+            const socialsHTML = PORTFOLIO_DATA.profile.socials.map(s => `
+                <a href="${s.url}" class="w-10 h-10 rounded-full bg-slate-100 dark:bg-navy-800 flex items-center justify-center text-lg hover:scale-110 transition-transform ${s.color}">
+                    <i class="${s.icon}"></i>
+                </a>
+            `).join('');
+            document.getElementById('profile-socials').innerHTML = socialsHTML;
+            document.getElementById('contact-links').innerHTML = socialsHTML;
+        }
+
+        function renderEducation() {
+            const container = document.getElementById('education-timeline-container');
+            container.innerHTML = '';
+            
+            PORTFOLIO_DATA.education.forEach((edu, index) => {
+                let certsHTML = '';
+                if(!currentPrefs.hideEduDocs && edu.achievements && edu.achievements.length > 0) {
+                    const certItems = edu.achievements.map(ach => {
+                        const ratioClass = ach.orientation === 'landscape' ? 'cert-landscape' : 'cert-portrait';
+                        return `
+                            <div class="${ratioClass} relative rounded-xl overflow-hidden shadow-sm border border-slate-200 dark:border-navy-700 cursor-pointer group bg-slate-100 dark:bg-navy-800" onclick="viewDocument('${ach.img}', '${ach.title}')">
+                                <img src="${ach.img}" crossorigin="anonymous" alt="${ach.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 protected-img" oncontextmenu="return false;" draggable="false">
+                                <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center text-white p-2 text-center">
+                                    <i class="fas fa-search-plus text-2xl mb-2"></i>
+                                    <span class="text-xs font-bold">${ach.title}</span>
+                                    <span class="text-[10px] text-gold-400">${ach.year}</span>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+
+                    certsHTML = `
+                        <div class="mt-6 pt-6 border-t border-slate-200 dark:border-navy-800">
+                            <h5 class="text-xs font-bold uppercase tracking-widest mb-4 flex items-center gap-2 text-gold-500">
+                                <i class="fas fa-award"></i> Sertifikat & Piagam Penghargaan
+                            </h5>
+                            <div class="cert-grid">${certItems}</div>
+                        </div>
+                    `;
+                } else if (currentPrefs.hideEduDocs) {
+                    certsHTML = `
+                        <div class="mt-6 pt-4 border-t border-slate-200 dark:border-navy-800 text-sm text-slate-500 italic flex items-center gap-2">
+                            <i class="fas fa-lock text-xs"></i> Dokumen disembunyikan oleh pengaturan privasi.
+                        </div>
+                    `;
+                }
+
+                container.innerHTML += `
+                    <div class="relative flex w-full fade-up">
+                        <div class="w-4 h-4 md:w-5 md:h-5 rounded-full bg-teal-500 border-4 border-slate-50 dark:border-navy-900 z-10 timeline-dot mt-1"></div>
+                        <div class="ml-10 md:ml-16 w-full pr-4 pb-12">
+                            <span class="text-xs font-bold text-teal-500 tracking-wider mb-1 block">CHAPTER 0${index+1} / ${edu.level}</span>
+                            <h4 class="text-2xl md:text-3xl font-extrabold mb-3 text-navy-900 dark:text-white">${edu.name}</h4>
+                            
+                            <div class="flex flex-wrap items-center gap-3 text-xs md:text-sm text-slate-500 dark:text-slate-400 mb-6">
+                                <span class="flex items-center gap-1"><i class="far fa-calendar-alt"></i> ${edu.period}</span>
+                                ${edu.major ? `<span>•</span><span class="flex items-center gap-1"><i class="fas fa-book"></i> ${edu.major}</span>` : ''}
+                                <span>•</span>
+                                <span class="flex items-center gap-1"><i class="fas fa-map-marker-alt"></i> ${edu.location}</span>
+                            </div>
+                            
+                            <div class="flex flex-col md:flex-row gap-6 mb-2">
+                                <div class="md:w-2/3">
+                                    <p class="text-slate-600 dark:text-slate-300 leading-relaxed text-sm md:text-base">${edu.desc}</p>
+                                    
+                                    ${edu.pkl ? `
+                                    <div class="mt-4 p-4 bg-slate-50 dark:bg-navy-950 rounded-xl border border-slate-200 dark:border-navy-700">
+                                        <h6 class="text-xs font-bold text-teal-600 dark:text-teal-400 uppercase mb-2 flex items-center gap-1.5"><i class="fas fa-briefcase"></i> Praktek Kerja Lapangan (PKL)</h6>
+                                        <div class="text-xs text-slate-600 dark:text-slate-300 flex flex-col gap-1.5 mb-3">
+                                            <span><i class="fas fa-map-pin w-4 text-center"></i> ${edu.pkl.location}</span>
+                                            <span><i class="far fa-clock w-4 text-center"></i> ${edu.pkl.duration}</span>
+                                        </div>
+                                        ${!currentPrefs.hideEduDocs ? `
+                                        <button onclick="viewDocument('${edu.pkl.cert}', 'Sertifikat PKL')" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-navy-800 border border-slate-200 dark:border-navy-600 rounded-md text-[10px] font-medium text-teal-600 dark:text-teal-400 hover:bg-slate-50 dark:hover:bg-navy-700 transition-colors shadow-sm">
+                                            <i class="fas fa-award"></i> Lihat Sertifikat PKL
+                                        </button>` : ''}
+                                    </div>
+                                    ` : ''}
+
+                                    ${edu.ukk ? `
+                                    <div class="mt-3 p-4 bg-slate-50 dark:bg-navy-950 rounded-xl border border-slate-200 dark:border-navy-700">
+                                        <h6 class="text-xs font-bold text-gold-500 uppercase mb-2 flex items-center gap-1.5"><i class="fas fa-screwdriver-wrench"></i> Uji Kompetensi Keahlian (UKK)</h6>
+                                        <div class="text-xs text-slate-600 dark:text-slate-300 mb-3">
+                                            <span class="block font-medium mb-1">Materi Uji:</span>
+                                            <p>${edu.ukk.material}</p>
+                                        </div>
+                                        ${!currentPrefs.hideEduDocs ? `
+                                        <button onclick="viewDocument('${edu.ukk.cert}', 'Sertifikat UKK')" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-navy-800 border border-slate-200 dark:border-navy-600 rounded-md text-[10px] font-medium text-gold-500 hover:bg-slate-50 dark:hover:bg-navy-700 transition-colors shadow-sm">
+                                            <i class="fas fa-award"></i> Lihat Sertifikat UKK
+                                        </button>` : ''}
+                                    </div>
+                                    ` : ''}
+                                </div>
+                                <div class="md:w-1/3 rounded-xl overflow-hidden shadow-sm aspect-video cursor-pointer group" onclick="viewDocument('${edu.photo}', 'Foto Sekolah')">
+                                    <img src="${edu.photo}" crossorigin="anonymous" alt="${edu.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 protected-img" oncontextmenu="return false;" draggable="false">
+                                </div>
+                            </div>
+                            
+                            ${certsHTML}
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function renderCareer() {
+            const container = document.getElementById('career-container');
+            container.innerHTML = '';
+            
+            PORTFOLIO_DATA.career.forEach((job, index) => {
+                const processHTML = job.process.map((step) => `
+                    <div class="relative z-20 pb-8 last:pb-0 pl-6 process-step">
+                        <div class="absolute -left-[22px] top-0 w-3 h-3 rounded-full border-2 border-slate-50 dark:border-navy-900 bg-slate-300 dark:bg-navy-600 transition-colors duration-300 process-dot z-20 mt-1"></div>
+                        <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 mb-1 -mt-1">
+                            <h6 class="font-bold text-sm text-navy-900 dark:text-white">${step.name}</h6>
+                            <span class="text-[10px] text-slate-500 flex items-center gap-1"><i class="far fa-calendar"></i> ${step.date}</span>
+                            <span class="text-[10px] text-slate-500 flex items-center gap-1"><i class="fas fa-map-marker-alt"></i> ${step.loc}</span>
+                        </div>
+                        ${step.desc ? `<p class="text-xs text-slate-600 dark:text-slate-400 mt-1.5 mb-2.5 leading-relaxed max-w-xl">${step.desc}</p>` : ''}
+                        ${step.doc && !currentPrefs.hideEduDocs ? `
+                            <button onclick="viewDocument('${step.doc}', 'Dokumen Lamaran')" class="mt-1 inline-flex items-center gap-1.5 px-3 py-1 bg-slate-100 dark:bg-navy-800 rounded-md text-xs font-medium text-teal-600 dark:text-teal-400 hover:bg-slate-200 dark:hover:bg-navy-700 transition-colors border border-slate-200 dark:border-navy-700">
+                                <i class="fas fa-file-alt"></i> Lihat File
+                            </button>
+                        ` : ''}
+                    </div>
+                `).join('');
+
+                let memoriesHTML = '';
+                if(!currentPrefs.hideWorkPhotos && job.memories && job.memories.length > 0) {
+                    const memoItems = job.memories.map((mem) => `
+                        <div class="break-inside-avoid">
+                            <div class="polaroid cursor-pointer" style="transform: rotate(${mem.rotate}deg)" onclick="viewDocument('${mem.img}', '${mem.caption}')">
+                                <img src="${mem.img}" crossorigin="anonymous" alt="${mem.caption}" class="w-full h-auto mb-2 border border-slate-100 dark:border-navy-800 protected-img" oncontextmenu="return false;" draggable="false">
+                                <div class="text-center">
+                                    <p class="font-bold text-slate-800 dark:text-slate-200 text-xs font-sans leading-tight">${mem.caption}</p>
+                                    <p class="text-[9px] text-slate-400 font-sans mt-0.5">${mem.date}</p>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                    
+                    memoriesHTML = `
+                        <div class="pt-8 border-t border-slate-200 dark:border-navy-700">
+                            <h5 class="text-sm font-bold uppercase tracking-widest mb-6 flex items-center gap-2 text-gold-500">
+                                <i class="fas fa-camera"></i> Kenangan di Tempat Kerja
+                            </h5>
+                            <div class="columns-2 sm:columns-3 gap-4 md:gap-6">
+                                ${memoItems}
+                            </div>
+                        </div>
+                    `;
+                } else if (currentPrefs.hideWorkPhotos) {
+                    memoriesHTML = `
+                        <div class="pt-6 border-t border-slate-200 dark:border-navy-800 text-sm text-slate-500 italic flex items-center gap-2">
+                            <i class="fas fa-lock text-xs"></i> Dokumentasi foto disembunyikan oleh pengaturan privasi.
+                        </div>
+                    `;
+                }
+
+                container.innerHTML += `
+                    <div class="glass-panel p-6 md:p-10 rounded-3xl relative fade-up shadow-lg">
+                        <div class="absolute top-0 right-0 p-6 opacity-5 pointer-events-none text-8xl">
+                            <i class="fas fa-building"></i>
+                        </div>
+                        <span class="text-xs font-bold text-gold-500 tracking-wider mb-2 block">CAREER CHAPTER 0${index+1}</span>
+                        <h4 class="text-2xl md:text-3xl font-extrabold mb-3 text-navy-900 dark:text-white">${job.company}</h4>
+                        
+                        <div class="flex flex-wrap gap-3 text-xs md:text-sm font-medium text-slate-600 dark:text-slate-400 mb-6">
+                            <span class="flex items-center gap-1"><i class="fas fa-user-tie text-teal-500"></i> ${job.role}</span>
+                            <span>•</span>
+                            <span class="flex items-center gap-1"><i class="far fa-calendar-alt"></i> ${job.period}</span>
+                            <span>•</span>
+                            <span class="flex items-center gap-1"><i class="fas fa-map-marker-alt text-red-400"></i> ${job.location}</span>
+                        </div>
+                        
+                        <p class="text-slate-600 dark:text-slate-300 mb-8 max-w-3xl leading-relaxed text-sm md:text-base">${job.desc}</p>
+
+                        <div class="mb-8">
+                            <h5 class="text-sm font-bold uppercase tracking-widest mb-6 flex items-center gap-2 text-teal-600 dark:text-teal-400">
+                                <i class="fas fa-tasks"></i> Tracking Lamaran
+                            </h5>
+                            <div class="relative pl-4 ml-1 process-container">
+                                <div class="absolute left-[-1px] top-2 bottom-6 w-[2px] bg-slate-200 dark:bg-navy-700 z-0"></div>
+                                <div class="absolute left-[-1px] top-2 w-[2px] bg-teal-500 z-10 transition-all duration-700 ease-out career-progress-line" style="height: 0%;"></div>
+                                ${processHTML}
+                            </div>
+                        </div>
+
+                        ${memoriesHTML}
+                    </div>
+                `;
+            });
+        }
+
+        async function downloadBlurredImage(imgElement, defaultName) {
+            try {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                
+                canvas.width = imgElement.naturalWidth || imgElement.width;
+                canvas.height = imgElement.naturalHeight || imgElement.height;
+                
+                ctx.filter = 'blur(15px)';
+                ctx.drawImage(imgElement, 0, 0, canvas.width, canvas.height);
+                
+                const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+                
+                const link = document.createElement('a');
+                link.download = `[BLURRED]_${defaultName.replace(/\s+/g, '_')}.jpg`;
+                link.href = dataUrl;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+            } catch (err) {
+                console.error(err);
+                alert("Pengamanan ketat: Gagal memproses blur karena pembatasan eksternal.");
+            }
+        }
+        
+        function downloadBlurredProfile() {
+            const img = document.getElementById('profile-img');
+            downloadBlurredImage(img, 'Foto_Profil_Asep');
+        }
+
+        document.getElementById('modal-download-blur').addEventListener('click', () => {
+            const img = document.getElementById('modal-img');
+            const title = document.getElementById('modal-title').textContent || 'Document';
+            downloadBlurredImage(img, title);
+        });
+
+        let currentZoom = 1;
+        const modal = document.getElementById('viewer-modal');
+        const modalImg = document.getElementById('modal-img');
+        const pdfContainer = document.getElementById('modal-pdf-container');
+        const pdfDownload = document.getElementById('modal-pdf-download');
+        const zoomText = document.getElementById('modal-zoom-level');
+        const blurDownloadBtn = document.getElementById('modal-download-blur');
+
+        function viewDocument(url, title = "Document View") {
+            currentZoom = 1;
+            modalImg.style.transform = `scale(1)`;
+            zoomText.textContent = '100%';
+            document.getElementById('modal-title').textContent = title;
+            
+            if (url && (url.toLowerCase().endsWith('.pdf') || url === '#cv-link')) {
+                modalImg.classList.add('hidden');
+                blurDownloadBtn.classList.add('hidden');
+                pdfContainer.classList.remove('hidden');
+                pdfContainer.classList.add('flex');
+                pdfDownload.href = url === '#cv-link' ? '#' : url;
+            } else {
+                modalImg.classList.remove('hidden');
+                blurDownloadBtn.classList.remove('hidden');
+                pdfContainer.classList.add('hidden');
+                pdfContainer.classList.remove('flex');
+                modalImg.src = url;
+            }
+            
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+        }
+
+        function closeModal() {
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            setTimeout(() => { modalImg.src = ''; }, 300);
+        }
+
+        window.viewDocument = viewDocument;
+        window.downloadCV = () => viewDocument(PORTFOLIO_DATA.documents.cv, "Curriculum Vitae");
+
+        document.getElementById('modal-close').addEventListener('click', closeModal);
+        document.getElementById('modal-zoom-in').addEventListener('click', () => updateZoom(0.25));
+        document.getElementById('modal-zoom-out').addEventListener('click', () => updateZoom(-0.25));
+        
+        function updateZoom(delta) {
+            currentZoom += delta;
+            if (currentZoom < 0.5) currentZoom = 0.5;
+            if (currentZoom > 4) currentZoom = 4;
+            modalImg.style.transform = `scale(${currentZoom})`;
+            zoomText.textContent = `${Math.round(currentZoom * 100)}%`;
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if(e.key === 'Escape' && !modal.classList.contains('pointer-events-none')) closeModal();
+        });
+
+        function openAlbum() {
+            document.getElementById('close-sheet-btn').click();
+            const page = document.getElementById('album-page');
+            page.classList.remove('opacity-0', 'pointer-events-none');
+            setTimeout(() => page.classList.remove('translate-y-4'), 10);
+            document.body.classList.add('overflow-hidden');
+            document.getElementById('timer-widget').classList.add('widget-hide');
+            document.getElementById('chat-widget').classList.add('widget-hide');
+            renderAlbum('all');
+        }
+
+        function closeAlbum() {
+            const page = document.getElementById('album-page');
+            page.classList.add('translate-y-4');
+            setTimeout(() => {
+                page.classList.add('opacity-0', 'pointer-events-none');
+                document.body.classList.remove('overflow-hidden');
+                document.getElementById('timer-widget').classList.remove('widget-hide');
+                document.getElementById('chat-widget').classList.remove('widget-hide');
+            }, 300);
+        }
+
+        function renderAlbum(filter) {
+            document.querySelectorAll('.filter-btn').forEach(b => {
+                b.classList.remove('active', 'bg-teal-500', 'text-white', 'border-teal-500');
+                b.classList.add('text-slate-600', 'dark:text-slate-300');
+            });
+            const activeBtn = document.querySelector(`.filter-btn[onclick="renderAlbum('${filter}')"]`);
+            if(activeBtn) {
+                activeBtn.classList.remove('text-slate-600', 'dark:text-slate-300');
+                activeBtn.classList.add('active', 'bg-teal-500', 'text-white', 'border-teal-500');
+            }
+
+            const grid = document.getElementById('album-grid');
+            const empty = document.getElementById('album-empty');
+            grid.innerHTML = '';
+            
+            let items = [];
+
+            if (!currentPrefs.hideEduDocs) {
+                PORTFOLIO_DATA.education.forEach(edu => {
+                    if (filter === 'all' || filter === 'mem') {
+                        if (edu.photo) items.push({ url: edu.photo, title: "Foto Sekolah", type: 'mem' });
+                    }
+                    if (filter === 'all' || filter === 'cert') {
+                        if (edu.pkl && edu.pkl.cert) items.push({ url: edu.pkl.cert, title: "Sertifikat PKL", type: 'cert' });
+                        if (edu.ukk && edu.ukk.cert) items.push({ url: edu.ukk.cert, title: "Sertifikat UKK", type: 'cert' });
+                        if (edu.achievements) {
+                            edu.achievements.forEach(ach => items.push({ url: ach.img, title: ach.title, type: 'cert' }));
+                        }
+                    }
+                });
+            }
+
+            PORTFOLIO_DATA.career.forEach(job => {
+                if (!currentPrefs.hideEduDocs && (filter === 'all' || filter === 'cert')) {
+                    job.process.forEach(step => {
+                        if(step.doc) items.push({ url: step.doc, title: step.name, type: 'cert' });
+                    });
+                }
+                if (!currentPrefs.hideWorkPhotos && (filter === 'all' || filter === 'mem')) {
+                    if (job.memories) {
+                        job.memories.forEach(mem => items.push({ url: mem.img, title: mem.caption, type: 'mem' }));
+                    }
+                }
+            });
+
+            if (items.length === 0) {
+                grid.classList.add('hidden');
+                empty.classList.remove('hidden');
+            } else {
+                grid.classList.remove('hidden');
+                empty.classList.add('hidden');
+                
+                items.forEach(item => {
+                    grid.innerHTML += `
+                        <div class="relative aspect-square rounded-xl overflow-hidden shadow-sm border border-slate-200 dark:border-navy-700 cursor-pointer group bg-slate-100 dark:bg-navy-800" onclick="viewDocument('${item.url}', '${item.title}')">
+                            <img src="${item.url}" crossorigin="anonymous" alt="${item.title}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 protected-img" oncontextmenu="return false;" draggable="false">
+                            <div class="absolute inset-x-0 bottom-0 p-2 text-center text-[10px] md:text-xs font-bold bg-white/90 dark:bg-navy-900/90 backdrop-blur-sm truncate translate-y-full group-hover:translate-y-0 transition-transform">
+                                ${item.title}
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+        }
+
+        function openKarya() {
+            document.getElementById('close-sheet-btn').click();
+            const page = document.getElementById('karya-page');
+            page.classList.remove('opacity-0', 'pointer-events-none');
+            setTimeout(() => page.classList.remove('translate-y-4'), 10);
+            document.body.classList.add('overflow-hidden');
+            renderKarya();
+        }
+
+        function closeKarya() {
+            const page = document.getElementById('karya-page');
+            page.classList.add('translate-y-4');
+            setTimeout(() => {
+                page.classList.add('opacity-0', 'pointer-events-none');
+                document.body.classList.remove('overflow-hidden');
+            }, 300);
+        }
+
+        function renderKarya() {
+            const grid = document.getElementById('karya-grid');
+            grid.innerHTML = '';
+            
+            PORTFOLIO_DATA.projects.forEach(proj => {
+                grid.innerHTML += `
+                    <div class="bg-white dark:bg-navy-800 rounded-xl md:rounded-2xl overflow-hidden shadow-lg border border-slate-200 dark:border-navy-700 flex flex-col group hover:shadow-xl transition-shadow relative">
+                        <div class="absolute top-2 right-2 bg-gradient-to-r from-gold-400 to-gold-500 text-white text-[8px] md:text-[10px] font-bold px-2 py-1 rounded-md shadow-sm z-10 flex items-center gap-1">
+                            <i class="fas fa-star"></i> PREMIUM
+                        </div>
+                        <div class="aspect-[4/3] overflow-hidden relative bg-slate-100 dark:bg-navy-900">
+                            <img src="${proj.img}" alt="${proj.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-3">
+                                <span class="text-white text-[10px] font-medium"><i class="fas fa-html5 text-orange-500"></i> HTML Template</span>
+                            </div>
+                        </div>
+                        <div class="p-3 md:p-5 flex-1 flex flex-col justify-between">
+                            <div>
+                                <h3 class="font-bold text-xs md:text-base mb-1 text-navy-900 dark:text-white line-clamp-1 md:line-clamp-2">${proj.title}</h3>
+                                <div class="flex items-center gap-1 mb-3 text-[10px] text-teal-600 dark:text-teal-400 font-medium">
+                                    <i class="fas fa-check-circle"></i> Responsive Ready
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <a href="${proj.demo}" class="text-center py-1.5 md:py-2 px-2 bg-teal-500 hover:bg-teal-600 text-white rounded-lg text-[10px] md:text-xs font-bold transition-colors shadow-md shadow-teal-500/20">
+                                    <i class="fas fa-play mr-1"></i> Demo
+                                </a>
+                                <a href="${proj.code}" class="text-center py-1.5 md:py-2 px-2 border border-slate-300 dark:border-navy-600 hover:bg-slate-50 dark:hover:bg-navy-700 rounded-lg text-[10px] md:text-xs font-bold transition-colors text-slate-700 dark:text-slate-300">
+                                    <i class="fas fa-code mr-1"></i> Kode
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function setupInteractivity() {
+            const sheet = document.getElementById('mobile-sheet');
+            document.getElementById('close-sheet-btn').addEventListener('click', () => {
+                document.getElementById('mobile-sheet-content').classList.add('translate-y-full');
+                setTimeout(() => {
+                    sheet.classList.add('opacity-0', 'pointer-events-none');
+                    document.getElementById('timer-widget').classList.remove('widget-hide');
+                    document.getElementById('chat-widget').classList.remove('widget-hide');
+                }, 300);
+            });
+            sheet.addEventListener('click', (e) => {
+                if(e.target === sheet) document.getElementById('close-sheet-btn').click(); 
+            });
+
+            window.addEventListener('scroll', () => {
+                const timerW = document.getElementById('timer-widget');
+                const chatW = document.getElementById('chat-widget');
+                
+                if(!timerW.classList.contains('hidden') && document.getElementById('mobile-sheet').classList.contains('opacity-0')) {
+                    timerW.classList.add('opacity-0', 'pointer-events-none', 'translate-y-4');
+                    chatW.classList.add('opacity-0', 'pointer-events-none', 'translate-y-4');
+                    
+                    clearTimeout(widgetScrollTimeout);
+                    widgetScrollTimeout = setTimeout(() => {
+                        if(document.getElementById('mobile-sheet').classList.contains('opacity-0')){
+                            timerW.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-4');
+                            chatW.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-4');
+                        }
+                    }, 400);
+                }
+            });
+        }
+
+        function setupScrollAnimations() {
+            const fadeElements = document.querySelectorAll('.fade-up');
+            const fadeObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        fadeObserver.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1 });
+            fadeElements.forEach(el => fadeObserver.observe(el));
+
+            window.addEventListener('scroll', () => {
+                let current = '';
+                document.querySelectorAll('.section-observe').forEach(sec => {
+                    const secTop = sec.offsetTop;
+                    if (window.pageYOffset >= (secTop - window.innerHeight / 2.5)) {
+                        current = sec.getAttribute('id');
+                    }
+                });
+
+                const desktopLinks = document.querySelectorAll('#desktop-nav-links .nav-link');
+                const mobileLinks = document.querySelectorAll('#mobile-nav-links .nav-link:not(#mobile-menu-btn)');
+
+                const updateLinks = (links, activeClasses, inactiveClasses) => {
+                    links.forEach(link => {
+                        link.classList.remove(...activeClasses.split(' '));
+                        link.classList.add(...inactiveClasses.split(' '));
+                        if (link.getAttribute('href') === `#${current}`) {
+                            link.classList.remove(...inactiveClasses.split(' '));
+                            link.classList.add(...activeClasses.split(' '));
+                        }
+                    });
+                };
+
+                if (current) {
+                    updateLinks(desktopLinks, 'text-teal-600 dark:text-teal-400 bg-slate-100 dark:bg-navy-800', 'text-slate-500 dark:text-slate-400');
+                    updateLinks(mobileLinks, 'text-teal-600 dark:text-teal-400', 'text-slate-500 hover:text-navy-800 dark:hover:text-gold-400');
+                }
+            });
+        }
+
+        function setupTimelineScroll() {
+            const eduSection = document.getElementById('education');
+            const progressLine = document.getElementById('edu-timeline-progress');
+            const dots = document.querySelectorAll('.timeline-dot');
+            const processContainers = document.querySelectorAll('.process-container');
+
+            window.addEventListener('scroll', () => {
+                const viewHeight = window.innerHeight;
+                
+                if (eduSection && progressLine) {
+                    const rect = eduSection.getBoundingClientRect();
+                    if (rect.top < viewHeight && rect.bottom > 0) {
+                        const startPos = rect.top + 200; 
+                        const maxDist = rect.height - 200;
+                        const scrolled = (viewHeight / 2) - startPos;
+                        
+                        let percentage = (scrolled / maxDist) * 100;
+                        if (percentage < 0) percentage = 0;
+                        if (percentage > 100) percentage = 100;
+                        
+                        progressLine.style.height = `${percentage}%`;
+
+                        dots.forEach((dot) => {
+                            const dotRect = dot.getBoundingClientRect();
+                            if (dotRect.top < viewHeight * 0.7) {
+                                dot.classList.add('active');
+                            } else {
+                                dot.classList.remove('active');
+                            }
+                        });
+                    }
+                }
+
+                processContainers.forEach(container => {
+                    const dots = container.querySelectorAll('.process-dot');
+                    let activeCount = 0;
+                    
+                    dots.forEach(dot => {
+                        const dotRect = dot.getBoundingClientRect();
+                        if (dotRect.top < viewHeight * 0.75) {
+                            dot.classList.add('bg-teal-500', 'border-teal-200');
+                            dot.classList.remove('bg-slate-300', 'dark:bg-navy-600');
+                            activeCount++;
+                        } else {
+                            dot.classList.remove('bg-teal-500', 'border-teal-200');
+                            dot.classList.add('bg-slate-300', 'dark:bg-navy-600');
+                        }
+                    });
+
+                    const careerLine = container.querySelector('.career-progress-line');
+                    if (careerLine && dots.length > 0) {
+                        let percentage = (activeCount / dots.length) * 100;
+                        if(activeCount === dots.length) percentage = 100;
+                        else if(activeCount === 0) percentage = 0;
+                        
+                        careerLine.style.height = `${percentage}%`;
+                    }
+                });
+            });
+        }
+
+        function initChatbot() {
+            const toggleBtn = document.getElementById('chat-toggle-btn');
+            const closeBtn = document.getElementById('chat-close-btn');
+            const chatWindow = document.getElementById('chat-window');
+            const sendBtn = document.getElementById('chat-send-btn');
+            const input = document.getElementById('chat-input');
+
+            const toggleChat = () => {
+                if (chatWindow.classList.contains('hidden')) {
+                    chatWindow.classList.remove('hidden');
+                    chatWindow.classList.add('flex');
+                    setTimeout(() => {
+                        chatWindow.classList.remove('opacity-0', 'translate-y-4', 'pointer-events-none');
+                    }, 10);
+                } else {
+                    chatWindow.classList.add('opacity-0', 'translate-y-4', 'pointer-events-none');
+                    setTimeout(() => {
+                        chatWindow.classList.add('hidden');
+                        chatWindow.classList.remove('flex');
+                    }, 300);
+                }
+            };
+
+            toggleBtn.addEventListener('click', toggleChat);
+            closeBtn.addEventListener('click', toggleChat);
+            
+            sendBtn.addEventListener('click', handleSendChat);
+            input.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') handleSendChat();
+            });
+        }
+
+        function buildSystemPrompt() {
+            return `Anda adalah Asisten AI untuk portofolio Asep Jamaludin. Tugas Anda adalah menjawab pertanyaan pengunjung tentang profil, pengalaman, dan pendidikannya dengan ramah, profesional, dan ringkas.
+            
+            [DATA PROFIL]
+            Nama: ${PORTFOLIO_DATA.profile.name}
+            Peran: ${PORTFOLIO_DATA.profile.role}
+            Ringkasan: ${PORTFOLIO_DATA.profile.description}
+            
+            [PENDIDIKAN]
+            ${PORTFOLIO_DATA.education.map(e => `- ${e.level} di ${e.name} (${e.period}). Jurusan: ${e.major || 'Tidak ada/Umum'}. Deskripsi: ${e.desc}`).join('\n')}
+            
+            [PENGALAMAN KERJA]
+            ${PORTFOLIO_DATA.career.map(c => `- Posisi: ${c.role} di ${c.company} (${c.period}). Lokasi: ${c.location}. Deskripsi: ${c.desc}`).join('\n')}
+            `;
+        }
+
+        async function handleSendChat() {
+            const input = document.getElementById('chat-input');
+            const text = input.value.trim();
+            if (!text) return;
+
+            input.value = '';
+            input.disabled = true;
+            
+            appendChatMessage('user', text);
+            showChatTyping();
+
+            chatHistory.push({ role: 'user', parts: [{ text }] });
+
+            try {
+                const apiKey = "AQ.Ab8RN6IwJ8ghBA9qLFwZnrea4u8yywmGUQTC53PPT-RgSNDaIQ"; 
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+                
+                const payload = {
+                    contents: chatHistory,
+                    systemInstruction: { parts: [{ text: buildSystemPrompt() }] }
+                };
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+                
+                if (data.candidates && data.candidates.length > 0) {
+                    const botText = data.candidates[0].content.parts[0].text;
+                    chatHistory.push(data.candidates[0].content);
+                    hideChatTyping();
+                    appendChatMessage('model', botText);
+                } else {
+                    throw new Error("Invalid API response format");
+                }
+            } catch (error) {
+                hideChatTyping();
+                appendChatMessage('model', "Mohon maaf, saya sedang mengalami kendala jaringan atau sistem. Silakan coba beberapa saat lagi. 🙏");
+                chatHistory.pop();
+            } finally {
+                input.disabled = false;
+                input.focus();
+            }
+        }
+
+        function appendChatMessage(sender, text) {
+            const chatMessages = document.getElementById('chat-messages');
+            const typingIndicator = document.getElementById('chat-typing');
+            
+            const div = document.createElement('div');
+            div.className = sender === 'user' ? 'flex items-start gap-2 justify-end' : 'flex items-start gap-2';
+            
+            const formattedText = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
+
+            if (sender === 'user') {
+                div.innerHTML = `
+                    <div class="bg-teal-500 text-white p-3 rounded-2xl rounded-tr-sm shadow-sm max-w-[85%] text-sm">
+                        ${formattedText}
+                    </div>
+                `;
+            } else {
+                div.innerHTML = `
+                    <div class="w-8 h-8 rounded-full bg-teal-500 text-white flex items-center justify-center shrink-0 shadow-md"><i class="fas fa-robot text-xs"></i></div>
+                    <div class="bg-white dark:bg-navy-800 p-3 rounded-2xl rounded-tl-sm shadow-sm border border-slate-100 dark:border-navy-700 text-slate-700 dark:text-slate-300 max-w-[85%] text-sm">
+                        ${formattedText}
+                    </div>
+                `;
+            }
+            
+            chatMessages.insertBefore(div, typingIndicator);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function showChatTyping() {
+            const typingIndicator = document.getElementById('chat-typing');
+            typingIndicator.classList.remove('hidden');
+            typingIndicator.classList.add('flex');
+            const chatMessages = document.getElementById('chat-messages');
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function hideChatTyping() {
+            const typingIndicator = document.getElementById('chat-typing');
+            typingIndicator.classList.add('hidden');
+            typingIndicator.classList.remove('flex');
+        }
+
+    </script>
+</body>
+</html>
