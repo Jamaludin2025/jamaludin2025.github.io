@@ -3,12 +3,24 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pemesanan Makanan</title>
+<title>Pemesanan Makanan Online</title>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.0/dist/JsBarcode.all.min.js"></script>
 <!-- SweetAlert2 Library -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<!-- OneSignal SDK -->
+<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+<script>
+  window.OneSignalDeferred = window.OneSignalDeferred || [];
+  OneSignalDeferred.push(async function(OneSignal) {
+    await OneSignal.init({
+      appId: "374a039a-a1f3-48f4-a803-fa3ef6a10c89",
+    });
+  });
+</script>
+
 <style>
 * {
     margin: 0;
@@ -847,11 +859,11 @@ document.getElementById("btnSaveAccount").addEventListener("click", async () => 
         const formData = new FormData();
         formData.append('file', selectedProfileImage);
         // PENTING: Ganti dengan UPLOAD_PRESET Cloudinary Anda
-        formData.append('upload_preset', 'AJGallery'); 
+        formData.append('upload_preset', 'YOUR_UPLOAD_PRESET'); 
 
         try {
             // PENTING: Ganti YOUR_CLOUD_NAME dengan cloud name Cloudinary Anda
-            const res = await fetch('https://api.cloudinary.com/v1_1/dz4w1sqiv/image/upload', {
+            const res = await fetch('https://api.cloudinary.com/v1_1/YOUR_CLOUD_NAME/image/upload', {
                 method: 'POST',
                 body: formData
             });
