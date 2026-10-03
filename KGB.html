@@ -10,16 +10,15 @@
     
     <style>
         :root {
-            --primary: #4a90e2;
-            --primary-hover: #357abd;
-            --secondary: #f39c12;
-            --dark: #2c3e50;
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --secondary: #f97316;
+            --secondary-hover: #ea580c;
+            --dark: #1e293b;
             --light: #f8fafc;
-            --bg-p1: #ffffff; 
-            --bg-p2: #ffffff;
-            --danger: #e53e3e;
-            --success: #2f855a;
-            --border-color: #2c3e50;
+            --danger: #ef4444;
+            --success: #10b981;
+            --border-color: #1e293b;
             --radius-lg: 20px;
             --radius-md: 12px;
             --radius-sm: 8px;
@@ -37,7 +36,7 @@
             padding: 0;
             overflow-x: hidden;
             font-family: 'Segoe UI', system-ui, -apple-system, Roboto, Helvetica, Arial, sans-serif;
-            background-color: #f0f3f8;
+            background-color: #f1f5f9;
             color: var(--dark);
         }
 
@@ -54,7 +53,7 @@
             border-radius: clamp(14px, 4vw, var(--radius-lg));
             box-shadow: 0 12px 30px rgba(0,0,0,0.08);
             width: 100%;
-            max-width: 540px;
+            max-width: 520px;
             max-height: calc(100vh - 20px);
             overflow-y: auto;
             text-align: center;
@@ -79,7 +78,7 @@
             color: var(--dark); 
             margin: 0 0 clamp(0.7rem, 2.5vw, 1.2rem) 0; 
             letter-spacing: -0.5px; 
-            font-size: clamp(1.4rem, 5vw, 2rem);
+            font-size: clamp(1.4rem, 5vw, 1.9rem);
             font-weight: 800;
             line-height: 1.2;
         }
@@ -87,6 +86,8 @@
         h3 {
             font-size: clamp(0.95rem, 3.5vw, 1.15rem);
             margin: 0 0 1rem 0;
+            color: #475569;
+            font-weight: 700;
         }
 
         .hidden { display: none !important; }
@@ -102,7 +103,7 @@
         input, select {
             padding: clamp(10px, 2.8vw, 14px) 14px;
             width: 100%;
-            border: 2px solid #edf2f7;
+            border: 2px solid #cbd5e0;
             border-radius: var(--radius-md);
             font-size: clamp(0.9rem, 3.2vw, 1rem);
             outline: none;
@@ -111,12 +112,13 @@
             background-color: #fff;
             min-height: 48px;
             color: var(--dark);
+            font-weight: 600;
         }
 
         input { padding-right: 42px; }
         input:focus, select:focus { 
             border-color: var(--primary); 
-            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.15);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
         }
 
         .clear-icon {
@@ -144,7 +146,7 @@
 
         select { 
             width: 100%; 
-            margin: 8px 0 12px 0; 
+            margin: 6px 0 14px 0; 
             cursor: pointer;
             appearance: auto;
         }
@@ -153,46 +155,53 @@
             padding: clamp(10px, 3vw, 14px) clamp(16px, 4vw, 24px);
             background-color: var(--primary);
             color: white;
-            border: none;
+            border: 2px solid var(--dark);
             border-radius: var(--radius-md);
             cursor: pointer;
-            font-weight: 700;
+            font-weight: 800;
             font-size: clamp(0.9rem, 3.2vw, 1.05rem);
             transition: all 0.2s ease;
             margin-top: 8px;
             width: 100%;
             min-height: 48px;
-            box-shadow: 0 4px 12px rgba(74, 144, 226, 0.25);
             display: inline-flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
             user-select: none;
+            box-shadow: 0 3px 0 var(--dark);
         }
         
         button:hover:not(:disabled) { 
-            background-color: var(--primary-hover);
             transform: translateY(-2px); 
-            box-shadow: 0 6px 16px rgba(74, 144, 226, 0.35); 
+            box-shadow: 0 5px 0 var(--dark);
         }
         button:active:not(:disabled) {
-            transform: translateY(0);
+            transform: translateY(1px);
+            box-shadow: 0 1px 0 var(--dark);
         }
         button:disabled { 
             background-color: #cbd5e0; 
+            border-color: #94a3b8;
             cursor: not-allowed; 
             box-shadow: none; 
             transform: none; 
             opacity: 0.7;
+            color: #64748b;
+        }
+
+        .btn-orange {
+            background-color: var(--secondary);
+        }
+        .btn-orange:hover:not(:disabled) {
+            background-color: var(--secondary-hover);
         }
 
         .btn-secondary {
             background-color: #64748b;
-            box-shadow: 0 4px 12px rgba(100, 116, 139, 0.25);
         }
         .btn-secondary:hover:not(:disabled) {
             background-color: #475569;
-            box-shadow: 0 6px 16px rgba(100, 116, 139, 0.35);
         }
 
         .btn-outline {
@@ -204,19 +213,16 @@
         .btn-outline:hover:not(:disabled) {
             background-color: #eff6ff;
             color: var(--primary-hover);
+            box-shadow: none;
         }
 
         .btn-danger {
             background-color: var(--danger);
-            box-shadow: 0 4px 12px rgba(229, 62, 62, 0.25);
-        }
-        .btn-danger:hover:not(:disabled) {
-            background-color: #c53030;
         }
 
         .mode-card {
             background: #f8fafc;
-            border: 2px solid #e2e8f0;
+            border: 2.5px solid var(--dark);
             border-radius: var(--radius-md);
             padding: clamp(12px, 3vw, 16px);
             margin-bottom: 12px;
@@ -228,48 +234,49 @@
             gap: 14px;
         }
         .mode-card:hover {
-            border-color: var(--primary);
-            background: #f0f7ff;
+            background: #eff6ff;
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.06);
         }
         .mode-icon {
             font-size: clamp(1.4rem, 4.5vw, 1.8rem);
             color: var(--primary);
-            background: #ebf8ff;
+            background: #dbeafe;
             padding: clamp(8px, 2.5vw, 12px);
             border-radius: var(--radius-md);
             display: flex;
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
+            border: 2px solid var(--dark);
         }
         .mode-info h4 {
             margin: 0 0 4px 0;
             color: var(--dark);
             font-size: clamp(0.95rem, 3.5vw, 1.1rem);
-            font-weight: 700;
+            font-weight: 800;
         }
         .mode-info p {
             margin: 0;
             color: #64748b;
             font-size: clamp(0.8rem, 2.8vw, 0.88rem);
             line-height: 1.3;
+            font-weight: 600;
         }
 
         .avatar-preview {
-            width: clamp(70px, 18vw, 90px);
-            height: clamp(70px, 18vw, 90px);
+            width: clamp(75px, 20vw, 95px);
+            height: clamp(75px, 20vw, 95px);
             border-radius: 50%;
             background-color: var(--primary);
             color: #ffffff;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: clamp(2rem, 6vw, 2.6rem);
+            font-size: clamp(2.2rem, 7vw, 2.8rem);
             margin: 10px auto 16px auto;
-            border: 3px solid #2c3e50;
-            box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+            border: 3px solid var(--dark);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.08);
             transition: background-color 0.3s ease;
         }
 
@@ -289,36 +296,37 @@
             transition: transform 0.2s ease, border-color 0.2s ease;
         }
         .color-dot:hover {
-            transform: scale(1.15);
+            transform: scale(1.12);
         }
         .color-dot.active {
-            border-color: #2c3e50;
+            border-color: var(--dark);
             transform: scale(1.18);
         }
 
-        .my-profile-card {
-            background: #f8fafc;
-            border: 2px solid #cbd5e0;
+        .lobby-user-card {
+            background: #ffffff;
+            border: 2.5px solid var(--dark);
             border-radius: var(--radius-md);
-            padding: clamp(10px, 2.5vw, 14px);
-            margin-bottom: 14px;
+            padding: clamp(12px, 3vw, 16px);
+            margin-bottom: 16px;
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 14px;
             text-align: left;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.05);
         }
-        .user-avatar-sm {
-            width: clamp(42px, 10vw, 50px);
-            height: clamp(42px, 10vw, 50px);
+        .user-avatar-badge {
+            width: clamp(48px, 12vw, 56px);
+            height: clamp(48px, 12vw, 56px);
             border-radius: 50%;
             background-color: var(--primary);
             color: #fff;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: clamp(1.2rem, 3.5vw, 1.5rem);
+            font-size: clamp(1.4rem, 4vw, 1.7rem);
             flex-shrink: 0;
-            border: 2px solid #2c3e50;
+            border: 2.5px solid var(--dark);
         }
         .user-info-box {
             flex: 1;
@@ -327,45 +335,49 @@
         .user-info-name {
             font-weight: 800;
             color: var(--dark);
-            font-size: clamp(0.95rem, 3.2vw, 1.1rem);
+            font-size: clamp(1rem, 3.5vw, 1.15rem);
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
         .user-id-code {
             font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
-            font-size: clamp(0.8rem, 2.8vw, 0.9rem);
+            font-size: clamp(0.82rem, 2.9vw, 0.92rem);
             font-weight: 700;
             color: #64748b;
-            letter-spacing: 1px;
+            margin-top: 2px;
         }
-
-        .divider {
+        .user-card-actions {
             display: flex;
-            align-items: center;
-            text-align: center;
-            margin: 14px 0;
-            color: #94a3b8;
-            font-size: clamp(0.75rem, 2.5vw, 0.85rem);
-            font-weight: 700;
-            letter-spacing: 0.5px;
+            gap: 8px;
+            color: var(--dark);
         }
-        .divider::before, .divider::after {
-            content: '';
-            flex: 1;
-            border-bottom: 1px solid #e2e8f0;
+        .icon-btn {
+            background: none;
+            border: none;
+            padding: 6px;
+            margin: 0;
+            box-shadow: none;
+            min-height: auto;
+            width: auto;
+            cursor: pointer;
+            color: var(--dark);
+            font-size: 1.25rem;
+            border-radius: 6px;
         }
-        .divider span {
-            padding: 0 10px;
+        .icon-btn:hover {
+            background: #f1f5f9;
+            transform: scale(1.1);
+            box-shadow: none;
         }
 
         .user-list-container {
             background: #ffffff;
-            border: 2px solid #e2e8f0;
+            border: 2.5px solid var(--dark);
             border-radius: var(--radius-md);
-            max-height: 220px;
+            max-height: 260px;
             overflow-y: auto;
-            margin-top: 8px;
+            margin: 12px 0;
             text-align: left;
         }
         .user-row {
@@ -373,7 +385,7 @@
             align-items: center;
             justify-content: space-between;
             padding: 10px 12px;
-            border-bottom: 1px solid #f1f5f9;
+            border-bottom: 2px solid #f1f5f9;
             gap: 10px;
         }
         .user-row:last-child {
@@ -387,63 +399,86 @@
             min-width: 0;
         }
         .user-row-status {
-            font-size: clamp(0.72rem, 2.5vw, 0.8rem);
-            font-weight: 600;
+            font-size: clamp(0.75rem, 2.6vw, 0.82rem);
+            font-weight: 700;
+            margin-top: 2px;
         }
         .status-waiting { color: var(--success); }
-        .status-playing { color: var(--secondary); }
+        .status-playing { color: var(--danger); }
 
-        .btn-invite {
+        .btn-invite-row {
             width: auto;
             margin: 0;
-            padding: 6px 12px;
-            font-size: clamp(0.78rem, 2.5vw, 0.85rem);
-            min-height: 36px;
+            padding: 6px 10px;
+            font-size: clamp(0.8rem, 2.6vw, 0.88rem);
+            min-height: 38px;
             flex-shrink: 0;
+            box-shadow: 0 2px 0 var(--dark);
         }
 
-        .scoreboard {
+        .scoreboard-container {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: clamp(12px, 3vw, 20px);
-            background: #f1f5f9;
-            padding: clamp(8px, 2.5vw, 14px) clamp(12px, 3vw, 20px);
+            margin-bottom: clamp(12px, 3vw, 18px);
+            background: #f8fafc;
+            padding: clamp(10px, 2.5vw, 14px) clamp(12px, 3vw, 18px);
             border-radius: var(--radius-md);
-            border: 1.5px solid #e2e8f0;
+            border: 2.5px solid var(--dark);
             gap: 8px;
         }
-        .score-box { 
-            flex: 1; 
+        .player-score-card {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
             min-width: 0;
-            overflow: hidden;
         }
-        .score-name { 
-            font-size: clamp(0.7rem, 2.5vw, 0.82rem); 
-            color: #64748b; 
-            text-transform: uppercase; 
-            font-weight: 700; 
+        .player-score-card.right {
+            justify-content: flex-end;
+            text-align: right;
+        }
+        .mini-avatar {
+            width: clamp(32px, 8vw, 40px);
+            height: clamp(32px, 8vw, 40px);
+            border-radius: 50%;
+            background-color: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: clamp(0.9rem, 2.8vw, 1.2rem);
+            border: 2px solid var(--dark);
+            flex-shrink: 0;
+        }
+        .player-details {
+            min-width: 0;
+            flex: 1;
+        }
+        .player-details .name {
+            font-size: clamp(0.72rem, 2.5vw, 0.85rem);
+            font-weight: 800;
+            color: var(--dark);
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
-        .score-num { 
-            font-size: clamp(1.4rem, 5vw, 2rem); 
-            color: var(--dark); 
-            font-weight: 800; 
-            line-height: 1.1;
+        .player-details .score {
+            font-size: clamp(0.75rem, 2.5vw, 0.85rem);
+            font-weight: 700;
+            color: #64748b;
         }
-        .round-info { 
-            font-size: clamp(0.85rem, 3vw, 1.1rem); 
-            flex: 0 0 auto; 
-            font-weight: 800; 
-            color: var(--primary);
-            padding: 0 6px;
+        .match-round-badge {
+            font-size: clamp(1rem, 3.5vw, 1.3rem);
+            font-weight: 900;
+            color: var(--dark);
+            padding: 0 8px;
+            flex-shrink: 0;
         }
 
-        #turn-indicator { 
-            font-size: clamp(1rem, 3.5vw, 1.25rem); 
-            margin-bottom: clamp(10px, 2.5vw, 16px); 
+        #turn-instruction { 
+            font-size: clamp(0.95rem, 3.2vw, 1.15rem); 
+            margin-bottom: clamp(12px, 3vw, 18px); 
             color: var(--dark); 
             font-weight: 800; 
         }
@@ -464,14 +499,14 @@
             padding: clamp(6px, 2vw, 12px);
             background: #ffffff;
             border: 3px solid var(--border-color);
-            border-radius: clamp(10px, 3vw, 16px);
+            border-radius: clamp(12px, 3.2vw, 18px);
             cursor: pointer;
             transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             display: flex;
             align-items: center;
             justify-content: center;
             margin: 0;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 0 var(--dark);
         }
         .choice-btn img { 
             width: 100%; 
@@ -480,21 +515,53 @@
             pointer-events: none;
         }
         .choice-btn:hover:not(:disabled) { 
-            border-color: var(--primary); 
-            transform: scale(1.06); 
+            transform: translateY(-2px); 
         }
         .choice-btn.selected { 
-            border-color: var(--secondary); 
-            background: #fffaf0; 
-            transform: scale(1.08); 
-            box-shadow: 0 6px 16px rgba(243, 156, 18, 0.25);
+            border-color: var(--dark); 
+            background: #fef3c7; 
+            transform: scale(1.06); 
+            box-shadow: 0 6px 0 var(--dark);
+        }
+
+        .choice-status-info {
+            font-size: clamp(0.82rem, 2.8vw, 0.92rem);
+            font-weight: 700;
+            color: #64748b;
+            margin: 8px 0 12px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .countdown-overlay-box {
+            padding: clamp(20px, 5vw, 30px);
+            background: #ffffff;
+            border-radius: var(--radius-lg);
+            border: 3px solid var(--dark);
+            margin: 16px 0;
+        }
+        .countdown-text {
+            font-size: clamp(0.9rem, 3.2vw, 1.05rem);
+            font-weight: 800;
+            color: var(--dark);
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+        .countdown-number {
+            font-size: clamp(3.2rem, 12vw, 4.8rem);
+            font-weight: 900;
+            color: var(--primary);
+            line-height: 1;
+            margin-top: 10px;
         }
 
         .result-box {
             padding: clamp(14px, 3.5vw, 22px);
-            background: #f8fafc;
+            background: #ffffff;
             border-radius: var(--radius-lg);
-            border: 2px solid #e2e8f0;
+            border: 3px solid var(--dark);
             margin: 12px 0;
         }
         .vs-container {
@@ -504,30 +571,81 @@
             margin-top: 12px;
             gap: 10px;
         }
-        .res-img { 
-            width: clamp(65px, 20vw, 100px); 
-            height: clamp(65px, 20vw, 100px); 
-            object-fit: contain; 
+        .card-weapon {
+            width: clamp(75px, 22vw, 105px);
+            height: clamp(75px, 22vw, 105px);
+            border: 2.5px solid var(--dark);
+            border-radius: var(--radius-md);
+            padding: 8px;
+            background: #f8fafc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
         }
-        .vs-text { 
-            font-size: clamp(1.2rem, 4vw, 1.6rem); 
-            font-weight: 900; 
-            color: #cbd5e0; 
+        .card-weapon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
         }
         .winner-text { 
-            font-size: clamp(1.1rem, 4vw, 1.4rem); 
-            font-weight: 800; 
-            color: var(--secondary); 
-            margin-bottom: 8px; 
+            font-size: clamp(1.1rem, 4vw, 1.35rem); 
+            font-weight: 900; 
+            color: var(--dark); 
+            margin-bottom: 12px; 
         }
 
-        #final-winner-screen {
-            padding: 10px 0;
+        .readiness-bar-box {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #f8fafc;
+            border: 2.5px solid var(--dark);
+            border-radius: var(--radius-md);
+            padding: 8px 12px;
+            margin-top: 14px;
+            gap: 10px;
         }
+        .ready-icons-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .ready-user-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #cbd5e0;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            border: 2px solid var(--dark);
+            transition: all 0.3s ease;
+        }
+        .ready-user-icon.is-ready {
+            background: var(--success);
+        }
+        .btn-siap {
+            width: auto;
+            margin: 0;
+            min-height: 38px;
+            padding: 6px 18px;
+            background-color: var(--dark);
+            color: #ffffff;
+            font-size: 0.9rem;
+            box-shadow: none;
+        }
+        .btn-siap:hover:not(:disabled) {
+            background-color: #334155;
+            box-shadow: none;
+        }
+
         .trophy-icon {
             font-size: clamp(55px, 15vw, 80px);
-            color: #f1c40f;
-            text-shadow: 0 0 20px rgba(241, 196, 15, 0.4);
+            color: #f59e0b;
+            text-shadow: 0 0 20px rgba(245, 158, 11, 0.4);
             margin-bottom: 8px;
             display: block;
         }
@@ -546,7 +664,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(255, 255, 255, 0.96);
+            background: rgba(255, 255, 255, 0.97);
             border-radius: clamp(12px, 3.5vw, 17px);
             display: flex;
             flex-direction: column;
@@ -607,14 +725,14 @@
             body { padding: 6px; }
             .container { max-height: 98vh; padding: 10px 18px; }
             h1 { font-size: 1.2rem; margin-bottom: 6px; }
-            .scoreboard { padding: 4px 12px; margin-bottom: 8px; }
+            .scoreboard-container { padding: 4px 12px; margin-bottom: 8px; }
             .choice-container { margin: 8px 0; }
             .choice-btn { max-width: 65px; }
             .mode-card { padding: 8px 12px; margin-bottom: 8px; }
             .mode-icon { padding: 6px; font-size: 1.2rem; }
-            .res-img { width: 55px; height: 55px; }
             .trophy-icon { font-size: 45px; margin-bottom: 4px; }
             .user-list-container { max-height: 120px; }
+            .card-weapon { width: 60px; height: 60px; }
         }
     </style>
 </head>
@@ -627,17 +745,26 @@
 
     <div id="modal-overlay" class="modal-overlay hidden">
         <div id="modal-spinner" class="spinner"></div>
-        <h3 id="modal-title" style="color: var(--dark); margin: 5px 0 8px 0;">Mencari Lawan...</h3>
-        <p id="modal-desc" style="color: #64748b; margin-bottom: 16px; font-size: clamp(0.85rem, 2.8vw, 0.95rem);">Mohon tunggu sebentar</p>
+        <h3 id="modal-title" style="margin: 5px 0 8px 0;">Mencari Lawan...</h3>
+        <p id="modal-desc" style="color: #64748b; margin-bottom: 16px; font-size: clamp(0.85rem, 2.8vw, 0.95rem); font-weight: 600;">Mohon tunggu sebentar</p>
+        
+        <div id="modal-input-container" class="hidden" style="width: 100%; margin-bottom: 12px;">
+            <div class="input-wrapper">
+                <input type="text" id="modal-target-id" placeholder="Masukkan User ID Lawan" style="text-transform: uppercase;" maxlength="6">
+                <i class="bi bi-x-circle-fill clear-icon" onmousedown="clearInput('modal-target-id')"></i>
+            </div>
+        </div>
+
         <div id="modal-actions" style="width: 100%; display: flex; gap: 8px; flex-wrap: wrap;">
             <button id="modal-btn-cancel" onclick="cancelModalAction()" class="btn-secondary">BATAL</button>
-            <button id="modal-btn-accept" onclick="acceptInvitation()" class="hidden" style="background-color: var(--success);">TERIMA</button>
+            <button id="modal-btn-submit-invite" onclick="submitModalInvite()" class="btn-orange hidden">KIRIM UNDANGAN</button>
+            <button id="modal-btn-accept" onclick="acceptInvitation()" class="hidden" style="background-color: var(--success); border-color: var(--dark);">TERIMA</button>
             <button id="modal-btn-reject" onclick="rejectInvitation()" class="btn-danger hidden">TOLAK</button>
         </div>
     </div>
 
     <div id="mode-select-screen">
-        <h3 style="color: #475569;">Pilih Mode Permainan</h3>
+        <h3>Pilih Mode Permainan</h3>
 
         <div style="margin-top: 14px;">
             <div class="mode-card" onclick="chooseMode('computer')">
@@ -659,7 +786,7 @@
     </div>
 
     <div id="bot-setup-screen" class="hidden">
-        <h3 style="color: #475569;">Atur Permainan Computer</h3>
+        <h3>Atur Permainan Computer</h3>
         
         <div class="input-wrapper">
             <input type="text" id="bot-player-name" placeholder="Nama Anda" value="Pemain 1" maxlength="15">
@@ -681,7 +808,7 @@
     </div>
 
     <div id="mp-profile-screen" class="hidden">
-        <h3 style="color: #475569;">Buat Profil Online</h3>
+        <h3>Buat Profil Online</h3>
 
         <div id="avatar-preview-box" class="avatar-preview">
             <i class="bi bi-person-fill"></i>
@@ -706,19 +833,22 @@
         <button onclick="showScreen('mode-select-screen')" class="btn-outline" style="margin-top: 8px;">KEMBALI</button>
     </div>
 
-    <div id="multiplayer-screen" class="hidden">
-        <div class="my-profile-card">
-            <div id="my-avatar-badge" class="user-avatar-sm"><i class="bi bi-person-fill"></i></div>
+    <div id="mp-lobby-screen" class="hidden">
+        <div class="lobby-user-card">
+            <div id="my-avatar-badge" class="user-avatar-badge"><i class="bi bi-person-fill"></i></div>
             <div class="user-info-box">
-                <div id="my-profile-name" class="user-info-name">Pemain Online</div>
+                <div id="my-profile-name" class="user-info-name">Nama Pemain</div>
                 <div class="user-id-code">ID: <span id="my-user-id">------</span></div>
             </div>
-            <button class="btn-outline btn-invite" onclick="copyMyUserId()"><i class="bi bi-copy"></i> Salin ID</button>
+            <div class="user-card-actions">
+                <button class="icon-btn" onclick="copyMyUserId()" title="Salin ID"><i class="bi bi-copy"></i></button>
+                <button class="icon-btn" onclick="shareMyUserId()" title="Bagikan"><i class="bi bi-share-fill"></i></button>
+            </div>
         </div>
 
-        <div style="text-align: left; margin-bottom: 10px;">
-            <span style="font-size: 0.85rem; color: #64748b; font-weight: 700;">Jumlah Putaran Kamar:</span>
-            <select id="online-rounds-input" style="margin-top: 4px;">
+        <div style="text-align: left; margin-bottom: 12px;">
+            <div style="font-size: 0.88rem; color: #64748b; font-weight: 700; margin-bottom: 4px;">Jumlah Putaran:</div>
+            <select id="online-rounds-input">
                 <option value="1">1 Putaran</option>
                 <option value="3" selected>3 Putaran</option>
                 <option value="5">5 Putaran</option>
@@ -726,41 +856,46 @@
             </select>
         </div>
 
-        <button onclick="startMatchmaking()"><i class="bi bi-lightning-charge-fill"></i> CARI PASANGAN</button>
+        <button onclick="openCariPasanganRoom()"><i class="bi bi-lightning-charge-fill"></i> Cari Pasangan</button>
+        <button onclick="openUndangTemanModal()" class="btn-orange" style="margin-top: 8px;"><i class="bi bi-person-plus-fill"></i> Undang Teman</button>
 
-        <div class="divider"><span>ATAU UNDANG VIA USER ID</span></div>
+        <button onclick="showScreen('mode-select-screen')" class="btn-outline" style="margin-top: 14px;">KEMBALI KE MENU</button>
+    </div>
 
-        <div class="input-wrapper" style="margin-bottom: 0;">
-            <input type="text" id="target-id-input" placeholder="Masukkan User ID Lawan" style="text-transform: uppercase;" maxlength="6">
-            <i class="bi bi-x-circle-fill clear-icon" onmousedown="clearInput('target-id-input')"></i>
-        </div>
-        <button onclick="invitePlayerByUserId()" class="btn-secondary" style="margin-top: 8px;"><i class="bi bi-send-fill"></i> UNDANG BERMAIN</button>
-
-        <div class="divider"><span>DAFTAR PEMAIN ONLINE</span></div>
+    <div id="online-users-screen" class="hidden">
+        <h3>CARI DAN AJAK TEMAN</h3>
 
         <div id="user-list-box" class="user-list-container">
-            <div style="padding: 16px; color: #94a3b8; font-size: 0.85rem;">Memuat daftar pemain...</div>
+            <div style="padding: 16px; color: #94a3b8; font-size: 0.85rem; font-weight: 700;">Memuat daftar pemain...</div>
         </div>
 
-        <button onclick="showScreen('mode-select-screen')" class="btn-outline" style="margin-top: 12px;">MENU UTAMA</button>
+        <button onclick="showScreen('mp-lobby-screen')" class="btn-outline" style="margin-top: 8px;">KEMBALI KE LOBBY</button>
     </div>
 
     <div id="game-screen" class="hidden">
-        <div class="scoreboard">
-            <div class="score-box">
-                <div class="score-name" id="p1-label">P1</div>
-                <div class="score-num" id="p1-score">0</div>
+        <div class="scoreboard-container">
+            <div class="player-score-card">
+                <div id="p1-avatar-icon" class="mini-avatar"><i class="bi bi-person-fill"></i></div>
+                <div class="player-details">
+                    <div id="p1-label" class="name">Pemain 1</div>
+                    <div class="score">Skor: <span id="p1-score">0</span></div>
+                </div>
             </div>
-            <div class="round-info">
-                <i class="bi bi-filter-right"></i> <span id="cur-round">1</span>/<span id="total-round">3</span> <i class="bi bi-filter-left"></i>
+
+            <div class="match-round-badge">
+                <span id="cur-round">1</span>/<span id="total-round">3</span>
             </div>
-            <div class="score-box">
-                <div class="score-name" id="p2-label">P2</div>
-                <div class="score-num" id="p2-score">0</div>
+
+            <div class="player-score-card right">
+                <div class="player-details">
+                    <div id="p2-label" class="name">Pemain 2</div>
+                    <div class="score">Skor: <span id="p2-score">0</span></div>
+                </div>
+                <div id="p2-avatar-icon" class="mini-avatar" style="background-color: #ef4444;"><i class="bi bi-person-fill"></i></div>
             </div>
         </div>
 
-        <h2 id="turn-indicator">Giliran: Pemain A</h2>
+        <div id="turn-instruction">Pilih senjata untuk mengalahkan lawan</div>
         
         <div id="selection-area">
             <div class="choice-container">
@@ -774,50 +909,65 @@
                     <img id="img-kertas" src="" alt="Kertas">
                 </button>
             </div>
-            <p id="feedback-text" style="color: #64748b; font-weight: 600; font-size: clamp(0.85rem, 2.8vw, 0.95rem); margin: 6px 0 10px 0;">Pilih senjatamu!</p>
+            
+            <div id="choice-status-text" class="choice-status-info">
+                <i class="bi bi-info-circle"></i> <span>Lawan sedang memilih senjata</span>
+            </div>
+
             <button id="save-btn" onclick="saveChoice()" disabled>SIMPAN PILIHAN</button>
         </div>
 
-        <div id="ready-area" class="hidden">
-            <div style="padding: 10px; background: #f0fff4; border-radius: var(--radius-md); border: 1.5px solid #2f855a; margin: 14px 0;">
-                <p id="ready-msg" style="color: #2f855a; font-weight: 700; margin: 0; font-size: clamp(0.85rem, 2.8vw, 0.95rem);"><i class="bi bi-check-circle"></i> Pilihan Anda telah dikunci!</p>
+        <div id="countdown-area" class="hidden">
+            <div class="countdown-overlay-box">
+                <div class="countdown-text">Semuanya sudah siap memilih,<br>Hasil pertandingan akan muncul dalam...</div>
+                <div id="countdown-timer-num" class="countdown-number">3</div>
             </div>
-            <button id="final-result-btn" onclick="showResult()" style="background-color: var(--secondary); box-shadow: 0 4px 12px rgba(243, 156, 18, 0.3);">LIHAT HASIL</button>
         </div>
     </div>
 
     <div id="result-screen" class="hidden">
         <div class="result-box">
-            <div id="round-winner" class="winner-text">Pemain A Menang!</div>
+            <div id="round-winner" class="winner-text">Pemain 1 Menang!</div>
+            
             <div class="vs-container">
-                <div style="flex: 1;">
-                    <div id="res-p1-name" style="font-weight: 700; margin-bottom: 4px; font-size: clamp(0.8rem, 2.8vw, 0.95rem); word-break: break-word;">P1</div>
-                    <img id="res-p1-img" class="res-img" src="">
+                <div>
+                    <div id="res-p1-name" style="font-weight: 800; margin-bottom: 6px; font-size: 0.9rem;">Pemain 1</div>
+                    <div class="card-weapon">
+                        <img id="res-p1-img" src="" alt="Senjata P1">
+                    </div>
                 </div>
-                <div class="vs-text">VS</div>
-                <div style="flex: 1;">
-                    <div id="res-p2-name" style="font-weight: 700; margin-bottom: 4px; font-size: clamp(0.8rem, 2.8vw, 0.95rem); word-break: break-word;">P2</div>
-                    <img id="res-p2-img" class="res-img" src="">
+                <div>
+                    <div id="res-p2-name" style="font-weight: 800; margin-bottom: 6px; font-size: 0.9rem;">Pemain 2</div>
+                    <div class="card-weapon">
+                        <img id="res-p2-img" src="" alt="Senjata P2">
+                    </div>
                 </div>
             </div>
         </div>
-        <button id="next-btn" onclick="nextRound()" style="width: 100%;">PUTARAN BERIKUTNYA</button>
+
+        <div style="font-size: 0.88rem; font-weight: 700; color: #64748b; margin-top: 10px;">
+            Bersiap untuk putaran ke <span id="next-round-num">2</span>
+        </div>
+
+        <div class="readiness-bar-box">
+            <div class="ready-icons-group">
+                <div id="ready-icon-p1" class="ready-user-icon"><i class="bi bi-person-fill"></i></div>
+                <div id="ready-icon-p2" class="ready-user-icon"><i class="bi bi-person-fill"></i></div>
+            </div>
+            <button id="btn-ready-confirm" onclick="confirmReadyNextRound()" class="btn-siap">SIAP</button>
+        </div>
     </div>
 
     <div id="final-winner-screen" class="hidden">
         <i class="bi bi-trophy-fill trophy-icon"></i>
-        <div id="final-msg" style="font-weight: 700; color: var(--secondary); margin-bottom: 4px; font-size: clamp(1rem, 3.2vw, 1.15rem);">PEMENANGNYA ADALAH:</div>
-        <div id="final-winner-name" class="final-name">PEMAIN A</div>
-        <button id="rematch-btn" onclick="requestRematch()" style="background-color: var(--primary);"><i class="bi bi-arrow-repeat"></i> BERMAIN LAGI</button>
+        <div id="final-msg" style="font-weight: 800; color: var(--secondary); margin-bottom: 4px; font-size: 1.1rem;">PEMENANGNYA ADALAH:</div>
+        <div id="final-winner-name" class="final-name">PEMAIN 1</div>
+        <button id="rematch-btn" onclick="requestRematch()"><i class="bi bi-arrow-repeat"></i> BERMAIN LAGI</button>
         <button onclick="exitToMenu()" class="btn-outline" style="margin-top: 8px;"><i class="bi bi-house-door-fill"></i> MENU UTAMA</button>
     </div>
 </div>
 
 <script>
-    /*
-     * Konfigurasi Firebase Realtime Database
-     * Ganti firebaseConfig di bawah ini dengan konfigurasi proyek Firebase milik Anda.
-     */
     const firebaseConfig = {
             apiKey: "AIzaSyBdt-2IQflUWNx3sdI1QHPMe1vAzsXAZcY",
             authDomain: "ajproject-log.firebaseapp.com",
@@ -870,6 +1020,7 @@
     let p2Choice = "";
     let selectedChoiceTemp = "";
 
+    let countdownTimer = null;
     let pendingInviteFromId = null;
     let pendingInviteFromName = null;
 
@@ -906,7 +1057,8 @@
             'mode-select-screen', 
             'bot-setup-screen', 
             'mp-profile-screen',
-            'multiplayer-screen', 
+            'mp-lobby-screen',
+            'online-users-screen',
             'game-screen', 
             'result-screen', 
             'final-winner-screen'
@@ -945,7 +1097,7 @@
             registerOnlineUser();
             subscribeOnlineUsersList();
         }
-        showScreen('multiplayer-screen');
+        showScreen('mp-lobby-screen');
     }
 
     function copyMyUserId() {
@@ -970,6 +1122,64 @@
         showToast("User ID disalin: " + myUserId);
     }
 
+    function shareMyUserId() {
+        if (navigator.share) {
+            navigator.share({
+                title: 'Kertas Gunting Batu',
+                text: 'Ayo main Kertas Gunting Batu bersamaku! User ID saya: ' + myUserId,
+            }).catch(() => {});
+        } else {
+            copyMyUserId();
+        }
+    }
+
+    function openCariPasanganRoom() {
+        if (!isFirebaseReady) {
+            showToast("Mode Demo: Firebase belum terhubung.");
+            return;
+        }
+        showScreen('online-users-screen');
+    }
+
+    function openUndangTemanModal() {
+        document.getElementById('modal-overlay').classList.remove('hidden');
+        document.getElementById('modal-spinner').classList.add('hidden');
+        document.getElementById('modal-title').innerText = "UNDANG TEMAN";
+        document.getElementById('modal-desc').innerText = "Masukkan User ID lawan untuk mengundangnya bermain";
+        document.getElementById('modal-input-container').classList.remove('hidden');
+        
+        document.getElementById('modal-btn-cancel').classList.remove('hidden');
+        document.getElementById('modal-btn-submit-invite').classList.remove('hidden');
+        document.getElementById('modal-btn-accept').classList.add('hidden');
+        document.getElementById('modal-btn-reject').classList.add('hidden');
+    }
+
+    function submitModalInvite() {
+        const targetId = document.getElementById('modal-target-id').value.trim().toUpperCase();
+        if (!targetId) {
+            showToast("Masukkan User ID tujuan!");
+            return;
+        }
+        if (targetId === myUserId) {
+            showToast("Tidak bisa mengundang diri sendiri!");
+            return;
+        }
+        if (!isFirebaseReady) {
+            showToast("Mode Demo: Firebase belum terhubung.");
+            return;
+        }
+
+        db.ref('users/' + targetId).once('value').then((snapshot) => {
+            if (!snapshot.exists()) {
+                showToast("User ID tidak ditemukan!");
+                return;
+            }
+            const oppData = snapshot.val();
+            hideModal();
+            sendDirectInvite(targetId, oppData.name || targetId);
+        });
+    }
+
     function startBotGame() {
         gameMode = 'vs_bot';
         myRole = 'p1';
@@ -983,6 +1193,8 @@
 
         document.getElementById('p1-label').innerText = myName;
         document.getElementById('p2-label').innerText = "Computer";
+        document.getElementById('p1-avatar-icon').style.backgroundColor = myAvatarColor;
+        document.getElementById('p2-avatar-icon').style.backgroundColor = "#64748b";
         document.getElementById('p1-score').innerText = '0';
         document.getElementById('p2-score').innerText = '0';
         document.getElementById('total-round').innerText = maxRounds;
@@ -1039,14 +1251,14 @@
         const userKeys = Object.keys(usersData).filter(key => key !== myUserId);
 
         if (userKeys.length === 0) {
-            container.innerHTML = '<div style="padding: 16px; color: #94a3b8; font-size: 0.85rem; text-align: center;">Belum ada pemain lain yang online</div>';
+            container.innerHTML = '<div style="padding: 18px; color: #94a3b8; font-size: 0.88rem; font-weight: 700; text-align: center;">Belum ada pemain lain yang online</div>';
             return;
         }
 
         userKeys.forEach(uid => {
             const u = usersData[uid];
             const isPlaying = u.status === 'playing';
-            const statusLabel = isPlaying ? 'Sedang Bermain' : 'Menunggu Undangan';
+            const statusLabel = isPlaying ? 'Sedang Bermain' : 'Siap Bermain';
             const statusClass = isPlaying ? 'status-playing' : 'status-waiting';
             const userColor = u.color || '#3b82f6';
             const userName = u.name || 'Pemain';
@@ -1055,16 +1267,16 @@
             row.className = 'user-row';
             row.innerHTML = `
                 <div class="user-row-info">
-                    <div class="user-avatar-sm" style="background-color: ${userColor}; width: 36px; height: 36px; font-size: 1rem;">
+                    <div class="user-avatar-badge" style="background-color: ${userColor}; width: 38px; height: 38px; font-size: 1rem;">
                         <i class="bi bi-person-fill"></i>
                     </div>
                     <div style="min-width: 0;">
-                        <div style="font-weight: 700; font-size: 0.9rem; color: var(--dark); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${userName}</div>
+                        <div style="font-weight: 800; font-size: 0.92rem; color: var(--dark); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${userName}</div>
                         <div class="user-row-status ${statusClass}">${statusLabel}</div>
                     </div>
                 </div>
-                <button class="btn-invite btn-secondary" ${isPlaying ? 'disabled' : ''} onclick="sendDirectInvite('${u.id}', '${userName}')">
-                    <i class="bi bi-send-fill"></i> Undang
+                <button class="btn-invite-row btn-secondary" ${isPlaying ? 'disabled' : ''} onclick="sendDirectInvite('${u.id}', '${userName}')">
+                    <i class="bi bi-person-plus-fill"></i>
                 </button>
             `;
             container.appendChild(row);
@@ -1074,10 +1286,12 @@
     function showInviteModal(fromName, fromId) {
         document.getElementById('modal-overlay').classList.remove('hidden');
         document.getElementById('modal-spinner').classList.add('hidden');
+        document.getElementById('modal-input-container').classList.add('hidden');
         document.getElementById('modal-title').innerText = "Undangan Bermain!";
         document.getElementById('modal-desc').innerText = fromName + " (ID: " + fromId + ") mengundang Anda.";
         
         document.getElementById('modal-btn-cancel').classList.add('hidden');
+        document.getElementById('modal-btn-submit-invite').classList.add('hidden');
         document.getElementById('modal-btn-accept').classList.remove('hidden');
         document.getElementById('modal-btn-reject').classList.remove('hidden');
     }
@@ -1085,18 +1299,18 @@
     function hideModal() {
         document.getElementById('modal-overlay').classList.add('hidden');
         document.getElementById('modal-spinner').classList.remove('hidden');
+        document.getElementById('modal-input-container').classList.add('hidden');
         document.getElementById('modal-btn-cancel').classList.remove('hidden');
+        document.getElementById('modal-btn-submit-invite').classList.add('hidden');
         document.getElementById('modal-btn-accept').classList.add('hidden');
         document.getElementById('modal-btn-reject').classList.add('hidden');
     }
 
     function cancelModalAction() {
-        if (!isFirebaseReady) {
-            hideModal();
-            return;
+        if (isFirebaseReady && myUserId) {
+            db.ref('matchmaking/' + myUserId).remove();
+            db.ref('users/' + myUserId).update({ status: 'idle' });
         }
-        db.ref('matchmaking/' + myUserId).remove();
-        db.ref('users/' + myUserId).update({ status: 'idle' });
         hideModal();
     }
 
@@ -1110,8 +1324,8 @@
             id: roomId,
             maxRounds: rounds,
             curRound: 1,
-            p1: { id: hostId, name: pendingInviteFromName, score: 0, choice: '', ready: false, connected: true },
-            p2: { id: myUserId, name: myName, score: 0, choice: '', ready: false, connected: true },
+            p1: { id: hostId, name: pendingInviteFromName, color: '#3b82f6', score: 0, choice: '', readyForNext: false, connected: true },
+            p2: { id: myUserId, name: myName, color: myAvatarColor, score: 0, choice: '', readyForNext: false, connected: true },
             status: 'playing',
             lastUpdate: firebase.database.ServerValue.TIMESTAMP
         };
@@ -1164,102 +1378,6 @@
         });
     }
 
-    function startMatchmaking() {
-        if (!isFirebaseReady) {
-            showToast("Mode Demo: Firebase belum terhubung.");
-            return;
-        }
-
-        document.getElementById('modal-overlay').classList.remove('hidden');
-        document.getElementById('modal-spinner').classList.remove('hidden');
-        document.getElementById('modal-title').innerText = "Mencari Pasangan...";
-        document.getElementById('modal-desc').innerText = "Mencari pemain lain yang sedang online...";
-        document.getElementById('modal-btn-cancel').classList.remove('hidden');
-        document.getElementById('modal-btn-accept').classList.add('hidden');
-        document.getElementById('modal-btn-reject').classList.add('hidden');
-
-        db.ref('users/' + myUserId).update({ status: 'searching' });
-
-        db.ref('matchmaking').once('value').then((snapshot) => {
-            const queue = snapshot.val() || {};
-            let foundOpponentId = null;
-
-            for (let uid in queue) {
-                if (uid !== myUserId) {
-                    foundOpponentId = uid;
-                    break;
-                }
-            }
-
-            if (foundOpponentId) {
-                db.ref('matchmaking/' + foundOpponentId).remove();
-                db.ref('users/' + foundOpponentId).once('value').then((oppSnap) => {
-                    const oppData = oppSnap.val();
-                    const oppName = (oppData && oppData.name) ? oppData.name : "Lawan";
-                    const roomId = 'room_' + myUserId + '_' + foundOpponentId;
-                    const rounds = parseInt(document.getElementById('online-rounds-input').value) || 3;
-
-                    const roomData = {
-                        id: roomId,
-                        maxRounds: rounds,
-                        curRound: 1,
-                        p1: { id: myUserId, name: myName, score: 0, choice: '', ready: false, connected: true },
-                        p2: { id: foundOpponentId, name: oppName, score: 0, choice: '', ready: false, connected: true },
-                        status: 'playing',
-                        lastUpdate: firebase.database.ServerValue.TIMESTAMP
-                    };
-
-                    db.ref('rooms/' + roomId).set(roomData).then(() => {
-                        myRole = 'p1';
-                        hideModal();
-                        joinOnlineRoom(roomId);
-                    });
-                });
-            } else {
-                db.ref('matchmaking/' + myUserId).set({
-                    name: myName,
-                    time: firebase.database.ServerValue.TIMESTAMP
-                });
-
-                db.ref('rooms').on('child_added', function onRoomCreated(snapshot) {
-                    const room = snapshot.val();
-                    if (room && room.p2 && room.p2.id === myUserId) {
-                        db.ref('rooms').off('child_added', onRoomCreated);
-                        db.ref('matchmaking/' + myUserId).remove();
-                        myRole = 'p2';
-                        hideModal();
-                        joinOnlineRoom(room.id);
-                    }
-                });
-            }
-        });
-    }
-
-    function invitePlayerByUserId() {
-        const targetId = document.getElementById('target-id-input').value.trim().toUpperCase();
-        if (!targetId) {
-            showToast("Masukkan User ID tujuan!");
-            return;
-        }
-        if (targetId === myUserId) {
-            showToast("Tidak bisa mengundang diri sendiri!");
-            return;
-        }
-        if (!isFirebaseReady) {
-            showToast("Mode Demo: Firebase belum terhubung.");
-            return;
-        }
-
-        db.ref('users/' + targetId).once('value').then((snapshot) => {
-            if (!snapshot.exists()) {
-                showToast("User ID tidak ditemukan!");
-                return;
-            }
-            const oppData = snapshot.val();
-            sendDirectInvite(targetId, oppData.name || targetId);
-        });
-    }
-
     function joinOnlineRoom(roomId) {
         activeRoomId = roomId;
         roomRef = db.ref('rooms/' + roomId);
@@ -1294,16 +1412,14 @@
         p1Score = room.p1.score;
         p2Score = room.p2.score;
 
-        document.getElementById('p1-label').innerText = room.p1.name + (isP1 ? " (Anda)" : "");
-        document.getElementById('p2-label').innerText = room.p2.name + (!isP1 ? " (Anda)" : "");
+        document.getElementById('p1-label').innerText = room.p1.name;
+        document.getElementById('p2-label').innerText = room.p2.name;
+        document.getElementById('p1-avatar-icon').style.backgroundColor = room.p1.color || '#3b82f6';
+        document.getElementById('p2-avatar-icon').style.backgroundColor = room.p2.color || '#ef4444';
         document.getElementById('p1-score').innerText = p1Score;
         document.getElementById('p2-score').innerText = p2Score;
         document.getElementById('total-round').innerText = maxRounds;
         document.getElementById('cur-round').innerText = curRound;
-
-        if (!oppData.connected) {
-            showToast("Lawan terputus dari permainan.");
-        }
 
         p1Choice = room.p1.choice;
         p2Choice = room.p2.choice;
@@ -1313,25 +1429,38 @@
 
         if (room.status === 'playing') {
             showScreen('game-screen');
+            document.getElementById('selection-area').classList.remove('hidden');
+            document.getElementById('countdown-area').classList.add('hidden');
+
             if (myChoice) {
-                document.getElementById('selection-area').classList.add('hidden');
-                document.getElementById('ready-area').classList.remove('hidden');
-                document.getElementById('final-result-btn').classList.add('hidden');
-                if (oppChoice) {
-                    document.getElementById('ready-msg').innerHTML = '<i class="bi bi-check-circle-fill"></i> Kedua pemain sudah memilih!';
-                    if (myRole === 'p1') {
-                        document.getElementById('final-result-btn').classList.remove('hidden');
-                    }
-                } else {
-                    document.getElementById('ready-msg').innerHTML = '<i class="bi bi-hourglass-split"></i> Menunggu lawan memilih...';
+                document.getElementById('save-btn').disabled = true;
+                document.getElementById('choice-status-text').innerHTML = '<i class="bi bi-check-circle-fill" style="color: var(--success);"></i> <span>Senjata berhasil dipilih!</span>';
+                if (!oppChoice) {
+                    document.getElementById('choice-status-text').innerHTML = '<i class="bi bi-hourglass-split"></i> <span>Menunggu lawan memilih senjata</span>';
                 }
             } else {
-                document.getElementById('selection-area').classList.remove('hidden');
-                document.getElementById('ready-area').classList.add('hidden');
+                document.getElementById('choice-status-text').innerHTML = '<i class="bi bi-info-circle"></i> <span>Lawan sedang memilih senjata</span>';
                 updateTurnUIForPOV();
             }
+
+            if (p1Choice && p2Choice && myRole === 'p1') {
+                roomRef.update({ status: 'countdown' });
+            }
+        } else if (room.status === 'countdown') {
+            showScreen('game-screen');
+            document.getElementById('selection-area').classList.add('hidden');
+            document.getElementById('countdown-area').classList.remove('hidden');
+            
+            if (!countdownTimer) {
+                startCountdownSequence();
+            }
         } else if (room.status === 'round_result') {
+            if (countdownTimer) {
+                clearInterval(countdownTimer);
+                countdownTimer = null;
+            }
             showScreen('result-screen');
+            
             document.getElementById('res-p1-name').innerText = room.p1.name;
             document.getElementById('res-p2-name').innerText = room.p2.name;
             document.getElementById('res-p1-img').src = imageSources.p1[p1Choice] || '';
@@ -1347,11 +1476,49 @@
                 winText = room.p2.name + " Menang!";
             }
             document.getElementById('round-winner').innerText = winText;
+            document.getElementById('next-round-num').innerText = curRound + 1;
 
-            if (myRole === 'p2') {
-                document.getElementById('next-btn').classList.add('hidden');
+            const readyP1 = document.getElementById('ready-icon-p1');
+            const readyP2 = document.getElementById('ready-icon-p2');
+            
+            if (room.p1.readyForNext) {
+                readyP1.classList.add('is-ready');
+                readyP1.style.backgroundColor = room.p1.color || '#10b981';
             } else {
-                document.getElementById('next-btn').classList.remove('hidden');
+                readyP1.classList.remove('is-ready');
+                readyP1.style.backgroundColor = '#cbd5e0';
+            }
+
+            if (room.p2.readyForNext) {
+                readyP2.classList.add('is-ready');
+                readyP2.style.backgroundColor = room.p2.color || '#10b981';
+            } else {
+                readyP2.classList.remove('is-ready');
+                readyP2.style.backgroundColor = '#cbd5e0';
+            }
+
+            const btnConfirm = document.getElementById('btn-ready-confirm');
+            if (myData.readyForNext) {
+                btnConfirm.disabled = true;
+                btnConfirm.innerText = "SIAP!";
+            } else {
+                btnConfirm.disabled = false;
+                btnConfirm.innerText = "SIAP";
+            }
+
+            if (room.p1.readyForNext && room.p2.readyForNext && myRole === 'p1') {
+                if (curRound >= maxRounds) {
+                    roomRef.update({ status: 'game_over' });
+                } else {
+                    roomRef.update({
+                        curRound: curRound + 1,
+                        'p1/choice': '',
+                        'p1/readyForNext': false,
+                        'p2/choice': '',
+                        'p2/readyForNext': false,
+                        status: 'playing'
+                    });
+                }
             }
         } else if (room.status === 'game_over') {
             showScreen('final-winner-screen');
@@ -1375,11 +1542,43 @@
         }
     }
 
+    function startCountdownSequence() {
+        let count = 3;
+        const numEl = document.getElementById('countdown-timer-num');
+        numEl.innerText = count;
+
+        countdownTimer = setInterval(() => {
+            count--;
+            if (count > 0) {
+                numEl.innerText = count;
+            } else {
+                clearInterval(countdownTimer);
+                countdownTimer = null;
+                if (myRole === 'p1' && roomRef) {
+                    calculateWinnerOnline();
+                }
+            }
+        }, 1000);
+    }
+
+    function confirmReadyNextRound() {
+        if (gameMode === 'vs_bot') {
+            if (curRound >= maxRounds) {
+                showFinalWinnerBot();
+            } else {
+                curRound++;
+                document.getElementById('cur-round').innerText = curRound;
+                showScreen('game-screen');
+                resetRoundUI();
+            }
+        } else {
+            if (roomRef) {
+                roomRef.child(myRole + '/readyForNext').set(true);
+            }
+        }
+    }
+
     function updateTurnUIForPOV() {
-        const turnText = document.getElementById('turn-indicator');
-        turnText.innerText = "PILIH SENJATAMU";
-        turnText.style.color = "var(--dark)";
-        
         const playerKey = myRole;
         document.getElementById('img-batu').src = imageSources[playerKey]['Batu'];
         document.getElementById('img-gunting').src = imageSources[playerKey]['Gunting'];
@@ -1388,8 +1587,7 @@
 
     function resetRoundUI() {
         document.getElementById('selection-area').classList.remove('hidden');
-        document.getElementById('ready-area').classList.add('hidden');
-        document.getElementById('feedback-text').innerText = "Pilih senjatamu!";
+        document.getElementById('countdown-area').classList.add('hidden');
         document.getElementById('save-btn').disabled = true;
         document.querySelectorAll('.choice-btn').forEach(btn => btn.classList.remove('selected'));
         
@@ -1397,7 +1595,7 @@
         if (gameMode === 'vs_bot') {
             p1Choice = "";
             p2Choice = "";
-            document.getElementById('turn-indicator').innerText = "Giliran: " + myName;
+            document.getElementById('choice-status-text').innerHTML = '<i class="bi bi-info-circle"></i> <span>Pilih senjatamu!</span>';
             document.getElementById('img-batu').src = imageSources.p1['Batu'];
             document.getElementById('img-gunting').src = imageSources.p1['Gunting'];
             document.getElementById('img-kertas').src = imageSources.p1['Kertas'];
@@ -1408,7 +1606,6 @@
 
     function selectChoice(choice) {
         selectedChoiceTemp = choice;
-        document.getElementById('feedback-text').innerText = "Kamu memilih " + choice + "!";
         document.getElementById('save-btn').disabled = false;
         document.querySelectorAll('.choice-btn').forEach(btn => btn.classList.remove('selected'));
         const btnId = 'btn-' + choice.toLowerCase();
@@ -1422,32 +1619,27 @@
         if (gameMode === 'vs_bot') {
             p1Choice = selectedChoiceTemp;
             makeBotChoice();
-            showResult();
+            showResultBot();
         } else {
             if (roomRef) {
                 roomRef.child(myRole + '/choice').set(selectedChoiceTemp);
-                roomRef.child(myRole + '/ready').set(true);
             }
         }
     }
 
-    function showResult() {
-        if (gameMode === 'vs_bot') {
-            calculateWinnerBot();
-            if (curRound >= maxRounds) {
-                showFinalWinnerBot();
-            } else {
-                showScreen('result-screen');
-                document.getElementById('res-p1-name').innerText = myName;
-                document.getElementById('res-p2-name').innerText = "Computer";
-                document.getElementById('res-p1-img').src = imageSources.p1[p1Choice];
-                document.getElementById('res-p2-img').src = imageSources.p2[p2Choice];
-            }
-        } else {
-            if (myRole === 'p1' && roomRef) {
-                calculateWinnerOnline();
-            }
-        }
+    function showResultBot() {
+        calculateWinnerBot();
+        showScreen('result-screen');
+        document.getElementById('res-p1-name').innerText = myName;
+        document.getElementById('res-p2-name').innerText = "Computer";
+        document.getElementById('res-p1-img').src = imageSources.p1[p1Choice];
+        document.getElementById('res-p2-img').src = imageSources.p2[p2Choice];
+        document.getElementById('next-round-num').innerText = curRound + 1;
+        
+        document.getElementById('ready-icon-p1').classList.add('is-ready');
+        document.getElementById('ready-icon-p2').classList.remove('is-ready');
+        document.getElementById('btn-ready-confirm').disabled = false;
+        document.getElementById('btn-ready-confirm').innerText = "SIAP";
     }
 
     function calculateWinnerBot() {
@@ -1482,13 +1674,10 @@
             }
         }
 
-        const isGameOver = curRound >= maxRounds;
-        const nextStatus = isGameOver ? 'game_over' : 'round_result';
-
         roomRef.update({
             'p1/score': newP1Score,
             'p2/score': newP2Score,
-            'status': nextStatus
+            'status': 'round_result'
         });
     }
 
@@ -1513,26 +1702,6 @@
         }
     }
 
-    function nextRound() {
-        if (gameMode === 'vs_bot') {
-            curRound++;
-            document.getElementById('cur-round').innerText = curRound;
-            showScreen('game-screen');
-            resetRoundUI();
-        } else {
-            if (myRole === 'p1' && roomRef) {
-                roomRef.update({
-                    curRound: curRound + 1,
-                    'p1/choice': '',
-                    'p1/ready': false,
-                    'p2/choice': '',
-                    'p2/ready': false,
-                    status: 'playing'
-                });
-            }
-        }
-    }
-
     function requestRematch() {
         if (gameMode === 'vs_bot') {
             startBotGame();
@@ -1543,9 +1712,9 @@
                     'p1/score': 0,
                     'p2/score': 0,
                     'p1/choice': '',
-                    'p1/ready': false,
+                    'p1/readyForNext': false,
                     'p2/choice': '',
-                    'p2/ready': false,
+                    'p2/readyForNext': false,
                     status: 'playing'
                 });
             }
