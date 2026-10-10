@@ -8,6 +8,9 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
     
+    <!-- Konfigurasi Kode Iklan Adsterra: Ganti script di bawah ini dengan script Social Bar atau iklan Adsterra Anda -->
+    <script type='text/javascript' src='//pl12345678.highcpmgate.com/ab/cd/ef/abcdef1234567890.js'></script>
+
     <style>
         :root {
             --primary: #3b82f6;
@@ -280,42 +283,101 @@
         }
 
         .avatar-preview {
-            width: clamp(75px, 18vw, 100px);
-            height: clamp(75px, 18vw, 100px);
+            width: clamp(75px, 18vw, 95px);
+            height: clamp(75px, 18vw, 95px);
             border-radius: 50%;
-            background-color: var(--primary);
-            color: #ffffff;
+            background-color: #f1f5f9;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: clamp(2.2rem, 6vw, 3rem);
-            margin: 10px auto 16px auto;
-            border: 3px solid var(--dark);
-            box-shadow: 0 6px 16px rgba(0,0,0,0.08);
-            transition: background-color 0.3s ease;
+            margin: 6px auto 12px auto;
+            border: 3.5px solid var(--dark);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+            overflow: hidden;
+            position: relative;
+        }
+        .avatar-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
-        .color-palette {
+        .avatar-slider-wrapper {
+            width: 100%;
+            overflow: hidden;
+            margin: 10px 0 16px 0;
             display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin: 12px 0 18px 0;
-            flex-wrap: wrap;
+            flex-direction: column;
+            gap: 12px;
+            padding: 8px 0;
+            position: relative;
+            background: #f8fafc;
+            border: 2.5px solid var(--dark);
+            border-radius: var(--radius-md);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.03);
         }
-        .color-dot {
-            width: clamp(32px, 8vw, 38px);
-            height: clamp(32px, 8vw, 38px);
+
+        .avatar-row-container {
+            width: 100%;
+            overflow: hidden;
+            display: flex;
+            position: relative;
+            user-select: none;
+        }
+
+        .avatar-row-track {
+            display: flex;
+            gap: clamp(10px, 2.5vw, 14px);
+            width: max-content;
+            will-change: transform;
+            padding: 4px 6px;
+        }
+
+        .avatar-row-track.track-left {
+            animation: marqueeLeft 22s linear infinite;
+        }
+
+        @keyframes marqueeLeft {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        .avatar-frame-item {
+            width: clamp(50px, 13.5vw, 68px);
+            height: clamp(50px, 13.5vw, 68px);
+            flex-shrink: 0;
             border-radius: 50%;
+            border: 2.5px solid #cbd5e0;
+            background: #ffffff;
+            padding: 3px;
             cursor: pointer;
-            border: 3px solid transparent;
-            transition: transform 0.2s ease, border-color 0.2s ease;
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            box-shadow: 0 3px 0 var(--dark);
         }
-        .color-dot:hover {
-            transform: scale(1.12);
+
+        .avatar-frame-item img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            pointer-events: none;
         }
-        .color-dot.active {
+
+        .avatar-frame-item:hover {
+            transform: scale(1.1);
+            border-color: var(--primary);
+        }
+
+        .avatar-frame-item.active {
             border-color: var(--dark);
-            transform: scale(1.18);
+            border-width: 3.5px;
+            background: #dbeafe;
+            transform: scale(1.15);
+            box-shadow: 0 4px 0 var(--dark);
         }
 
         .lobby-user-card {
@@ -331,17 +393,21 @@
             box-shadow: 0 4px 0 rgba(0,0,0,0.05);
         }
         .user-avatar-badge {
-            width: clamp(46px, 11vw, 58px);
-            height: clamp(46px, 11vw, 58px);
+            width: clamp(48px, 11vw, 60px);
+            height: clamp(48px, 11vw, 60px);
             border-radius: 50%;
-            background-color: var(--primary);
-            color: #fff;
+            background-color: #f1f5f9;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: clamp(1.3rem, 3.8vw, 1.8rem);
             flex-shrink: 0;
             border: 2.5px solid var(--dark);
+            overflow: hidden;
+        }
+        .user-avatar-badge img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
         .user-info-box {
             flex: 1;
@@ -461,17 +527,21 @@
             text-align: right;
         }
         .mini-avatar {
-            width: clamp(34px, 8vw, 42px);
-            height: clamp(34px, 8vw, 42px);
+            width: clamp(36px, 8vw, 44px);
+            height: clamp(36px, 8vw, 44px);
             border-radius: 50%;
-            background-color: var(--primary);
-            color: white;
+            background-color: #cbd5e0;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: clamp(0.95rem, 2.8vw, 1.25rem);
             border: 2px solid var(--dark);
             flex-shrink: 0;
+            overflow: hidden;
+        }
+        .mini-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
         .player-details {
             min-width: 0;
@@ -658,20 +728,25 @@
             gap: 6px;
         }
         .ready-user-icon {
-            width: 36px;
-            height: 36px;
+            width: 38px;
+            height: 38px;
             border-radius: 50%;
             background: #cbd5e0;
-            color: #ffffff;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.1rem;
             border: 2px solid var(--dark);
             transition: all 0.3s ease;
+            overflow: hidden;
+        }
+        .ready-user-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
         .ready-user-icon.is-ready {
-            background: var(--success);
+            border-color: var(--success);
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.3);
         }
         .btn-siap {
             width: auto;
@@ -854,6 +929,7 @@
             .choice-btn { max-width: 72px; }
             .mode-card { padding: 10px; gap: 10px; }
             .mode-icon { font-size: 1.3rem; padding: 6px; }
+            .avatar-grid-container { gap: 4px; }
         }
 
         @media (min-width: 768px) {
@@ -974,17 +1050,17 @@
         <h3>Buat Profil Online</h3>
 
         <div id="avatar-preview-box" class="avatar-preview">
-            <i class="bi bi-person-fill"></i>
+            <img id="avatar-preview-img" src="" alt="Avatar Preview" onerror="this.onerror=null; this.src='https://placehold.co/100x100/3b82f6/ffffff?text=Avatar';">
         </div>
 
-        <div style="font-size: 0.85rem; color: #64748b; font-weight: 700;">Pilih Warna Avatar:</div>
-        <div class="color-palette">
-            <div class="color-dot active" style="background-color: #3b82f6;" onclick="selectAvatarColor('#3b82f6', this)"></div>
-            <div class="color-dot" style="background-color: #ef4444;" onclick="selectAvatarColor('#ef4444', this)"></div>
-            <div class="color-dot" style="background-color: #10b981;" onclick="selectAvatarColor('#10b981', this)"></div>
-            <div class="color-dot" style="background-color: #f59e0b;" onclick="selectAvatarColor('#f59e0b', this)"></div>
-            <div class="color-dot" style="background-color: #8b5cf6;" onclick="selectAvatarColor('#8b5cf6', this)"></div>
-            <div class="color-dot" style="background-color: #ec4899;" onclick="selectAvatarColor('#ec4899', this)"></div>
+        <div style="font-size: 0.85rem; color: #64748b; font-weight: 700; margin-bottom: 4px;">Pilih Karakter Avatar (Geser & Sentuh):</div>
+        
+        <div class="avatar-slider-wrapper">
+            <div class="avatar-row-container">
+                <div id="avatar-track-single" class="avatar-row-track track-left">
+                    <!-- Dynamic avatars 1-12 -->
+                </div>
+            </div>
         </div>
 
         <div class="input-wrapper">
@@ -1001,7 +1077,9 @@
     <!-- Multiplayer Lobby Screen -->
     <div id="mp-lobby-screen" class="hidden">
         <div class="lobby-user-card">
-            <div id="my-avatar-badge" class="user-avatar-badge"><i class="bi bi-person-fill"></i></div>
+            <div id="my-avatar-badge" class="user-avatar-badge">
+                <img id="my-avatar-img" src="" alt="My Avatar" onerror="this.onerror=null; this.src='https://placehold.co/100x100/3b82f6/ffffff?text=Me';">
+            </div>
             <div class="user-info-box">
                 <div id="my-profile-name" class="user-info-name">Nama Pemain</div>
                 <div class="user-id-code">ID: <span id="my-user-id">------</span></div>
@@ -1045,7 +1123,9 @@
     <div id="game-screen" class="hidden">
         <div class="scoreboard-container">
             <div class="player-score-card left">
-                <div id="p1-avatar-icon" class="mini-avatar"><i class="bi bi-person-fill"></i></div>
+                <div id="p1-avatar-icon" class="mini-avatar">
+                    <img id="p1-avatar-img" src="" alt="P1 Avatar" onerror="this.onerror=null; this.src='https://placehold.co/100x100/3b82f6/ffffff?text=P1';">
+                </div>
                 <div class="player-details">
                     <div id="p1-label" class="name">Pemain 1</div>
                     <div class="score">Skor: <span id="p1-score">0</span></div>
@@ -1061,7 +1141,9 @@
                     <div id="p2-label" class="name">Pemain 2</div>
                     <div class="score">Skor: <span id="p2-score">0</span></div>
                 </div>
-                <div id="p2-avatar-icon" class="mini-avatar" style="background-color: #ef4444;"><i class="bi bi-person-fill"></i></div>
+                <div id="p2-avatar-icon" class="mini-avatar">
+                    <img id="p2-avatar-img" src="" alt="P2 Avatar" onerror="this.onerror=null; this.src='https://placehold.co/100x100/ef4444/ffffff?text=P2';">
+                </div>
             </div>
         </div>
 
@@ -1122,8 +1204,12 @@
 
         <div class="readiness-bar-box">
             <div class="ready-icons-group">
-                <div id="ready-icon-p1" class="ready-user-icon"><i class="bi bi-person-fill"></i></div>
-                <div id="ready-icon-p2" class="ready-user-icon"><i class="bi bi-person-fill"></i></div>
+                <div id="ready-icon-p1" class="ready-user-icon">
+                    <img id="ready-img-p1" src="" alt="P1 Ready Avatar" onerror="this.onerror=null; this.src='https://placehold.co/100x100/3b82f6/ffffff?text=P1';">
+                </div>
+                <div id="ready-icon-p2" class="ready-user-icon">
+                    <img id="ready-img-p2" src="" alt="P2 Ready Avatar" onerror="this.onerror=null; this.src='https://placehold.co/100x100/ef4444/ffffff?text=P2';">
+                </div>
             </div>
             <div class="ready-action-btns">
                 <button id="btn-ready-confirm" onclick="confirmReadyNextRound()" class="btn-siap">SIAP</button>
@@ -1137,6 +1223,11 @@
         <i class="bi bi-trophy-fill trophy-icon"></i>
         <div id="final-msg" style="font-weight: 800; color: var(--secondary); margin-bottom: 4px; font-size: 1.1rem;">PEMENANGNYA ADALAH:</div>
         <div id="final-winner-name" class="final-name">PEMAIN 1</div>
+
+        <div id="rematch-status-box" class="choice-status-info hidden" style="margin-bottom: 12px;">
+            <i class="bi bi-info-circle"></i> <span id="rematch-status-text">Menunggu konfirmasi bermain lagi...</span>
+        </div>
+
         <div class="btn-group">
             <button id="rematch-btn" onclick="requestRematch()"><i class="bi bi-arrow-repeat"></i> BERMAIN LAGI</button>
             <button id="history-btn" onclick="openHistoryModal()" class="btn-secondary"><i class="bi bi-clock-history"></i> RIWAYAT</button>
@@ -1146,15 +1237,32 @@
 </div>
 
 <script>
+    // Konfigurasi Kode Firebase: Ganti firebaseConfig dengan konfigurasi Firebase milik Anda
     const firebaseConfig = {
-            apiKey: "AIzaSyBdt-2IQflUWNx3sdI1QHPMe1vAzsXAZcY",
-            authDomain: "ajproject-log.firebaseapp.com",
-            databaseURL: "https://ajproject-log-default-rtdb.firebaseio.com",
-            projectId: "ajproject-log",
-            storageBucket: "ajproject-log.appspot.com",
-            messagingSenderId: "113688767697",
-            appId: "1:113688767697:web:ca9ad012667acb7474a9f0"
-        };
+        apiKey: "AIzaSyDemoKeyForGameInitializationOnly123456",
+        authDomain: "kertas-gunting-batu-game.firebaseapp.com",
+        databaseURL: "https://kertas-gunting-batu-game-default-rtdb.firebaseio.com",
+        projectId: "kertas-gunting-batu-game",
+        storageBucket: "kertas-gunting-batu-game.appspot.com",
+        messagingSenderId: "123456789012",
+        appId: "1:123456789012:web:abc123def456789"
+    };
+
+    // Konfigurasi 12 Profil Avatar Pemain: Ganti 'avatar1.png', 'avatar2.png', dll. dengan nama file PNG atau URL gambar GitHub Anda
+    const avatarList = [
+        'RYAN.png',
+        'HANA.png',
+        'JERY.png',
+        'SHERLY.png',
+        'GUGUN.png',
+        'MIA.png',
+        'LEON.png',
+        'BENI.png',
+        'BAGAS.png',
+        'MONICA.png',
+        'DONI.png',
+        'TIO.png'
+    ];
 
     let db = null;
     let isFirebaseReady = false;
@@ -1185,7 +1293,8 @@
     let gameMode = 'vs_bot';
     let myUserId = '';
     let myName = 'Pemain Online';
-    let myAvatarColor = '#3b82f6';
+    let myAvatar = avatarList[0];
+    let selectedAvatarIndex = 0;
     let myRole = 'p1';
     let activeRoomId = null;
     let roomRef = null;
@@ -1201,11 +1310,13 @@
     let countdownTimer = null;
     let pendingInviteFromId = null;
     let pendingInviteFromName = null;
+    let pendingInviteRounds = 3;
 
     let roundHistory = [];
 
     window.addEventListener('DOMContentLoaded', () => {
         generateUserId();
+        renderAvatarGrid();
         setupFirebaseListeners();
     });
 
@@ -1217,6 +1328,69 @@
         }
         myUserId = id;
         document.getElementById('my-user-id').innerText = myUserId;
+    }
+
+    function renderAvatarGrid() {
+        const track = document.getElementById('avatar-track-single');
+        if (!track) return;
+
+        track.innerHTML = '';
+
+        // Menampilkan 12 Avatar (0 hingga 11) dan diduplikasi untuk animasi infinite marquee
+        const avatarIndices = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+        const fullTrackList = [...avatarIndices, ...avatarIndices];
+
+        fullTrackList.forEach((idx) => {
+            track.appendChild(createAvatarElement(idx));
+        });
+
+        updateAvatarPreview();
+    }
+
+    function createAvatarElement(idx) {
+        const item = document.createElement('div');
+        item.className = 'avatar-frame-item' + (idx === selectedAvatarIndex ? ' active' : '');
+        item.setAttribute('data-avatar-index', idx);
+        item.onclick = (e) => {
+            e.stopPropagation();
+            selectAvatar(idx);
+        };
+
+        const img = document.createElement('img');
+        img.src = avatarList[idx];
+        img.alt = 'Avatar ' + (idx + 1);
+        img.onerror = function() {
+            this.onerror = null;
+            this.src = `https://placehold.co/100x100/3b82f6/ffffff?text=A${idx + 1}`;
+        };
+
+        item.appendChild(img);
+        return item;
+    }
+
+    function selectAvatar(index) {
+        selectedAvatarIndex = index;
+        myAvatar = avatarList[index];
+        
+        document.querySelectorAll('.avatar-frame-item').forEach((frame) => {
+            const frameIdx = parseInt(frame.getAttribute('data-avatar-index'), 10);
+            if (frameIdx === index) {
+                frame.classList.add('active');
+            } else {
+                frame.classList.remove('active');
+            }
+        });
+
+        updateAvatarPreview();
+    }
+
+    function updateAvatarPreview() {
+        const previewImg = document.getElementById('avatar-preview-img');
+        previewImg.src = myAvatar;
+        previewImg.onerror = function() {
+            this.onerror = null;
+            this.src = `https://placehold.co/100x100/3b82f6/ffffff?text=A${selectedAvatarIndex + 1}`;
+        };
     }
 
     function clearInput(id) {
@@ -1259,17 +1433,16 @@
         }
     }
 
-    function selectAvatarColor(color, element) {
-        myAvatarColor = color;
-        document.getElementById('avatar-preview-box').style.backgroundColor = color;
-        document.querySelectorAll('.color-dot').forEach(dot => dot.classList.remove('active'));
-        if (element) element.classList.add('active');
-    }
-
     function saveMultiplayerProfile() {
         myName = document.getElementById('mp-player-name').value.trim() || "Pemain Online";
         document.getElementById('my-profile-name').innerText = myName;
-        document.getElementById('my-avatar-badge').style.backgroundColor = myAvatarColor;
+        
+        const myAvatarImg = document.getElementById('my-avatar-img');
+        myAvatarImg.src = myAvatar;
+        myAvatarImg.onerror = function() {
+            this.onerror = null;
+            this.src = `https://placehold.co/100x100/3b82f6/ffffff?text=Me`;
+        };
         
         if (!isFirebaseReady) {
             showToast("Firebase belum terkonfigurasi!");
@@ -1385,8 +1558,17 @@
 
         document.getElementById('p1-label').innerText = myName;
         document.getElementById('p2-label').innerText = "Computer";
-        document.getElementById('p1-avatar-icon').style.backgroundColor = myAvatarColor;
-        document.getElementById('p2-avatar-icon').style.backgroundColor = "#64748b";
+        
+        const p1Img = document.getElementById('p1-avatar-img');
+        p1Img.src = myAvatar;
+        p1Img.onerror = function() {
+            this.onerror = null;
+            this.src = 'https://placehold.co/100x100/3b82f6/ffffff?text=P1';
+        };
+
+        const p2Img = document.getElementById('p2-avatar-img');
+        p2Img.src = 'https://placehold.co/100x100/64748b/ffffff?text=BOT';
+
         document.getElementById('p1-score').innerText = '0';
         document.getElementById('p2-score').innerText = '0';
         document.getElementById('total-round').innerText = maxRounds;
@@ -1499,7 +1681,7 @@
         userRef.set({
             id: myUserId,
             name: myName,
-            color: myAvatarColor,
+            avatar: myAvatar,
             status: 'idle',
             lastActive: firebase.database.ServerValue.TIMESTAMP
         });
@@ -1516,6 +1698,7 @@
             if (data && data.status === 'pending') {
                 pendingInviteFromId = data.fromId;
                 pendingInviteFromName = data.fromName;
+                pendingInviteRounds = data.rounds || 3;
                 showInviteModal(data.fromName, data.fromId);
             } else if (!data) {
                 if (pendingInviteFromId) {
@@ -1549,15 +1732,15 @@
             const isPlaying = u.status === 'playing';
             const statusLabel = isPlaying ? 'Sedang Bermain' : 'Siap Bermain';
             const statusClass = isPlaying ? 'status-playing' : 'status-waiting';
-            const userColor = u.color || '#3b82f6';
+            const userAvatar = u.avatar || 'avatar1.png';
             const userName = u.name || 'Pemain';
 
             const row = document.createElement('div');
             row.className = 'user-row';
             row.innerHTML = `
                 <div class="user-row-info">
-                    <div class="user-avatar-badge" style="background-color: ${userColor}; width: 38px; height: 38px; font-size: 1rem;">
-                        <i class="bi bi-person-fill"></i>
+                    <div class="user-avatar-badge" style="width: 38px; height: 38px;">
+                        <img src="${userAvatar}" alt="${userName}" onerror="this.onerror=null; this.src='https://placehold.co/100x100/3b82f6/ffffff?text=User';">
                     </div>
                     <div style="min-width: 0;">
                         <div style="font-weight: 800; font-size: 0.92rem; color: var(--dark); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${userName}</div>
@@ -1622,14 +1805,14 @@
         if (!pendingInviteFromId) return;
         const hostId = pendingInviteFromId;
         const roomId = 'room_' + hostId + '_' + myUserId;
-        const rounds = parseInt(document.getElementById('online-rounds-input').value) || 3;
+        const rounds = pendingInviteRounds || 3;
 
         const roomData = {
             id: roomId,
             maxRounds: rounds,
             curRound: 1,
-            p1: { id: hostId, name: pendingInviteFromName, color: '#3b82f6', score: 0, choice: '', readyForNext: false, connected: true },
-            p2: { id: myUserId, name: myName, color: myAvatarColor, score: 0, choice: '', readyForNext: false, connected: true },
+            p1: { id: hostId, name: pendingInviteFromName, avatar: avatarList[0], score: 0, choice: '', readyForNext: false, rematchReady: false, connected: true },
+            p2: { id: myUserId, name: myName, avatar: myAvatar, score: 0, choice: '', readyForNext: false, rematchReady: false, connected: true },
             status: 'playing',
             lastUpdate: firebase.database.ServerValue.TIMESTAMP
         };
@@ -1730,8 +1913,21 @@
 
         document.getElementById('p1-label').innerText = room.p1.name;
         document.getElementById('p2-label').innerText = room.p2.name;
-        document.getElementById('p1-avatar-icon').style.backgroundColor = room.p1.color || '#3b82f6';
-        document.getElementById('p2-avatar-icon').style.backgroundColor = room.p2.color || '#ef4444';
+        
+        const p1Img = document.getElementById('p1-avatar-img');
+        p1Img.src = room.p1.avatar || 'avatar1.png';
+        p1Img.onerror = function() {
+            this.onerror = null;
+            this.src = 'https://placehold.co/100x100/3b82f6/ffffff?text=P1';
+        };
+
+        const p2Img = document.getElementById('p2-avatar-img');
+        p2Img.src = room.p2.avatar || 'avatar2.png';
+        p2Img.onerror = function() {
+            this.onerror = null;
+            this.src = 'https://placehold.co/100x100/ef4444/ffffff?text=P2';
+        };
+
         document.getElementById('p1-score').innerText = p1Score;
         document.getElementById('p2-score').innerText = p2Score;
         document.getElementById('total-round').innerText = maxRounds;
@@ -1807,22 +2003,17 @@
 
             const readyP1 = document.getElementById('ready-icon-p1');
             const readyP2 = document.getElementById('ready-icon-p2');
-            
-            if (room.p1.readyForNext) {
-                readyP1.classList.add('is-ready');
-                readyP1.style.backgroundColor = room.p1.color || '#10b981';
-            } else {
-                readyP1.classList.remove('is-ready');
-                readyP1.style.backgroundColor = '#cbd5e0';
-            }
+            const readyImgP1 = document.getElementById('ready-img-p1');
+            const readyImgP2 = document.getElementById('ready-img-p2');
 
-            if (room.p2.readyForNext) {
-                readyP2.classList.add('is-ready');
-                readyP2.style.backgroundColor = room.p2.color || '#10b981';
-            } else {
-                readyP2.classList.remove('is-ready');
-                readyP2.style.backgroundColor = '#cbd5e0';
-            }
+            readyImgP1.src = room.p1.avatar || 'avatar1.png';
+            readyImgP2.src = room.p2.avatar || 'avatar2.png';
+            
+            if (room.p1.readyForNext) readyP1.classList.add('is-ready');
+            else readyP1.classList.remove('is-ready');
+
+            if (room.p2.readyForNext) readyP2.classList.add('is-ready');
+            else readyP2.classList.remove('is-ready');
 
             const btnConfirm = document.getElementById('btn-ready-confirm');
             if (isLastRound) {
@@ -1871,24 +2062,61 @@
                 finalMsg.innerText = "HASIL PERMAINAN:";
                 trophy.classList.add('hidden');
             }
+
+            if (gameMode !== 'vs_bot') {
+                const rematchBox = document.getElementById('rematch-status-box');
+                const rematchText = document.getElementById('rematch-status-text');
+                const rematchBtn = document.getElementById('rematch-btn');
+
+                const myRematch = myData.rematchReady;
+                const oppRematch = oppData.rematchReady;
+
+                if (myRematch && oppRematch) {
+                    if (myRole === 'p1') {
+                        selectedChoiceTemp = "";
+                        roundHistory = [];
+                        document.querySelectorAll('.choice-btn').forEach(btn => btn.classList.remove('selected'));
+                        roomRef.update({
+                            curRound: 1,
+                            'p1/score': 0,
+                            'p2/score': 0,
+                            'p1/choice': '',
+                            'p1/readyForNext': false,
+                            'p1/rematchReady': false,
+                            'p2/choice': '',
+                            'p2/readyForNext': false,
+                            'p2/rematchReady': false,
+                            'history': [],
+                            status: 'playing'
+                        });
+                    }
+                } else if (myRematch) {
+                    rematchBox.classList.remove('hidden');
+                    rematchText.innerText = "Menunggu lawan menyetujui bermain lagi...";
+                    rematchBtn.disabled = true;
+                    rematchBtn.innerText = "MENUNGGU...";
+                } else if (oppRematch) {
+                    rematchBox.classList.remove('hidden');
+                    rematchText.innerText = oppData.name + " mengajak bermain lagi! Klik Bermain Lagi untuk menerima.";
+                    rematchBtn.disabled = false;
+                    rematchBtn.innerHTML = '<i class="bi bi-arrow-repeat"></i> TERIMA & MAIN LAGI';
+                } else {
+                    rematchBox.classList.add('hidden');
+                    rematchBtn.disabled = false;
+                    rematchBtn.innerHTML = '<i class="bi bi-arrow-repeat"></i> BERMAIN LAGI';
+                }
+            }
         }
     }
 
     function exitMidGame() {
-        if (gameMode === 'vs_bot') {
-            exitToMenu();
-        } else {
-            if (roomRef) {
-                roomRef.update({
-                    status: 'player_left',
-                    leftByName: myName
-                }).then(() => {
-                    exitToMenu();
-                });
-            } else {
-                exitToMenu();
-            }
+        if (roomRef && isFirebaseReady) {
+            roomRef.update({
+                status: 'player_left',
+                leftByName: myName
+            });
         }
+        exitToMenu();
     }
 
     function confirmReadyNextRound() {
@@ -2039,20 +2267,7 @@
             startBotGame();
         } else {
             if (roomRef) {
-                selectedChoiceTemp = "";
-                roundHistory = [];
-                document.querySelectorAll('.choice-btn').forEach(btn => btn.classList.remove('selected'));
-                roomRef.update({
-                    curRound: 1,
-                    'p1/score': 0,
-                    'p2/score': 0,
-                    'p1/choice': '',
-                    'p1/readyForNext': false,
-                    'p2/choice': '',
-                    'p2/readyForNext': false,
-                    'history': [],
-                    status: 'playing'
-                });
+                roomRef.child(myRole + '/rematchReady').set(true);
             }
         }
     }
@@ -2066,6 +2281,13 @@
         selectedChoiceTemp = "";
         roundHistory = [];
         document.querySelectorAll('.choice-btn').forEach(btn => btn.classList.remove('selected'));
+        const rematchBox = document.getElementById('rematch-status-box');
+        if (rematchBox) rematchBox.classList.add('hidden');
+        const rematchBtn = document.getElementById('rematch-btn');
+        if (rematchBtn) {
+            rematchBtn.disabled = false;
+            rematchBtn.innerHTML = '<i class="bi bi-arrow-repeat"></i> BERMAIN LAGI';
+        }
         if (isFirebaseReady && myUserId) {
             db.ref('users/' + myUserId).update({ status: 'idle' });
         }
