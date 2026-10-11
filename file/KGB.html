@@ -929,7 +929,6 @@
             .choice-btn { max-width: 72px; }
             .mode-card { padding: 10px; gap: 10px; }
             .mode-icon { font-size: 1.3rem; padding: 6px; }
-            .avatar-grid-container { gap: 4px; }
         }
 
         @media (min-width: 768px) {
@@ -1050,7 +1049,7 @@
         <h3>Buat Profil Online</h3>
 
         <div id="avatar-preview-box" class="avatar-preview">
-            <img id="avatar-preview-img" src="" alt="Avatar Preview" onerror="this.onerror=null; this.src='https://placehold.co/100x100/3b82f6/ffffff?text=Avatar';">
+            <img id="avatar-preview-img" src="./avatar1.png" alt="Avatar Preview">
         </div>
 
         <div style="font-size: 0.85rem; color: #64748b; font-weight: 700; margin-bottom: 4px;">Pilih Karakter Avatar (Geser & Sentuh):</div>
@@ -1078,7 +1077,7 @@
     <div id="mp-lobby-screen" class="hidden">
         <div class="lobby-user-card">
             <div id="my-avatar-badge" class="user-avatar-badge">
-                <img id="my-avatar-img" src="" alt="My Avatar" onerror="this.onerror=null; this.src='https://placehold.co/100x100/3b82f6/ffffff?text=Me';">
+                <img id="my-avatar-img" src="./avatar1.png" alt="My Avatar">
             </div>
             <div class="user-info-box">
                 <div id="my-profile-name" class="user-info-name">Nama Pemain</div>
@@ -1124,7 +1123,7 @@
         <div class="scoreboard-container">
             <div class="player-score-card left">
                 <div id="p1-avatar-icon" class="mini-avatar">
-                    <img id="p1-avatar-img" src="" alt="P1 Avatar" onerror="this.onerror=null; this.src='https://placehold.co/100x100/3b82f6/ffffff?text=P1';">
+                    <img id="p1-avatar-img" src="./avatar1.png" alt="P1 Avatar">
                 </div>
                 <div class="player-details">
                     <div id="p1-label" class="name">Pemain 1</div>
@@ -1142,7 +1141,7 @@
                     <div class="score">Skor: <span id="p2-score">0</span></div>
                 </div>
                 <div id="p2-avatar-icon" class="mini-avatar">
-                    <img id="p2-avatar-img" src="" alt="P2 Avatar" onerror="this.onerror=null; this.src='https://placehold.co/100x100/ef4444/ffffff?text=P2';">
+                    <img id="p2-avatar-img" src="./avatar2.png" alt="P2 Avatar">
                 </div>
             </div>
         </div>
@@ -1205,10 +1204,10 @@
         <div class="readiness-bar-box">
             <div class="ready-icons-group">
                 <div id="ready-icon-p1" class="ready-user-icon">
-                    <img id="ready-img-p1" src="" alt="P1 Ready Avatar" onerror="this.onerror=null; this.src='https://placehold.co/100x100/3b82f6/ffffff?text=P1';">
+                    <img id="ready-img-p1" src="./avatar1.png" alt="P1 Ready Avatar">
                 </div>
                 <div id="ready-icon-p2" class="ready-user-icon">
-                    <img id="ready-img-p2" src="" alt="P2 Ready Avatar" onerror="this.onerror=null; this.src='https://placehold.co/100x100/ef4444/ffffff?text=P2';">
+                    <img id="ready-img-p2" src="./avatar2.png" alt="P2 Ready Avatar">
                 </div>
             </div>
             <div class="ready-action-btns">
@@ -1248,20 +1247,20 @@
         appId: "1:123456789012:web:abc123def456789"
     };
 
-    // Konfigurasi 12 Profil Avatar Pemain: Ganti 'avatar1.png', 'avatar2.png', dll. dengan nama file PNG atau URL gambar GitHub Anda
+    // Konfigurasi 12 Profil Avatar Pemain dengan relatif path ./ agar bekerja sempurna di GitHub Pages
     const avatarList = [
-        'RYAN.png',
-        'HANA.png',
-        'JERY.png',
-        'SHERLY.png',
-        'GUGUN.png',
-        'MIA.png',
-        'LEON.png',
-        'BENI.png',
-        'BAGAS.png',
-        'MONICA.png',
-        'DONI.png',
-        'TIO.png'
+        './HANA.png',
+        './RYAN.png',
+        './JERY.png',
+        './SHERLY.png',
+        './GUGUN.png',
+        './MIA.png',
+        './TIO.png',
+        './DONI.png',
+        './BAGAS.png',
+        './MONICA.png',
+        './BENI.png',
+        './LEON.png'
     ];
 
     let db = null;
@@ -1310,9 +1309,11 @@
     let countdownTimer = null;
     let pendingInviteFromId = null;
     let pendingInviteFromName = null;
+    let pendingInviteFromAvatar = avatarList[0];
     let pendingInviteRounds = 3;
 
     let roundHistory = [];
+    let usersListenerRef = null;
 
     window.addEventListener('DOMContentLoaded', () => {
         generateUserId();
@@ -1330,13 +1331,21 @@
         document.getElementById('my-user-id').innerText = myUserId;
     }
 
+    function safeLoadAvatar(imgElement, srcPath, fallbackText) {
+        if (!imgElement) return;
+        imgElement.onerror = function() {
+            this.onerror = null;
+            this.src = `https://placehold.co/100x100/3b82f6/ffffff?text=${encodeURIComponent(fallbackText)}`;
+        };
+        imgElement.src = srcPath;
+    }
+
     function renderAvatarGrid() {
         const track = document.getElementById('avatar-track-single');
         if (!track) return;
 
         track.innerHTML = '';
 
-        // Menampilkan 12 Avatar (0 hingga 11) dan diduplikasi untuk animasi infinite marquee
         const avatarIndices = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
         const fullTrackList = [...avatarIndices, ...avatarIndices];
 
@@ -1357,12 +1366,8 @@
         };
 
         const img = document.createElement('img');
-        img.src = avatarList[idx];
+        safeLoadAvatar(img, avatarList[idx], `A${idx + 1}`);
         img.alt = 'Avatar ' + (idx + 1);
-        img.onerror = function() {
-            this.onerror = null;
-            this.src = `https://placehold.co/100x100/3b82f6/ffffff?text=A${idx + 1}`;
-        };
 
         item.appendChild(img);
         return item;
@@ -1386,11 +1391,7 @@
 
     function updateAvatarPreview() {
         const previewImg = document.getElementById('avatar-preview-img');
-        previewImg.src = myAvatar;
-        previewImg.onerror = function() {
-            this.onerror = null;
-            this.src = `https://placehold.co/100x100/3b82f6/ffffff?text=A${selectedAvatarIndex + 1}`;
-        };
+        safeLoadAvatar(previewImg, myAvatar, `A${selectedAvatarIndex + 1}`);
     }
 
     function clearInput(id) {
@@ -1438,14 +1439,10 @@
         document.getElementById('my-profile-name').innerText = myName;
         
         const myAvatarImg = document.getElementById('my-avatar-img');
-        myAvatarImg.src = myAvatar;
-        myAvatarImg.onerror = function() {
-            this.onerror = null;
-            this.src = `https://placehold.co/100x100/3b82f6/ffffff?text=Me`;
-        };
+        safeLoadAvatar(myAvatarImg, myAvatar, 'Me');
         
         if (!isFirebaseReady) {
-            showToast("Firebase belum terkonfigurasi!");
+            showToast("Mode Demo: Firebase belum terhubung.");
         } else {
             registerOnlineUser();
             subscribeOnlineUsersList();
@@ -1453,10 +1450,10 @@
         showScreen('mp-lobby-screen');
     }
 
-    let usersListenerRef = null;
-
     function subscribeOnlineUsersList() {
-        if (!isFirebaseReady || usersListenerRef) return;
+        if (!isFirebaseReady) return;
+        if (usersListenerRef) usersListenerRef.off();
+
         usersListenerRef = db.ref('users');
         usersListenerRef.on('value', (snapshot) => {
             const usersData = snapshot.val() || {};
@@ -1502,7 +1499,79 @@
             showToast("Mode Demo: Firebase belum terhubung.");
             return;
         }
-        showScreen('online-users-screen');
+
+        const rounds = parseInt(document.getElementById('online-rounds-input').value) || 3;
+        
+        document.getElementById('modal-overlay').classList.remove('hidden');
+        document.getElementById('modal-spinner').classList.remove('hidden');
+        document.getElementById('modal-title').innerText = "MENCARI PASANGAN...";
+        document.getElementById('modal-desc').innerText = "Mencari pemain lain yang siap bermain";
+        document.getElementById('modal-input-container').classList.add('hidden');
+        document.getElementById('modal-btn-cancel').classList.remove('hidden');
+        document.getElementById('modal-btn-submit-invite').classList.add('hidden');
+        document.getElementById('modal-btn-accept').classList.add('hidden');
+        document.getElementById('modal-btn-reject').classList.add('hidden');
+        document.getElementById('modal-btn-ok').classList.add('hidden');
+
+        // Cek antrean matchmaking
+        const queueRef = db.ref('matchmaking');
+        queueRef.once('value').then((snap) => {
+            const queue = snap.val() || {};
+            let matchedUser = null;
+
+            for (let uid in queue) {
+                if (uid !== myUserId && queue[uid]) {
+                    matchedUser = queue[uid];
+                    break;
+                }
+            }
+
+            if (matchedUser) {
+                // Pasangkan dengan pemain dalam antrean
+                const hostId = matchedUser.id;
+                const roomId = 'room_' + hostId + '_' + myUserId;
+                
+                db.ref('matchmaking/' + hostId).remove();
+
+                const roomData = {
+                    id: roomId,
+                    maxRounds: matchedUser.rounds || rounds,
+                    curRound: 1,
+                    p1: { id: hostId, name: matchedUser.name, avatar: matchedUser.avatar || avatarList[0], score: 0, choice: '', readyForNext: false, rematchReady: false, connected: true },
+                    p2: { id: myUserId, name: myName, avatar: myAvatar, score: 0, choice: '', readyForNext: false, rematchReady: false, connected: true },
+                    status: 'playing',
+                    lastUpdate: firebase.database.ServerValue.TIMESTAMP
+                };
+
+                db.ref('rooms/' + roomId).set(roomData).then(() => {
+                    db.ref('matchmaking_signal/' + hostId).set({ roomId: roomId });
+                    hideModal();
+                    myRole = 'p2';
+                    joinOnlineRoom(roomId);
+                });
+            } else {
+                // Masukkan diri ke antrean matchmaking
+                db.ref('matchmaking/' + myUserId).set({
+                    id: myUserId,
+                    name: myName,
+                    avatar: myAvatar,
+                    rounds: rounds
+                });
+
+                // Dengarkan jika ada pemain lain yang memasangkan kita
+                db.ref('matchmaking_signal/' + myUserId).on('value', function listenSignal(sigSnap) {
+                    const sig = sigSnap.val();
+                    if (sig && sig.roomId) {
+                        db.ref('matchmaking_signal/' + myUserId).off('value', listenSignal);
+                        db.ref('matchmaking_signal/' + myUserId).remove();
+                        db.ref('matchmaking/' + myUserId).remove();
+                        hideModal();
+                        myRole = 'p1';
+                        joinOnlineRoom(sig.roomId);
+                    }
+                });
+            }
+        });
     }
 
     function openUndangTemanModal() {
@@ -1516,6 +1585,7 @@
         document.getElementById('modal-btn-submit-invite').classList.remove('hidden');
         document.getElementById('modal-btn-accept').classList.add('hidden');
         document.getElementById('modal-btn-reject').classList.add('hidden');
+        document.getElementById('modal-btn-ok').classList.add('hidden');
     }
 
     function submitModalInvite() {
@@ -1559,15 +1629,8 @@
         document.getElementById('p1-label').innerText = myName;
         document.getElementById('p2-label').innerText = "Computer";
         
-        const p1Img = document.getElementById('p1-avatar-img');
-        p1Img.src = myAvatar;
-        p1Img.onerror = function() {
-            this.onerror = null;
-            this.src = 'https://placehold.co/100x100/3b82f6/ffffff?text=P1';
-        };
-
-        const p2Img = document.getElementById('p2-avatar-img');
-        p2Img.src = 'https://placehold.co/100x100/64748b/ffffff?text=BOT';
+        safeLoadAvatar(document.getElementById('p1-avatar-img'), myAvatar, 'P1');
+        safeLoadAvatar(document.getElementById('p2-avatar-img'), './avatar2.png', 'BOT');
 
         document.getElementById('p1-score').innerText = '0';
         document.getElementById('p2-score').innerText = '0';
@@ -1698,6 +1761,7 @@
             if (data && data.status === 'pending') {
                 pendingInviteFromId = data.fromId;
                 pendingInviteFromName = data.fromName;
+                pendingInviteFromAvatar = data.fromAvatar || avatarList[0];
                 pendingInviteRounds = data.rounds || 3;
                 showInviteModal(data.fromName, data.fromId);
             } else if (!data) {
@@ -1711,6 +1775,7 @@
 
     function renderOnlineUsersList(usersData) {
         const container = document.getElementById('user-list-box');
+        if (!container) return;
         container.innerHTML = '';
 
         const now = Date.now();
@@ -1732,7 +1797,7 @@
             const isPlaying = u.status === 'playing';
             const statusLabel = isPlaying ? 'Sedang Bermain' : 'Siap Bermain';
             const statusClass = isPlaying ? 'status-playing' : 'status-waiting';
-            const userAvatar = u.avatar || 'avatar1.png';
+            const userAvatar = u.avatar || avatarList[0];
             const userName = u.name || 'Pemain';
 
             const row = document.createElement('div');
@@ -1811,7 +1876,7 @@
             id: roomId,
             maxRounds: rounds,
             curRound: 1,
-            p1: { id: hostId, name: pendingInviteFromName, avatar: avatarList[0], score: 0, choice: '', readyForNext: false, rematchReady: false, connected: true },
+            p1: { id: hostId, name: pendingInviteFromName, avatar: pendingInviteFromAvatar, score: 0, choice: '', readyForNext: false, rematchReady: false, connected: true },
             p2: { id: myUserId, name: myName, avatar: myAvatar, score: 0, choice: '', readyForNext: false, rematchReady: false, connected: true },
             status: 'playing',
             lastUpdate: firebase.database.ServerValue.TIMESTAMP
@@ -1844,6 +1909,7 @@
         db.ref('invites/' + targetId).set({
             fromId: myUserId,
             fromName: myName,
+            fromAvatar: myAvatar,
             status: 'pending',
             rounds: rounds
         });
@@ -1866,6 +1932,8 @@
     }
 
     function joinOnlineRoom(roomId) {
+        if (roomRef) roomRef.off();
+
         activeRoomId = roomId;
         roomRef = db.ref('rooms/' + roomId);
         roundHistory = [];
@@ -1914,19 +1982,8 @@
         document.getElementById('p1-label').innerText = room.p1.name;
         document.getElementById('p2-label').innerText = room.p2.name;
         
-        const p1Img = document.getElementById('p1-avatar-img');
-        p1Img.src = room.p1.avatar || 'avatar1.png';
-        p1Img.onerror = function() {
-            this.onerror = null;
-            this.src = 'https://placehold.co/100x100/3b82f6/ffffff?text=P1';
-        };
-
-        const p2Img = document.getElementById('p2-avatar-img');
-        p2Img.src = room.p2.avatar || 'avatar2.png';
-        p2Img.onerror = function() {
-            this.onerror = null;
-            this.src = 'https://placehold.co/100x100/ef4444/ffffff?text=P2';
-        };
+        safeLoadAvatar(document.getElementById('p1-avatar-img'), room.p1.avatar, 'P1');
+        safeLoadAvatar(document.getElementById('p2-avatar-img'), room.p2.avatar, 'P2');
 
         document.getElementById('p1-score').innerText = p1Score;
         document.getElementById('p2-score').innerText = p2Score;
@@ -2003,11 +2060,9 @@
 
             const readyP1 = document.getElementById('ready-icon-p1');
             const readyP2 = document.getElementById('ready-icon-p2');
-            const readyImgP1 = document.getElementById('ready-img-p1');
-            const readyImgP2 = document.getElementById('ready-img-p2');
-
-            readyImgP1.src = room.p1.avatar || 'avatar1.png';
-            readyImgP2.src = room.p2.avatar || 'avatar2.png';
+            
+            safeLoadAvatar(document.getElementById('ready-img-p1'), room.p1.avatar, 'P1');
+            safeLoadAvatar(document.getElementById('ready-img-p2'), room.p2.avatar, 'P2');
             
             if (room.p1.readyForNext) readyP1.classList.add('is-ready');
             else readyP1.classList.remove('is-ready');
@@ -2224,6 +2279,7 @@
 
     function renderHistoryUI() {
         const box = document.getElementById('history-container-box');
+        if (!box) return;
         box.innerHTML = '';
 
         if (!roundHistory || roundHistory.length === 0) {
@@ -2290,6 +2346,7 @@
         }
         if (isFirebaseReady && myUserId) {
             db.ref('users/' + myUserId).update({ status: 'idle' });
+            db.ref('matchmaking/' + myUserId).remove();
         }
         showScreen('mode-select-screen');
     }
