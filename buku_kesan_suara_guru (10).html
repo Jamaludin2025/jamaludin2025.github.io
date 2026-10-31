@@ -1,0 +1,1177 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buku Kesan & Pesan Suara Guru</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- OneSignal SDK untuk Web Push Notification -->
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+    <script>
+        window.OneSignalDeferred = window.OneSignalDeferred || [];
+        // App ID OneSignal Resmi Anda
+        window.ONESIGNAL_APP_ID = "374a039a-a1f3-48f4-a803-fa3ef6a10c89"; 
+
+        if (window.ONESIGNAL_APP_ID && window.ONESIGNAL_APP_ID.trim() !== "") {
+            OneSignalDeferred.push(async function(OneSignal) {
+                try {
+                    // Hindari SDK error saat dijalankan di luar domain resmi jamaludin2025.github.io
+                    const currentOrigin = window.location.origin;
+                    if (currentOrigin.includes('jamaludin2025.github.io') || currentOrigin.includes('localhost') || currentOrigin.includes('127.0.0.1')) {
+                        await OneSignal.init({
+                            appId: window.ONESIGNAL_APP_ID,
+                            notifyButton: {
+                                enable: false,
+                            },
+                        });
+                    } else {
+                        // Di lingkungan preview/sandbox, lakukan init aman tanpa melempar fatal error
+                        await OneSignal.init({
+                            appId: window.ONESIGNAL_APP_ID,
+                            allowLocalhostAsSecureOrigin: true,
+                            notifyButton: { enable: false }
+                        });
+                    }
+                } catch(err) {
+                    console.warn("OneSignal Web Push dibatasi hanya untuk domain jamaludin2025.github.io (Fitur simpan & kirim notifikasi admin tetap aktif via Cloudflare Worker).", err);
+                }
+            });
+        }
+    </script>
+    <style>
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .dark ::-webkit-scrollbar-thumb { background: #475569; }
+        ::-webkit-scrollbar-track { background: transparent; }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 font-sans min-h-screen transition-colors duration-200">
+
+    <header class="sticky top-0 z-30 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-4 lg:px-8 py-3.5 transition-colors">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-brand-600 text-white flex items-center justify-center shadow-lg shadow-brand-500/30">
+                    <i class="fa-solid fa-microphone-lines text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg leading-tight tracking-tight">Buku Kesan Suara Guru</h1>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Album Kenangan & Pesan Suara Guru (SD - SMK)</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <button onclick="bukaModalLoginAdmin()" class="w-10 h-10 flex-shrink-0 flex items-center justify-center rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition" title="Pengaturan & Dashboard Admin">
+                    <i class="fa-solid fa-gear text-sm"></i>
+                </button>
+                <button id="themeToggleBtn" onclick="toggleDarkMode()" class="w-10 h-10 flex-shrink-0 flex items-center justify-center rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition" title="Ubah Tema">
+                    <i class="fa-solid fa-moon dark:hidden text-sm"></i>
+                    <i class="fa-solid fa-sun hidden dark:block text-sm"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main id="mainGuruView" class="max-w-3xl mx-auto px-4 lg:px-8 py-6 space-y-6">
+        
+        <div id="formIdentitasSection" class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-sm space-y-5 transition-all">
+            <div class="border-b border-slate-100 dark:border-slate-700/60 pb-3">
+                <h2 class="text-base font-bold flex items-center gap-2 text-slate-900 dark:text-white">
+                    <i class="fa-solid fa-user-graduate text-brand-500"></i> Form Identitas Guru
+                </h2>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                    Selamat datang Bapak/Ibu Guru. Mohon perkenannya untuk memilih sekolah dan memasukkan nama Anda.
+                </p>
+            </div>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5">Sekolah (Jenjang & Nama Sekolah)</label>
+                    <select id="selSekolahCombined" class="w-full px-3.5 py-2.5 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 focus:ring-2 focus:ring-brand-500 outline-none font-medium cursor-pointer">
+                        <option value="">-- Pilih Sekolah --</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5">Nama Lengkap Bapak/Ibu Guru</label>
+                    <input type="text" id="iptNamaGuru" placeholder="Contoh: Bpk. H. Ahmad Dahlan, S.Pd." class="w-full px-3.5 py-2.5 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 focus:ring-2 focus:ring-brand-500 outline-none font-medium">
+                </div>
+
+                <!-- Checkbox Syarat & Ketentuan Notifikasi -->
+                <div class="bg-slate-50 dark:bg-slate-900/60 p-3.5 rounded-xl border border-slate-200/80 dark:border-slate-700/80 space-y-2">
+                    <label class="flex items-start gap-2.5 cursor-pointer">
+                        <input type="checkbox" id="chkIjinkanNotifikasi" onchange="toggleOneSignalNotification(this.checked)" class="mt-0.5 rounded border-slate-300 text-brand-600 focus:ring-brand-500">
+                        <span class="text-xs text-slate-600 dark:text-slate-300 font-medium leading-relaxed">
+                            Saya menyetujui untuk menerima **Push Notification** pemberitahuan konfirmasi begitu pesan suara saya berhasil tersimpan di sistem.
+                        </span>
+                    </label>
+                    <p class="text-[10px] text-slate-400 pl-6 flex items-center gap-1">
+                        <i class="fa-solid fa-shield-halved text-brand-500"></i> Privasi terjamin, notifikasi hanya dikirimkan untuk konfirmasi pengiriman pesan suara ini.
+                    </p>
+                </div>
+
+                <div class="flex justify-end pt-1">
+                    <button onclick="verifikasiGuru()" class="w-full md:w-auto md:px-8 py-3 bg-brand-600 hover:bg-brand-700 text-white rounded-xl font-semibold text-xs transition shadow-md shadow-brand-500/20 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-id-card"></i> Verifikasi & Lanjutkan
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="unmatchedNoticePanel" class="bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/60 rounded-2xl p-6 shadow-sm space-y-4 hidden transition-all">
+            <div class="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-4">
+                <div class="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center flex-shrink-0 shadow-inner">
+                    <i class="fa-solid fa-circle-info text-2xl"></i>
+                </div>
+                <div class="space-y-2 flex-1">
+                    <h3 class="text-sm font-bold text-amber-900 dark:text-amber-200 tracking-tight">Data Belum Terdaftar atau Tidak Cocok</h3>
+                    <p class="text-xs text-amber-800 dark:text-amber-300/90 leading-relaxed">
+                        Mohon maaf sebesar-besarnya Bapak/Ibu Guru. Nama atau pilihan sekolah yang dimasukkan belum cocok dengan data registrasi kami, atau kemungkinan administrator/pembuat website belum mendaftarkan nama Bapak/Ibu ke dalam sistem.
+                    </p>
+                    <div class="bg-amber-100/60 dark:bg-amber-900/30 rounded-xl p-3 text-[11px] text-amber-800 dark:text-amber-300 font-medium flex items-center justify-center sm:justify-start gap-2 border border-amber-200/50 dark:border-amber-800/40">
+                        <i class="fa-solid fa-lightbulb text-amber-600 dark:text-amber-400 text-xs"></i>
+                        <span>Silakan periksa kembali ejaan nama dan jenjang sekolah, atau hubungi administrator untuk mendaftarkan nama Bapak/Ibu Guru.</span>
+                    </div>
+                </div>
+            </div>
+            <div class="flex justify-center sm:justify-end pt-2 border-t border-amber-200/60 dark:border-amber-900/40">
+                <button onclick="tutupInfoGagalVerifikasi()" class="w-full sm:w-auto px-6 py-2.5 bg-amber-600 hover:bg-amber-700 text-white rounded-xl font-semibold text-xs transition shadow-sm shadow-amber-600/20 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-rotate-left text-xs"></i> Coba Kembali
+                </button>
+            </div>
+        </div>
+
+        <div id="recordingPanel" class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-sm space-y-5 hidden">
+            <div class="border-b border-slate-100 dark:border-slate-700/60 pb-3 flex items-center justify-between">
+                <div>
+                    <h2 class="text-base font-bold flex items-center gap-2 text-slate-900 dark:text-white">
+                        <i class="fa-solid fa-camera-retro text-brand-500"></i> Kenangan Foto & Pesan Suara
+                    </h2>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1" id="verifiedGuruTitle">Pesan Suara untuk Siswa/Siswi Anda</p>
+                </div>
+                <span class="px-2.5 py-1 bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 rounded-lg text-[10px] font-bold">
+                    Terverifikasi
+                </span>
+            </div>
+
+            <!-- Frame Foto Landscape Gradasi Biru + Foto Portrait Untung di Tengah -->
+            <div class="rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 relative h-64 md:h-72 flex items-center justify-center shadow-inner">
+                <img id="imgFotoBersama" src="https://placehold.co/600x400/e2e8f0/475569?text=Foto+Bersama+Bapak%2FIbu+Guru" alt="Foto Bersama Guru" class="h-full max-w-full object-contain mx-auto py-2 drop-shadow-lg">
+                <div class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-slate-950/90 via-slate-950/40 to-transparent p-4 text-white">
+                    <p class="font-bold text-sm tracking-wide" id="lblFotoGuruNama">Nama Guru</p>
+                    <p class="text-xs text-slate-300" id="lblFotoGuruSekolah">Sekolah</p>
+                </div>
+            </div>
+
+            <!-- Tampilan Jika Guru Sudah Pernah Merekam Suara Sebelumnya -->
+            <div id="existingAudioBox" class="p-4 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900/50 rounded-2xl space-y-3 hidden">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2 text-emerald-800 dark:text-emerald-300 font-bold text-xs">
+                        <i class="fa-solid fa-circle-check text-emerald-600 dark:text-emerald-400 text-sm"></i>
+                        <span>Pesan Suara Anda Sudah Tersimpan</span>
+                    </div>
+                    <span class="text-[10px] text-emerald-700 dark:text-emerald-400 font-medium" id="existingAudioDate">Tersimpan</span>
+                </div>
+                <audio id="existingAudioPlayer" controls class="w-full rounded-xl"></audio>
+                <div class="pt-1 flex flex-col sm:flex-row items-center justify-between gap-2 border-t border-emerald-200/60 dark:border-emerald-900/40">
+                    <p class="text-[11px] text-emerald-700 dark:text-emerald-400/90 italic">
+                        Bapak/Ibu dapat mendengarkan kembali hasil rekaman di atas atau membuat rekaman baru.
+                    </p>
+                    <button onclick="bukaPerekamanBaru()" class="w-full sm:w-auto px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold transition shadow-sm flex items-center justify-center gap-1.5 flex-shrink-0">
+                        <i class="fa-solid fa-microphone-slash"></i> Rekam Pesan Baru
+                    </button>
+                </div>
+            </div>
+
+            <!-- Box Keterangan Sopan Perekaman Suara -->
+            <div id="recordingControlsWrapper" class="space-y-4">
+                <div class="p-4 bg-brand-50/80 dark:bg-brand-950/40 border border-brand-100 dark:border-brand-900/60 rounded-2xl space-y-1.5">
+                    <h3 class="text-xs font-bold text-brand-900 dark:text-brand-200 flex items-center gap-2">
+                        <i class="fa-solid fa-comment-dots text-brand-600 dark:text-brand-400"></i> Mohon Perkenan Rekaman Pesan Suara
+                    </h3>
+                    <p class="text-xs text-brand-800/90 dark:text-brand-300/90 leading-relaxed">
+                        Di persilakan kepada Bapak/Ibu Guru untuk menyampaikan pesan, kesan, motivasi, maupun doa kenangan melalui rekaman suara ini. Rekaman suara Anda akan menjadi kenangan yang sangat berharga bagi kami.
+                    </p>
+                </div>
+
+                <div class="text-center py-4 bg-slate-50 dark:bg-slate-900/60 rounded-2xl border border-slate-100 dark:border-slate-700/60 space-y-3">
+                    <div class="text-3xl font-mono font-bold text-brand-600 dark:text-brand-400" id="timerDisplay">
+                        00:00
+                    </div>
+
+                    <div class="flex items-center justify-center gap-3">
+                        <button id="btnStartRec" onclick="startRecording()" class="px-4 py-2.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl font-semibold text-xs transition shadow-md flex items-center gap-2">
+                            <i class="fa-solid fa-microphone-lines"></i> Mulai Rekam
+                        </button>
+                        <button id="btnPauseRec" onclick="pauseRecording()" class="px-4 py-2.5 bg-amber-600 hover:bg-amber-700 text-white rounded-xl font-semibold text-xs transition shadow-md flex items-center gap-2 hidden">
+                            <i class="fa-solid fa-pause"></i> Pause
+                        </button>
+                        <button id="btnResumeRec" onclick="resumeRecording()" class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-semibold text-xs transition shadow-md flex items-center gap-2 hidden">
+                            <i class="fa-solid fa-play"></i> Lanjut
+                        </button>
+                        <button id="btnStopRec" onclick="stopRecording()" class="px-4 py-2.5 bg-slate-700 hover:bg-slate-800 text-white rounded-xl font-semibold text-xs transition shadow-md flex items-center gap-2 hidden">
+                            <i class="fa-solid fa-square"></i> Selesai
+                        </button>
+                    </div>
+                </div>
+
+                <div id="audioPreviewContainer" class="space-y-3 hidden">
+                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300">Hasil Rekaman Pesan Suara Baru</label>
+                    <audio id="audioPlayback" controls class="w-full rounded-xl"></audio>
+                    
+                    <div class="flex items-center gap-2">
+                        <button onclick="resetRecording()" class="flex-1 py-2.5 border border-rose-200 dark:border-rose-900/50 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-xl font-semibold text-xs transition flex items-center justify-center gap-1.5">
+                            <i class="fa-solid fa-rotate-left"></i> Rekam Ulang
+                        </button>
+                        <button onclick="submitRecording()" id="btnSubmitRec" class="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-semibold text-xs transition shadow-md flex items-center justify-center gap-1.5">
+                            <i class="fa-solid fa-paper-plane"></i> Kirim Pesan
+                        </button>
+                    </div>
+
+                    <p class="text-[10px] text-slate-400 text-center italic">
+                        <i class="fa-solid fa-circle-info text-brand-500"></i> Catatan: Jika Bapak/Ibu melakukan rekaman ulang dan mengirimkannya, pesan suara yang pertama akan otomatis digantikan dengan pesan suara yang baru ini.
+                    </p>
+                </div>
+            </div>
+            
+            <button onclick="batalVerifikasi()" class="w-full py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700/60 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-semibold transition border border-slate-200/80 dark:border-slate-600/60 shadow-sm flex items-center justify-center gap-1.5">
+                <i class="fa-solid fa-arrow-left text-xs"></i> Kembali ke Form Verifikasi
+            </button>
+        </div>
+
+    </main>
+
+    <div id="modalLoginAdmin" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-xl max-w-md w-full space-y-4 relative">
+            <button onclick="tutupModalLoginAdmin()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-white transition">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            
+            <div class="flex items-center gap-3 border-b border-slate-100 dark:border-slate-700/60 pb-3">
+                <div class="w-10 h-10 rounded-xl bg-brand-500/10 text-brand-600 dark:text-brand-400 flex items-center justify-center">
+                    <i class="fa-solid fa-sliders text-lg"></i>
+                </div>
+                <div>
+                    <h3 class="font-bold text-base text-slate-900 dark:text-white">Pengaturan & Akses Admin</h3>
+                    <p class="text-xs text-slate-400">Verifikasi password untuk mengelola data guru</p>
+                </div>
+            </div>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="block font-semibold text-xs text-slate-600 dark:text-slate-300 mb-1.5">Password Akses Admin</label>
+                    <input type="password" id="iptAdminPassInput" placeholder="Masukkan password admin" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 focus:ring-2 focus:ring-brand-500 outline-none text-xs font-medium">
+                </div>
+                <button onclick="loginAdminDashboard()" class="w-full py-3 bg-brand-600 hover:bg-brand-700 text-white rounded-xl font-semibold text-xs shadow-md transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-right-to-bracket"></i> Masuk Dashboard Admin
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modalAlertPass" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-xl max-w-sm w-full space-y-4 text-center">
+            <div class="w-12 h-12 rounded-2xl bg-rose-500/10 text-rose-500 flex items-center justify-center mx-auto text-xl">
+                <i class="fa-solid fa-lock"></i>
+            </div>
+            <div>
+                <h3 class="font-bold text-sm text-slate-900 dark:text-white">Akses Ditolak</h3>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Password admin yang Anda masukkan tidak sesuai. Silakan coba kembali.</p>
+            </div>
+            <button onclick="tutupModalAlertPass()" class="w-full py-2.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl font-semibold text-xs transition shadow-sm">
+                Coba Lagi
+            </button>
+        </div>
+    </div>
+
+    <main id="mainAdminView" class="max-w-7xl mx-auto px-4 lg:px-8 py-6 space-y-6 hidden">
+
+        <div id="adminDashboardBox" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            <div class="lg:col-span-5 bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-sm space-y-4 h-fit">
+                <div class="border-b border-slate-100 dark:border-slate-700/60 pb-3 flex items-center justify-between gap-3">
+                    <h3 class="font-bold text-sm text-slate-900 dark:text-white flex items-center gap-2">
+                        <i class="fa-solid fa-user-plus text-brand-500"></i> Tambah Data Guru & Foto
+                    </h3>
+                    <button onclick="logoutAdminDashboard()" class="w-9 h-9 flex-shrink-0 flex items-center justify-center bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/50 text-rose-600 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-900/60 rounded-xl transition" title="Keluar Panel Admin">
+                        <i class="fa-solid fa-door-open text-sm"></i>
+                    </button>
+                </div>
+
+                <div class="space-y-4">
+                    <div>
+                        <label class="block font-semibold text-xs text-slate-600 dark:text-slate-300 mb-1">Jenjang & Sekolah</label>
+                        <select id="admSelSekolah" class="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 focus:ring-2 focus:ring-brand-500 outline-none font-medium cursor-pointer">
+                            <option value="">-- Pilih Sekolah --</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block font-semibold text-xs text-slate-600 dark:text-slate-300 mb-1">Nama Lengkap Guru</label>
+                        <input type="text" id="admIptNama" placeholder="Contoh: Bpk. H. Ahmad Dahlan, S.Pd." class="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 outline-none">
+                    </div>
+
+                    <div>
+                        <label class="block font-semibold text-xs text-slate-600 dark:text-slate-300 mb-1">Foto Bersama Guru</label>
+                        <input type="file" id="admIptFileFoto" accept="image/*" class="w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100">
+                    </div>
+
+                    <div class="flex justify-end pt-1">
+            <button onclick="simpanEditGuruAdmin()" class="px-5 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-xs font-semibold transition shadow-md">
+                Simpan Perubahan
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Alert Sukses Khusus Guru (Desain Rapi & Estetis) -->
+<div id="modalAlertSuksesGuru" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-2xl max-w-sm w-full space-y-4 text-center transform transition-all scale-100">
+        <div class="w-14 h-14 rounded-2xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center mx-auto text-2xl shadow-inner">
+            <i class="fa-solid fa-circle-check"></i>
+        </div>
+        <div class="space-y-1.5">
+            <h3 class="font-bold text-base text-slate-900 dark:text-white" id="suksesGuruNamaHeader">Terima Kasih, Bapak/Ibu Guru!</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed" id="suksesGuruBodyText">
+                Pesan suara kenangan Anda telah berhasil tersimpan dengan aman di dalam album sistem kami.
+            </p>
+        </div>
+        <div class="p-3 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200/60 dark:border-emerald-900/40 rounded-xl text-[11px] text-emerald-800 dark:text-emerald-300 font-medium flex items-center justify-center gap-2">
+            <i class="fa-solid fa-heart text-emerald-600 dark:text-emerald-400"></i>
+            <span>Suara dan doa Anda sangat berharga bagi para siswa/siswi.</span>
+        </div>
+        <button onclick="tutupModalSuksesGuru()" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-semibold text-xs transition shadow-md shadow-emerald-600/20 flex items-center justify-center gap-2">
+            <i class="fa-solid fa-check"></i> Selesai & Tutup
+        </button>
+    </div>
+</div>
+
+<script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot, doc, setDoc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const firebaseConfig = typeof __firebase_config !== 'undefined' 
+            ? JSON.parse(__firebase_config) 
+            : {
+                apiKey: "AIzaSyBdt-2IQflUWNx3sdI1QHPMe1vAzsXAZcY",
+                authDomain: "ajproject-log.firebaseapp.com",
+                databaseURL: "https://ajproject-log-default-rtdb.firebaseio.com",
+                projectId: "ajproject-log",
+                storageBucket: "ajproject-log.appspot.com",
+                messagingSenderId: "113688767697",
+                appId: "1:113688767697:web:ca9ad012667acb7474a9f0"
+            };
+
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'buku-kesan-suara-guru';
+
+        window.CLOUDINARY_CONFIG = {
+            cloudName: "dz4w1sqiv",
+            uploadPreset: "AJGallery"
+        };
+
+        // Konfigurasi Endpoint Cloudflare Worker Proxy untuk Kirim Push Notification Aman (Tanpa REST API Key)
+        window.WORKER_NOTIFICATION_CONFIG = {
+            workerUrl: "https://ajproject.unknownssr99.workers.dev/" // Endpoint Worker Cloudflare Anda Resmi
+        };
+
+        let app = null;
+        let db = null;
+        let auth = null;
+
+        if (firebaseConfig.projectId) {
+            try {
+                app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+                signInAnonymously(auth);
+
+                const guruCol = collection(db, 'artifacts', appId, 'public', 'data', 'master_guru');
+                onSnapshot(guruCol, (snapshot) => {
+                    if (!snapshot.empty) {
+                        const list = [];
+                        snapshot.forEach(docSnap => {
+                            list.push({ id: docSnap.id, ...docSnap.data() });
+                        });
+                        window.masterGuruList = list;
+                        window.saveMasterGuruList();
+                        window.populateSekolahDropdown();
+                        window.renderAdminGuruList();
+                    }
+                }, (err) => {});
+
+                const msgCol = collection(db, 'artifacts', appId, 'public', 'data', 'pesan_suara');
+                onSnapshot(msgCol, (snapshot) => {
+                    const msgs = [];
+                    snapshot.forEach(docSnap => {
+                        msgs.push({ id: docSnap.id, ...docSnap.data() });
+                    });
+                    window.recordedMessagesList = msgs;
+                    window.saveRecordedMessagesList();
+                    window.renderAdminGuruList();
+                }, (err) => {});
+
+            } catch (e) {}
+        }
+
+        window.dbSaveGuru = async function(guruObj) {
+            if (!db) return;
+            try {
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'master_guru', guruObj.id);
+                await setDoc(docRef, guruObj);
+            } catch(e) {}
+        };
+
+        window.dbDeleteGuru = async function(guruId) {
+            if (!db) return;
+            try {
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'master_guru', guruId);
+                await deleteDoc(docRef);
+            } catch(e) {}
+        };
+
+        window.dbSavePesanSuara = async function(msgObj) {
+            if (!db) return;
+            try {
+                const colRef = collection(db, 'artifacts', appId, 'public', 'data', 'pesan_suara');
+                await addDoc(colRef, { ...msgObj, createdAt: serverTimestamp() });
+            } catch(e) {}
+        };
+
+        // Unggah Cloudinary dengan Timeout 8 Detik & Penamaan File Ber-ekstensi Resmi (.webm)
+        window.uploadToCloudinary = async function(file, resourceType = "auto", customFilename = "") {
+            const cfg = window.CLOUDINARY_CONFIG;
+            if (!cfg || !cfg.cloudName || cfg.cloudName === "demo_cloud") return null;
+
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 8000);
+
+            try {
+                const formData = new FormData();
+                const uploadFileName = customFilename || `pesan_suara_${Date.now()}.webm`;
+                formData.append("file", file, uploadFileName);
+                formData.append("upload_preset", cfg.uploadPreset);
+
+                const res = await fetch(`https://api.cloudinary.com/v1_1/${cfg.cloudName}/${resourceType}/upload`, {
+                    method: "POST",
+                    body: formData,
+                    signal: controller.signal
+                });
+                clearTimeout(timeoutId);
+                
+                if (!res.ok) return null;
+                const json = await res.json();
+                return json.secure_url || null;
+            } catch(e) {
+                clearTimeout(timeoutId);
+                return null;
+            }
+        };
+
+        window.blobToBase64 = function(blob) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onloadend = () => resolve(reader.result);
+                reader.onerror = () => resolve(null);
+                reader.readAsDataURL(blob);
+            });
+        };
+    </script>
+
+    <script>
+        let masterGuruList = [
+            { id: 'g_1', sekolah: "SD - SD Negeri 01 Pagi", nama: "Bpk. H. Ahmad Dahlan, S.Pd.", foto: "https://placehold.co/600x400/4f46e5/ffffff?text=Foto+Bersama+Bpk.+Ahmad+Dahlan" },
+            { id: 'g_2', sekolah: "SD - SD Negeri 01 Pagi", nama: "Ibu Siti Nurhaliza, S.Pd.", foto: "https://placehold.co/600x400/059669/ffffff?text=Foto+Bersama+Ibu+Siti+Nurhaliza" },
+            { id: 'g_3', sekolah: "SMP - SMP Negeri 1", nama: "Bpk. Bambang Sujatmiko, M.Pd.", foto: "https://placehold.co/600x400/d97706/ffffff?text=Foto+Bersama+Bpk.+Bambang" },
+            { id: 'g_4', sekolah: "SMP - SMP Negeri 1", nama: "Ibu Dewi Sartika, S.Pd.", foto: "https://placehold.co/600x400/dc2626/ffffff?text=Foto+Bersama+Ibu+Dewi+Sartika" },
+            { id: 'g_5', sekolah: "SMK - SMK Negeri 1", nama: "Bpk. Ir. Budi Santoso", foto: "https://placehold.co/600x400/2563eb/ffffff?text=Foto+Bersama+Bpk.+Budi+Santoso" },
+            { id: 'g_6', sekolah: "SMK - SMK Negeri 1", nama: "Ibu Dr. Ratna Juwita, M.T.", foto: "https://placehold.co/600x400/7c3aed/ffffff?text=Foto+Bersama+Ibu+Ratna+Juwita" }
+        ];
+
+        let recordedMessagesList = [];
+        let mediaRecorder = null;
+        let audioChunks = [];
+        let recordedBlob = null;
+        let timerInterval = null;
+        let recordSeconds = 0;
+        let currentVerifiedGuru = null;
+
+        const LS_KEY_THEME = 'teacher_voice_dark_mode';
+        const LS_KEY_GURU_DB = 'teacher_voice_guru_master_v3';
+
+        window.toggleDarkMode = function() {
+            document.documentElement.classList.toggle('dark');
+            const isDark = document.documentElement.classList.contains('dark');
+            localStorage.setItem(LS_KEY_THEME, isDark ? 'true' : 'false');
+        };
+
+        if (localStorage.getItem(LS_KEY_THEME) === 'true') {
+            document.documentElement.classList.add('dark');
+        }
+
+        window.bukaModalLoginAdmin = function() {
+            document.getElementById('modalLoginAdmin').classList.remove('hidden');
+            document.getElementById('iptAdminPassInput').focus();
+        };
+
+        window.tutupModalLoginAdmin = function() {
+            document.getElementById('modalLoginAdmin').classList.add('hidden');
+            document.getElementById('iptAdminPassInput').value = '';
+        };
+
+        window.tutupModalAlertPass = function() {
+            document.getElementById('modalAlertPass').classList.add('hidden');
+            document.getElementById('iptAdminPassInput').focus();
+        };
+
+        window.loginAdminDashboard = function() {
+            const pass = document.getElementById('iptAdminPassInput').value;
+            if (pass === "123") {
+                window.tutupModalLoginAdmin();
+                document.getElementById('mainGuruView').classList.add('hidden');
+                document.getElementById('mainAdminView').classList.remove('hidden');
+                window.renderAdminGuruList();
+
+                window.mintaIzinPushNotificationAdmin();
+            } else {
+                document.getElementById('modalAlertPass').classList.remove('hidden');
+            }
+        };
+
+        window.mintaIzinPushNotificationAdmin = function() {
+            if ("Notification" in window && Notification.permission !== "granted") {
+                Notification.requestPermission();
+            }
+            if (typeof OneSignalDeferred !== 'undefined') {
+                OneSignalDeferred.push(async function(OneSignal) {
+                    try {
+                        await OneSignal.Notifications.requestPermission();
+                        await OneSignal.User.PushSubscription.optIn();
+                    } catch(e) {}
+                });
+            }
+        };
+
+        window.logoutAdminDashboard = function() {
+            document.getElementById('mainAdminView').classList.add('hidden');
+            document.getElementById('mainGuruView').classList.remove('hidden');
+        };
+
+        window.populateSekolahDropdown = function() {
+            const selectGuru = document.getElementById('selSekolahCombined');
+            const selectAdmin = document.getElementById('admSelSekolah');
+            const selectEdit = document.getElementById('edtSelSekolah');
+
+            if (selectGuru) selectGuru.innerHTML = '<option value="">-- Pilih Sekolah --</option>';
+            if (selectAdmin) selectAdmin.innerHTML = '<option value="">-- Pilih Sekolah --</option>';
+            if (selectEdit) selectEdit.innerHTML = '<option value="">-- Pilih Sekolah --</option>';
+
+            const uniqueSekolah = [...new Set(masterGuruList.map(g => g.sekolah))];
+            uniqueSekolah.forEach(s => {
+                if (selectGuru) {
+                    const opt = document.createElement('option');
+                    opt.value = s; opt.textContent = s;
+                    selectGuru.appendChild(opt);
+                }
+                if (selectAdmin) {
+                    const opt = document.createElement('option');
+                    opt.value = s; opt.textContent = s;
+                    selectAdmin.appendChild(opt);
+                }
+                if (selectEdit) {
+                    const opt = document.createElement('option');
+                    opt.value = s; opt.textContent = s;
+                    selectEdit.appendChild(opt);
+                }
+            });
+        };
+
+        window.verifikasiGuru = function() {
+            const sekolah = document.getElementById('selSekolahCombined').value;
+            const nama = document.getElementById('iptNamaGuru').value.trim();
+
+            document.getElementById('unmatchedNoticePanel').classList.add('hidden');
+
+            if (!sekolah || !nama) {
+                alert("Mohon berkenan memilih sekolah dan memasukkan nama Bapak/Ibu terlebih dahulu.");
+                return;
+            }
+
+            const cleanInputName = nama.toLowerCase().replace(/[^a-z0-9]/g, '');
+
+            const matchedGuru = masterGuruList.find(g => {
+                if (g.sekolah !== sekolah) return false;
+                const cleanDbName = g.nama.toLowerCase().replace(/[^a-z0-9]/g, '');
+                return cleanDbName.includes(cleanInputName) || cleanInputName.includes(cleanDbName);
+            });
+
+            if (matchedGuru) {
+                currentVerifiedGuru = { 
+                    sekolah: matchedGuru.sekolah, 
+                    nama: matchedGuru.nama, 
+                    jenjang: matchedGuru.sekolah.split(' - ')[0],
+                    foto: matchedGuru.foto 
+                };
+
+                document.getElementById('verifiedGuruTitle').innerText = `Terima kasih, ${matchedGuru.nama}`;
+                document.getElementById('lblFotoGuruNama').innerText = matchedGuru.nama;
+                document.getElementById('lblFotoGuruSekolah').innerText = matchedGuru.sekolah;
+                document.getElementById('imgFotoBersama').src = matchedGuru.foto;
+
+                const existingMsg = recordedMessagesList.find(m => {
+                    const c1 = matchedGuru.nama.toLowerCase().replace(/[^a-z0-9]/g, '');
+                    const c2 = m.guruNama.toLowerCase().replace(/[^a-z0-9]/g, '');
+                    return (matchedGuru.sekolah === m.sekolah) && (c1.includes(c2) || c2.includes(c1));
+                });
+
+                if (existingMsg && existingMsg.audioUrl) {
+                    document.getElementById('existingAudioPlayer').src = existingMsg.audioUrl;
+                    document.getElementById('existingAudioDate').innerText = existingMsg.dateStr ? `Dikirim pada ${existingMsg.dateStr}` : 'Tersimpan';
+                    document.getElementById('existingAudioBox').classList.remove('hidden');
+                    document.getElementById('recordingControlsWrapper').classList.add('hidden');
+                } else {
+                    document.getElementById('existingAudioBox').classList.add('hidden');
+                    document.getElementById('recordingControlsWrapper').classList.remove('hidden');
+                }
+
+                document.getElementById('formIdentitasSection').classList.add('hidden');
+                document.getElementById('recordingPanel').classList.remove('hidden');
+                document.getElementById('recordingPanel').scrollIntoView({ behavior: 'smooth' });
+            } else {
+                document.getElementById('formIdentitasSection').classList.add('hidden');
+                document.getElementById('recordingPanel').classList.add('hidden');
+                document.getElementById('unmatchedNoticePanel').classList.remove('hidden');
+                document.getElementById('unmatchedNoticePanel').scrollIntoView({ behavior: 'smooth' });
+            }
+        };
+
+        window.bukaPerekamanBaru = function() {
+            document.getElementById('existingAudioBox').classList.add('hidden');
+            document.getElementById('recordingControlsWrapper').classList.remove('hidden');
+            window.resetRecording();
+        };
+
+        window.tutupInfoGagalVerifikasi = function() {
+            document.getElementById('unmatchedNoticePanel').classList.add('hidden');
+            document.getElementById('formIdentitasSection').classList.remove('hidden');
+        };
+
+        window.batalVerifikasi = function() {
+            document.getElementById('recordingPanel').classList.add('hidden');
+            document.getElementById('formIdentitasSection').classList.remove('hidden');
+            currentVerifiedGuru = null;
+            window.resetRecording();
+        };
+
+        let currentTabFilter = 'sudah';
+
+        window.switchTabGuru = function(tab) {
+            currentTabFilter = tab;
+            const btnSudah = document.getElementById('tabSudahRekam');
+            const btnBelum = document.getElementById('tabBelumRekam');
+
+            if (tab === 'sudah') {
+                btnSudah.className = "px-3 py-2 sm:py-1.5 rounded-lg text-brand-600 dark:text-brand-400 bg-white dark:bg-slate-800 shadow-sm transition flex items-center justify-center gap-1.5 w-full sm:w-auto text-center";
+                btnBelum.className = "px-3 py-2 sm:py-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition flex items-center justify-center gap-1.5 w-full sm:w-auto text-center";
+            } else {
+                btnBelum.className = "px-3 py-2 sm:py-1.5 rounded-lg text-brand-600 dark:text-brand-400 bg-white dark:bg-slate-800 shadow-sm transition flex items-center justify-center gap-1.5 w-full sm:w-auto text-center";
+                btnSudah.className = "px-3 py-2 sm:py-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition flex items-center justify-center gap-1.5 w-full sm:w-auto text-center";
+            }
+            window.renderAdminGuruList();
+        };
+
+        window.tambahDataGuruAdmin = async function() {
+            const sekolah = document.getElementById('admSelSekolah').value;
+            const nama = document.getElementById('admIptNama').value.trim();
+            const fileInput = document.getElementById('admIptFileFoto');
+
+            if (!sekolah || !nama) {
+                alert("Mohon lengkapi jenjang sekolah dan nama guru.");
+                return;
+            }
+
+            const saveGuruObj = async (fotoUrl) => {
+                const newGuru = {
+                    id: 'g_' + Date.now(),
+                    sekolah: sekolah,
+                    nama: nama,
+                    foto: fotoUrl || 'https://placehold.co/600x400/4f46e5/ffffff?text=Foto+Bersama+Guru'
+                };
+                masterGuruList.push(newGuru);
+                window.saveMasterGuruList();
+                if (window.dbSaveGuru) await window.dbSaveGuru(newGuru);
+
+                window.populateSekolahDropdown();
+                window.renderAdminGuruList();
+
+                document.getElementById('admSelSekolah').value = '';
+                document.getElementById('admIptNama').value = '';
+                fileInput.value = '';
+                alert("Data guru dan foto berhasil disimpan!");
+            };
+
+            if (fileInput.files && fileInput.files[0]) {
+                const uploadedUrl = window.uploadToCloudinary ? await window.uploadToCloudinary(fileInput.files[0], "auto") : null;
+                if (uploadedUrl) {
+                    await saveGuruObj(uploadedUrl);
+                } else {
+                    const reader = new FileReader();
+                    reader.onload = async function(e) {
+                        await saveGuruObj(e.target.result);
+                    };
+                    reader.readAsDataURL(fileInput.files[0]);
+                }
+            } else {
+                await saveGuruObj(null);
+            }
+        };
+
+        window.renderAdminGuruList = function() {
+            const container = document.getElementById('admGuruListTable');
+            if (!container) return;
+            
+            document.getElementById('cntGuruRegistered').innerText = masterGuruList.length;
+
+            const guruSudahRekam = [];
+            const guruBelumRekam = [];
+
+            masterGuruList.forEach(g => {
+                const recordedMsg = recordedMessagesList.find(m => {
+                    const c1 = g.nama.toLowerCase().replace(/[^a-z0-9]/g, '');
+                    const c2 = m.guruNama.toLowerCase().replace(/[^a-z0-9]/g, '');
+                    return (g.sekolah === m.sekolah) && (c1.includes(c2) || c2.includes(c1));
+                });
+
+                if (recordedMsg) {
+                    guruSudahRekam.push({ guru: g, msg: recordedMsg });
+                } else {
+                    guruBelumRekam.push({ guru: g, msg: null });
+                }
+            });
+
+            document.getElementById('cntSudahRekam').innerText = guruSudahRekam.length;
+            document.getElementById('cntBelumRekam').innerText = guruBelumRekam.length;
+
+            container.innerHTML = '';
+            const activeList = currentTabFilter === 'sudah' ? guruSudahRekam : guruBelumRekam;
+
+            if (activeList.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full py-8 text-center text-slate-400 text-xs">
+                        <i class="fa-solid fa-folder-open text-2xl mb-2 text-slate-300 dark:text-slate-600 block"></i>
+                        Tidak ada data guru dalam kategori ini.
+                    </div>
+                `;
+                return;
+            }
+
+            activeList.forEach(({ guru: g }) => {
+                const item = document.createElement('div');
+                item.className = "p-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/60 flex items-center justify-between gap-2.5 text-xs shadow-sm hover:border-brand-300 dark:hover:border-brand-700 transition";
+                
+                item.innerHTML = `
+                    <div class="flex items-center gap-2.5 overflow-hidden flex-1 min-w-0">
+                        <img src="${g.foto}" class="w-11 h-11 rounded-xl object-cover flex-shrink-0 border border-slate-200 dark:border-slate-700">
+                        <div class="truncate">
+                            <p class="font-bold text-slate-800 dark:text-white text-xs truncate" title="${g.nama}">${g.nama}</p>
+                            <p class="text-[10px] text-slate-400 truncate mt-0.5" title="${g.sekolah}">${g.sekolah}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-1.5 flex-shrink-0">
+                        <button onclick="bukaModalPreviewAudio('${g.id}')" class="w-8 h-8 flex items-center justify-center bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-900/50 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 rounded-xl transition" title="Lihat Detail & Pesan Suara">
+                            <i class="fa-solid fa-eye text-xs"></i>
+                        </button>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        };
+
+        window.bukaModalPreviewAudio = function(guruId) {
+            const guru = masterGuruList.find(g => g.id === guruId);
+            if (!guru) return;
+
+            document.getElementById('prvModalNamaGuru').innerText = guru.nama;
+            document.getElementById('prvModalSekolahGuru').innerText = guru.sekolah;
+
+            document.getElementById('btnModalEditAction').onclick = function() {
+                window.tutupModalPreviewAudio();
+                window.bukaModalEditGuru(guru.id);
+            };
+            document.getElementById('btnModalDeleteAction').onclick = function() {
+                window.tutupModalPreviewAudio();
+                window.hapusGuruAdmin(guru.id);
+            };
+
+            const recordedMsg = recordedMessagesList.find(m => {
+                const c1 = guru.nama.toLowerCase().replace(/[^a-z0-9]/g, '');
+                const c2 = m.guruNama.toLowerCase().replace(/[^a-z0-9]/g, '');
+                return (guru.sekolah === m.sekolah) && (c1.includes(c2) || c2.includes(c1));
+            });
+
+            const contentBox = document.getElementById('prvModalContent');
+
+            if (recordedMsg && recordedMsg.audioUrl) {
+                contentBox.innerHTML = `
+                    <div class="rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 mb-3 h-48 flex items-center justify-center">
+                        <img src="${guru.foto}" class="h-full max-w-full object-contain mx-auto py-1.5 drop-shadow-md">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300">Pesan Suara Rekaman Guru:</label>
+                        <audio controls class="w-full rounded-xl">
+                            <source src="${recordedMsg.audioUrl}">
+                            Browser Anda tidak mendukung pemutaran audio.
+                        </audio>
+                    </div>
+                    <div class="pt-2 flex justify-end">
+                        <a href="${recordedMsg.audioUrl}" download="Pesan_Suara_${guru.nama.replace(/\s+/g, '_')}.webm" target="_blank" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold transition flex items-center gap-1.5 shadow-md">
+                            <i class="fa-solid fa-download"></i> Unduh Pesan Suara
+                        </a>
+                    </div>
+                `;
+            } else {
+                contentBox.innerHTML = `
+                    <div class="rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 mb-3 h-48 flex items-center justify-center">
+                        <img src="${guru.foto}" class="h-full max-w-full object-contain mx-auto py-1.5 drop-shadow-md">
+                    </div>
+                    <div class="p-4 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/50 rounded-xl flex items-center gap-3">
+                        <i class="fa-solid fa-triangle-exclamation text-amber-500 text-xl flex-shrink-0"></i>
+                        <p class="text-xs text-amber-800 dark:text-amber-300 font-medium">
+                            Bapak/Ibu Guru ini <strong>belum merekam</strong> pesan suara kenangan di dalam sistem.
+                        </p>
+                    </div>
+                `;
+            }
+
+            document.getElementById('modalPreviewAudioAdmin').classList.remove('hidden');
+        };
+
+        window.tutupModalPreviewAudio = function() {
+            document.getElementById('modalPreviewAudioAdmin').classList.add('hidden');
+        };
+
+        window.bukaModalEditGuru = function(guruId) {
+            const guru = masterGuruList.find(g => g.id === guruId);
+            if (!guru) return;
+
+            document.getElementById('edtIptGuruId').value = guru.id;
+            document.getElementById('edtSelSekolah').value = guru.sekolah;
+            document.getElementById('edtIptNama').value = guru.nama;
+            document.getElementById('edtIptFileFoto').value = '';
+
+            document.getElementById('modalEditGuruAdmin').classList.remove('hidden');
+        };
+
+        window.tutupModalEditGuru = function() {
+            document.getElementById('modalEditGuruAdmin').classList.add('hidden');
+        };
+
+        window.simpanEditGuruAdmin = async function() {
+            const guruId = document.getElementById('edtIptGuruId').value;
+            const sekolah = document.getElementById('edtSelSekolah').value;
+            const nama = document.getElementById('edtIptNama').value.trim();
+            const fileInput = document.getElementById('edtIptFileFoto');
+
+            if (!sekolah || !nama) {
+                alert("Mohon isi sekolah dan nama guru dengan lengkap.");
+                return;
+            }
+
+            const idx = masterGuruList.findIndex(g => g.id === guruId);
+            if (idx === -1) return;
+
+            const applyEdit = async (fotoUrl) => {
+                masterGuruList[idx].sekolah = sekolah;
+                masterGuruList[idx].nama = nama;
+                if (fotoUrl) {
+                    masterGuruList[idx].foto = fotoUrl;
+                }
+                window.saveMasterGuruList();
+                if (window.dbSaveGuru) await window.dbSaveGuru(masterGuruList[idx]);
+
+                window.populateSekolahDropdown();
+                window.renderAdminGuruList();
+                window.tutupModalEditGuru();
+                alert("Data guru berhasil diperbarui!");
+            };
+
+            if (fileInput.files && fileInput.files[0]) {
+                const uploadedUrl = window.uploadToCloudinary ? await window.uploadToCloudinary(fileInput.files[0], "auto") : null;
+                if (uploadedUrl) {
+                    await applyEdit(uploadedUrl);
+                } else {
+                    const reader = new FileReader();
+                    reader.onload = async function(e) { await applyEdit(e.target.result); };
+                    reader.readAsDataURL(fileInput.files[0]);
+                }
+            } else {
+                await applyEdit(null);
+            }
+        };
+
+        window.hapusGuruAdmin = async function(id) {
+            if (confirm("Apakah Anda yakin ingin menghapus data verifikasi guru ini?")) {
+                masterGuruList = masterGuruList.filter(g => g.id !== id);
+                window.saveMasterGuruList();
+                if (window.dbDeleteGuru) await window.dbDeleteGuru(id);
+                window.populateSekolahDropdown();
+                window.renderAdminGuruList();
+            }
+        };
+
+        window.saveMasterGuruList = function() {
+            try { localStorage.setItem(LS_KEY_GURU_DB, JSON.stringify(masterGuruList)); } catch(e){}
+        };
+
+        window.loadMasterGuruList = function() {
+            try {
+                const saved = localStorage.getItem(LS_KEY_GURU_DB);
+                if (saved) masterGuruList = JSON.parse(saved);
+            } catch(e){}
+
+            try {
+                const savedMsgs = localStorage.getItem('teacher_voice_recorded_msgs_v1');
+                if (savedMsgs) recordedMessagesList = JSON.parse(savedMsgs);
+            } catch(e){}
+        };
+
+        window.toggleOneSignalNotification = function(isChecked) {
+            if (typeof OneSignalDeferred !== 'undefined') {
+                OneSignalDeferred.push(async function(OneSignal) {
+                    if (!OneSignal.User) return;
+                    if (isChecked) {
+                        try {
+                            await OneSignal.Notifications.requestPermission();
+                            await OneSignal.User.PushSubscription.optIn();
+                        } catch(e) {}
+                    } else {
+                        try {
+                            await OneSignal.User.PushSubscription.optOut();
+                        } catch(e) {}
+                    }
+                });
+            }
+        };
+
+        window.saveRecordedMessagesList = function() {
+            try {
+                localStorage.setItem('teacher_voice_recorded_msgs_v1', JSON.stringify(recordedMessagesList));
+            } catch(e){}
+        };
+
+        window.tampilkanAlertSuksesGuru = function(guruNama, sekolahNama) {
+            document.getElementById('suksesGuruNamaHeader').innerText = `Terima Kasih, ${guruNama}!`;
+            document.getElementById('suksesGuruBodyText').innerText = `Pesan suara kenangan Anda untuk ${sekolahNama} telah berhasil tersimpan dengan aman di dalam album kenangan kami.`;
+            document.getElementById('modalAlertSuksesGuru').classList.remove('hidden');
+
+            // Tetap kirimkan Push Notification ke HP Admin secara otomatis di latar belakang (via OneSignal)
+            window.kirimNotifikasiAdmin(guruNama, sekolahNama);
+        };
+
+        window.tutupModalSuksesGuru = function() {
+            document.getElementById('modalAlertSuksesGuru').classList.add('hidden');
+        };
+
+        window.kirimNotifikasiAdmin = async function(guruNama, sekolahNama) {
+            const cfg = window.WORKER_NOTIFICATION_CONFIG;
+            if (!cfg.workerUrl || cfg.workerUrl.trim() === "") {
+                return;
+            }
+
+            try {
+                await fetch(cfg.workerUrl, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        guruNama: guruNama,
+                        sekolah: sekolahNama,
+                        waktu: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
+                    })
+                });
+            } catch(e) {}
+        };
+
+        window.startRecording = async function() {
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                alert("Perangkat tidak mendukung fitur perekaman suara.");
+                return;
+            }
+
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
+                audioChunks = [];
+
+                mediaRecorder.ondataavailable = e => { if (e.data.size > 0) audioChunks.push(e.data); };
+                mediaRecorder.onstop = () => {
+                    recordedBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                    const audioUrl = URL.createObjectURL(recordedBlob);
+                    document.getElementById('audioPlayback').src = audioUrl;
+                    document.getElementById('audioPreviewContainer').classList.remove('hidden');
+                };
+
+                mediaRecorder.start();
+                window.startTimer();
+
+                document.getElementById('btnStartRec').classList.add('hidden');
+                document.getElementById('btnPauseRec').classList.remove('hidden');
+                document.getElementById('btnStopRec').classList.remove('hidden');
+            } catch (err) {
+                alert("Izin penggunaan mikrofon tidak diberikan atau terjadi kendala.");
+            }
+        };
+
+        window.pauseRecording = function() {
+            if (mediaRecorder && mediaRecorder.state === "recording") {
+                mediaRecorder.pause();
+                window.stopTimer();
+                document.getElementById('btnPauseRec').classList.add('hidden');
+                document.getElementById('btnResumeRec').classList.remove('hidden');
+            }
+        };
+
+        window.resumeRecording = function() {
+            if (mediaRecorder && mediaRecorder.state === "paused") {
+                mediaRecorder.resume();
+                window.startTimer();
+                document.getElementById('btnResumeRec').classList.add('hidden');
+                document.getElementById('btnPauseRec').classList.remove('hidden');
+            }
+        };
+
+        window.stopRecording = function() {
+            if (mediaRecorder && (mediaRecorder.state === "recording" || mediaRecorder.state === "paused")) {
+                mediaRecorder.stop();
+                window.stopTimer();
+                if (mediaRecorder.stream) {
+                    mediaRecorder.stream.getTracks().forEach(track => track.stop());
+                }
+                document.getElementById('btnPauseRec').classList.add('hidden');
+                document.getElementById('btnResumeRec').classList.add('hidden');
+                document.getElementById('btnStopRec').classList.add('hidden');
+            }
+        };
+
+        window.resetRecording = function() {
+            window.stopTimer();
+            recordSeconds = 0;
+            document.getElementById('timerDisplay').innerText = "00:00";
+            document.getElementById('audioPreviewContainer').classList.add('hidden');
+            document.getElementById('btnStartRec').classList.remove('hidden');
+            recordedBlob = null;
+            audioChunks = [];
+        };
+
+        window.startTimer = function() {
+            window.stopTimer();
+            timerInterval = setInterval(() => {
+                recordSeconds++;
+                const mins = String(Math.floor(recordSeconds / 60)).padStart(2, '0');
+                const secs = String(recordSeconds % 60).padStart(2, '0');
+                document.getElementById('timerDisplay').innerText = `${mins}:${secs}`;
+            }, 1000);
+        };
+
+        window.stopTimer = function() {
+            if (timerInterval) clearInterval(timerInterval);
+        };
+
+        window.submitRecording = async function() {
+            if (!recordedBlob || !currentVerifiedGuru) {
+                alert("Belum ada rekaman suara yang dapat dikirim.");
+                return;
+            }
+
+            const btn = document.getElementById('btnSubmitRec');
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Menyimpan Pesan...`;
+
+            let audioUrl = "";
+            const cleanGuruName = currentVerifiedGuru.nama.toLowerCase().replace(/[^a-z0-9]/g, '_');
+            const fileName = `PesanSuara_${cleanGuruName}_${Date.now()}.webm`;
+            
+            if (window.uploadToCloudinary) {
+                audioUrl = await window.uploadToCloudinary(recordedBlob, "video", fileName);
+            }
+
+            if (!audioUrl) {
+                audioUrl = await window.blobToBase64(recordedBlob);
+            }
+
+            if (!audioUrl || audioUrl.startsWith('blob:')) {
+                audioUrl = await window.blobToBase64(recordedBlob);
+            }
+
+            recordedMessagesList = recordedMessagesList.filter(m => {
+                const c1 = currentVerifiedGuru.nama.toLowerCase().replace(/[^a-z0-9]/g, '');
+                const c2 = m.guruNama.toLowerCase().replace(/[^a-z0-9]/g, '');
+                return !(currentVerifiedGuru.sekolah === m.sekolah && (c1.includes(c2) || c2.includes(c1)));
+            });
+
+            const newItem = {
+                id: 'p_' + Date.now(),
+                guruNama: currentVerifiedGuru.nama,
+                jenjang: currentVerifiedGuru.jenjang,
+                sekolah: currentVerifiedGuru.sekolah,
+                foto: currentVerifiedGuru.foto,
+                audioUrl: audioUrl,
+                duration: document.getElementById('timerDisplay').innerText,
+                dateStr: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })
+            };
+
+            recordedMessagesList.push(newItem);
+            window.saveRecordedMessagesList();
+            
+            try {
+                if (window.dbSavePesanSuara) {
+                    await Promise.race([
+                        window.dbSavePesanSuara(newItem),
+                        new Promise(resolve => setTimeout(resolve, 3000))
+                    ]);
+                }
+            } catch(e) {}
+
+            btn.disabled = false;
+            btn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Kirim Pesan`;
+            window.resetRecording();
+            
+            document.getElementById('existingAudioPlayer').src = newItem.audioUrl;
+            document.getElementById('existingAudioDate').innerText = `Dikirim pada ${newItem.dateStr}`;
+            document.getElementById('existingAudioBox').classList.remove('hidden');
+            document.getElementById('recordingControlsWrapper').classList.add('hidden');
+
+            // Tampilkan Modal Alert Sukses Rapi ke Guru & Kirim Push Notif OneSignal ke Admin
+            window.tampilkanAlertSuksesGuru(currentVerifiedGuru.nama, currentVerifiedGuru.sekolah);
+        };
+
+        window.onload = function() {
+            window.loadMasterGuruList();
+            window.populateSekolahDropdown();
+        };
+    </script>
+</body>
+</html>
