@@ -36,7 +36,7 @@
         // Konfigurasi OneSignal Langsung di Client (Bisa diubah via UI Admin)
         window.ONESIGNAL_CONFIG = {
             appId: localStorage.getItem('onesignal_app_id') || "374a039a-a1f3-48f4-a803-fa3ef6a10c89",
-            restApiKey: localStorage.getItem('onesignal_rest_api_key') || "os_v2_app_xxxxxxxxxxxxxxxxxxxxxxxx" // Masukkan REST API Key OneSignal Anda di Dashboard Admin
+            restApiKey: localStorage.getItem('onesignal_rest_api_key') || "" // Masukkan REST API Key OneSignal Anda di Dashboard Admin
         };
 
         OneSignalDeferred.push(async function(OneSignal) {
@@ -114,11 +114,11 @@
                     <label class="flex items-start gap-2.5 cursor-pointer">
                         <input type="checkbox" id="chkIjinkanNotifikasi" onchange="toggleOneSignalNotification(this.checked)" class="mt-0.5 rounded border-slate-300 text-brand-600 focus:ring-brand-500">
                         <span class="text-xs text-slate-600 dark:text-slate-300 font-medium leading-relaxed">
-                            Saya menyetujui untuk menerima **Push Notification** pemberitahuan konfirmasi begitu pesan suara saya berhasil tersimpan di sistem.
+                            Saya menyetujui untuk menerima **Push Notification HP** pemberitahuan konfirmasi begitu pesan suara saya berhasil tersimpan di sistem.
                         </span>
                     </label>
                     <p class="text-[10px] text-slate-400 pl-6 flex items-center gap-1">
-                        <i class="fa-solid fa-shield-halved text-brand-500"></i> Privasi terjamin, notifikasi hanya dikirimkan khusus untuk konfirmasi pengiriman pesan suara ini.
+                        <i class="fa-solid fa-shield-halved text-brand-500"></i> Privasi terjamin, push notification dikirimkan langsung ke status bar HP Anda.
                     </p>
                 </div>
 
@@ -138,7 +138,7 @@
                 <div class="space-y-2 flex-1">
                     <h3 class="text-sm font-bold text-amber-900 dark:text-amber-200 tracking-tight">Data Belum Terdaftar atau Tidak Cocok</h3>
                     <p class="text-xs text-amber-800 dark:text-amber-300/90 leading-relaxed">
-                        Mohon maaf sebesar-besarnya Bapak/Ibu Guru. Nama atau pilihan sekolah yang dimasukkan belum cocok dengan data registrasi kami, atau kemungkinan administrator/pembuat website belum mendaftarkan nama Bapak/Ibu ke dalam sistem.
+                        Mohon maaf sebesar-besarnya Bapak/Ibu Guru. Nama atau pilihan sekolah yang dimasukkan belum cocok dengan data registrasi kami, atau kemungkinan administrator belum mendaftarkan nama Bapak/Ibu ke dalam sistem.
                     </p>
                     <div class="bg-amber-100/60 dark:bg-amber-900/30 rounded-xl p-3 text-[11px] text-amber-800 dark:text-amber-300 font-medium flex items-center justify-center sm:justify-start gap-2 border border-amber-200/50 dark:border-amber-800/40">
                         <i class="fa-solid fa-lightbulb text-amber-600 dark:text-amber-400 text-xs"></i>
@@ -308,15 +308,15 @@
                     <h3 class="text-xs font-bold uppercase tracking-wider">Pengaturan OneSignal REST API Key</h3>
                 </div>
                 <button onclick="mintaIzinPushNotificationAdmin()" class="px-3 py-1 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-[11px] rounded-lg transition flex items-center gap-1.5">
-                    <i class="fa-solid fa-bell"></i> Minta Izin Notifikasi Admin
+                    <i class="fa-solid fa-bell"></i> Izin Notifikasi Admin
                 </button>
             </div>
             <p class="text-[11px] text-indigo-200 leading-relaxed">
-                Masukkan <strong>REST API Key</strong> OneSignal Anda di sini agar sistem dapat langsung mengirim push notification dari browser tanpa Cloudflare Worker.
+                Masukkan <strong>REST API Key</strong> OneSignal dari Dashboard OneSignal Anda (Keys & IDs) agar Push Notification dapat terkirim secara otomatis ke bar notifikasi HP Admin & Guru.
             </p>
             <div class="flex flex-col sm:flex-row gap-2">
                 <input type="text" id="iptOneSignalAppId" placeholder="App ID OneSignal" class="flex-1 px-3 py-2 text-xs rounded-xl bg-indigo-950 border border-indigo-700 text-white outline-none">
-                <input type="password" id="iptOneSignalRestKey" placeholder="REST API Key (misal: os_v2_app_...)" class="flex-1 px-3 py-2 text-xs rounded-xl bg-indigo-950 border border-indigo-700 text-white outline-none">
+                <input type="password" id="iptOneSignalRestKey" placeholder="REST API Key (contoh: os_v2_app_...)" class="flex-1 px-3 py-2 text-xs rounded-xl bg-indigo-950 border border-indigo-700 text-white outline-none">
                 <button onclick="simpanConfigOneSignalAdmin()" class="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold text-xs rounded-xl transition">
                     Simpan Key
                 </button>
@@ -463,7 +463,7 @@
         </div>
     </div>
 
-    <!-- Modal Alert Sukses Guru -->
+    <!-- Modal Konfirmasi UI lokal (Opsional sebagai visual feedback ringkas) -->
     <div id="modalAlertSuksesGuru" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 hidden">
         <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-2xl max-w-sm w-full space-y-4 text-center transform transition-all scale-100">
             <div class="w-14 h-14 rounded-2xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center mx-auto text-2xl shadow-inner">
@@ -476,8 +476,8 @@
                 </p>
             </div>
             <div class="p-3 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200/60 dark:border-emerald-900/40 rounded-xl text-[11px] text-emerald-800 dark:text-emerald-300 font-medium flex items-center justify-center gap-2">
-                <i class="fa-solid fa-heart text-emerald-600 dark:text-emerald-400"></i>
-                <span>Suara dan doa Anda sangat berharga bagi para siswa/siswi.</span>
+                <i class="fa-solid fa-bell text-emerald-600 dark:text-emerald-400"></i>
+                <span>Push Notification konfirmasi juga telah dikirimkan ke HP Anda & Admin.</span>
             </div>
             <button onclick="tutupModalSuksesGuru()" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-semibold text-xs transition shadow-md shadow-emerald-600/20 flex items-center justify-center gap-2">
                 <i class="fa-solid fa-check"></i> Selesai & Tutup
@@ -679,7 +679,7 @@
             const restKey = document.getElementById('iptOneSignalRestKey').value.trim();
 
             if (!appId || !restKey) {
-                alert("Mohon isi App ID dan REST API Key OneSignal.");
+                alert("Mohon isi App ID dan REST API Key OneSignal dengan lengkap.");
                 return;
             }
 
@@ -689,24 +689,24 @@
             localStorage.setItem('onesignal_app_id', appId);
             localStorage.setItem('onesignal_rest_api_key', restKey);
 
-            alert("Konfigurasi OneSignal REST API berhasil disimpan!");
+            alert("Konfigurasi REST API Key OneSignal berhasil diperbarui!");
         };
 
-        // Meminta Izin Notifikasi & Memberi Tag "role = admin" pada HP Admin
+        // Meminta Izin Push Notification Native & Penandaan Tag 'role = admin'
         window.mintaIzinPushNotificationAdmin = function() {
             if (typeof OneSignalDeferred !== 'undefined') {
                 OneSignalDeferred.push(async function(OneSignal) {
                     try {
                         await OneSignal.Notifications.requestPermission();
                         await OneSignal.User.PushSubscription.optIn();
-                        // BERI TAG ROLE ADMIN KE PERANGKAT ADMIN
+                        // SET TAG AGAR ONESIGNAL DENGAN PRESISE DAPAT MENINGALKAN PUSH NOTIFIKASI KE DEVICE ADMIN
                         await OneSignal.User.addTags({
                             role: 'admin',
                             user_type: 'administrator'
                         });
-                        alert("HP Anda telah didaftarkan sebagai ADMIN untuk menerima laporan push notification.");
+                        alert("Izin Push Notification Aktif! HP/Browser ini telah terdaftar sebagai ADMIN.");
                     } catch(e) {
-                        console.warn("Gagal meminta izin admin OneSignal", e);
+                        console.warn("Gagal mengaktifkan notifikasi admin:", e);
                     }
                 });
             }
@@ -773,7 +773,7 @@
                     foto: matchedGuru.foto 
                 };
 
-                // OTOMATIS BERI TAG PADA ONESIGNAL KETIKA GURU DIVERIFIKASI
+                // SET TAG UNTUK ONESIGNAL KHUSUS GURU TERSEBUT
                 window.tagPerangkatGuru(matchedGuru.nama);
 
                 document.getElementById('verifiedGuruTitle').innerText = `Terima kasih, ${matchedGuru.nama}`;
@@ -808,7 +808,7 @@
             }
         };
 
-        // Fungsi Pemberian Tag Nama Guru pada HP Guru
+        // Tag Perangkat HP Guru secara Spesifik
         window.tagPerangkatGuru = function(namaGuru) {
             if (typeof OneSignalDeferred !== 'undefined') {
                 OneSignalDeferred.push(async function(OneSignal) {
@@ -1145,7 +1145,7 @@
             document.getElementById('suksesGuruBodyText').innerText = `Pesan suara kenangan Anda untuk ${sekolahNama} telah berhasil tersimpan dengan aman di dalam album kenangan kami.`;
             document.getElementById('modalAlertSuksesGuru').classList.remove('hidden');
 
-            // KIRIM 2 NOTIFIKASI SEKALIGUS (1 UNTUK GURU YANG BERSANGKUTAN, 1 UNTUK ADMIN)
+            // TRIGER PUSH NOTIFICATION NATIVE ONESIGNAL KE GURU & ADMIN
             window.kirimDualPushNotification(guruNama, sekolahNama);
         };
 
@@ -1153,19 +1153,19 @@
             document.getElementById('modalAlertSuksesGuru').classList.add('hidden');
         };
 
-        // EKSEKUSI PENGIRIMAN 2 PUSH NOTIFICATION DARI CLIENT (HTML) TANPA CLOUDFLARE WORKER
+        // METODE UTAMA PENGIRIMAN PUSH NOTIFICATION SYSTEM/OS LEVEL DARI HTML VIA ONESIGNAL REST API
         window.kirimDualPushNotification = async function(guruNama, sekolahNama) {
             const appId = window.ONESIGNAL_CONFIG.appId;
             const restApiKey = window.ONESIGNAL_CONFIG.restApiKey;
 
-            if (!appId || !restApiKey || restApiKey.includes("xxxx")) {
-                console.warn("REST API Key OneSignal belum dimasukkan dengan benar. Silakan atur di Dashboard Admin.");
+            if (!appId || !restApiKey || restApiKey.trim() === "") {
+                console.warn("Push Notification skipped: REST API Key OneSignal belum dikonfigurasi di Dashboard Admin.");
                 return;
             }
 
-            const sendNotificationRequest = async (filters, title, message) => {
+            const sendPushApiCall = async (filters, title, message) => {
                 try {
-                    await fetch("https://onesignal.com/api/v1/notifications", {
+                    const response = await fetch("https://onesignal.com/api/v1/notifications", {
                         method: "POST",
                         headers: {
                             "Content-Type": "application/json; charset=utf-8",
@@ -1174,32 +1174,35 @@
                         body: JSON.stringify({
                             app_id: appId,
                             filters: filters,
+                            target_channel: "push",
                             headings: { "en": title, "id": title },
                             contents: { "en": message, "id": message }
                         })
                     });
+                    const resJson = await response.json();
+                    console.log("Status Pengiriman OneSignal Push API:", resJson);
                 } catch(e) {
-                    console.error("Gagal mengirim Push Notification via OneSignal REST API:", e);
+                    console.error("Gagal mengeksekusi Push Notification API:", e);
                 }
             };
 
-            // 1. Kirim Notifikasi Pribadi ke Perangkat GURU YBS (Berdasarkan Tag guru_nama)
+            // 1. PUSH NOTIFICATION 1: Ditujukan Khusus Perangkat GURU (Target Tag: guru_nama)
             const filterGuru = [
                 { field: "tag", key: "guru_nama", relation: "=", value: guruNama }
             ];
             const titleGuru = "Pesan Suara Berhasil Tersimpan!";
-            const msgGuru = `Terima kasih ${guruNama}, pesan suara Anda untuk ${sekolahNama} telah berhasil tersimpan dengan aman.`;
+            const msgGuru = `Terima kasih ${guruNama}, pesan suara Anda untuk ${sekolahNama} telah berhasil tersimpan.`;
             
-            await sendNotificationRequest(filterGuru, titleGuru, msgGuru);
+            await sendPushApiCall(filterGuru, titleGuru, msgGuru);
 
-            // 2. Kirim Notifikasi Laporan ke Perangkat ADMIN (Berdasarkan Tag role = admin)
+            // 2. PUSH NOTIFICATION 2: Ditujukan Khusus Perangkat ADMIN (Target Tag: role = admin)
             const filterAdmin = [
                 { field: "tag", key: "role", relation: "=", value: "admin" }
             ];
-            const titleAdmin = "Laporan Pesan Suara Baru!";
-            const msgAdmin = `Laporan Admin: ${guruNama} (${sekolahNama}) telah merekam & menyimpan pesan suara kenangan.`;
+            const titleAdmin = "Laporan Pesan Suara Masuk!";
+            const msgAdmin = `Bpk/Ibu ${guruNama} (${sekolahNama}) telah selesai merekam & menyimpan pesan suara.`;
 
-            await sendNotificationRequest(filterAdmin, titleAdmin, msgAdmin);
+            await sendPushApiCall(filterAdmin, titleAdmin, msgAdmin);
         };
 
         window.startRecording = async function() {
@@ -1351,7 +1354,7 @@
             document.getElementById('existingAudioBox').classList.remove('hidden');
             document.getElementById('recordingControlsWrapper').classList.add('hidden');
 
-            // Tampilkan Modal Alert Sukses Rapi ke Guru & Kirim Push Notif OneSignal (Guru + Admin)
+            // Tampilkan Modal UI & Triger Push Notification Native ke status bar HP
             window.tampilkanAlertSuksesGuru(currentVerifiedGuru.nama, currentVerifiedGuru.sekolah);
         };
 
