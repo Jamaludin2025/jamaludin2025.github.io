@@ -84,7 +84,7 @@
         </div>
     </header>
 
-    <!-- Modal Pop-Up Izin Notifikasi (Baru Muncul Setelah Klik/Sentuhan Pertama) -->
+    <!-- Modal Pop-Up Izin Notifikasi (KHUSUS TAMPILAN GURU - BARU MUNCUL SAAT GURU SENTUH HALAMAN) -->
     <div id="modalAwalPersetujuanNotif" class="fixed inset-0 top-[65px] z-40 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 transition-all overflow-y-auto hidden">
         <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-2xl max-w-md w-full space-y-5 text-left relative transform transition-all scale-100 my-auto">
             
@@ -671,20 +671,21 @@
             document.documentElement.classList.add('dark');
         }
 
-        // LISTEN SENTUHAN/KLIK PERTAMA LAYAR HP UNTUK MEMUNCULKAN KOTAK PERSETUJUAN
+        // LISTEN SENTUHAN/KLIK PERTAMA LAYAR HP UNTUK MEMUNCULKAN KOTAK PERSETUJUAN (KHUSUS TAMPILAN GURU)
         function inisialisasiPemicuSentuhanLayar() {
             const handleFirstTouch = function(e) {
-                // Jangan picu jika klik mengenai tombol gear admin/tema
-                if (e.target.closest('button[onclick*="bukaModalLoginAdmin"]') || e.target.closest('#themeToggleBtn')) {
+                // Hentikan jika klik/touch mengarah ke area admin/header tombol
+                if (e.target.closest('header') || e.target.closest('#modalLoginAdmin') || e.target.closest('#mainAdminView')) {
                     return;
                 }
 
                 if (!modalPersetujuanSudahPernahMuncul) {
+                    const mainGuru = document.getElementById('mainGuruView');
                     const modal = document.getElementById('modalAwalPersetujuanNotif');
                     const formGuru = document.getElementById('formIdentitasSection');
                     
-                    // Cek jika modal belum disetujui dan form masih terkunci
-                    if (formGuru && formGuru.classList.contains('pointer-events-none')) {
+                    // Pastikan user sedang di tampilan guru dan form masih terkunci
+                    if (mainGuru && !mainGuru.classList.contains('hidden') && formGuru && formGuru.classList.contains('pointer-events-none')) {
                         modal.classList.remove('hidden');
                         modalPersetujuanSudahPernahMuncul = true;
                     }
@@ -695,7 +696,7 @@
             window.addEventListener('touchstart', handleFirstTouch, { capture: true });
         }
 
-        // PROSES PERSETUJUAN MODAL POP-UP
+        // PROSES PERSETUJUAN MODAL POP-UP KHUSUS GURU
         window.prosesPersetujuanAwalGuru = async function() {
             const chk = document.getElementById('chkModalAwalNotif');
             if (!chk.checked) {
@@ -703,14 +704,14 @@
                 return;
             }
 
-            // Minta izin Push Notification Perangkat HP
+            // Minta izin Push Notification Perangkat HP Guru
             if (typeof OneSignalDeferred !== 'undefined') {
                 OneSignalDeferred.push(async function(OneSignal) {
                     try {
                         await OneSignal.Notifications.requestPermission();
                         await OneSignal.User.PushSubscription.optIn();
                     } catch(e) {
-                        console.warn("Izin notifikasi:", e);
+                        console.warn("Izin notifikasi guru:", e);
                     }
                 });
             }
@@ -724,8 +725,9 @@
             badge.className = "px-2.5 py-1 bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 rounded-lg text-[10px] font-bold";
         };
 
-        // SAAT PANEL ADMIN DIBUKA -> SEMBUNYIKAN MODAL PERSETUJUAN AGAR TIDAK MENUTUPI
+        // SAAT TOMBOL ADMIN DIKLIK -> PAKSA KOTAK PERSETUJUAN TIDAK MUNCUL & HIDDEN TOTAL
         window.bukaModalLoginAdmin = function() {
+            modalPersetujuanSudahPernahMuncul = true;
             const modalAwal = document.getElementById('modalAwalPersetujuanNotif');
             if (modalAwal) {
                 modalAwal.classList.add('hidden');
@@ -749,7 +751,8 @@
             if (pass === "123") {
                 window.tutupModalLoginAdmin();
                 
-                // Pastikan modal awal persetujuan disembunyikan total
+                // Pastikan modal awal persetujuan disembunyikan total dari tampilan Admin
+                modalPersetujuanSudahPernahMuncul = true;
                 const modalAwal = document.getElementById('modalAwalPersetujuanNotif');
                 if (modalAwal) modalAwal.classList.add('hidden');
 
