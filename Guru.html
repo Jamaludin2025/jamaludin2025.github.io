@@ -59,7 +59,8 @@
 </head>
 <body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 font-sans min-h-screen transition-colors duration-200">
 
-    <header class="sticky top-0 z-30 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-4 lg:px-8 py-3.5 transition-colors">
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-4 lg:px-8 py-3.5 transition-colors shadow-sm">
         <div class="max-w-7xl mx-auto flex items-center justify-between">
             <div class="flex items-center gap-3">
                 <div class="w-10 h-10 rounded-xl bg-brand-600 text-white flex items-center justify-center shadow-lg shadow-brand-500/30">
@@ -72,7 +73,7 @@
             </div>
 
             <div class="flex items-center gap-3">
-                <button onclick="bukaModalLoginAdmin()" class="w-10 h-10 flex-shrink-0 flex items-center justify-center rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition" title="Pengaturan & Dashboard Admin">
+                <button onclick="bukaModalLoginAdmin()" class="w-10 h-10 flex-shrink-0 flex items-center justify-center rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition relative" title="Pengaturan & Dashboard Admin">
                     <i class="fa-solid fa-gear text-sm"></i>
                 </button>
                 <button id="themeToggleBtn" onclick="toggleDarkMode()" class="w-10 h-10 flex-shrink-0 flex items-center justify-center rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition" title="Ubah Tema">
@@ -83,9 +84,9 @@
         </div>
     </header>
 
-    <!-- Modal Pop-Up Izin Notifikasi & Persetujuan di Awal Halaman -->
-    <div id="modalAwalPersetujuanNotif" class="fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-md flex items-center justify-center p-4 transition-all">
-        <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-2xl max-w-md w-full space-y-5 text-left relative transform transition-all scale-100">
+    <!-- Modal Pop-Up Izin Notifikasi (Baru Muncul Setelah Klik/Sentuhan Pertama) -->
+    <div id="modalAwalPersetujuanNotif" class="fixed inset-0 top-[65px] z-40 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 transition-all overflow-y-auto hidden">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-2xl max-w-md w-full space-y-5 text-left relative transform transition-all scale-100 my-auto">
             
             <div class="flex items-center gap-3 border-b border-slate-100 dark:border-slate-700/60 pb-3">
                 <div class="w-12 h-12 rounded-2xl bg-brand-500/10 text-brand-600 dark:text-brand-400 flex items-center justify-center flex-shrink-0 text-xl shadow-inner">
@@ -282,7 +283,7 @@
     </main>
 
     <!-- Modal Login Admin -->
-    <div id="modalLoginAdmin" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div id="modalLoginAdmin" class="fixed inset-0 z-60 bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-4 hidden">
         <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-xl max-w-md w-full space-y-4 relative">
             <button onclick="tutupModalLoginAdmin()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-white transition">
                 <i class="fa-solid fa-xmark text-lg"></i>
@@ -310,7 +311,7 @@
         </div>
     </div>
 
-    <div id="modalAlertPass" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div id="modalAlertPass" class="fixed inset-0 z-60 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 hidden">
         <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-xl max-w-sm w-full space-y-4 text-center">
             <div class="w-12 h-12 rounded-2xl bg-rose-500/10 text-rose-500 flex items-center justify-center mx-auto text-xl">
                 <i class="fa-solid fa-lock"></i>
@@ -413,7 +414,7 @@
     </main>
 
     <!-- Modal Preview Audio Admin -->
-    <div id="modalPreviewAudioAdmin" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div id="modalPreviewAudioAdmin" class="fixed inset-0 z-60 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 hidden">
         <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-xl max-w-md w-full space-y-4 relative">
             <button onclick="tutupModalPreviewAudio()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-white transition">
                 <i class="fa-solid fa-xmark text-lg"></i>
@@ -444,7 +445,7 @@
     </div>
 
     <!-- Modal Edit Guru Admin -->
-    <div id="modalEditGuruAdmin" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div id="modalEditGuruAdmin" class="fixed inset-0 z-60 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 hidden">
         <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-xl max-w-md w-full space-y-4 relative">
             <button onclick="tutupModalEditGuru()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-white transition">
                 <i class="fa-solid fa-xmark text-lg"></i>
@@ -491,7 +492,7 @@
     </div>
 
     <!-- Modal Sukses Rekam -->
-    <div id="modalAlertSuksesGuru" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div id="modalAlertSuksesGuru" class="fixed inset-0 z-60 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 hidden">
         <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-2xl max-w-sm w-full space-y-4 text-center transform transition-all scale-100">
             <div class="w-14 h-14 rounded-2xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center mx-auto text-2xl shadow-inner">
                 <i class="fa-solid fa-circle-check"></i>
@@ -655,6 +656,7 @@
         let timerInterval = null;
         let recordSeconds = 0;
         let currentVerifiedGuru = null;
+        let modalPersetujuanSudahPernahMuncul = false;
 
         const LS_KEY_THEME = 'teacher_voice_dark_mode';
         const LS_KEY_GURU_DB = 'teacher_voice_guru_master_v3';
@@ -669,7 +671,31 @@
             document.documentElement.classList.add('dark');
         }
 
-        // FUNGSI UNTUK PROSES PERSETUJUAN MODAL POP-UP DI AWAL HALAMAN
+        // LISTEN SENTUHAN/KLIK PERTAMA LAYAR HP UNTUK MEMUNCULKAN KOTAK PERSETUJUAN
+        function inisialisasiPemicuSentuhanLayar() {
+            const handleFirstTouch = function(e) {
+                // Jangan picu jika klik mengenai tombol gear admin/tema
+                if (e.target.closest('button[onclick*="bukaModalLoginAdmin"]') || e.target.closest('#themeToggleBtn')) {
+                    return;
+                }
+
+                if (!modalPersetujuanSudahPernahMuncul) {
+                    const modal = document.getElementById('modalAwalPersetujuanNotif');
+                    const formGuru = document.getElementById('formIdentitasSection');
+                    
+                    // Cek jika modal belum disetujui dan form masih terkunci
+                    if (formGuru && formGuru.classList.contains('pointer-events-none')) {
+                        modal.classList.remove('hidden');
+                        modalPersetujuanSudahPernahMuncul = true;
+                    }
+                }
+            };
+
+            window.addEventListener('click', handleFirstTouch, { capture: true });
+            window.addEventListener('touchstart', handleFirstTouch, { capture: true });
+        }
+
+        // PROSES PERSETUJUAN MODAL POP-UP
         window.prosesPersetujuanAwalGuru = async function() {
             const chk = document.getElementById('chkModalAwalNotif');
             if (!chk.checked) {
@@ -677,7 +703,7 @@
                 return;
             }
 
-            // Minta izin Push Notification Sistem Perangkat HP
+            // Minta izin Push Notification Perangkat HP
             if (typeof OneSignalDeferred !== 'undefined') {
                 OneSignalDeferred.push(async function(OneSignal) {
                     try {
@@ -689,7 +715,6 @@
                 });
             }
 
-            // Sembunyikan modal awal & buka form identitas guru
             document.getElementById('modalAwalPersetujuanNotif').classList.add('hidden');
             const formIdentitas = document.getElementById('formIdentitasSection');
             formIdentitas.classList.remove('opacity-60', 'pointer-events-none');
@@ -699,7 +724,12 @@
             badge.className = "px-2.5 py-1 bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 rounded-lg text-[10px] font-bold";
         };
 
+        // SAAT PANEL ADMIN DIBUKA -> SEMBUNYIKAN MODAL PERSETUJUAN AGAR TIDAK MENUTUPI
         window.bukaModalLoginAdmin = function() {
+            const modalAwal = document.getElementById('modalAwalPersetujuanNotif');
+            if (modalAwal) {
+                modalAwal.classList.add('hidden');
+            }
             document.getElementById('modalLoginAdmin').classList.remove('hidden');
             document.getElementById('iptAdminPassInput').focus();
         };
@@ -718,6 +748,11 @@
             const pass = document.getElementById('iptAdminPassInput').value;
             if (pass === "123") {
                 window.tutupModalLoginAdmin();
+                
+                // Pastikan modal awal persetujuan disembunyikan total
+                const modalAwal = document.getElementById('modalAwalPersetujuanNotif');
+                if (modalAwal) modalAwal.classList.add('hidden');
+
                 document.getElementById('mainGuruView').classList.add('hidden');
                 document.getElementById('mainAdminView').classList.remove('hidden');
                 
@@ -820,7 +855,7 @@
             }
         };
 
-        // ALGORITMA VERIFIKASI NAMA GURU PRESISI (MENDUKUNG DATA GURU BARU DARI ADMIN)
+        // ALGORITMA VERIFIKASI NAMA GURU PRESISI
         window.verifikasiGuru = async function() {
             const sekolah = document.getElementById('selSekolahCombined').value;
             const nama = document.getElementById('iptNamaGuru').value.trim();
@@ -832,7 +867,6 @@
                 return;
             }
 
-            // Normalisasi ejaan nama agar cocok (menghapus spasi ganda, gelar, dan karakter khusus)
             const cleanInputName = nama.toLowerCase().replace(/[^a-z0-9]/g, '');
 
             const matchedGuru = masterGuruList.find(g => {
@@ -849,7 +883,6 @@
                     foto: matchedGuru.foto 
                 };
 
-                // Panggil Pendaftaran Push Notification HP & Tagging Nama
                 await window.tagPerangkatGuru(matchedGuru.nama);
 
                 document.getElementById('verifiedGuruTitle').innerText = `Terima kasih, ${matchedGuru.nama}`;
@@ -919,7 +952,6 @@
             window.renderAdminGuruList();
         };
 
-        // FUNGSI PENAMBAHAN DATA GURU BARU DARI ADMIN
         window.tambahDataGuruAdmin = async function() {
             const sekolah = document.getElementById('admSelSekolah').value;
             const nama = document.getElementById('admIptNama').value.trim();
@@ -941,7 +973,6 @@
                 window.saveMasterGuruList();
                 if (window.dbSaveGuru) await window.dbSaveGuru(newGuru);
 
-                // Re-populate dropdown dan render ulang UI
                 window.populateSekolahDropdown();
                 window.renderAdminGuruList();
 
@@ -1291,6 +1322,7 @@
             window.stopTimer();
             recordSeconds = 0;
             document.getElementById('timerDisplay').innerText = "00:00";
+            document.getElementById('audioPreviewContainer').classList.hidden = false;
             document.getElementById('audioPreviewContainer').classList.add('hidden');
             document.getElementById('btnStartRec').classList.remove('hidden');
             recordedBlob = null;
@@ -1381,6 +1413,7 @@
         window.onload = function() {
             window.loadMasterGuruList();
             window.populateSekolahDropdown();
+            inisialisasiPemicuSentuhanLayar();
         };
     </script>
 </body>
