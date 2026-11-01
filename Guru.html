@@ -33,10 +33,9 @@
     <script>
         window.OneSignalDeferred = window.OneSignalDeferred || [];
         
-        // Konfigurasi OneSignal Langsung di Client (Bisa diubah via UI Admin)
         window.ONESIGNAL_CONFIG = {
             appId: localStorage.getItem('onesignal_app_id') || "374a039a-a1f3-48f4-a803-fa3ef6a10c89",
-            restApiKey: localStorage.getItem('onesignal_rest_api_key') || "" // Masukkan REST API Key OneSignal Anda di Dashboard Admin
+            workerUrl: localStorage.getItem('onesignal_worker_url') || "https://ajproject.unknownssr99.workers.dev/"
         };
 
         OneSignalDeferred.push(async function(OneSignal) {
@@ -84,6 +83,7 @@
         </div>
     </header>
 
+    <!-- Main View Guru -->
     <main id="mainGuruView" class="max-w-3xl mx-auto px-4 lg:px-8 py-6 space-y-6">
         
         <div id="formIdentitasSection" class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-sm space-y-5 transition-all">
@@ -114,7 +114,7 @@
                     <label class="flex items-start gap-2.5 cursor-pointer">
                         <input type="checkbox" id="chkIjinkanNotifikasi" onchange="toggleOneSignalNotification(this.checked)" class="mt-0.5 rounded border-slate-300 text-brand-600 focus:ring-brand-500">
                         <span class="text-xs text-slate-600 dark:text-slate-300 font-medium leading-relaxed">
-                            Saya menyetujui untuk menerima **Push Notification HP** pemberitahuan konfirmasi begitu pesan suara saya berhasil tersimpan di sistem.
+                            Saya menyetujui untuk menerima Push Notification HP pemberitahuan konfirmasi begitu pesan suara saya berhasil tersimpan di sistem.
                         </span>
                     </label>
                     <p class="text-[10px] text-slate-400 pl-6 flex items-center gap-1">
@@ -300,25 +300,25 @@
     <!-- Panel Dashboard Admin -->
     <main id="mainAdminView" class="max-w-7xl mx-auto px-4 lg:px-8 py-6 space-y-6 hidden">
 
-        <!-- Banner Pengaturan Kunci OneSignal REST API -->
+        <!-- Banner Pengaturan Endpoint Worker & Push Notification -->
         <div class="bg-indigo-900 text-white p-4 rounded-2xl shadow-md space-y-3">
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-2">
-                    <i class="fa-solid fa-key text-amber-400"></i>
-                    <h3 class="text-xs font-bold uppercase tracking-wider">Pengaturan OneSignal REST API Key</h3>
+                    <i class="fa-solid fa-cloud text-amber-400"></i>
+                    <h3 class="text-xs font-bold uppercase tracking-wider">Pengaturan Push Notification & Proxy Worker</h3>
                 </div>
-                <button onclick="mintaIzinPushNotificationAdmin()" class="px-3 py-1 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-[11px] rounded-lg transition flex items-center gap-1.5">
-                    <i class="fa-solid fa-bell"></i> Izin Notifikasi Admin
+                <button onclick="mintaIzinPushNotificationAdmin()" class="px-3 py-1 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-[11px] rounded-lg transition flex items-center gap-1.5 shadow">
+                    <i class="fa-solid fa-bell"></i> Daftar HP Ini Sebagai Admin
                 </button>
             </div>
             <p class="text-[11px] text-indigo-200 leading-relaxed">
-                Masukkan <strong>REST API Key</strong> OneSignal dari Dashboard OneSignal Anda (Keys & IDs) agar Push Notification dapat terkirim secara otomatis ke bar notifikasi HP Admin & Guru.
+                Panggilan push notification dilewatkan melalui Cloudflare Worker proxy agar terkirim ke bar HP walaupun browser sedang ditutup.
             </p>
             <div class="flex flex-col sm:flex-row gap-2">
                 <input type="text" id="iptOneSignalAppId" placeholder="App ID OneSignal" class="flex-1 px-3 py-2 text-xs rounded-xl bg-indigo-950 border border-indigo-700 text-white outline-none">
-                <input type="password" id="iptOneSignalRestKey" placeholder="REST API Key (contoh: os_v2_app_...)" class="flex-1 px-3 py-2 text-xs rounded-xl bg-indigo-950 border border-indigo-700 text-white outline-none">
+                <input type="text" id="iptOneSignalWorkerUrl" placeholder="URL Worker (Contoh: https://ajproject.xxx.workers.dev/)" class="flex-1 px-3 py-2 text-xs rounded-xl bg-indigo-950 border border-indigo-700 text-white outline-none">
                 <button onclick="simpanConfigOneSignalAdmin()" class="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold text-xs rounded-xl transition">
-                    Simpan Key
+                    Simpan Endpoint
                 </button>
             </div>
         </div>
@@ -463,7 +463,7 @@
         </div>
     </div>
 
-    <!-- Modal Konfirmasi UI lokal (Opsional sebagai visual feedback ringkas) -->
+    <!-- Modal Konfirmasi UI lokal -->
     <div id="modalAlertSuksesGuru" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 hidden">
         <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-2xl max-w-sm w-full space-y-4 text-center transform transition-all scale-100">
             <div class="w-14 h-14 rounded-2xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center mx-auto text-2xl shadow-inner">
@@ -665,7 +665,7 @@
                 document.getElementById('mainAdminView').classList.remove('hidden');
                 
                 document.getElementById('iptOneSignalAppId').value = window.ONESIGNAL_CONFIG.appId;
-                document.getElementById('iptOneSignalRestKey').value = window.ONESIGNAL_CONFIG.restApiKey;
+                document.getElementById('iptOneSignalWorkerUrl').value = window.ONESIGNAL_CONFIG.workerUrl;
                 
                 window.renderAdminGuruList();
                 window.mintaIzinPushNotificationAdmin();
@@ -676,20 +676,20 @@
 
         window.simpanConfigOneSignalAdmin = function() {
             const appId = document.getElementById('iptOneSignalAppId').value.trim();
-            const restKey = document.getElementById('iptOneSignalRestKey').value.trim();
+            const workerUrl = document.getElementById('iptOneSignalWorkerUrl').value.trim();
 
-            if (!appId || !restKey) {
-                alert("Mohon isi App ID dan REST API Key OneSignal dengan lengkap.");
+            if (!appId || !workerUrl) {
+                alert("Mohon isi App ID dan Worker URL dengan lengkap.");
                 return;
             }
 
             window.ONESIGNAL_CONFIG.appId = appId;
-            window.ONESIGNAL_CONFIG.restApiKey = restKey;
+            window.ONESIGNAL_CONFIG.workerUrl = workerUrl;
 
             localStorage.setItem('onesignal_app_id', appId);
-            localStorage.setItem('onesignal_rest_api_key', restKey);
+            localStorage.setItem('onesignal_worker_url', workerUrl);
 
-            alert("Konfigurasi REST API Key OneSignal berhasil diperbarui!");
+            alert("Konfigurasi Push Notification berhasil diperbarui!");
         };
 
         // Meminta Izin Push Notification Native & Penandaan Tag 'role = admin'
@@ -699,12 +699,12 @@
                     try {
                         await OneSignal.Notifications.requestPermission();
                         await OneSignal.User.PushSubscription.optIn();
-                        // SET TAG AGAR ONESIGNAL DENGAN PRESISE DAPAT MENINGALKAN PUSH NOTIFIKASI KE DEVICE ADMIN
+                        // BERI TAG PERANGKAT ADMIN
                         await OneSignal.User.addTags({
                             role: 'admin',
                             user_type: 'administrator'
                         });
-                        alert("Izin Push Notification Aktif! HP/Browser ini telah terdaftar sebagai ADMIN.");
+                        alert("Berhasil! HP/Browser Admin ini terdaftar untuk menerima Push Notification.");
                     } catch(e) {
                         console.warn("Gagal mengaktifkan notifikasi admin:", e);
                     }
@@ -746,6 +746,22 @@
             });
         };
 
+        // Fungsi Tagging OneSignal Perangkat Guru yang Terdefinisi dengan Aman
+        window.tagPerangkatGuru = function(namaGuru) {
+            if (typeof OneSignalDeferred !== 'undefined') {
+                OneSignalDeferred.push(async function(OneSignal) {
+                    try {
+                        await OneSignal.User.addTags({
+                            guru_nama: namaGuru,
+                            role: 'guru'
+                        });
+                    } catch(e){
+                        console.warn("Gagal menambahkan tag OneSignal guru:", e);
+                    }
+                });
+            }
+        };
+
         window.verifikasiGuru = function() {
             const sekolah = document.getElementById('selSekolahCombined').value;
             const nama = document.getElementById('iptNamaGuru').value.trim();
@@ -773,7 +789,7 @@
                     foto: matchedGuru.foto 
                 };
 
-                // SET TAG UNTUK ONESIGNAL KHUSUS GURU TERSEBUT
+                // Panggil tagging aman tanpa ReferenceError
                 window.tagPerangkatGuru(matchedGuru.nama);
 
                 document.getElementById('verifiedGuruTitle').innerText = `Terima kasih, ${matchedGuru.nama}`;
@@ -805,20 +821,6 @@
                 document.getElementById('recordingPanel').classList.add('hidden');
                 document.getElementById('unmatchedNoticePanel').classList.remove('hidden');
                 document.getElementById('unmatchedNoticePanel').scrollIntoView({ behavior: 'smooth' });
-            }
-        };
-
-        // Tag Perangkat HP Guru secara Spesifik
-        window.tagPerangkatGuru = function(namaGuru) {
-            if (typeof OneSignalDeferred !== 'undefined') {
-                OneSignalDeferred.push(async function(OneSignal) {
-                    try {
-                        await OneSignal.User.addTags({
-                            guru_nama: namaGuru,
-                            role: 'guru'
-                        });
-                    } catch(e){}
-                });
             }
         };
 
@@ -1120,10 +1122,6 @@
                         try {
                             await OneSignal.Notifications.requestPermission();
                             await OneSignal.User.PushSubscription.optIn();
-                            const namaGuru = document.getElementById('iptNamaGuru').value.trim();
-                            if (namaGuru) {
-                                window.tagPerangkatGuru(namaGuru);
-                            }
                         } catch(e) {}
                     } else {
                         try {
@@ -1131,6 +1129,36 @@
                         } catch(e) {}
                     }
                 });
+            }
+        };
+
+        // METODE UTAMA PENGIRIMAN PUSH NOTIFICATION NATIVE (HP) VIA WORKER PROXY
+        window.kirimDualPushNotification = async function(guruNama, sekolahNama) {
+            const workerUrl = window.ONESIGNAL_CONFIG.workerUrl || "https://ajproject.unknownssr99.workers.dev/";
+            const appId = window.ONESIGNAL_CONFIG.appId || "374a039a-a1f3-48f4-a803-fa3ef6a10c89";
+
+            if (!workerUrl || workerUrl.trim() === "") {
+                console.warn("Push Notification skipped: Worker URL belum dikonfigurasi.");
+                return;
+            }
+
+            try {
+                const response = await fetch(workerUrl, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        app_id: appId,
+                        guruNama: guruNama,
+                        sekolah: sekolahNama,
+                        waktu: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
+                    })
+                });
+                const resJson = await response.json();
+                console.log("Response dari Push Notification Worker:", resJson);
+            } catch(e) {
+                console.error("Gagal mengirim notifikasi via Worker Proxy:", e);
             }
         };
 
@@ -1145,64 +1173,11 @@
             document.getElementById('suksesGuruBodyText').innerText = `Pesan suara kenangan Anda untuk ${sekolahNama} telah berhasil tersimpan dengan aman di dalam album kenangan kami.`;
             document.getElementById('modalAlertSuksesGuru').classList.remove('hidden');
 
-            // TRIGER PUSH NOTIFICATION NATIVE ONESIGNAL KE GURU & ADMIN
             window.kirimDualPushNotification(guruNama, sekolahNama);
         };
 
         window.tutupModalSuksesGuru = function() {
             document.getElementById('modalAlertSuksesGuru').classList.add('hidden');
-        };
-
-        // METODE UTAMA PENGIRIMAN PUSH NOTIFICATION SYSTEM/OS LEVEL DARI HTML VIA ONESIGNAL REST API
-        window.kirimDualPushNotification = async function(guruNama, sekolahNama) {
-            const appId = window.ONESIGNAL_CONFIG.appId;
-            const restApiKey = window.ONESIGNAL_CONFIG.restApiKey;
-
-            if (!appId || !restApiKey || restApiKey.trim() === "") {
-                console.warn("Push Notification skipped: REST API Key OneSignal belum dikonfigurasi di Dashboard Admin.");
-                return;
-            }
-
-            const sendPushApiCall = async (filters, title, message) => {
-                try {
-                    const response = await fetch("https://onesignal.com/api/v1/notifications", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json; charset=utf-8",
-                            "Authorization": `Basic ${restApiKey}`
-                        },
-                        body: JSON.stringify({
-                            app_id: appId,
-                            filters: filters,
-                            target_channel: "push",
-                            headings: { "en": title, "id": title },
-                            contents: { "en": message, "id": message }
-                        })
-                    });
-                    const resJson = await response.json();
-                    console.log("Status Pengiriman OneSignal Push API:", resJson);
-                } catch(e) {
-                    console.error("Gagal mengeksekusi Push Notification API:", e);
-                }
-            };
-
-            // 1. PUSH NOTIFICATION 1: Ditujukan Khusus Perangkat GURU (Target Tag: guru_nama)
-            const filterGuru = [
-                { field: "tag", key: "guru_nama", relation: "=", value: guruNama }
-            ];
-            const titleGuru = "Pesan Suara Berhasil Tersimpan!";
-            const msgGuru = `Terima kasih ${guruNama}, pesan suara Anda untuk ${sekolahNama} telah berhasil tersimpan.`;
-            
-            await sendPushApiCall(filterGuru, titleGuru, msgGuru);
-
-            // 2. PUSH NOTIFICATION 2: Ditujukan Khusus Perangkat ADMIN (Target Tag: role = admin)
-            const filterAdmin = [
-                { field: "tag", key: "role", relation: "=", value: "admin" }
-            ];
-            const titleAdmin = "Laporan Pesan Suara Masuk!";
-            const msgAdmin = `Bpk/Ibu ${guruNama} (${sekolahNama}) telah selesai merekam & menyimpan pesan suara.`;
-
-            await sendPushApiCall(filterAdmin, titleAdmin, msgAdmin);
         };
 
         window.startRecording = async function() {
