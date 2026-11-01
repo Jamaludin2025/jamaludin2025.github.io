@@ -83,17 +83,61 @@
         </div>
     </header>
 
+    <!-- Modal Pop-Up Izin Notifikasi & Persetujuan di Awal Halaman -->
+    <div id="modalAwalPersetujuanNotif" class="fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-md flex items-center justify-center p-4 transition-all">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-2xl max-w-md w-full space-y-5 text-left relative transform transition-all scale-100">
+            
+            <div class="flex items-center gap-3 border-b border-slate-100 dark:border-slate-700/60 pb-3">
+                <div class="w-12 h-12 rounded-2xl bg-brand-500/10 text-brand-600 dark:text-brand-400 flex items-center justify-center flex-shrink-0 text-xl shadow-inner">
+                    <i class="fa-solid fa-bell font-bold"></i>
+                </div>
+                <div>
+                    <h3 class="font-bold text-base text-slate-900 dark:text-white leading-snug">Selamat Datang Bapak/Ibu Guru</h3>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Persetujuan Layanan Notifikasi Status Bar</p>
+                </div>
+            </div>
+
+            <div class="space-y-3.5 text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                <p>
+                    Sebelum mengisi data dan merekam pesan suara kenangan, mohon perkenan Anda untuk mengaktifkan **Push Notification**. 
+                </p>
+                <div class="p-3.5 bg-brand-50/80 dark:bg-brand-950/40 border border-brand-100 dark:border-brand-900/60 rounded-xl space-y-2">
+                    <label class="flex items-start gap-2.5 cursor-pointer">
+                        <input type="checkbox" id="chkModalAwalNotif" class="mt-0.5 rounded border-slate-300 text-brand-600 focus:ring-brand-500 w-4 h-4 cursor-pointer">
+                        <span class="font-semibold text-brand-900 dark:text-brand-200 leading-relaxed">
+                            Saya menyetujui untuk menerima Push Notification konfirmasi di layar terkunci/status bar HP begitu rekaman suara saya tersimpan.
+                        </span>
+                    </label>
+                </div>
+                <p class="text-[11px] text-slate-400 flex items-center gap-1.5 italic">
+                    <i class="fa-solid fa-shield-halved text-brand-500"></i> Notifikasi dikirim khusus untuk konfirmasi rekaman suara Anda.
+                </p>
+            </div>
+
+            <div class="pt-2">
+                <button onclick="prosesPersetujuanAwalGuru()" class="w-full py-3 bg-brand-600 hover:bg-brand-700 text-white rounded-xl font-semibold text-xs shadow-md shadow-brand-600/20 transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-circle-check"></i> Terima & Lanjutkan Isi Data
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Main View Guru -->
     <main id="mainGuruView" class="max-w-3xl mx-auto px-4 lg:px-8 py-6 space-y-6">
         
-        <div id="formIdentitasSection" class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-sm space-y-5 transition-all">
-            <div class="border-b border-slate-100 dark:border-slate-700/60 pb-3">
-                <h2 class="text-base font-bold flex items-center gap-2 text-slate-900 dark:text-white">
-                    <i class="fa-solid fa-user-graduate text-brand-500"></i> Form Identitas Guru
-                </h2>
-                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                    Selamat datang Bapak/Ibu Guru. Mohon perkenannya untuk memilih sekolah dan memasukkan nama Anda.
-                </p>
+        <div id="formIdentitasSection" class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-sm space-y-5 transition-all opacity-60 pointer-events-none">
+            <div class="border-b border-slate-100 dark:border-slate-700/60 pb-3 flex items-center justify-between">
+                <div>
+                    <h2 class="text-base font-bold flex items-center gap-2 text-slate-900 dark:text-white">
+                        <i class="fa-solid fa-user-graduate text-brand-500"></i> Form Identitas Guru
+                    </h2>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                        Silakan pilih sekolah dan masukkan nama Anda yang telah terdaftar.
+                    </p>
+                </div>
+                <span id="badgeIzinNotifStatus" class="px-2.5 py-1 bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800 rounded-lg text-[10px] font-bold">
+                    Menunggu Izin Notifikasi
+                </span>
             </div>
 
             <div class="space-y-4">
@@ -107,19 +151,6 @@
                 <div>
                     <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5">Nama Lengkap Bapak/Ibu Guru</label>
                     <input type="text" id="iptNamaGuru" placeholder="Contoh: Bpk. H. Ahmad Dahlan, S.Pd." class="w-full px-3.5 py-2.5 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 focus:ring-2 focus:ring-brand-500 outline-none font-medium">
-                </div>
-
-                <!-- Checkbox Syarat & Ketentuan Notifikasi -->
-                <div class="bg-slate-50 dark:bg-slate-900/60 p-3.5 rounded-xl border border-slate-200/80 dark:border-slate-700/80 space-y-2">
-                    <label class="flex items-start gap-2.5 cursor-pointer">
-                        <input type="checkbox" id="chkIjinkanNotifikasi" onchange="toggleOneSignalNotification(this.checked)" class="mt-0.5 rounded border-slate-300 text-brand-600 focus:ring-brand-500">
-                        <span class="text-xs text-slate-600 dark:text-slate-300 font-medium leading-relaxed">
-                            Saya menyetujui untuk menerima Push Notification HP pemberitahuan konfirmasi begitu pesan suara saya berhasil tersimpan di sistem.
-                        </span>
-                    </label>
-                    <p class="text-[10px] text-slate-400 pl-6 flex items-center gap-1">
-                        <i class="fa-solid fa-shield-halved text-brand-500"></i> Privasi terjamin, push notification dikirimkan langsung ke status bar HP Anda.
-                    </p>
                 </div>
 
                 <div class="flex justify-end pt-1">
@@ -166,7 +197,6 @@
                 </span>
             </div>
 
-            <!-- Frame Foto Landscape Gradasi Biru + Foto Portrait Guru di Tengah -->
             <div class="rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 relative h-64 md:h-72 flex items-center justify-center shadow-inner">
                 <img id="imgFotoBersama" src="https://placehold.co/600x400/e2e8f0/475569?text=Foto+Bersama+Bapak%2FIbu+Guru" alt="Foto Bersama Guru" class="h-full max-w-full object-contain mx-auto py-2 drop-shadow-lg">
                 <div class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-slate-950/90 via-slate-950/40 to-transparent p-4 text-white">
@@ -175,7 +205,6 @@
                 </div>
             </div>
 
-            <!-- Tampilan Jika Guru Sudah Pernah Merekam Suara Sebelumnya -->
             <div id="existingAudioBox" class="p-4 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900/50 rounded-2xl space-y-3 hidden">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-2 text-emerald-800 dark:text-emerald-300 font-bold text-xs">
@@ -195,7 +224,6 @@
                 </div>
             </div>
 
-            <!-- Box Perekaman Suara -->
             <div id="recordingControlsWrapper" class="space-y-4">
                 <div class="p-4 bg-brand-50/80 dark:bg-brand-950/40 border border-brand-100 dark:border-brand-900/60 rounded-2xl space-y-1.5">
                     <h3 class="text-xs font-bold text-brand-900 dark:text-brand-200 flex items-center gap-2">
@@ -300,7 +328,6 @@
     <!-- Panel Dashboard Admin -->
     <main id="mainAdminView" class="max-w-7xl mx-auto px-4 lg:px-8 py-6 space-y-6 hidden">
 
-        <!-- Banner Pengaturan Endpoint Worker & Push Notification -->
         <div class="bg-indigo-900 text-white p-4 rounded-2xl shadow-md space-y-3">
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-2">
@@ -463,7 +490,7 @@
         </div>
     </div>
 
-    <!-- Modal Konfirmasi UI lokal -->
+    <!-- Modal Sukses Rekam -->
     <div id="modalAlertSuksesGuru" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 hidden">
         <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-2xl max-w-sm w-full space-y-4 text-center transform transition-all scale-100">
             <div class="w-14 h-14 rounded-2xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center mx-auto text-2xl shadow-inner">
@@ -472,7 +499,7 @@
             <div class="space-y-1.5">
                 <h3 class="font-bold text-base text-slate-900 dark:text-white" id="suksesGuruNamaHeader">Terima Kasih, Bapak/Ibu Guru!</h3>
                 <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed" id="suksesGuruBodyText">
-                    Pesan suara kenangan Anda telah berhasil tersimpan dengan aman di dalam album sistem kami.
+                    Pesan suara kenangan Anda telah berhasil tersimpan dengan aman di dalam album kami.
                 </p>
             </div>
             <div class="p-3 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200/60 dark:border-emerald-900/40 rounded-xl text-[11px] text-emerald-800 dark:text-emerald-300 font-medium flex items-center justify-center gap-2">
@@ -642,6 +669,36 @@
             document.documentElement.classList.add('dark');
         }
 
+        // FUNGSI UNTUK PROSES PERSETUJUAN MODAL POP-UP DI AWAL HALAMAN
+        window.prosesPersetujuanAwalGuru = async function() {
+            const chk = document.getElementById('chkModalAwalNotif');
+            if (!chk.checked) {
+                alert("Mohon centang kotak persetujuan notifikasi terlebih dahulu untuk melanjutkan.");
+                return;
+            }
+
+            // Minta izin Push Notification Sistem Perangkat HP
+            if (typeof OneSignalDeferred !== 'undefined') {
+                OneSignalDeferred.push(async function(OneSignal) {
+                    try {
+                        await OneSignal.Notifications.requestPermission();
+                        await OneSignal.User.PushSubscription.optIn();
+                    } catch(e) {
+                        console.warn("Izin notifikasi:", e);
+                    }
+                });
+            }
+
+            // Sembunyikan modal awal & buka form identitas guru
+            document.getElementById('modalAwalPersetujuanNotif').classList.add('hidden');
+            const formIdentitas = document.getElementById('formIdentitasSection');
+            formIdentitas.classList.remove('opacity-60', 'pointer-events-none');
+            
+            const badge = document.getElementById('badgeIzinNotifStatus');
+            badge.innerText = "Izin Notifikasi Disetujui";
+            badge.className = "px-2.5 py-1 bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 rounded-lg text-[10px] font-bold";
+        };
+
         window.bukaModalLoginAdmin = function() {
             document.getElementById('modalLoginAdmin').classList.remove('hidden');
             document.getElementById('iptAdminPassInput').focus();
@@ -692,14 +749,12 @@
             alert("Konfigurasi Push Notification berhasil diperbarui!");
         };
 
-        // Meminta Izin Push Notification Native & Penandaan Tag 'role = admin'
         window.mintaIzinPushNotificationAdmin = function() {
             if (typeof OneSignalDeferred !== 'undefined') {
                 OneSignalDeferred.push(async function(OneSignal) {
                     try {
                         await OneSignal.Notifications.requestPermission();
                         await OneSignal.User.PushSubscription.optIn();
-                        // BERI TAG PERANGKAT ADMIN
                         await OneSignal.User.addTags({
                             role: 'admin',
                             user_type: 'administrator'
@@ -746,23 +801,27 @@
             });
         };
 
-        // Fungsi Tagging OneSignal Perangkat Guru yang Terdefinisi dengan Aman
-        window.tagPerangkatGuru = function(namaGuru) {
+        // Tagging Perangkat Guru di OneSignal
+        window.tagPerangkatGuru = async function(namaGuru) {
             if (typeof OneSignalDeferred !== 'undefined') {
                 OneSignalDeferred.push(async function(OneSignal) {
                     try {
+                        await OneSignal.Notifications.requestPermission();
+                        await OneSignal.User.PushSubscription.optIn();
                         await OneSignal.User.addTags({
                             guru_nama: namaGuru,
                             role: 'guru'
                         });
+                        console.log("Tagging HP Guru Berhasil:", namaGuru);
                     } catch(e){
-                        console.warn("Gagal menambahkan tag OneSignal guru:", e);
+                        console.warn("Gagal tagging OneSignal guru:", e);
                     }
                 });
             }
         };
 
-        window.verifikasiGuru = function() {
+        // ALGORITMA VERIFIKASI NAMA GURU PRESISI (MENDUKUNG DATA GURU BARU DARI ADMIN)
+        window.verifikasiGuru = async function() {
             const sekolah = document.getElementById('selSekolahCombined').value;
             const nama = document.getElementById('iptNamaGuru').value.trim();
 
@@ -773,6 +832,7 @@
                 return;
             }
 
+            // Normalisasi ejaan nama agar cocok (menghapus spasi ganda, gelar, dan karakter khusus)
             const cleanInputName = nama.toLowerCase().replace(/[^a-z0-9]/g, '');
 
             const matchedGuru = masterGuruList.find(g => {
@@ -789,8 +849,8 @@
                     foto: matchedGuru.foto 
                 };
 
-                // Panggil tagging aman tanpa ReferenceError
-                window.tagPerangkatGuru(matchedGuru.nama);
+                // Panggil Pendaftaran Push Notification HP & Tagging Nama
+                await window.tagPerangkatGuru(matchedGuru.nama);
 
                 document.getElementById('verifiedGuruTitle').innerText = `Terima kasih, ${matchedGuru.nama}`;
                 document.getElementById('lblFotoGuruNama').innerText = matchedGuru.nama;
@@ -859,6 +919,7 @@
             window.renderAdminGuruList();
         };
 
+        // FUNGSI PENAMBAHAN DATA GURU BARU DARI ADMIN
         window.tambahDataGuruAdmin = async function() {
             const sekolah = document.getElementById('admSelSekolah').value;
             const nama = document.getElementById('admIptNama').value.trim();
@@ -880,13 +941,14 @@
                 window.saveMasterGuruList();
                 if (window.dbSaveGuru) await window.dbSaveGuru(newGuru);
 
+                // Re-populate dropdown dan render ulang UI
                 window.populateSekolahDropdown();
                 window.renderAdminGuruList();
 
                 document.getElementById('admSelSekolah').value = '';
                 document.getElementById('admIptNama').value = '';
                 fileInput.value = '';
-                alert("Data guru dan foto berhasil disimpan!");
+                alert(`Data guru baru (${nama}) berhasil disimpan dan dapat langsung diverifikasi oleh guru yang bersangkutan!`);
             };
 
             if (fileInput.files && fileInput.files[0]) {
@@ -1114,25 +1176,7 @@
             } catch(e){}
         };
 
-        window.toggleOneSignalNotification = function(isChecked) {
-            if (typeof OneSignalDeferred !== 'undefined') {
-                OneSignalDeferred.push(async function(OneSignal) {
-                    if (!OneSignal.User) return;
-                    if (isChecked) {
-                        try {
-                            await OneSignal.Notifications.requestPermission();
-                            await OneSignal.User.PushSubscription.optIn();
-                        } catch(e) {}
-                    } else {
-                        try {
-                            await OneSignal.User.PushSubscription.optOut();
-                        } catch(e) {}
-                    }
-                });
-            }
-        };
-
-        // METODE UTAMA PENGIRIMAN PUSH NOTIFICATION NATIVE (HP) VIA WORKER PROXY
+        // PENGIRIMAN PUSH NOTIFICATION VIA CLOUDFLARE WORKER
         window.kirimDualPushNotification = async function(guruNama, sekolahNama) {
             const workerUrl = window.ONESIGNAL_CONFIG.workerUrl || "https://ajproject.unknownssr99.workers.dev/";
             const appId = window.ONESIGNAL_CONFIG.appId || "374a039a-a1f3-48f4-a803-fa3ef6a10c89";
@@ -1141,6 +1185,8 @@
                 console.warn("Push Notification skipped: Worker URL belum dikonfigurasi.");
                 return;
             }
+
+            await window.tagPerangkatGuru(guruNama);
 
             try {
                 const response = await fetch(workerUrl, {
@@ -1156,7 +1202,7 @@
                     })
                 });
                 const resJson = await response.json();
-                console.log("Response dari Push Notification Worker:", resJson);
+                console.log("Response Worker Push:", resJson);
             } catch(e) {
                 console.error("Gagal mengirim notifikasi via Worker Proxy:", e);
             }
@@ -1170,7 +1216,7 @@
 
         window.tampilkanAlertSuksesGuru = function(guruNama, sekolahNama) {
             document.getElementById('suksesGuruNamaHeader').innerText = `Terima Kasih, ${guruNama}!`;
-            document.getElementById('suksesGuruBodyText').innerText = `Pesan suara kenangan Anda untuk ${sekolahNama} telah berhasil tersimpan dengan aman di dalam album kenangan kami.`;
+            document.getElementById('suksesGuruBodyText').innerText = `Pesan suara kenangan Anda untuk ${sekolahNama} telah berhasil tersimpan dengan aman di dalam album kami.`;
             document.getElementById('modalAlertSuksesGuru').classList.remove('hidden');
 
             window.kirimDualPushNotification(guruNama, sekolahNama);
@@ -1329,7 +1375,6 @@
             document.getElementById('existingAudioBox').classList.remove('hidden');
             document.getElementById('recordingControlsWrapper').classList.add('hidden');
 
-            // Tampilkan Modal UI & Triger Push Notification Native ke status bar HP
             window.tampilkanAlertSuksesGuru(currentVerifiedGuru.nama, currentVerifiedGuru.sekolah);
         };
 
