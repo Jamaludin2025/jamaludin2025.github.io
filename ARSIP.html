@@ -259,7 +259,7 @@
       <div class="terms-wrapper">
         <input type="checkbox" id="checkNotif" checked />
         <label for="checkNotif" class="terms-label">
-          Saya menyetujui untuk menerima <b>Notifikasi Push</b> update informasi penting mengenai arsip ini langsung di perangkat saya.
+          Saya menyetujui untuk menerima <b>Notifikasi</b> update informasi penting mengenai arsip ini langsung di perangkat saya.
         </label>
       </div>
 
@@ -570,20 +570,15 @@
     const PATH_NOTIF_GLOBAL = "database_B/notifGlobal"; 
     
     const CLOUDFLARE_WORKER_PUSH_URL = "https://ajproject.unknownssr99.workers.dev/";
-
-    // OneSignal App ID - Ganti dengan ID asli dari dashboard OneSignal Anda
     const ONESIGNAL_APP_ID = "374a039a-a1f3-48f4-a803-fa3ef6a10c89";
 
     window.OneSignalDeferred = window.OneSignalDeferred || [];
     OneSignalDeferred.push(async function(OneSignal) {
-      // Hanya inisialisasi jika App ID yang valid telah dipasang
       if (ONESIGNAL_APP_ID && ONESIGNAL_APP_ID !== "374a039a-a1f3-48f4-a803-fa3ef6a10c89") {
         await OneSignal.init({
           appId: ONESIGNAL_APP_ID,
           safari_web_id: "web.onesignal.auto",
-          notifyButton: {
-            enable: false
-          }
+          notifyButton: { enable: false }
         });
       } else {
         console.warn("OneSignal push notification diabaikan: Harap ganti ONESIGNAL_APP_ID dengan App ID OneSignal yang valid.");
@@ -755,62 +750,71 @@
 
       try {
         const snap = await db.ref(`${PATH_DATA}/${kode}`).once("value");
-        setTimeout(() => {
-          Swal.close(); 
-          if(snap.exists()) {
-            const data = snap.val();
-            document.getElementById("suaraSukses").play();
-            
-            currentUserCode = kode;
-            
-            const sapaan = getSapaanWaktu();
-            const picHtml = getProfilePicHtml('user');
-            document.getElementById("user-greeting-header").innerHTML = `
-              <div style="display:flex; align-items:center; gap:12px;">
-                <div id="user-pic-wrapper">${picHtml}</div>
-                <div style="line-height:1.2; font-size:13px; text-align:left;">
-                  <span style="font-weight:400; opacity:0.9;">${sapaan},</span><br>
-                  <span style="font-weight:700; font-size:15px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">${data.kerabat}</span>
-                </div>
-              </div>`;
-
-            Swal.fire({
-              icon: 'success',
-              title: `Selamat datang, ${data.kerabat}`,
-              showConfirmButton: false,
-              timer: 2000
-            }).then(() => {
-              document.getElementById("card-names").innerHTML = `${data.kerabat}<br>&<br>${data.pasangan}`;
-              let tgl = new Date(data.tanggal);
-              let formattedDate = `${tgl.getDate().toString().padStart(2, '0')}-${(tgl.getMonth()+1).toString().padStart(2, '0')}-${tgl.getFullYear()}`;
-              document.getElementById("card-date").textContent = formattedDate;
-              document.getElementById("login-screen").style.display = "none";
-              document.getElementById("user-full-page").style.display = "flex";
-              
-              if(document.getElementById("checkNotif").checked && ONESIGNAL_APP_ID && ONESIGNAL_APP_ID !== "374a039a-a1f3-48f4-a803-fa3ef6a10c89") {
+        if(snap.exists()) {
+          const data = snap.val();
+          
+          if(document.getElementById("checkNotif").checked && ONESIGNAL_APP_ID && ONESIGNAL_APP_ID !== "374a039a-a1f3-48f4-a803-fa3ef6a10c89") {
+            try {
+              await new Promise((resolve) => {
                 OneSignalDeferred.push(async function(OneSignal) {
                   try {
                     await OneSignal.Notifications.requestPermission();
                     await OneSignal.User.addTag("user_code", kode);
-                  } catch(e) {
-                    console.log("OneSignal Permission / Tag error:", e);
+                    if (OneSignal.User.PushSubscription) {
+                      await OneSignal.User.PushSubscription.optIn();
+                    }
+                  } catch(err) {
+                    console.log("OneSignal Permission / Tag Error:", err);
                   }
+                  resolve();
                 });
-              }
-
-              clearInterval(csInterval);
-              document.getElementById("floating-cs").classList.remove("hidden");
-              csInterval = setInterval(() => {
-                document.getElementById("floating-cs").classList.toggle("hidden");
-              }, 7000);
-
-              db.ref(PATH_LOG).push({ user: kode, waktu: new Date().toLocaleString("id-ID") });
-            });
-            
-          } else {
-            showAlert("UPS, KODE AKSES TIDAK TERDAFTAR!");
+              });
+            } catch(e) {
+              console.log("OneSignal push error:", e);
+            }
           }
-        }, 2000); 
+
+          Swal.close();
+          document.getElementById("suaraSukses").play();
+          currentUserCode = kode;
+          
+          const sapaan = getSapaanWaktu();
+          const picHtml = getProfilePicHtml('user');
+          document.getElementById("user-greeting-header").innerHTML = `
+            <div style="display:flex; align-items:center; gap:12px;">
+              <div id="user-pic-wrapper">${picHtml}</div>
+              <div style="line-height:1.2; font-size:13px; text-align:left;">
+                <span style="font-weight:400; opacity:0.9;">${sapaan},</span><br>
+                <span style="font-weight:700; font-size:15px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">${data.kerabat}</span>
+              </div>
+            </div>`;
+
+          Swal.fire({
+            icon: 'success',
+            title: `Selamat datang, ${data.kerabat}`,
+            showConfirmButton: false,
+            timer: 2000
+          }).then(() => {
+            document.getElementById("card-names").innerHTML = `${data.kerabat}<br>&<br>${data.pasangan}`;
+            let tgl = new Date(data.tanggal);
+            let formattedDate = `${tgl.getDate().toString().padStart(2, '0')}-${(tgl.getMonth()+1).toString().padStart(2, '0')}-${tgl.getFullYear()}`;
+            document.getElementById("card-date").textContent = formattedDate;
+            document.getElementById("login-screen").style.display = "none";
+            document.getElementById("user-full-page").style.display = "flex";
+
+            clearInterval(csInterval);
+            document.getElementById("floating-cs").classList.remove("hidden");
+            csInterval = setInterval(() => {
+              document.getElementById("floating-cs").classList.toggle("hidden");
+            }, 7000);
+
+            db.ref(PATH_LOG).push({ user: kode, waktu: new Date().toLocaleString("id-ID") });
+          });
+          
+        } else {
+          Swal.close();
+          showAlert("UPS, KODE AKSES TIDAK TERDAFTAR!");
+        }
       } catch(e) { 
         console.error(e); 
         Swal.close();
@@ -827,7 +831,6 @@
       setTimeout(() => {
         Swal.close();
         if(pin === "123") {
-          
           const sapaan = getSapaanWaktu();
           const picHtml = getProfilePicHtml('admin');
           document.getElementById("admin-greeting-header").innerHTML = `
@@ -1208,7 +1211,7 @@
     function kirimNotifGlobal() {
       const judul = document.getElementById("inputJudulGlobal").value.trim();
       const pesan = document.getElementById("inputPesanGlobal").value.trim();
-      const kirimPush = document.getElementById("checkSendPush").checked;
+      const sendPush = document.getElementById("checkSendPush").checked;
       
       if(!judul || !pesan) return Swal.fire({ icon: 'warning', title: 'Kosong', text: 'Judul dan isi pesan tidak boleh kosong!' });
       
@@ -1223,20 +1226,19 @@
         waktu: formatWaktu,
         timestamp: firebase.database.ServerValue.TIMESTAMP
       }).then(() => {
-        if (kirimPush) {
+        if (sendPush) {
           fetch(CLOUDFLARE_WORKER_PUSH_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              title: judul,
-              message: pesan
-            })
-          }).catch(err => console.error("Error sending push via Cloudflare:", err));
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ title: judul, message: pesan })
+          }).then(res => res.json())
+          .then(data => console.log("Push notification status:", data))
+          .catch(err => console.error("Gagal mengirim push via Worker:", err));
         }
 
         document.getElementById("inputJudulGlobal").value = "";
         document.getElementById("inputPesanGlobal").value = "";
-        Swal.fire({ icon: 'success', title: 'Terkirim!', text: 'Pesan siaran berhasil dikirim', timer: 1500, showConfirmButton: false });
+        Swal.fire({ icon: 'success', title: 'Terkirim!', text: 'Pesan siaran berhasil dikirim ke semua pengunjung', timer: 1500, showConfirmButton: false });
       });
     }
     
