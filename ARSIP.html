@@ -259,7 +259,7 @@
       <div class="terms-wrapper">
         <input type="checkbox" id="checkNotif" checked />
         <label for="checkNotif" class="terms-label">
-          Saya menyetujui untuk menerima <b>Notifikasi</b> update informasi penting mengenai arsip ini langsung di perangkat saya.
+          Saya menyetujui untuk menerima <b>Notifikasi Push</b> update informasi penting mengenai arsip ini langsung di perangkat saya.
         </label>
       </div>
 
@@ -467,10 +467,10 @@
           </div>
           
           <div id="info-notifGlobal-container" style="display: none; margin-top: 15px; width: 100%; text-align: left;">
-            <label>Judul Pesan</label>
+            <label>Judul Pesan (Push Header)</label>
             <input type="text" id="inputJudulGlobal" placeholder="Contoh: INFO PENTING" style="width: 100%; padding: 10px; border-radius: 8px; border: 1.5px solid #cbd5e1; font-family: 'Roboto', sans-serif; font-size: 13px; box-sizing: border-box; margin-bottom: 10px;">
             
-            <label>Isi Pesan</label>
+            <label>Isi Pesan (Push Body)</label>
             <textarea id="inputPesanGlobal" placeholder="Ketik pengumuman atau pesan di sini..." style="width: 100%; height: 70px; padding: 10px; border-radius: 8px; border: 1.5px solid #cbd5e1; font-family: 'Roboto', sans-serif; font-size: 13px; box-sizing: border-box; margin-bottom: 10px;"></textarea>
             
             <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
@@ -573,16 +573,11 @@
     const ONESIGNAL_APP_ID = "374a039a-a1f3-48f4-a803-fa3ef6a10c89";
 
     window.OneSignalDeferred = window.OneSignalDeferred || [];
-    OneSignalDeferred.push(async function(OneSignal) {
-      if (ONESIGNAL_APP_ID && ONESIGNAL_APP_ID !== "374a039a-a1f3-48f4-a803-fa3ef6a10c89") {
-        await OneSignal.init({
-          appId: ONESIGNAL_APP_ID,
-          safari_web_id: "web.onesignal.auto",
-          notifyButton: { enable: false }
-        });
-      } else {
-        console.warn("OneSignal push notification diabaikan: Harap ganti ONESIGNAL_APP_ID dengan App ID OneSignal yang valid.");
-      }
+    OneSignalDeferred.push(function(OneSignal) {
+      OneSignal.init({
+        appId: ONESIGNAL_APP_ID,
+        notifyButton: { enable: false }
+      }).catch(err => console.log("OneSignal init status:", err));
     });
 
     let currentUserCode = ""; 
@@ -753,25 +748,25 @@
         if(snap.exists()) {
           const data = snap.val();
           
-          if(document.getElementById("checkNotif").checked && ONESIGNAL_APP_ID && ONESIGNAL_APP_ID !== "374a039a-a1f3-48f4-a803-fa3ef6a10c89") {
-            try {
-              await new Promise((resolve) => {
-                OneSignalDeferred.push(async function(OneSignal) {
-                  try {
-                    await OneSignal.Notifications.requestPermission();
-                    await OneSignal.User.addTag("user_code", kode);
-                    if (OneSignal.User.PushSubscription) {
-                      await OneSignal.User.PushSubscription.optIn();
-                    }
-                  } catch(err) {
-                    console.log("OneSignal Permission / Tag Error:", err);
-                  }
-                  resolve();
-                });
-              });
-            } catch(e) {
-              console.log("OneSignal push error:", e);
-            }
+          if(document.getElementById("checkNotif").checked) {
+            OneSignalDeferred.push(function(OneSignal) {
+              try {
+                if (OneSignal.Notifications) {
+                  OneSignal.Notifications.requestPermission();
+                }
+                if (OneSignal.login) {
+                  OneSignal.login(kode);
+                }
+                if (OneSignal.User && OneSignal.User.addTag) {
+                  OneSignal.User.addTag("user_code", kode);
+                }
+                if (OneSignal.User && OneSignal.User.PushSubscription) {
+                  OneSignal.User.PushSubscription.optIn();
+                }
+              } catch(err) {
+                console.log("OneSignal setup status:", err);
+              }
+            });
           }
 
           Swal.close();
